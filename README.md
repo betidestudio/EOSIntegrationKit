@@ -5,7 +5,7 @@
 ###
 
 <div align="center">
-  <img height="150" src="https://media.discordapp.net/attachments/943013597032890368/1087632976088662086/EOS_Integration_Kit.png?width=1662&height=935"  />
+  <img height="300" src="https://media.discordapp.net/attachments/943013597032890368/1087632976088662086/EOS_Integration_Kit.png?width=1662&height=935"  />
 </div>
 
 ###
