@@ -1,0 +1,19 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.OnlineSubsystemEOSPlus.cpp.obj": [
+			"OnlineAchievementsEOSPlus.cpp.obj",
+			"OnlineExternalUIEOSPlus.cpp.obj",
+			"OnlineLeaderboardsEOSPlus.cpp.obj",
+			"OnlineSessionEOSPlus.cpp.obj",
+			"OnlineStatsEOSPlus.cpp.obj",
+			"OnlineStoreEOSPlus.cpp.obj",
+			"OnlineSubsystemEOSPlus.cpp.obj",
+			"OnlineSubsystemModuleEOSPlus.cpp.obj",
+			"OnlineTitleFileEOSPlus.cpp.obj",
+			"OnlineUserCloudEOSPlus.cpp.obj",
+			"OnlineUserEOSPlus.cpp.obj",
+			"OnlineVoiceEOSPlus.cpp.obj"
+		]
+	}
+}

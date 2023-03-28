@@ -1,0 +1,13 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\plugins\\onlinesubsystemeos\\intermediate\\build\\win64\\unrealeditor\\inc\\onlinesubsystemeos\\onlinesubsystemeos.init.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\intermediate\\build\\win64\\eik_exampleeditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\plugins\\onlinesubsystemeos\\intermediate\\build\\win64\\unrealeditor\\development\\onlinesubsystemeos\\definitions.onlinesubsystemeos.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

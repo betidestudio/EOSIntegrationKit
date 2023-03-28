@@ -1,0 +1,7 @@
+{
+	"OutputFiles": [
+		"..\\..\\..\\..\\..\\..\\..\\..\\..\\Intermediate\\Build\\Win64\\UnrealGame\\Shipping\\Engine\\SharedPCH.Engine.ShadowErrors.h.obj",
+		"Module.OnlineSubsystemEOS.cpp.obj",
+		"Module.OnlineSubsystemEOS.gen.cpp.obj"
+	]
+}

@@ -1,0 +1,10 @@
+{
+	"SourceFiles": [
+		"C:\\Users\\Betide Studio\\Documents\\GitHub\\EOS-Integration-Kit\\EIK_Example\\Source\\EIK_Example\\EIK_Example.Build.cs",
+		"C:\\Users\\Betide Studio\\Documents\\GitHub\\EOS-Integration-Kit\\EIK_Example\\Plugins\\OnlineSubsystemEOS\\Source\\OnlineSubsystemEOS\\OnlineSubsystemEOS.Build.cs",
+		"C:\\Users\\Betide Studio\\Documents\\GitHub\\EOS-Integration-Kit\\EIK_Example\\Plugins\\OnlineSubsystemEOS\\Source\\OnlineSubsystemEOSPlus\\OnlineSubsystemEOSPlus.Build.cs",
+		"C:\\Users\\Betide Studio\\Documents\\GitHub\\EOS-Integration-Kit\\EIK_Example\\Source\\EIK_Example.Target.cs",
+		"C:\\Users\\Betide Studio\\Documents\\GitHub\\EOS-Integration-Kit\\EIK_Example\\Source\\EIK_ExampleEditor.Target.cs"
+	],
+	"EngineVersion": "5.0.3"
+}

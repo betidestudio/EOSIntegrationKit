@@ -1,0 +1,8 @@
+{
+	"BuildId": "19505902",
+	"Modules": 
+	{
+		"OnlineSubsystemEOS": "UnrealEditor-OnlineSubsystemEOS.dll",
+		"OnlineSubsystemEOSPlus": "UnrealEditor-OnlineSubsystemEOSPlus.dll"
+	}
+}

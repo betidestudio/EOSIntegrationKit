@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "EIK_Example",
+			"Path": "C:\\Users\\Betide Studio\\Documents\\GitHub\\EOS-Integration-Kit\\EIK_Example\\Source\\EIK_Example.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "EIK_ExampleEditor",
+			"Path": "C:\\Users\\Betide Studio\\Documents\\GitHub\\EOS-Integration-Kit\\EIK_Example\\Source\\EIK_ExampleEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

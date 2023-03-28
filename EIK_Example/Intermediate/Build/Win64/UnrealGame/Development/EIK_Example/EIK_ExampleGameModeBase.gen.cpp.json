@@ -1,0 +1,19 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\intermediate\\build\\win64\\unrealgame\\inc\\eik_example\\eik_examplegamemodebase.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\intermediate\\build\\win64\\eik_example\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\intermediate\\build\\win64\\unrealgame\\development\\eik_example\\definitions.eik_example.h",
+            "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\source\\eik_example\\eik_examplegamemodebase.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\gamemodebase.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\engine\\serverstatreplicator.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealgame\\inc\\engine\\serverstatreplicator.generated.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealgame\\inc\\engine\\gamemodebase.generated.h",
+            "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\intermediate\\build\\win64\\unrealgame\\inc\\eik_example\\eik_examplegamemodebase.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

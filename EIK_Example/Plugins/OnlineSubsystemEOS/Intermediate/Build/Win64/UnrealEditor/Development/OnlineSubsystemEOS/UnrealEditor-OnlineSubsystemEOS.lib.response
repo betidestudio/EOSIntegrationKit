@@ -1,0 +1,16 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-OnlineSubsystemEOS.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Intermediate\Build\Win64\EIK_ExampleEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Plugins\OnlineSubsystemEOS\Intermediate\Build\Win64\UnrealEditor\Development\OnlineSubsystemEOS\Module.OnlineSubsystemEOS.cpp.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Plugins\OnlineSubsystemEOS\Intermediate\Build\Win64\UnrealEditor\Development\OnlineSubsystemEOS\Module.OnlineSubsystemEOS.gen.cpp.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Plugins\OnlineSubsystemEOS\Intermediate\Build\Win64\UnrealEditor\Development\OnlineSubsystemEOS\EOSSettings.gen.cpp.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Plugins\OnlineSubsystemEOS\Intermediate\Build\Win64\UnrealEditor\Development\OnlineSubsystemEOS\NetDriverEOS.gen.cpp.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Plugins\OnlineSubsystemEOS\Intermediate\Build\Win64\UnrealEditor\Development\OnlineSubsystemEOS\OnlineSubsystemEOS.init.gen.cpp.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Plugins\OnlineSubsystemEOS\Intermediate\Build\Win64\UnrealEditor\Development\OnlineSubsystemEOS\Default.rc2.res"
+/OUT:"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Plugins\OnlineSubsystemEOS\Intermediate\Build\Win64\UnrealEditor\Development\OnlineSubsystemEOS\UnrealEditor-OnlineSubsystemEOS.lib"

@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\EIK_Example.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\EIK_Example.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\EIK_ExampleEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Config\HoloLens">
+      <UniqueIdentifier>{4C8DD267-CDE7-336F-8602-F5F485D22BAB}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\HoloLens\HoloLensEngine.ini">
+      <Filter>Config\HoloLens</Filter>
+    </None>
+    <Filter Include="Plugins">
+      <UniqueIdentifier>{BB38096A-B391-30DC-A0D4-4F3EA6B44507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\OnlineSubsystemEOS">
+      <UniqueIdentifier>{717C2BDD-B7B2-3955-BD61-B706D1B2988B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source">
+      <UniqueIdentifier>{F7ED77F5-66BB-36F1-A4F8-79248A24BD03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS">
+      <UniqueIdentifier>{CB697FD4-4CA4-33C4-AC5E-098B39146B8E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\OnlineSubsystemEOS.Build.cs">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS</Filter>
+    </None>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private">
+      <UniqueIdentifier>{C1B803AF-06E9-3282-8BDD-DA6F4662E244}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\EOSHelpers.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\EOSHelpers.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\EOSSettings.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\NboSerializerEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\NetDriverEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineAchievementsEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineAchievementsEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineLeaderboardsEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineLeaderboardsEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineSessionEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineSessionEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineStatsEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineStatsEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineStoreEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineStoreEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineSubsystemEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineSubsystemEOSPrivate.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineSubsystemEOSTypes.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineSubsystemModuleEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineTitleFileEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineTitleFileEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineUserCloudEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\OnlineUserCloudEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\SocketSubsystemEOSUtils_OnlineSubsystemEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\SocketSubsystemEOSUtils_OnlineSubsystemEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\UserManagerEOS.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\UserManagerEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private</Filter>
+    </ClInclude>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Android">
+      <UniqueIdentifier>{D3F52CA6-6C2B-38B6-A914-4D0503237319}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Android\AndroidEOSHelpers.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Android</Filter>
+    </ClInclude>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\IOS">
+      <UniqueIdentifier>{567E18D4-4DEF-35E5-B844-9A1AE7566323}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\IOS\IOSEOSHelpers.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\IOS</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\IOS\IOSEOSHelpers.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\IOS</Filter>
+    </ClInclude>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Mac">
+      <UniqueIdentifier>{6E606A42-2C4D-372C-B849-599021BAA0F0}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Mac\MacEOSHelpers.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Mac</Filter>
+    </ClInclude>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Windows">
+      <UniqueIdentifier>{B1A58CBE-4C92-300F-8E6D-F88E09BD2227}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Windows\WindowsEOSHelpers.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Windows</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Windows\WindowsEOSHelpers.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Private\Windows</Filter>
+    </ClInclude>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Public">
+      <UniqueIdentifier>{E8427C9F-C4B3-3132-AD72-E24B3328BCA0}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Public\EOSSettings.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Public\OnlineSubsystemEOS.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Public\OnlineSubsystemEOSModule.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Public\OnlineSubsystemEOSPackage.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Public</Filter>
+    </ClInclude>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Subsystem">
+      <UniqueIdentifier>{912E076A-43B1-33CF-86C8-663A9EC08FB4}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Subsystem\EIK_Subsystem.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Subsystem</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Subsystem\EIK_Subsystem.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOS\Subsystem</Filter>
+    </ClInclude>
+    <None Include="..\..\Plugins\OnlineSubsystemEOS\OnlineSubsystemEOS.uplugin">
+      <Filter>Plugins\OnlineSubsystemEOS</Filter>
+    </None>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus">
+      <UniqueIdentifier>{E20A7770-4BEA-397C-97D6-9828D34C4E82}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\OnlineSubsystemEOSPlus.Build.cs">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus</Filter>
+    </None>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private">
+      <UniqueIdentifier>{DDAD48DD-63FE-340F-9C3F-9A19E6FF3E1D}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineAchievementsEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineAchievementsEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineExternalUIEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineExternalUIEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineLeaderboardsEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineLeaderboardsEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineSessionEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineSessionEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineStatsEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineStatsEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineStoreEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineStoreEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineSubsystemEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineSubsystemEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineSubsystemEOSPlusPrivate.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineSubsystemModuleEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineTitleFileEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineTitleFileEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineUserCloudEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineUserCloudEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineUserEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineUserEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineVoiceEOSPlus.cpp">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private\OnlineVoiceEOSPlus.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Private</Filter>
+    </ClInclude>
+    <Filter Include="Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Public">
+      <UniqueIdentifier>{32E31F6B-8322-3349-9599-7F7CDE7B50E4}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Public\OnlineSubsystemEOSPlusModule.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Public\OnlineSubsystemEOSPlusPackage.h">
+      <Filter>Plugins\OnlineSubsystemEOS\Source\OnlineSubsystemEOSPlus\Public</Filter>
+    </ClInclude>
+    <Filter Include="Source\EIK_Example">
+      <UniqueIdentifier>{EE4DDFB1-BF38-31FF-BAA8-468DA614B0F2}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\EIK_Example\EIK_Example.Build.cs">
+      <Filter>Source\EIK_Example</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\EIK_Example\EIK_Example.cpp">
+      <Filter>Source\EIK_Example</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\EIK_Example\EIK_Example.h">
+      <Filter>Source\EIK_Example</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\EIK_Example\EIK_ExampleGameModeBase.cpp">
+      <Filter>Source\EIK_Example</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\EIK_Example\EIK_ExampleGameModeBase.h">
+      <Filter>Source\EIK_Example</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

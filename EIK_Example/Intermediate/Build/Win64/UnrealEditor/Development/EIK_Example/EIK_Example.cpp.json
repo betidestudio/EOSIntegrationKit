@@ -1,0 +1,14 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\source\\eik_example\\eik_example.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\intermediate\\build\\win64\\eik_exampleeditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\intermediate\\build\\win64\\unrealeditor\\development\\eik_example\\definitions.eik_example.h",
+            "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\source\\eik_example\\eik_example.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\plugins\\onlinesubsystemeos\\intermediate\\build\\win64\\unrealeditor\\inc\\onlinesubsystemeos\\eossettings.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\intermediate\\build\\win64\\eik_exampleeditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\plugins\\onlinesubsystemeos\\intermediate\\build\\win64\\unrealeditor\\development\\onlinesubsystemeos\\definitions.onlinesubsystemeos.h",
+            "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\plugins\\onlinesubsystemeos\\source\\onlinesubsystemeos\\public\\eossettings.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\engine\\runtimeoptionsbase.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\runtimeoptionsbase.generated.h",
+            "c:\\users\\betide studio\\documents\\github\\eos-integration-kit\\eik_example\\plugins\\onlinesubsystemeos\\intermediate\\build\\win64\\unrealeditor\\inc\\onlinesubsystemeos\\eossettings.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

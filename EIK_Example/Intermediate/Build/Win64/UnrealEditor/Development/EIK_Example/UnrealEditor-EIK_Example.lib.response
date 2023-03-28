@@ -1,0 +1,15 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-EIK_Example.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Intermediate\Build\Win64\EIK_ExampleEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Intermediate\Build\Win64\UnrealEditor\Development\EIK_Example\EIK_Example.cpp.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Intermediate\Build\Win64\UnrealEditor\Development\EIK_Example\EIK_ExampleGameModeBase.cpp.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Intermediate\Build\Win64\UnrealEditor\Development\EIK_Example\EIK_Example.init.gen.cpp.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Intermediate\Build\Win64\UnrealEditor\Development\EIK_Example\EIK_ExampleGameModeBase.gen.cpp.obj"
+"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Intermediate\Build\Win64\UnrealEditor\Development\EIK_Example\Default.rc2.res"
+/OUT:"C:\Users\Betide Studio\Documents\GitHub\EOS-Integration-Kit\EIK_Example\Intermediate\Build\Win64\UnrealEditor\Development\EIK_Example\UnrealEditor-EIK_Example.lib"
