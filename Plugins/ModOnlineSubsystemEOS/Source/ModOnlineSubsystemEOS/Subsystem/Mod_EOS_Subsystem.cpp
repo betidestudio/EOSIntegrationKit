@@ -15,7 +15,7 @@ The method first sets the "LoginCallBackBP" property of the class to the "Result
 
 If the online subsystem or the identity interface cannot be retrieved, the method executes the "Result" callback function with a false value and an error message. The actual login response is handled by the "LoginCallback" function, which is defined elsewhere in the class and added to the "OnLoginCompleteDelegates" list as a delegate.
  */
-void UMod_EOS_Subsystem::LoginWithDeviceID(int32 LocalUserNum, const FBP_Login_Callback& Result)
+void UMod_EOS_Subsystem::LoginWithDeviceID(int32 LocalUserNum, FString DisplayName, FString DeviceName, const FBP_Login_Callback& Result)
 {
 	LoginCallBackBP = Result;
 	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
@@ -23,8 +23,8 @@ void UMod_EOS_Subsystem::LoginWithDeviceID(int32 LocalUserNum, const FBP_Login_C
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
 			FOnlineAccountCredentials AccountDetails;
-			AccountDetails.Id = "";
-			AccountDetails.Token = "";
+			AccountDetails.Id = DisplayName;
+			AccountDetails.Token = DeviceName;
 			AccountDetails.Type = "deviceid";
 			IdentityPointerRef->OnLoginCompleteDelegates->AddUObject(this,&UMod_EOS_Subsystem::LoginCallback);
 			IdentityPointerRef->Login(LocalUserNum,AccountDetails);

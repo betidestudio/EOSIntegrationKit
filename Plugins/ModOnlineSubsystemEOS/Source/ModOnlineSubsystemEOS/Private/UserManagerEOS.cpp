@@ -396,7 +396,7 @@ void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& Account
 	
 	EOS_Connect_UserLoginInfo LoginInfo;
 	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
-	std::string DisplayNameStr(TCHAR_TO_ANSI(*DisplayName));
+	const std::string DisplayNameStr(TCHAR_TO_ANSI(*DisplayName));
 	LoginInfo.DisplayName = DisplayNameStr.c_str();
 
 	EOS_Connect_LoginOptions LoginOptions;
@@ -411,7 +411,7 @@ void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& Account
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Login Using Device ID Success"));
 			AddLocalUser(LocalUserNum, nullptr, Data->LocalUserId);
-			FUniqueNetIdEOSPtr NetIdEos = GetLocalUniqueNetIdEOS(LocalUserNum);
+			const FUniqueNetIdEOSPtr NetIdEos = GetLocalUniqueNetIdEOS(LocalUserNum);
 			TriggerOnLoginCompleteDelegates(LocalUserNum, true, *NetIdEos.ToSharedRef(), "");
 
 		}
@@ -422,9 +422,9 @@ void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& Account
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("EOS Login using Device ID Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
-			EOS_EResult ResultCode = Data->ResultCode;
+			const EOS_EResult ResultCode = Data->ResultCode;
 			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
-			FString ResultCodeString = FString(ResultCodeStr);
+			const FString ResultCodeString = FString(ResultCodeStr);
 			TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
 
 		}
@@ -436,7 +436,7 @@ void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCre
 {
 	EOS_Connect_CreateDeviceIdOptions DeviceIdOptions = {};
 	DeviceIdOptions.ApiVersion = EOS_CONNECT_CREATEDEVICEID_API_LATEST;
-	DeviceIdOptions.DeviceModel = "ExampleDeviceModel";
+	DeviceIdOptions.DeviceModel = TCHAR_TO_ANSI(*AccountCredentials.Token);
 
 	int32 LocalUserNum = 0;
 	FCreateDeviceIDCallback* CallbackObj = new FCreateDeviceIDCallback();

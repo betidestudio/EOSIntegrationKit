@@ -96,7 +96,7 @@ class MODONLINESUBSYSTEMEOS_API UMod_EOS_Subsystem : public UGameInstanceSubsyst
 public:
 	//This is a C++ method definition for logging in a user to an online subsystem using provided credentials, and it sets up a callback function to handle the login response.
 	UFUNCTION(BlueprintCallable, Category="OSIK Identity")
-	void LoginWithDeviceID(int32 LocalUserNum, const FBP_Login_Callback& Result);
+	void LoginWithDeviceID(int32 LocalUserNum, FString DisplayName, FString DeviceName, const FBP_Login_Callback& Result);
 	
 	//This is a C++ method definition for logging out a user from an online subsystem, and it sets up a callback function to handle the logout response.
 	UFUNCTION(BlueprintCallable, Category="OSIK Identity")
