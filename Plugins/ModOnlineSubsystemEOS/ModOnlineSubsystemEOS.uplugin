@@ -1,0 +1,58 @@
+{
+	"FileVersion": 3,
+
+	"FriendlyName": "Modified Online Subsystem EOS",
+	"Version": 1,
+	"VersionName": "1.0",
+	"Description": "Online Subsystem for Epic Online Services",
+	"Category": "Online Platform",
+	"CreatedBy": "Betide Studio",
+	"CreatedByURL": "http://dev.epicgames.com/services",
+	"EnabledByDefault": false,
+	"IsBetaVersion" : true,
+
+	"Modules": [
+		{
+			"Name": "ModOnlineSubsystemEOS",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"Android"
+			]
+		},
+		{
+			"Name": "ModOnlineSubsystemEOSPlus",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"Android"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "OnlineSubsystem",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "EOSShared",
+			"Enabled": true
+		},
+		{
+			"Name": "EOSVoiceChat",
+			"Enabled": true
+		},
+		{
+			"Name": "SocketSubsystemEOS",
+			"Enabled": true
+		}
+	]
+}
