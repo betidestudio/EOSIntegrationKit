@@ -5,6 +5,7 @@
 #include "OnlineSubsystemUtils.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineIdentityInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void UMod_EOS_Subsystem::Login(int32 LocalUserNum, FString ID, FString Token , FString Type, const FBP_Login_Callback& Result)
@@ -139,6 +140,328 @@ FString UMod_EOS_Subsystem::GetLoginStatus(const int32 LocalUserNum) const
 	}
 }
 
+void UMod_EOS_Subsystem::CreateEOSSession(const FBP_CreateSession_Callback& Result,
+	TMap<FString, FString> Custom_Settings, FString SessionName, bool bIsDedicatedServer, bool bIsLan,
+	int32 NumberOfPublicConnections, ERegionInfo Region)
+{
+	CreateSession_CallbackBP = Result;
+	if(IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	{
+		if(IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+		{
+			FOnlineSessionSettings SessionCreationInfo;
+			SessionCreationInfo.bIsDedicated = bIsDedicatedServer;
+			SessionCreationInfo.bAllowInvites = true;
+			SessionCreationInfo.bIsLANMatch = bIsLan;
+			SessionCreationInfo.NumPublicConnections = NumberOfPublicConnections;
+			SessionCreationInfo.bUseLobbiesIfAvailable = false;
+			SessionCreationInfo.bUseLobbiesVoiceChatIfAvailable = false;
+			SessionCreationInfo.bUsesPresence =true;
+			SessionCreationInfo.bAllowJoinViaPresence = true;
+			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = false;
+			SessionCreationInfo.bShouldAdvertise = true;
+			SessionCreationInfo.bAllowJoinInProgress = true;
+			
+			SessionCreationInfo.Settings.Add( FName(TEXT("REGIONINFO")), FOnlineSessionSetting(UEnum::GetValueAsString(Region), EOnlineDataAdvertisementType::ViaOnlineService));
+			if(bIsDedicatedServer)
+			{
+				SessionCreationInfo.Settings.Add( FName(TEXT("PortInfo")), FOnlineSessionSetting(GetWorld()->URL.Port, EOnlineDataAdvertisementType::ViaOnlineService));
+			}
+			SessionCreationInfo.Set(SEARCH_KEYWORDS, FString(SessionName), EOnlineDataAdvertisementType::ViaOnlineService);
+			for (auto& Settings_SingleValue : Custom_Settings)
+			{
+				if (Settings_SingleValue.Key.Len() == 0)
+				{
+					continue;
+				}
+
+				FOnlineSessionSetting Setting;
+				Setting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
+				Setting.Data.SetValue(Settings_SingleValue.Value);
+				SessionCreationInfo.Set(FName(*Settings_SingleValue.Key), Setting);
+			}
+			SessionPtrRef->OnCreateSessionCompleteDelegates.AddUObject(this, &UMod_EOS_Subsystem::OnCreateSessionCompleted);
+			SessionPtrRef->CreateSession(0,*SessionName,SessionCreationInfo);
+		}
+	}
+}
+
+void UMod_EOS_Subsystem::CreateEOSLobby(const FBP_CreateLobby_Callback& Result, TMap<FString, FString> Custom_Settings,
+	FString SessionName, bool bUseVoiceChat, bool bUsePresence, bool bAllowInvites, bool bAdvertise,
+	bool bAllowJoinInProgress, bool bIsLan, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections)
+{
+	CreateLobby_CallbackBP = Result;
+	if(IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	{
+		if(IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+		{
+			FOnlineSessionSettings SessionCreationInfo;
+			SessionCreationInfo.bIsDedicated = false;
+			SessionCreationInfo.bAllowInvites = bAllowInvites;
+			SessionCreationInfo.bIsLANMatch = bIsLan;
+			SessionCreationInfo.NumPublicConnections = NumberOfPublicConnections;
+			SessionCreationInfo.NumPrivateConnections = NumberOfPrivateConnections;
+			SessionCreationInfo.bUseLobbiesIfAvailable = true;
+			SessionCreationInfo.bUseLobbiesVoiceChatIfAvailable = bUseVoiceChat;
+			SessionCreationInfo.bUsesPresence =bUsePresence;
+			SessionCreationInfo.bAllowJoinViaPresence = bUsePresence;
+			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = bUsePresence;
+			SessionCreationInfo.bShouldAdvertise = bAdvertise;
+			SessionCreationInfo.bAllowJoinInProgress = bAllowJoinInProgress;
+			
+			SessionCreationInfo.Set(SEARCH_KEYWORDS, FString(SessionName), EOnlineDataAdvertisementType::ViaOnlineService);
+			for (auto& Settings_SingleValue : Custom_Settings)
+			{
+				if (Settings_SingleValue.Key.Len() == 0)
+				{
+					continue;
+				}
+
+				FOnlineSessionSetting Setting;
+				Setting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
+				Setting.Data.SetValue(Settings_SingleValue.Value);
+				SessionCreationInfo.Set(FName(*Settings_SingleValue.Key), Setting);
+			}
+			SessionPtrRef->OnCreateSessionCompleteDelegates.AddUObject(this, &UMod_EOS_Subsystem::OnCreateLobbyCompleted);
+			SessionPtrRef->CreateSession(0,*SessionName,SessionCreationInfo);
+		}
+	}
+}
+
+void UMod_EOS_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap<FString, FString> Search_Settings,
+	EMatchType MatchType, ERegionInfo RegionToSearch)
+{
+	FindSession_CallbackBP = Result;
+	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	{
+		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+		{
+			SessionSearch = MakeShareable(new FOnlineSessionSearch());
+			SessionSearch->QuerySettings.SearchParams.Empty();
+			SessionSearch->bIsLanQuery = false;
+			if(MatchType == EMatchType::MT_MatchMakingSession)
+			{
+				if(RegionToSearch!=ERegionInfo::RE_NoSelection)
+				{
+					SessionSearch->QuerySettings.Set(FName(TEXT("RegionInfo")),UEnum::GetValueAsString(RegionToSearch), EOnlineComparisonOp::Equals);
+				}
+			}
+			else
+			{
+				SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
+			}
+			for (auto& Settings_SingleValue : Search_Settings)
+			{
+				if (Settings_SingleValue.Key.Len() == 0)
+				{
+					continue;
+				}
+				FOnlineSessionSetting Setting;
+				Setting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
+				Setting.Data.SetValue(Settings_SingleValue.Value);
+				SessionSearch->QuerySettings.Set(FName(*Settings_SingleValue.Key), Settings_SingleValue.Value, EOnlineComparisonOp::Equals);
+			}
+			SessionSearch->MaxSearchResults = 1000;
+ 
+			SessionPtrRef->OnFindSessionsCompleteDelegates.AddUObject(this, &UMod_EOS_Subsystem::OnFindSessionCompleted);
+			SessionPtrRef->FindSessions(0,SessionSearch.ToSharedRef());
+		}
+	}	
+}
+
+void UMod_EOS_Subsystem::DestroyEosSession(const FBP_DestroySession_Callback& Result, FName SessionName)
+{
+	DestroySession_CallbackBP = Result;
+	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	{
+		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+		{
+			SessionPtrRef->OnDestroySessionCompleteDelegates.AddUObject(this,&UMod_EOS_Subsystem::OnDestroySessionCompleted);
+			SessionPtrRef->DestroySession(SessionName);
+		}
+	}
+}
+
+void UMod_EOS_Subsystem::JoinEosSession(const FBP_JoinSession_Callback& Result, FName SessionName,
+	bool bIsDedicatedServerSession, FBlueprintSessionResult SessionResult)
+{
+	Local_bIsDedicatedServerSession = bIsDedicatedServerSession;
+	JoinSession_CallbackBP = Result;
+	const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld());
+	if(SessionResult.OnlineResult.IsSessionInfoValid())
+	{
+		if(SubsystemRef)
+		{
+			const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface();
+			if(SessionPtrRef)
+			{
+				if(SessionResult.OnlineResult.Session.SessionSettings.Settings.Num() > 0)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Session settings:"));
+					for (auto& Elem : SessionResult.OnlineResult.Session.SessionSettings.Settings)
+					{
+						UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *Elem.Key.ToString(), *Elem.Value.Data.ToString());
+					}
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Session settings not found"));
+				}
+				SessionPtrRef->OnJoinSessionCompleteDelegates.AddUObject(this, &UMod_EOS_Subsystem::OnJoinSessionCompleted);
+				SessionPtrRef->JoinSession(0, SessionName,SessionResult.OnlineResult);
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Session ref not valid"));
+	}
+}
+
+void UMod_EOS_Subsystem::OnCreateLobbyCompleted(FName SessionName, bool bWasSuccessful) const
+{
+	if(bWasSuccessful)
+	{
+		FDelegateHandle SessionJoinHandle;
+		if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+		{
+			if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+			{
+				if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+				{
+			
+				SessionPtrRef->RegisterPlayer(SessionName, *IdentityPointerRef->GetUniquePlayerId(0),false);
+				CreateLobby_CallbackBP.Execute(bWasSuccessful, SessionName);
+			}
+			}
+			else
+			{
+				CreateLobby_CallbackBP.Execute(false, SessionName);
+			}
+		}
+		else
+		{
+			CreateLobby_CallbackBP.Execute(false, SessionName);
+		}
+	}
+	else
+	{
+		CreateLobby_CallbackBP.Execute(false, SessionName);
+	}
+}
+
+void UMod_EOS_Subsystem::OnFindSessionCompleted(bool bWasSuccess) const
+{
+	if (const IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	{
+		TArray<FSessionFindStruct> SessionResult_Array;
+		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
+		if (Sessions.IsValid())
+		{
+			if (SessionSearch->SearchResults.Num() > 0)
+			{
+				for (int32 SearchIdx = 0; SearchIdx < SessionSearch->SearchResults.Num(); SearchIdx++)
+				{
+					FBlueprintSessionResult SessionResult;
+					SessionResult.OnlineResult = SessionSearch->SearchResults[SearchIdx];
+					FOnlineSessionSettings SessionSettings  = SessionResult.OnlineResult.Session.SessionSettings;
+					TMap<FName, FString> AllSettingsWithData;
+					TMap<FName, FOnlineSessionSetting>::TIterator It(SessionSettings.Settings);
+
+					TMap<FString, FString> LocalArraySettings;
+					while (It)
+					{
+						const FName& SettingName = It.Key();
+						const FOnlineSessionSetting& Setting = It.Value();
+						FString SettingValueString = Setting.Data.ToString();
+
+						UE_LOG(LogTemp, Log, TEXT("%s: %s"), *SettingName.ToString(), *SettingValueString);
+						LocalArraySettings.Add(*SettingName.ToString(), *SettingValueString);
+						++It;
+					}
+					FSessionFindStruct LocalStruct;
+					LocalStruct.SessionName = LocalArraySettings.FindRef("SEARCHKEYWORDS");
+					LocalStruct.CurrentNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections - SessionResult.OnlineResult.Session.NumOpenPublicConnections;
+					LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections;
+					LocalStruct.SessionResult= SessionResult;
+					LocalStruct.SessionSettings = LocalArraySettings;
+					SessionResult_Array.Add(LocalStruct);
+				}
+			}
+		}
+
+		FindSession_CallbackBP.Execute(bWasSuccess, SessionResult_Array);
+	}
+}
+
+
+void UMod_EOS_Subsystem::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+{
+	if(Result==EOnJoinSessionCompleteResult::Success)
+	{
+		if(APlayerController* PlayerControllerRef = UGameplayStatics::GetPlayerController(GetWorld(),0))
+		{
+			if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+			{
+				if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+				{
+					FString JoinAddress;
+					SessionPtrRef->GetResolvedConnectString(SessionName,JoinAddress);
+					if(Local_bIsDedicatedServerSession)
+					{
+						TArray<FString> IpPortArray;
+						JoinAddress.ParseIntoArray(IpPortArray, TEXT(":"), true);
+						const FString IpAddress = IpPortArray[0];
+						if(LocalPortInfo.IsEmpty())
+						{
+							LocalPortInfo = "7777";
+						}
+						const FString NewCustomIP = IpAddress + ":" + LocalPortInfo;
+						JoinAddress = NewCustomIP;
+					}
+					UE_LOG(LogTemp,Warning,TEXT("Join Address is %s"), *JoinAddress);
+					if(!JoinAddress.IsEmpty())
+					{
+						PlayerControllerRef->ClientTravel(JoinAddress,ETravelType::TRAVEL_Absolute);
+						JoinSession_CallbackBP.ExecuteIfBound(true);
+						return;
+					}
+					else
+					{
+						JoinSession_CallbackBP.Execute(false);
+						return;
+					}
+				}
+				else
+				{
+					JoinSession_CallbackBP.Execute(false);
+					return;
+				}
+			}
+			else
+			{
+				JoinSession_CallbackBP.Execute(false);
+				return;
+			}
+		}
+		else
+		{
+			JoinSession_CallbackBP.Execute(false);
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Join Session Error with Reason of %d"), Result);
+		JoinSession_CallbackBP.Execute(false);
+		return;
+	}
+	JoinSession_CallbackBP.Execute(false);
+}
+void UMod_EOS_Subsystem::OnDestroySessionCompleted(FName SessionName, bool bWasSuccess) const
+{
+	DestroySession_CallbackBP.Execute(bWasSuccess);
+}
 
 
 //Callback Functions
@@ -156,4 +479,35 @@ void UMod_EOS_Subsystem::LoginCallback(int32 LocalUserNum, bool bWasSuccess, con
 void UMod_EOS_Subsystem::LogoutCallback(int32 LocalUserNum, bool bWasSuccess) const
 {
 	LogoutCallbackBP.Execute(bWasSuccess);
+}
+
+void UMod_EOS_Subsystem::OnCreateSessionCompleted(FName SessionName, bool bWasSuccessful) const
+{
+	if(bWasSuccessful)
+	{
+		FDelegateHandle SessionJoinHandle;
+		if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+		{
+			if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+			{
+					if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+					{
+						SessionPtrRef->RegisterPlayer(SessionName, *IdentityPointerRef->GetUniquePlayerId(0),false);
+						CreateSession_CallbackBP.Execute(bWasSuccessful, SessionName);
+					}
+			}
+			else
+			{
+				CreateSession_CallbackBP.Execute(false, SessionName);
+			}
+		}
+		else
+		{
+			CreateSession_CallbackBP.Execute(false, SessionName);
+		}
+	}
+	else
+	{
+		CreateSession_CallbackBP.Execute(false, SessionName);
+	}
 }
