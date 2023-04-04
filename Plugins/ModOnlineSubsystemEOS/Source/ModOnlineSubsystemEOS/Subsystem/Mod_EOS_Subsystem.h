@@ -94,12 +94,28 @@ class MODONLINESUBSYSTEMEOS_API UMod_EOS_Subsystem : public UGameInstanceSubsyst
 	GENERATED_BODY()
 	
 public:
-	//This is a C++ method definition for logging in a user to an online subsystem using provided credentials, and it sets up a callback function to handle the login response.
-	UFUNCTION(BlueprintCallable, Category="OSIK Identity")
+	// This C++ method logs in a user to an online subsystem using their device ID and sets up a callback function to handle the login response.
+	UFUNCTION(BlueprintCallable, Category="Modified EOS || Login")
 	void LoginWithDeviceID(int32 LocalUserNum, FString DisplayName, FString DeviceName, const FBP_Login_Callback& Result);
+
+	// This C++ method logs in a user to an online subsystem through an account portal and sets up a callback function to handle the login response.
+	UFUNCTION(BlueprintCallable, Category="Modified EOS || Login")
+	void LoginWithAccountPortal(int32 LocalUserNum, const FBP_Login_Callback& Result);
+
+	// This C++ method logs in a user to an online subsystem using persistent authentication and sets up a callback function to handle the login response.
+	UFUNCTION(BlueprintCallable, Category="Modified EOS || Login")
+	void LoginWithPersistantAuth(int32 LocalUserNum, const FBP_Login_Callback& Result);
+
+	// This C++ method logs in a user to an online subsystem using a developer tool and sets up a callback function to handle the login response.
+	UFUNCTION(BlueprintCallable, Category="Modified EOS || Login")
+	void LoginWithDeveloperTool(int32 LocalUserNum, FString LocalIP, FString Credential, const FBP_Login_Callback& Result);
+
+	// This C++ method logs in a user to an online subsystem using the Epic Launcher and sets up a callback function to handle the login response.
+	UFUNCTION(BlueprintCallable, Category="Modified EOS || Login")
+	void LoginWithEpicLauncher(int32 LocalUserNum, const FBP_Login_Callback& Result);
 	
 	//This is a C++ method definition for logging out a user from an online subsystem, and it sets up a callback function to handle the logout response.
-	UFUNCTION(BlueprintCallable, Category="OSIK Identity")
+	UFUNCTION(BlueprintCallable, Category="Modified EOS || Login")
 	void Logout(int32 LocalUserNum, const FBP_Logout_Callback& Result);
 
 	//This is a C++ method definition for getting the nickname of a player from an online subsystem.
@@ -111,7 +127,9 @@ public:
 	FString GetLoginStatus(const int32 LocalUserNum) const;
 	
 
-	
+
+	//Local Functions
+	void Login(int32 LocalUserNum, FString ID, FString Token, FString Type, const FBP_Login_Callback& Result);
 	//Return Functions
 	void LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId, const FString& Error) const;
 	void LogoutCallback(int32 LocalUserNum,bool bWasSuccess) const;

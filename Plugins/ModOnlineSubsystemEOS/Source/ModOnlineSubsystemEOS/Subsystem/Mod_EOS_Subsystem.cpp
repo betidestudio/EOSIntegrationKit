@@ -7,15 +7,7 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 
 
-
-/*
-* This is a C++ function definition for a method called "Login" in the "UMod_EOS_Subsystem" class. It takes in one parameters: an integer "LocalUserNum" It also takes in a callback function "Result" of type "FBP_Login_Callback".
-
-The method first sets the "LoginCallBackBP" property of the class to the "Result" parameter. Then it retrieves the current online subsystem and the identity interface for that subsystem. If the identity interface is successfully retrieved, it creates an instance of "FOnlineAccountCredentials" with the values provided in the parameters and adds a login callback delegate to the "OnLoginCompleteDelegates" list of the identity interface. Finally, it calls the "Login" method of the identity interface with the "LocalUserNum" and "AccountDetails" parameters.
-
-If the online subsystem or the identity interface cannot be retrieved, the method executes the "Result" callback function with a false value and an error message. The actual login response is handled by the "LoginCallback" function, which is defined elsewhere in the class and added to the "OnLoginCompleteDelegates" list as a delegate.
- */
-void UMod_EOS_Subsystem::LoginWithDeviceID(int32 LocalUserNum, FString DisplayName, FString DeviceName, const FBP_Login_Callback& Result)
+void UMod_EOS_Subsystem::Login(int32 LocalUserNum, FString ID, FString Token , FString Type, const FBP_Login_Callback& Result)
 {
 	LoginCallBackBP = Result;
 	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
@@ -23,9 +15,9 @@ void UMod_EOS_Subsystem::LoginWithDeviceID(int32 LocalUserNum, FString DisplayNa
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
 			FOnlineAccountCredentials AccountDetails;
-			AccountDetails.Id = DisplayName;
-			AccountDetails.Token = DeviceName;
-			AccountDetails.Type = "deviceid";
+			AccountDetails.Id = ID;
+			AccountDetails.Token = Token;
+			AccountDetails.Type = Type;
 			IdentityPointerRef->OnLoginCompleteDelegates->AddUObject(this,&UMod_EOS_Subsystem::LoginCallback);
 			IdentityPointerRef->Login(LocalUserNum,AccountDetails);
 		}
@@ -38,6 +30,38 @@ void UMod_EOS_Subsystem::LoginWithDeviceID(int32 LocalUserNum, FString DisplayNa
 	{
 		Result.Execute(false,FBPUniqueNetId(),"Failed to get Subsystem");
 	}
+}
+
+
+/*
+* This is a C++ function definition for a method called "Login" in the "UMod_EOS_Subsystem" class. It takes in one parameters: an integer "LocalUserNum" It also takes in a callback function "Result" of type "FBP_Login_Callback".
+
+The method first sets the "LoginCallBackBP" property of the class to the "Result" parameter. Then it retrieves the current online subsystem and the identity interface for that subsystem. If the identity interface is successfully retrieved, it creates an instance of "FOnlineAccountCredentials" with the values provided in the parameters and adds a login callback delegate to the "OnLoginCompleteDelegates" list of the identity interface. Finally, it calls the "Login" method of the identity interface with the "LocalUserNum" and "AccountDetails" parameters.
+
+If the online subsystem or the identity interface cannot be retrieved, the method executes the "Result" callback function with a false value and an error message. The actual login response is handled by the "LoginCallback" function, which is defined elsewhere in the class and added to the "OnLoginCompleteDelegates" list as a delegate.
+ */
+void UMod_EOS_Subsystem::LoginWithDeviceID(int32 LocalUserNum, FString DisplayName, FString DeviceName, const FBP_Login_Callback& Result)
+{
+	Login(LocalUserNum,DisplayName, DeviceName, "deviceid", Result);
+}
+
+void UMod_EOS_Subsystem::LoginWithAccountPortal(int32 LocalUserNum, const FBP_Login_Callback& Result)
+{
+	Login(LocalUserNum,"", "", "accountportal", Result);
+}
+
+void UMod_EOS_Subsystem::LoginWithPersistantAuth(int32 LocalUserNum, const FBP_Login_Callback& Result)
+{
+	Login(LocalUserNum,"", "", "persistentauth", Result);
+}
+
+void UMod_EOS_Subsystem::LoginWithDeveloperTool(int32 LocalUserNum, FString LocalIP, FString Credential, const FBP_Login_Callback& Result)
+{
+	Login(LocalUserNum,LocalIP, Credential, "developer", Result);
+}
+
+void UMod_EOS_Subsystem::LoginWithEpicLauncher(int32 LocalUserNum, const FBP_Login_Callback& Result)
+{
 }
 
 /*
@@ -114,6 +138,7 @@ FString UMod_EOS_Subsystem::GetLoginStatus(const int32 LocalUserNum) const
 		return FString();
 	}
 }
+
 
 
 //Callback Functions
