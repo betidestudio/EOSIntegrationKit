@@ -173,6 +173,8 @@ FUserManagerEOS::~FUserManagerEOS()
 	}
 }
 
+
+
 void FUserManagerEOS::LoginStatusChanged(const EOS_Auth_LoginStatusChangedCallbackInfo* Data)
 {
 	if (Data->CurrentStatus == EOS_ELoginStatus::EOS_LS_NotLoggedIn)
@@ -286,6 +288,7 @@ FString FUserManagerEOS::GetPlatformDisplayName(int32 LocalUserNum) const
 
 typedef TEOSCallback<EOS_Auth_OnLoginCallback, EOS_Auth_LoginCallbackInfo> FLoginCallback;
 typedef TEOSCallback<EOS_Connect_OnLoginCallback, EOS_Connect_LoginCallbackInfo> FConnectLoginCallback;
+typedef TEOSCallback<EOS_Connect_OnCreateDeviceIdCallback, EOS_Connect_CreateDeviceIdCallbackInfo> FCreateDeviceIDCallback;
 typedef TEOSCallback<EOS_Auth_OnDeletePersistentAuthCallback, EOS_Auth_DeletePersistentAuthCallbackInfo> FDeletePersistentAuthCallback;
 
 // Chose arbitrarily since the SDK doesn't define it
@@ -375,6 +378,82 @@ struct FAuthCredentials :
 	char TokenAnsi[EOS_MAX_TOKEN_SIZE];
 };
 
+
+void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials)
+{
+	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback();
+
+	FString DisplayName = AccountCredentials.Id;
+	EOS_Connect_Credentials UserCredentials;
+	UserCredentials.Token = nullptr;
+	UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_DEVICEID_ACCESS_TOKEN;
+	UserCredentials.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
+
+	if (DisplayName.IsEmpty() || DisplayName.Equals(""))
+	{
+		DisplayName = "DefaultName";
+	}
+	
+	EOS_Connect_UserLoginInfo LoginInfo;
+	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
+	std::string DisplayNameStr(TCHAR_TO_ANSI(*DisplayName));
+	LoginInfo.DisplayName = DisplayNameStr.c_str();
+
+	EOS_Connect_LoginOptions LoginOptions;
+	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;
+	LoginOptions.UserLoginInfo = &LoginInfo;
+	LoginOptions.Credentials = &UserCredentials;
+
+	int32 LocalUserNum = 0;
+	CallbackObj->CallbackLambda = [LocalUserNum,AccountCredentials, UserCredentials, this](const EOS_Connect_LoginCallbackInfo* Data)
+	{
+		if(Data->ResultCode == EOS_EResult::EOS_Success)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Login Using Device ID Success"));
+			AddLocalUser(LocalUserNum, nullptr, Data->LocalUserId);
+			FUniqueNetIdEOSPtr NetIdEos = GetLocalUniqueNetIdEOS(LocalUserNum);
+			TriggerOnLoginCompleteDelegates(LocalUserNum, true, *NetIdEos.ToSharedRef(), "");
+
+		}
+		else if(Data->ResultCode == EOS_EResult::EOS_NotFound)
+		{
+			CreateDeviceID(AccountCredentials);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("EOS Login using Device ID Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
+			EOS_EResult ResultCode = Data->ResultCode;
+			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
+			FString ResultCodeString = FString(ResultCodeStr);
+			TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
+
+		}
+	};
+	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, (void*)CallbackObj, CallbackObj->GetCallbackPtr());
+}
+
+void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCredentials)
+{
+	EOS_Connect_CreateDeviceIdOptions DeviceIdOptions = {};
+	DeviceIdOptions.ApiVersion = EOS_CONNECT_CREATEDEVICEID_API_LATEST;
+	DeviceIdOptions.DeviceModel = "ExampleDeviceModel";
+
+	int32 LocalUserNum = 0;
+	FCreateDeviceIDCallback* CallbackObj = new FCreateDeviceIDCallback();
+	CallbackObj->CallbackLambda = [LocalUserNum, AccountCredentials, this](const EOS_Connect_CreateDeviceIdCallbackInfo* Data)
+	{
+		if(Data->ResultCode == EOS_EResult::EOS_Success || Data->ResultCode == EOS_EResult::EOS_DuplicateNotAllowed )
+		{
+			LoginWithDeviceID(AccountCredentials);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("EOS Create Device ID Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode))
+		}
+	};
+	EOS_Connect_CreateDeviceId(EOSSubsystem->ConnectHandle, &DeviceIdOptions,(void*)CallbackObj, CallbackObj->GetCallbackPtr() );
+}
+
 bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials)
 {
 	LocalUserNumToLastLoginCredentials.Emplace(LocalUserNum, MakeShared<FOnlineAccountCredentials>(AccountCredentials));
@@ -408,6 +487,11 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	if (!EOSSubsystem->bIsDefaultOSS && !EOSSubsystem->bIsPlatformOSS && Settings.bUseEAS)
 	{
 		LoginViaExternalAuth(LocalUserNum);
+		return true;
+	}
+
+	if(AccountCredentials.Type == TEXT("deviceid"))
+	{
 		return true;
 	}
 

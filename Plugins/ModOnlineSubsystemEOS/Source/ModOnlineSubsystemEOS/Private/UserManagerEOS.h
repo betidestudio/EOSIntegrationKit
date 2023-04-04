@@ -255,6 +255,11 @@ public:
 	 */
 	virtual ~FUserManagerEOS();
 
+	
+//Extra Functions
+	void LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials);
+	void CreateDeviceID(const FOnlineAccountCredentials& AccountCredentials);
+	//void DeleteDeviceID();
 // IOnlineIdentity Interface
 	virtual bool Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials) override;
 	virtual bool Logout(int32 LocalUserNum) override;

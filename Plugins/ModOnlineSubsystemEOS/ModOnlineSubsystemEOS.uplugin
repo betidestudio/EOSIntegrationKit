@@ -1,6 +1,5 @@
 {
 	"FileVersion": 3,
-
 	"FriendlyName": "Modified Online Subsystem EOS",
 	"Version": 1,
 	"VersionName": "1.0",
@@ -9,8 +8,7 @@
 	"CreatedBy": "Betide Studio",
 	"CreatedByURL": "http://dev.epicgames.com/services",
 	"EnabledByDefault": false,
-	"IsBetaVersion" : true,
-
+	"IsBetaVersion": true,
 	"Modules": [
 		{
 			"Name": "ModOnlineSubsystemEOS",
@@ -54,5 +52,11 @@
 			"Name": "SocketSubsystemEOS",
 			"Enabled": true
 		}
-	]
+	],
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsExperimentalVersion": false,
+	"Installed": false
 }
