@@ -9,3 +9,5 @@
 </div>
 
 ###
+
+<h2 align="center"> Documentation - https://betide-studio.gitbook.io/eos-integration-kit/ </h2>
