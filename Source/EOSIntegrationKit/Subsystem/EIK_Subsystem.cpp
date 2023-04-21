@@ -8,6 +8,7 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/SaveGame.h"
+#include "Interfaces/OnlineLeaderboardInterface.h"
 #ifdef PLAYFAB_PLUGIN_INSTALLED
 #include "Core/PlayFabClientAPI.h"
 #endif
@@ -16,7 +17,7 @@
 void UEIK_Subsystem::Login(int32 LocalUserNum, FString ID, FString Token , FString Type, const FBP_Login_Callback& Result)
 {
 	LoginCallBackBP = Result;
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
@@ -40,7 +41,7 @@ void UEIK_Subsystem::Login(int32 LocalUserNum, FString ID, FString Token , FStri
 
 bool UEIK_Subsystem::InitializeEIK()
 {
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineFriendsPtr FriendsPtr = SubsystemRef->GetFriendsInterface())
 		{
@@ -114,7 +115,7 @@ If the online subsystem or the identity interface cannot be retrieved, the metho
 void UEIK_Subsystem::Logout(int32 LocalUserNum, const FBP_Logout_Callback& Result)
 {
 	LogoutCallbackBP = Result;
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
@@ -138,9 +139,9 @@ void UEIK_Subsystem::Logout(int32 LocalUserNum, const FBP_Logout_Callback& Resul
 
 If the online subsystem or the identity interface cannot be retrieved, the method returns an empty string. This method is useful for retrieving the display name or nickname of a player in a multiplayer game, which can be used to identify the player in the game world or UI.
  */
-FString UEIK_Subsystem::GetPlayerNickname(const int32 LocalUserNum) const
+FString UEIK_Subsystem::GetPlayerNickname(const int32 LocalUserNum)
 {
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
@@ -164,7 +165,7 @@ If the online subsystem or the identity interface cannot be retrieved, the metho
  */
 bool UEIK_Subsystem::GetLoginStatus(const int32 LocalUserNum) const
 {
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
@@ -279,7 +280,7 @@ void UEIK_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap
 	EMatchType MatchType, ERegionInfo RegionToSearch)
 {
 	FindSession_CallbackBP = Result;
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
@@ -297,17 +298,19 @@ void UEIK_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap
 			{
 				SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
 			}
-			for (auto& Settings_SingleValue : Search_Settings)
-			{
-				if (Settings_SingleValue.Key.Len() == 0)
-				{
-					continue;
+			if (!Search_Settings.IsEmpty()) {
+				for (auto& Settings_SingleValue : Search_Settings) {
+					if (Settings_SingleValue.Key.Len() == 0) {
+						continue;
+					}
+					FOnlineSessionSetting Setting;
+					Setting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
+					Setting.Data.SetValue(Settings_SingleValue.Value);
+					SessionSearch->QuerySettings.Set(FName(*Settings_SingleValue.Key), Settings_SingleValue.Value, EOnlineComparisonOp::Equals);
 				}
-				FOnlineSessionSetting Setting;
-				Setting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
-				Setting.Data.SetValue(Settings_SingleValue.Value);
-				SessionSearch->QuerySettings.Set(FName(*Settings_SingleValue.Key), Settings_SingleValue.Value, EOnlineComparisonOp::Equals);
 			}
+
+
 			SessionSearch->MaxSearchResults = 1000;
  
 			SessionPtrRef->OnFindSessionsCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnFindSessionCompleted);
@@ -319,7 +322,7 @@ void UEIK_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap
 void UEIK_Subsystem::DestroyEosSession(const FBP_DestroySession_Callback& Result, FName SessionName)
 {
 	DestroySession_CallbackBP = Result;
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
@@ -456,7 +459,7 @@ bool UEIK_Subsystem::ShowFriendUserInterface()
 void UEIK_Subsystem::UpdateStats(const FBP_UpdateStat_Callback& Result, FString StatName, int32 Amount)
 {
 	UpdateStat_CallbackBP = Result;
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
@@ -475,7 +478,7 @@ void UEIK_Subsystem::UpdateStats(const FBP_UpdateStat_Callback& Result, FString 
 void UEIK_Subsystem::GetStats(const FBP_GetStats_Callback& Result, TArray<FString> StatName)
 {
 	GetStats_CallbackBP = Result;
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
@@ -490,9 +493,62 @@ void UEIK_Subsystem::GetStats(const FBP_GetStats_Callback& Result, TArray<FStrin
 }
 
 
-void UEIK_Subsystem::PurchaseItem(const FBP_PurchaseOffer_Callback& Result, FText ItemName)
+void UEIK_Subsystem::PurchaseItem(const FBP_PurchaseOffer_Callback& Result, FString ItemID)
 {
 	PurchaseOffer_CallbackBP = Result;
+	if (const IOnlineSubsystem* SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	{
+		if (const IOnlineStoreV2Ptr StoreV2Ptr = SubsystemRef->GetStoreV2Interface())
+		{
+			if (const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+			{
+				if (const IOnlinePurchasePtr Purchase = SubsystemRef->GetPurchaseInterface())
+				{
+					FPurchaseCheckoutRequest Request = {};
+					Request.AddPurchaseOffer(TEXT(""), ItemID, 1);
+
+					Purchase->Checkout(*IdentityPointerRef->GetUniquePlayerId(0).Get(),
+						Request,
+						FOnPurchaseCheckoutComplete::CreateLambda(
+							[this](
+							const FOnlineError& Result,
+							const TSharedRef<FPurchaseReceipt>& Receipt)
+							{
+								if (Result.WasSuccessful())
+								{
+									PurchaseOffer_CallbackBP.Execute(true);
+								}
+								else
+								{
+									PurchaseOffer_CallbackBP.Execute(false);
+								}
+							})
+					);
+				}
+				else
+				{
+					PurchaseOffer_CallbackBP.Execute(false);
+				}
+			}
+			else
+			{
+				PurchaseOffer_CallbackBP.Execute(false);
+			}
+		}
+		else
+		{
+			PurchaseOffer_CallbackBP.Execute(false);
+		}
+	}
+	else
+	{
+		PurchaseOffer_CallbackBP.Execute(false);
+	}
+}
+
+void UEIK_Subsystem::QueryOffers(const FBP_GetOffers_Callback& Result)
+{
+	GetOffers_CallbackBP = Result;
 	if (const IOnlineSubsystem* SubsystemRef = Online::GetSubsystem(this->GetWorld()))
 	{
 		if (const IOnlineStoreV2Ptr StoreV2Ptr = SubsystemRef->GetStoreV2Interface())
@@ -502,7 +558,7 @@ void UEIK_Subsystem::PurchaseItem(const FBP_PurchaseOffer_Callback& Result, FTex
 				StoreV2Ptr->QueryOffersByFilter(*IdentityPointerRef->GetUniquePlayerId(0).Get(), FOnlineStoreFilter(),
 				                                FOnQueryOnlineStoreOffersComplete::CreateLambda([
 						                                StoreV2Wk = TWeakPtr<IOnlineStoreV2, ESPMode::ThreadSafe>(
-							                                StoreV2Ptr), this, ItemName](
+							                                StoreV2Ptr), this](
 					                                bool bWasSuccessful,
 					                                const TArray<FUniqueOfferId>& OfferIds,
 					                                const FString& Error)
@@ -514,75 +570,129 @@ void UEIK_Subsystem::PurchaseItem(const FBP_PurchaseOffer_Callback& Result, FTex
 								                                TArray<FOnlineStoreOfferRef> Offers;
 								                                StoreV2->GetOffers(Offers);
 								                                TArray<FOffersStruct> OfferArray;
-								                                FUniqueOfferId OfferId;
 								                                for (int32 i = 0; i < Offers.Num(); ++i)
 								                                {
-									                                if (ItemName.ToString() == Offers[i]->Title.
-										                                ToString())
-									                                {
-										                                OfferId = Offers[i]->OfferId;
-									                                }
+								                                	OfferArray[i].ItemID = Offers[i]->OfferId;
+									                                OfferArray[i].ItemName = Offers[i]->Title;
+									                                OfferArray[i].Description = Offers[i]->Description;
+									                                OfferArray[i].ExpirationDate = Offers[i]->
+										                                ExpirationDate;
+									                                OfferArray[i].LongDescription = Offers[i]->
+										                                LongDescription;
+									                                OfferArray[i].NumericPrice = Offers[i]->
+										                                NumericPrice;
+									                                OfferArray[i].PriceText = Offers[i]->PriceText;
+									                                OfferArray[i].RegularPrice = Offers[i]->
+										                                RegularPrice;
+									                                OfferArray[i].ReleaseDate = Offers[i]->ReleaseDate;
+									                                OfferArray[i].RegularPriceText = Offers[i]->
+										                                RegularPriceText;
 								                                }
-								                                const IOnlineSubsystem* Subsystem = Online::GetSubsystem(
-									                                this->GetWorld());
-								                                const IOnlineIdentityPtr Identity = Subsystem->
-									                                GetIdentityInterface();
-								                                if (const IOnlinePurchasePtr Purchase = Subsystem->
-									                                GetPurchaseInterface())
-								                                {
-									                                FPurchaseCheckoutRequest Request = {};
-									                                Request.AddPurchaseOffer(
-										                                TEXT(""), OfferId, 1);
-
-									                                Purchase->Checkout(
-										                                *Identity->GetUniquePlayerId(0).Get(),
-										                                Request,
-										                                FOnPurchaseCheckoutComplete::CreateLambda(
-											                                [this, Error](
-											                                const FOnlineError& Result,
-											                                const TSharedRef<FPurchaseReceipt>& Receipt)
-											                                {
-												                                if (Result.WasSuccessful())
-												                                {
-													                                PurchaseOffer_CallbackBP.Execute(true, Error);
-												                                }
-												                                else
-												                                {
-													                                PurchaseOffer_CallbackBP.Execute(
-														                                false, Result.ToLogString());
-												                                }
-											                                })
-									                                );
-								                                }
-								                                else
-								                                {
-								                                	PurchaseOffer_CallbackBP.Execute(
-																						false, Error);
-								                                }
+								                                GetOffers_CallbackBP.Execute(true, OfferArray);
 							                                }
 							                                else
 							                                {
-							                                	PurchaseOffer_CallbackBP.Execute(
-																						false, Error);
+							                                	GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
 							                                }
 						                                }
-					                                }));}else{
-				PurchaseOffer_CallbackBP.Execute(false, FString());
+						                                else
+						                                {
+						                                	GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
+						                                }
+					                                }));
+			}
+			else
+			{
+				GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
 			}
 		}
 		else
 		{
-			PurchaseOffer_CallbackBP.Execute(false, FString());
-
+			GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
 		}
 	}
 	else
 	{
-		PurchaseOffer_CallbackBP.Execute(false, FString());
-
+		GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
 	}
 }
 
+void UEIK_Subsystem::GetOwnedItems(const FBP_GetOwnedItems_Callback& Result)
+{
+	GetOwnedItems_CallbackBP = Result;
+	if (const IOnlineSubsystem* SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	{
+		if (const IOnlineStoreV2Ptr StoreV2Ptr = SubsystemRef->GetStoreV2Interface())
+		{
+			if (const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+			{
+				if (const IOnlinePurchasePtr Purchase = SubsystemRef->GetPurchaseInterface())
+				{
+					Purchase->QueryReceipts(*IdentityPointerRef->GetUniquePlayerId(0).Get(), false,
+										   FOnQueryReceiptsComplete::CreateLambda(
+											   [this, SubsystemRef, IdentityPointerRef, Purchase
+											   ](const FOnlineError& Error)
+											   {
+												   if (Error.WasSuccessful())
+												   {
+													   if (Purchase)
+													   {
+														   TArray<FString> ItemNames;
+														   TArray<FPurchaseReceipt> Receipts;
+														   Purchase->GetReceipts(
+															   *IdentityPointerRef->GetUniquePlayerId(0).Get(), Receipts);
+														   for (int i = 0; i < Receipts.Num(); i++)
+														   {
+														   	ItemNames.Add(Receipts[i].ReceiptOffers[0].LineItems[0].ItemName);
+														   }
+														   GetOwnedItems_CallbackBP.Execute(false, ItemNames);
+													   }
+													   else
+													   {
+														   GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+													   }
+												   }
+											   }));
+				}
+				else
+				{
+					GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+				}
+			}
+			else
+			{
+				GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+			}
+		}
+		else
+		{
+			GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+		}
+	}
+	else
+	{
+		GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+	}
+}
+
+FString UEIK_Subsystem::GenerateSessionCode() const
+{
+	FString SessionCode;
+	const int32 CodeLength = 9;
+
+	for (int32 i = 0; i < CodeLength; i++)
+	{
+		const int32 RandomNumber = FMath::RandRange(0, 35);
+
+		// Convert the random number into a character (0-9, A-Z)
+		TCHAR RandomChar = (RandomNumber < 10) ? TCHAR('0' + RandomNumber) : TCHAR('A' + (RandomNumber - 10));
+
+		// Append the character to the session code
+		SessionCode.AppendChar(RandomChar);
+	}
+
+	return SessionCode;
+}
 
 
 void UEIK_Subsystem::SetPlayerData(const FBP_WriteFile_Callback& Result, FString FileName, USaveGame* SavedGame)
@@ -594,7 +704,7 @@ void UEIK_Subsystem::SetPlayerData(const FBP_WriteFile_Callback& Result, FString
 		UGameplayStatics::SaveGameToMemory(SavedGame,LocalArray);
 		if(!LocalArray.IsEmpty())
 		{
-			if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+			if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get() )
 			{
 				if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 				{
@@ -633,7 +743,7 @@ void UEIK_Subsystem::SetPlayerData(const FBP_WriteFile_Callback& Result, FString
 void UEIK_Subsystem::GetPlayerData(const FBP_GetFile_Callback& Result, FString FileName)
 {
 	GetFile_CallbackBP = Result;
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 {
 	if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 	{
@@ -659,9 +769,22 @@ void UEIK_Subsystem::GetPlayerData(const FBP_GetFile_Callback& Result, FString F
 	}
 }
 
-void UEIK_Subsystem::GetLeaderboard(const FBP_GetFile_Callback& Result, FString FileName)
+void UEIK_Subsystem::GetLeaderboard(const FBP_GetFile_Callback& Result, FName LeaderboardName, int32 Rank, int32 Range)
 {
 	//Coming in 1.1
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	{
+		if(IOnlineIdentityPtr Identity = SubsystemRef->GetIdentityInterface())
+		{
+			if(const IOnlineLeaderboardsPtr Leaderboards = SubsystemRef->GetLeaderboardsInterface())
+			{
+				// FOnlineLeaderboardReadRef ReadRef = MakeShared<FOnlineLeaderboardRead, ESPMode::ThreadSafe>();
+				// ReadRef->LeaderboardName = LeaderboardName;
+				// Leaderboards->AddOnLeaderboardReadCompleteDelegate_Handle(FOnLeaderboardReadComplete::FDelegate::CreateUObject(this,&UMyClass::HandleLeaderboardResult, ReadRef));
+				// Leaderboards->ReadLeaderboardsAroundRank(Rank, Range,ReadRef);
+			}
+		}
+	}
 }
 
 void UEIK_Subsystem::ConnectEosAndPlayFab(const FBP_ConnectEOSAndPlayFab_Callback& Result)
@@ -692,7 +815,7 @@ void UEIK_Subsystem::OnCreateLobbyCompleted(FName SessionName, bool bWasSuccessf
 	if(bWasSuccessful)
 	{
 		FDelegateHandle SessionJoinHandle;
-		if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 		{
 			if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 			{
@@ -769,7 +892,7 @@ void UEIK_Subsystem::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCom
 	{
 		if(APlayerController* PlayerControllerRef = UGameplayStatics::GetPlayerController(GetWorld(),0))
 		{
-			if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+			if(const IOnlineSubsystem *SubsystemRef =  IOnlineSubsystem::Get())
 			{
 				if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 				{
@@ -848,7 +971,7 @@ void UEIK_Subsystem::OnGetStatsCompleted(const FOnlineError& ResultState,
 	if(ResultState.WasSuccessful())
 	{
 		TArray<FEIK_Stats> LocalStatsArray;
-		for(const auto StatsVar : UsersStatsResult)
+		for(const auto& StatsVar : UsersStatsResult)
 		{
 			for(auto StoredValueRef : StatsVar->Stats)
 			{
@@ -879,7 +1002,7 @@ void UEIK_Subsystem::OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID
 {
 	if(bSuccess)
 	{
-		if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 		{
 			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
@@ -962,7 +1085,7 @@ void UEIK_Subsystem::OnCreateSessionCompleted(FName SessionName, bool bWasSucces
 	if(bWasSuccessful)
 	{
 		FDelegateHandle SessionJoinHandle;
-		if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 		{
 			if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 			{

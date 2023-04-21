@@ -20,7 +20,7 @@
 			"Name": "EOSIntegrationKit",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [ "Win64", "Mac", "IOS", "Android", "Linux"]
+			"WhitelistPlatforms": [ "Win64", "Android", "Linux"]
 		}
 	],
 	"Plugins": [
