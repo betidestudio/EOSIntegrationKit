@@ -51,41 +51,65 @@ USTRUCT(BlueprintType)
 struct FSessionFindStruct
 {
 	GENERATED_BODY()
-public:
-	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
-	FBlueprintSessionResult SessionResult;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
-	TMap<FString, FString> SessionSettings;
-	
+	FBlueprintSessionResult SessionResult = FBlueprintSessionResult();
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
-	FString SessionName;
+	TMap<FString, FString> SessionSettings = TMap<FString, FString>();
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
-	int32 CurrentNumberOfPlayers;
+	FString SessionName = FString();
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
-	int32 MaxNumberOfPlayers;
+	int32 CurrentNumberOfPlayers = 0;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
-	bool bIsDedicatedServer;
+	int32 MaxNumberOfPlayers = 0;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	bool bIsDedicatedServer = false;
 };
 
+
 USTRUCT(BlueprintType)
-struct FParticipantRequest
+struct FFileListStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Voice")
-	FString PuID;
+	/** Hash value, if applicable, of the given file contents */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	FString Hash = FString();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Voice")
-	FString ClientIP;
+	/** The hash algorithm used to sign this file */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	FName HashType = FName();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Voice")
-	bool HardMuted;
+	/** Filename as downloaded */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	FString DLName = FString();
+
+	/** Logical filename, maps to the downloaded filename */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	FString FileName = FString();
+
+	/** File size */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	int32 FileSize = 0;
+
+	/** The full URL to download the file if it is stored in a CDN or separate host site */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	FString URL = FString();
+
+	/** The chunk id this file represents */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	int32 iChunkID = 0;
+
+	/** Pointers to externally-accessible representations of this file */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	TMap<FString, FString> ExternalStorageIds = TMap<FString, FString>();
 };
+
 UENUM(BlueprintType)
 enum class ERegionInfo : uint8 {
 	RE_NoSelection       UMETA(DisplayName="No Selection"),
@@ -194,22 +218,23 @@ struct FEIK_Stats
 
 
 //Delegates for callbacks in BP
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FBP_Login_Callback, bool, bWasSuccess, const FEIKUniqueNetId&, UniqueNetId ,const FString&,Error);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_Login_Callback, bool, bWasSuccess,const FString&,Error);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FBP_Logout_Callback, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_CreateSession_Callback, bool, bWasSuccess, const FName&,SessionName);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_CreateLobby_Callback, bool, bWasSuccess, const FName&,SessionName);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FBP_DestroySession_Callback, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FBP_PurchaseOffer_Callback, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FBP_JoinSession_Callback, bool, bWasSuccess);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FBP_GetTitleFile_Callback, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FBP_UpdateStat_Callback, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetStats_Callback, bool, bWasSuccess, const TArray<FEIK_Stats>&,Stats);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetVoiceToken_Callback, bool, bWasSuccess, const FString&,Voice_Access_Token);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_FindSession_Callback, bool, bWasSuccess, const TArray<FSessionFindStruct>&, SessionResults);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FBP_WriteFile_Callback, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetOffers_Callback, bool, bWasSuccess, const TArray<FOffersStruct>&, Offers);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetOwnedItems_Callback, bool, bWasSuccess, const TArray<FString>&, OwnedItemNames);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetFile_Callback, bool, bWasSuccess, USaveGame*,SaveGame);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_ConnectEOSAndPlayFab_Callback, bool, bWasSuccess, const FString&, Error);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_TitleFileList_Callback, bool, bWasSuccess, const FString&, Error);
 
 UCLASS()
 class EOSINTEGRATIONKIT_API UEIK_Subsystem : public UGameInstanceSubsystem
@@ -264,7 +289,7 @@ public:
 	// This is a C++ method definition for getting the login status of a player from an online subsystem.
 	// Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/extra-functions/getloginstatus
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
-	bool GetLoginStatus(const int32 LocalUserNum) const;
+	static bool GetLoginStatus(const int32 LocalUserNum);
 	
 	//This is a C++ method definition for creating Epic Online Services Sessions
 	UFUNCTION(BlueprintCallable,DisplayName="Create EOS Session", Category="EOS Integration Kit || Sessions")
@@ -316,6 +341,10 @@ public:
 	UFUNCTION(BlueprintPure, DisplayName="Get Epic ID", Category="EOS Integration Kit || Extra")
 	static FString GetEpicID(const FEIKUniqueNetId& UniqueNetId);
 
+	// This is a C++ method definition for getting the Epic ID
+	UFUNCTION(BlueprintCallable, DisplayName="Unregister Players", Category="EOS Integration Kit || Sessions")
+	void UnRegisterPlayer(FName SessionName);
+
 
 	//This is a C++ method definition for getting the auth token of a player from an online subsystem.
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Friend")
@@ -334,23 +363,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Data")
 	void GetPlayerData(const FBP_GetFile_Callback& Result, FString FileName);
 
+	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Data")
+	void EnumerateTitleFiles(const FBP_TitleFileList_Callback& Result);
+
+	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Data")
+	TArray<FFileListStruct> GetTitleFileList();
+
+	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Data")
+	void GetTitleFile(const FBP_GetTitleFile_Callback& Result, FString FileName);
+
+	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Data")
+	TArray<uint8> GetTitleFileContent(FString FileName);
+
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Leaderboard")
 	void GetLeaderboard(const FBP_GetFile_Callback& Result, FName LeaderboardName, int32 Rank, int32 Range);
 	
 	//This is a C++ method definition for finding Epic Online Services Sessions
 	UFUNCTION(BlueprintCallable,DisplayName="Connect EOS And PlayFab", Category="EOS Integration Kit || PlayFab")
 	void ConnectEosAndPlayFab( const FBP_ConnectEOSAndPlayFab_Callback& Result);
-
-// This is a C++ method definition for setting voice credentials in Epic Online Services.
-UFUNCTION(BlueprintCallable, DisplayName="Set Voice Credentials", Category="EOS Integration Kit || Voice Server")
-void SetVoiceCredentials(FString ClientID, FString ClientSecret, FString DeploymentID, FString ProductUserID)
-{
-    Voice_ClientID = ClientID;
-    Voice_ClientSecret = ClientSecret;
-    Voice_DeploymentID = DeploymentID;
-    Voice_ProductUserID = ProductUserID;
-    return;
-}
 
 	// This is a C++ method definition for purchasing an item from the store.
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Store")
@@ -368,21 +398,24 @@ void SetVoiceCredentials(FString ClientID, FString ClientSecret, FString Deploym
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
 	FString GenerateSessionCode() const;
 
-// This is a C++ method definition for logging in a user locally.
-void Login(int32 LocalUserNum, FString ID, FString Token, FString Type, const FBP_Login_Callback& Result);
+	// This is a C++ method definition for logging in a user locally.
+	void Login(int32 LocalUserNum, FString ID, FString Token, FString Type, const FBP_Login_Callback& Result);
 
-// The following are C++ callback method definitions for handling various events in the online subsystem.
-void LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId, const FString& Error) const;
-void LogoutCallback(int32 LocalUserNum, bool bWasSuccess) const;
-void OnCreateSessionCompleted(FName SessionName, bool bWasSuccessful) const;
-void OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-void OnCreateLobbyCompleted(FName SessionName, bool bWasSuccessful) const;
-void OnFindSessionCompleted(bool bWasSuccess) const;
-void OnDestroySessionCompleted(FName SessionName, bool bWasSuccess) const;
-void OnUpdateStatsCompleted(const FOnlineError& Result) const;
-void OnGetStatsCompleted(const FOnlineError &ResultState, const TArray<TSharedRef<const FOnlineStatsUserStats>> &UsersStatsResult) const;
-void OnWriteFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
-void OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
+	// The following are C++ callback method definitions for handling various events in the online subsystem.
+	void LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId, const FString& Error) const;
+	void LogoutCallback(int32 LocalUserNum, bool bWasSuccess) const;
+	void OnCreateSessionCompleted(FName SessionName, bool bWasSuccessful) const;
+	void OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	void OnCreateLobbyCompleted(FName SessionName, bool bWasSuccessful) const;
+	void OnFindSessionCompleted(bool bWasSuccess) const;
+	void OnDestroySessionCompleted(FName SessionName, bool bWasSuccess) const;
+	void OnUpdateStatsCompleted(const FOnlineError& Result) const;
+	void OnGetStatsCompleted(const FOnlineError &ResultState, const TArray<TSharedRef<const FOnlineStatsUserStats>> &UsersStatsResult) const;
+	void OnWriteFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
+	void OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
+	void OnTitleFileListComplete(bool bSuccess, const FString& Error) const;
+	void OnTitleFileComplete(bool bSuccess, const FString& FileName) const;
+
 
 #ifdef PLAYFAB_PLUGIN_INSTALLED
 	//PlayFabEvents
@@ -398,7 +431,7 @@ void OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString&
 		ConnectEosAndPlayFab_CallbackBP.ExecuteIfBound(false, TEXT("Something went wrong."));
 	}
 #endif
-// The following are C++ variables used to store callback instances.
+	// The following are C++ variables used to store callback instances.
 	FBP_Login_Callback LoginCallBackBP;
 	FBP_Logout_Callback LogoutCallbackBP;
 	FBP_CreateSession_Callback CreateSession_CallbackBP;
@@ -414,23 +447,20 @@ void OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString&
 	FBP_PurchaseOffer_Callback PurchaseOffer_CallbackBP;
 	FBP_GetOffers_Callback GetOffers_CallbackBP;
 	FBP_WriteFile_Callback WriteFile_CallbackBP;
+	FBP_TitleFileList_Callback TitleFileList_CallbackBP;
+	FBP_GetTitleFile_Callback GetTitleFile_CallbackBP;
 
 	FOnSessionUserInviteAcceptedDelegate OnSessionUserInviteAcceptedDelegate;
 	void OnSessionUserInviteAccepted(const bool bWasSuccessful, const int32 ControllerId, FUniqueNetIdPtr UserId, const FOnlineSessionSearchResult& InviteResult);
 
 
-// This is a C++ variable for storing a reference to an online session search.
-TSharedPtr<FOnlineSessionSearch> SessionSearch;
+	// This is a C++ variable for storing a reference to an online session search.
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 
-// The following are C++ variables used for local information and settings.
-FString LocalPortInfo;
-bool Local_bIsDedicatedServerSession = false;
-
-// The following are C++ variables for storing voice server information.
-FString Voice_ClientID;
-FString Voice_ClientSecret;
-FString Voice_DeploymentID;
-FString Voice_ProductUserID;
+	// The following are C++ variables used for local information and settings.
+	FString LocalPortInfo;
+	bool Local_bIsDedicatedServerSession = false;
+	
 
 
 

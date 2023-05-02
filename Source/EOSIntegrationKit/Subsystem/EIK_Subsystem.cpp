@@ -30,12 +30,12 @@ void UEIK_Subsystem::Login(int32 LocalUserNum, FString ID, FString Token , FStri
 		}
 		else
 		{
-			Result.Execute(false, FEIKUniqueNetId(),"Failed to get Identity Pointer");
+			Result.ExecuteIfBound(false,"Failed to get Identity Pointer");
 		}
 	}
 	else
 	{
-		Result.Execute(false,FEIKUniqueNetId(),"Failed to get Subsystem");
+		Result.ExecuteIfBound(false,"Failed to get Subsystem");
 	}
 }
 
@@ -124,12 +124,12 @@ void UEIK_Subsystem::Logout(int32 LocalUserNum, const FBP_Logout_Callback& Resul
 		}
 		else
 		{
-			Result.Execute(false);
+			Result.ExecuteIfBound(false);
 		}
 	}
 	else
 	{
-		Result.Execute(false);
+		Result.ExecuteIfBound(false);
 		
 	}
 }
@@ -163,7 +163,7 @@ FString UEIK_Subsystem::GetPlayerNickname(const int32 LocalUserNum)
 
 If the online subsystem or the identity interface cannot be retrieved, the method returns an empty string. This method is useful for checking the login status of a player in a multiplayer game, which can be used to determine if the player needs to be logged in before accessing certain features or gameplay modes.
  */
-bool UEIK_Subsystem::GetLoginStatus(const int32 LocalUserNum) const
+bool UEIK_Subsystem::GetLoginStatus(const int32 LocalUserNum)
 {
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
@@ -200,14 +200,21 @@ void UEIK_Subsystem::CreateEOSSession(const FBP_CreateSession_Callback& Result,
 		{
 			FOnlineSessionSettings SessionCreationInfo;
 			SessionCreationInfo.bIsDedicated = bIsDedicatedServer;
+			SessionCreationInfo.bUsesPresence =true;
+			SessionCreationInfo.bAllowJoinViaPresence = true;
+			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = false;
 			SessionCreationInfo.bAllowInvites = true;
+			if(bIsDedicatedServer)
+			{
+				SessionCreationInfo.bUsesPresence = false;
+				SessionCreationInfo.bAllowJoinViaPresence = false;
+				SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = false;
+				SessionCreationInfo.bAllowInvites = false;
+			}
 			SessionCreationInfo.bIsLANMatch = bIsLan;
 			SessionCreationInfo.NumPublicConnections = NumberOfPublicConnections;
 			SessionCreationInfo.bUseLobbiesIfAvailable = false;
 			SessionCreationInfo.bUseLobbiesVoiceChatIfAvailable = false;
-			SessionCreationInfo.bUsesPresence =true;
-			SessionCreationInfo.bAllowJoinViaPresence = true;
-			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = false;
 			SessionCreationInfo.bShouldAdvertise = true;
 			SessionCreationInfo.bAllowJoinInProgress = true;
 			
@@ -309,14 +316,19 @@ void UEIK_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap
 					SessionSearch->QuerySettings.Set(FName(*Settings_SingleValue.Key), Settings_SingleValue.Value, EOnlineComparisonOp::Equals);
 				}
 			}
-
-
 			SessionSearch->MaxSearchResults = 1000;
- 
 			SessionPtrRef->OnFindSessionsCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnFindSessionCompleted);
 			SessionPtrRef->FindSessions(0,SessionSearch.ToSharedRef());
 		}
-	}	
+		else
+		{
+			Result.ExecuteIfBound(false, TArray<FSessionFindStruct>());
+		}
+	}
+	else
+	{
+		Result.ExecuteIfBound(false, TArray<FSessionFindStruct>());
+	}
 }
 
 void UEIK_Subsystem::DestroyEosSession(const FBP_DestroySession_Callback& Result, FName SessionName)
@@ -329,6 +341,14 @@ void UEIK_Subsystem::DestroyEosSession(const FBP_DestroySession_Callback& Result
 			SessionPtrRef->OnDestroySessionCompleteDelegates.AddUObject(this,&UEIK_Subsystem::OnDestroySessionCompleted);
 			SessionPtrRef->DestroySession(SessionName);
 		}
+		else
+		{
+			Result.ExecuteIfBound(false);
+		}
+	}
+	else
+	{
+		Result.ExecuteIfBound(false);
 	}
 }
 
@@ -355,15 +375,25 @@ void UEIK_Subsystem::JoinEosSession(const FBP_JoinSession_Callback& Result, FNam
 				else
 				{
 					UE_LOG(LogTemp, Warning, TEXT("Session settings not found"));
+					Result.ExecuteIfBound(false);
 				}
 				SessionPtrRef->OnJoinSessionCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnJoinSessionCompleted);
 				SessionPtrRef->JoinSession(0, SessionName,SessionResult.OnlineResult);
 			}
+			else
+			{
+				Result.ExecuteIfBound(false);
+			}
+		}
+		else
+		{
+			Result.ExecuteIfBound(false);
 		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Session ref not valid"));
+		Result.ExecuteIfBound(false);
 	}
 }
 
@@ -432,6 +462,20 @@ FString UEIK_Subsystem::GetEpicID(const FEIKUniqueNetId& UniqueNetId)
 	else
 	{
 		return FString();
+	}
+}
+
+void UEIK_Subsystem::UnRegisterPlayer(FName SessionName)
+{
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	{
+		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+		{
+			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+			{
+				SessionPtrRef->UnregisterPlayer(SessionName, *IdentityPointerRef->GetUniquePlayerId(0));
+			}
+		}
 	}
 }
 
@@ -516,33 +560,33 @@ void UEIK_Subsystem::PurchaseItem(const FBP_PurchaseOffer_Callback& Result, FStr
 							{
 								if (Result.WasSuccessful())
 								{
-									PurchaseOffer_CallbackBP.Execute(true);
+									PurchaseOffer_CallbackBP.ExecuteIfBound(true);
 								}
 								else
 								{
-									PurchaseOffer_CallbackBP.Execute(false);
+									PurchaseOffer_CallbackBP.ExecuteIfBound(false);
 								}
 							})
 					);
 				}
 				else
 				{
-					PurchaseOffer_CallbackBP.Execute(false);
+					PurchaseOffer_CallbackBP.ExecuteIfBound(false);
 				}
 			}
 			else
 			{
-				PurchaseOffer_CallbackBP.Execute(false);
+				PurchaseOffer_CallbackBP.ExecuteIfBound(false);
 			}
 		}
 		else
 		{
-			PurchaseOffer_CallbackBP.Execute(false);
+			PurchaseOffer_CallbackBP.ExecuteIfBound(false);
 		}
 	}
 	else
 	{
-		PurchaseOffer_CallbackBP.Execute(false);
+		PurchaseOffer_CallbackBP.ExecuteIfBound(false);
 	}
 }
 
@@ -588,32 +632,32 @@ void UEIK_Subsystem::QueryOffers(const FBP_GetOffers_Callback& Result)
 									                                OfferArray[i].RegularPriceText = Offers[i]->
 										                                RegularPriceText;
 								                                }
-								                                GetOffers_CallbackBP.Execute(true, OfferArray);
+								                                GetOffers_CallbackBP.ExecuteIfBound(true, OfferArray);
 							                                }
 							                                else
 							                                {
-							                                	GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
+							                                	GetOffers_CallbackBP.ExecuteIfBound(false, 	TArray<FOffersStruct>());
 							                                }
 						                                }
 						                                else
 						                                {
-						                                	GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
+						                                	GetOffers_CallbackBP.ExecuteIfBound(false, 	TArray<FOffersStruct>());
 						                                }
 					                                }));
 			}
 			else
 			{
-				GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
+				GetOffers_CallbackBP.ExecuteIfBound(false, 	TArray<FOffersStruct>());
 			}
 		}
 		else
 		{
-			GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
+			GetOffers_CallbackBP.ExecuteIfBound(false, 	TArray<FOffersStruct>());
 		}
 	}
 	else
 	{
-		GetOffers_CallbackBP.Execute(false, 	TArray<FOffersStruct>());
+		GetOffers_CallbackBP.ExecuteIfBound(false, 	TArray<FOffersStruct>());
 	}
 }
 
@@ -645,33 +689,33 @@ void UEIK_Subsystem::GetOwnedItems(const FBP_GetOwnedItems_Callback& Result)
 														   {
 														   	ItemNames.Add(Receipts[i].ReceiptOffers[0].LineItems[0].ItemName);
 														   }
-														   GetOwnedItems_CallbackBP.Execute(false, ItemNames);
+														   GetOwnedItems_CallbackBP.ExecuteIfBound(false, ItemNames);
 													   }
 													   else
 													   {
-														   GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+														   GetOwnedItems_CallbackBP.ExecuteIfBound(false, TArray<FString>());
 													   }
 												   }
 											   }));
 				}
 				else
 				{
-					GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+					GetOwnedItems_CallbackBP.ExecuteIfBound(false, TArray<FString>());
 				}
 			}
 			else
 			{
-				GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+				GetOwnedItems_CallbackBP.ExecuteIfBound(false, TArray<FString>());
 			}
 		}
 		else
 		{
-			GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+			GetOwnedItems_CallbackBP.ExecuteIfBound(false, TArray<FString>());
 		}
 	}
 	else
 	{
-		GetOwnedItems_CallbackBP.Execute(false, TArray<FString>());
+		GetOwnedItems_CallbackBP.ExecuteIfBound(false, TArray<FString>());
 	}
 }
 
@@ -716,27 +760,27 @@ void UEIK_Subsystem::SetPlayerData(const FBP_WriteFile_Callback& Result, FString
 					}
 					else
 					{
-						WriteFile_CallbackBP.Execute(false);
+						WriteFile_CallbackBP.ExecuteIfBound(false);
 					}
 				}
 				else
 				{
-						WriteFile_CallbackBP.Execute(false);
+						WriteFile_CallbackBP.ExecuteIfBound(false);
 				}
 			}
 			else
 			{
-				WriteFile_CallbackBP.Execute(false);
+				WriteFile_CallbackBP.ExecuteIfBound(false);
 			}
 		}
 		else
 		{
-			WriteFile_CallbackBP.Execute(false);
+			WriteFile_CallbackBP.ExecuteIfBound(false);
 		}
 	}
 	else
 	{
-		WriteFile_CallbackBP.Execute(false);
+		WriteFile_CallbackBP.ExecuteIfBound(false);
 	}
 }
 
@@ -744,34 +788,129 @@ void UEIK_Subsystem::GetPlayerData(const FBP_GetFile_Callback& Result, FString F
 {
 	GetFile_CallbackBP = Result;
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
-{
-	if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 	{
-		if(const IOnlineUserCloudPtr CloudPointerRef = SubsystemRef->GetUserCloudInterface())
+		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
-			TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
-			CloudPointerRef->OnReadUserFileCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnGetFileComplete);
-			CloudPointerRef->ReadUserFile(*UserIDRef, FileName);
+			if(const IOnlineUserCloudPtr CloudPointerRef = SubsystemRef->GetUserCloudInterface())
+			{
+				TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
+				CloudPointerRef->OnReadUserFileCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnGetFileComplete);
+				CloudPointerRef->ReadUserFile(*UserIDRef, FileName);
+			}
+			else
+			{
+				GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
+			}
 		}
 		else
 		{
-			GetFile_CallbackBP.Execute(false, nullptr);
+			GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
 		}
 	}
 	else
 	{
-		GetFile_CallbackBP.Execute(false, nullptr);
+		GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
 	}
 }
+
+void UEIK_Subsystem::EnumerateTitleFiles(const FBP_TitleFileList_Callback& Result)
+{
+	//Coming in Update 1.12
+	TitleFileList_CallbackBP = Result;
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	{
+		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+		{
+			if(const IOnlineTitleFilePtr TitleFilePtr = SubsystemRef->GetTitleFileInterface())
+			{
+				TitleFilePtr->OnEnumerateFilesCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnTitleFileListComplete);
+				TitleFilePtr->EnumerateFiles();
+			}
+			else
+			{
+				TitleFileList_CallbackBP.ExecuteIfBound(false, "Failed to get Title File Interface");
+			}
+		}
+		else
+		{
+			TitleFileList_CallbackBP.ExecuteIfBound(false, "Failed to get Online Identity");
+		}
+	}
 	else
 	{
-		GetFile_CallbackBP.Execute(false, nullptr);
+		TitleFileList_CallbackBP.ExecuteIfBound(false, "Failed to get Online Subsystem");
 	}
+}
+
+TArray<FFileListStruct> UEIK_Subsystem::GetTitleFileList()
+{
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	{
+		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+		{
+			if(const IOnlineTitleFilePtr TitleFilePtr = SubsystemRef->GetTitleFileInterface())
+			{
+				TArray<FCloudFileHeader> Files;
+				TitleFilePtr->GetFileList(Files);
+				TArray<FFileListStruct> Local_FileList;
+				for(int i =0; i< Files.Num(); i++)
+				{
+					FFileListStruct Temp;
+					Temp.FileName = Files[i].FileName;
+					Temp.FileSize = Files[i].FileSize;
+					Temp.Hash = Files[i].Hash;
+					Temp.HashType = Files[i].HashType;
+					Temp.iChunkID = Files[i].ChunkID;
+					Temp.DLName = Files[i].DLName;
+					Temp.ExternalStorageIds = Files[i].ExternalStorageIds;
+					Temp.URL = Files[i].URL;
+					Local_FileList.Add(Temp);
+				}
+				return Local_FileList;
+			}
+		}
+	}
+	return TArray<FFileListStruct>();
+}
+
+void UEIK_Subsystem::GetTitleFile(const FBP_GetTitleFile_Callback& Result,FString FileName)
+{
+	GetTitleFile_CallbackBP = Result;
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	{
+		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+		{
+			if(const IOnlineTitleFilePtr TitleFilePtr = SubsystemRef->GetTitleFileInterface())
+			{
+				TitleFilePtr->OnReadFileCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnTitleFileComplete);
+				TitleFilePtr->ReadFile(FileName);
+				return;
+			}
+		}
+	}
+	GetTitleFile_CallbackBP.ExecuteIfBound(false);
+}
+
+TArray<uint8> UEIK_Subsystem::GetTitleFileContent(FString FileName)
+{
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	{
+		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+		{
+			if(const IOnlineTitleFilePtr TitleFilePtr = SubsystemRef->GetTitleFileInterface())
+			{
+				TArray<uint8> TitleFileContent;
+				TitleFilePtr->GetFileContents(FileName, TitleFileContent);
+				return TitleFileContent;
+			}
+		}
+	}
+	return TArray<uint8>();
 }
 
 void UEIK_Subsystem::GetLeaderboard(const FBP_GetFile_Callback& Result, FName LeaderboardName, int32 Rank, int32 Range)
 {
-	//Coming in 1.1
+	//Coming in 1.12
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(IOnlineIdentityPtr Identity = SubsystemRef->GetIdentityInterface())
@@ -797,16 +936,16 @@ void UEIK_Subsystem::ConnectEosAndPlayFab(const FBP_ConnectEOSAndPlayFab_Callbac
 		PlayFabClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
 		PlayFab::ClientModels::FLoginWithCustomIDRequest CustomIDRequest;
 		CustomIDRequest.CreateAccount = true;
-		CustomIDRequest.CustomId = GetPlayerNickname(0);
+		CustomIDRequest.CustomId = GetProductUserID(GetUserUniqueID());
 		PlayFabClientAPI->LoginWithCustomID(CustomIDRequest,PlayFab::UPlayFabClientAPI::FLoginWithCustomIDDelegate::CreateUObject(this, &UEIK_Subsystem::OnLoginWithEpicIDPFSuccess),
 		PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &UEIK_Subsystem::OnLoginWithEpicIDPFFailure));
 		#else
-		Result.Execute(false, "Plugin not installed");
+		Result.ExecuteIfBound(false, "Plugin not installed");
 		#endif
 	}
 	else
 	{
-		Result.Execute(false, "Either the user is not logged in or Nickname is empty");
+		Result.ExecuteIfBound(false, "Either the user is not logged in or Nickname is empty");
 	}
 }
 
@@ -823,22 +962,22 @@ void UEIK_Subsystem::OnCreateLobbyCompleted(FName SessionName, bool bWasSuccessf
 				{
 			
 				SessionPtrRef->RegisterPlayer(SessionName, *IdentityPointerRef->GetUniquePlayerId(0),false);
-				CreateLobby_CallbackBP.Execute(bWasSuccessful, SessionName);
+				CreateLobby_CallbackBP.ExecuteIfBound(bWasSuccessful, SessionName);
 			}
 			}
 			else
 			{
-				CreateLobby_CallbackBP.Execute(false, SessionName);
+				CreateLobby_CallbackBP.ExecuteIfBound(false, SessionName);
 			}
 		}
 		else
 		{
-			CreateLobby_CallbackBP.Execute(false, SessionName);
+			CreateLobby_CallbackBP.ExecuteIfBound(false, SessionName);
 		}
 	}
 	else
 	{
-		CreateLobby_CallbackBP.Execute(false, SessionName);
+		CreateLobby_CallbackBP.ExecuteIfBound(false, SessionName);
 	}
 }
 
@@ -881,7 +1020,7 @@ void UEIK_Subsystem::OnFindSessionCompleted(bool bWasSuccess) const
 			}
 		}
 
-		FindSession_CallbackBP.Execute(bWasSuccess, SessionResult_Array);
+		FindSession_CallbackBP.ExecuteIfBound(bWasSuccess, SessionResult_Array);
 	}
 }
 
@@ -918,50 +1057,50 @@ void UEIK_Subsystem::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCom
 					}
 					else
 					{
-						JoinSession_CallbackBP.Execute(false);
+						JoinSession_CallbackBP.ExecuteIfBound(false);
 						return;
 					}
 				}
 				else
 				{
-					JoinSession_CallbackBP.Execute(false);
+					JoinSession_CallbackBP.ExecuteIfBound(false);
 					return;
 				}
 			}
 			else
 			{
-				JoinSession_CallbackBP.Execute(false);
+				JoinSession_CallbackBP.ExecuteIfBound(false);
 				return;
 			}
 		}
 		else
 		{
-			JoinSession_CallbackBP.Execute(false);
+			JoinSession_CallbackBP.ExecuteIfBound(false);
 			return;
 		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Join Session Error with Reason of %d"), Result);
-		JoinSession_CallbackBP.Execute(false);
+		JoinSession_CallbackBP.ExecuteIfBound(false);
 		return;
 	}
-	JoinSession_CallbackBP.Execute(false);
+	JoinSession_CallbackBP.ExecuteIfBound(false);
 }
 void UEIK_Subsystem::OnDestroySessionCompleted(FName SessionName, bool bWasSuccess) const
 {
-	DestroySession_CallbackBP.Execute(bWasSuccess);
+	DestroySession_CallbackBP.ExecuteIfBound(bWasSuccess);
 }
 
 void UEIK_Subsystem::OnUpdateStatsCompleted(const FOnlineError& Result) const
 {
 	if(Result == FOnlineError::Success())
 	{
-		UpdateStat_CallbackBP.Execute(true);
+		UpdateStat_CallbackBP.ExecuteIfBound(true);
 	}
 	else
 	{
-		UpdateStat_CallbackBP.Execute(false);
+		UpdateStat_CallbackBP.ExecuteIfBound(false);
 	}
 }
 
@@ -984,18 +1123,18 @@ void UEIK_Subsystem::OnGetStatsCompleted(const FOnlineError& ResultState,
 				LocalStatsArray.Add(LocalStats);
 			}
 		}
-		GetStats_CallbackBP.Execute(true, LocalStatsArray);
+		GetStats_CallbackBP.ExecuteIfBound(true, LocalStatsArray);
 	}
 	else
 	{
-		GetStats_CallbackBP.Execute(false, TArray<FEIK_Stats>());
+		GetStats_CallbackBP.ExecuteIfBound(false, TArray<FEIK_Stats>());
 		UE_LOG(LogTemp,Warning,TEXT("Getting stats failed with error - %s"), *ResultState.ToLogString());
 	}
 }
 
 void UEIK_Subsystem::OnWriteFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const
 {
-	WriteFile_CallbackBP.Execute(true);
+	WriteFile_CallbackBP.ExecuteIfBound(true);
 }
 
 void UEIK_Subsystem::OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const
@@ -1014,36 +1153,46 @@ void UEIK_Subsystem::OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID
 					if(!FileContents.IsEmpty())
 					{
 						USaveGame* LocalSaveGame = UGameplayStatics::LoadGameFromMemory(FileContents);
-						GetFile_CallbackBP.Execute(true, LocalSaveGame);
+						GetFile_CallbackBP.ExecuteIfBound(true, LocalSaveGame);
 					}
 					else
 					{
-						GetFile_CallbackBP.Execute(false, nullptr);
+						GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
 					}
 				}
 				else
 				{
-					GetFile_CallbackBP.Execute(false, nullptr);
+					GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
 				}
 			}
 			else
 			{
-				GetFile_CallbackBP.Execute(false, nullptr);
+				GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
 			}
 		}
 		else
 		{
-			GetFile_CallbackBP.Execute(false, nullptr);
+			GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
 		}
 	}
 	else
 	{
-		GetFile_CallbackBP.Execute(false, nullptr);
+		GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
 	}
 }
 
+void UEIK_Subsystem::OnTitleFileListComplete(bool bSuccess, const FString& Error) const
+{
+	TitleFileList_CallbackBP.ExecuteIfBound(bSuccess, Error);
+}
+
+void UEIK_Subsystem::OnTitleFileComplete(bool bSuccess, const FString& FileName) const
+{
+	GetTitleFile_CallbackBP.ExecuteIfBound(bSuccess);
+}
+
 void UEIK_Subsystem::OnSessionUserInviteAccepted(const bool bWasSuccessful, const int32 ControllerId,
-	FUniqueNetIdPtr UserId, const FOnlineSessionSearchResult& InviteResult)
+                                                 FUniqueNetIdPtr UserId, const FOnlineSessionSearchResult& InviteResult)
 {
 	if (bWasSuccessful)
 	{
@@ -1067,17 +1216,12 @@ void UEIK_Subsystem::OnSessionUserInviteAccepted(const bool bWasSuccessful, cons
 void UEIK_Subsystem::LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId,
                                        const FString& Error) const
 {
-	FEIKUniqueNetId LocalUserID;
-	if(bWasSuccess)
-	{
-		LocalUserID.SetUniqueNetId(&UserId);
-	}
-	LoginCallBackBP.Execute(bWasSuccess,LocalUserID,Error);
+	LoginCallBackBP.ExecuteIfBound(bWasSuccess,Error);
 }
 
 void UEIK_Subsystem::LogoutCallback(int32 LocalUserNum, bool bWasSuccess) const
 {
-	LogoutCallbackBP.Execute(bWasSuccess);
+	LogoutCallbackBP.ExecuteIfBound(bWasSuccess);
 }
 
 void UEIK_Subsystem::OnCreateSessionCompleted(FName SessionName, bool bWasSuccessful) const
@@ -1092,21 +1236,21 @@ void UEIK_Subsystem::OnCreateSessionCompleted(FName SessionName, bool bWasSucces
 					if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 					{
 						SessionPtrRef->RegisterPlayer(SessionName, *IdentityPointerRef->GetUniquePlayerId(0),false);
-						CreateSession_CallbackBP.Execute(bWasSuccessful, SessionName);
+						CreateSession_CallbackBP.ExecuteIfBound(bWasSuccessful, SessionName);
 					}
 			}
 			else
 			{
-				CreateSession_CallbackBP.Execute(false, SessionName);
+				CreateSession_CallbackBP.ExecuteIfBound(false, SessionName);
 			}
 		}
 		else
 		{
-			CreateSession_CallbackBP.Execute(false, SessionName);
+			CreateSession_CallbackBP.ExecuteIfBound(false, SessionName);
 		}
 	}
 	else
 	{
-		CreateSession_CallbackBP.Execute(false, SessionName);
+		CreateSession_CallbackBP.ExecuteIfBound(false, SessionName);
 	}
 }
