@@ -1010,8 +1010,8 @@ void UEIK_Subsystem::OnFindSessionCompleted(bool bWasSuccess) const
 					}
 					FSessionFindStruct LocalStruct;
 					LocalStruct.SessionName = LocalArraySettings.FindRef("SEARCHKEYWORDS");
-					LocalStruct.CurrentNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections - SessionResult.OnlineResult.Session.NumOpenPublicConnections;
-					LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections;
+					LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
+					LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections;
 					LocalStruct.SessionResult= SessionResult;
 					LocalStruct.SessionSettings = LocalArraySettings;
 					LocalStruct.bIsDedicatedServer = false;
