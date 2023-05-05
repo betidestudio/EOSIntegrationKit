@@ -233,6 +233,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FBP_WriteFile_Callback, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetOffers_Callback, bool, bWasSuccess, const TArray<FOffersStruct>&, Offers);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetOwnedItems_Callback, bool, bWasSuccess, const TArray<FString>&, OwnedItemNames);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetFile_Callback, bool, bWasSuccess, USaveGame*,SaveGame);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_DownloadFile_Callback, bool, bWasSuccess, const FString&, Path);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_ConnectEOSAndPlayFab_Callback, bool, bWasSuccess, const FString&, Error);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_TitleFileList_Callback, bool, bWasSuccess, const FString&, Error);
 
@@ -314,7 +315,7 @@ public:
 	// This is a C++ method definition for finding Epic Online Services Sessions
 	// Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/find-sessions-and-lobbies
 	UFUNCTION(BlueprintCallable, DisplayName="Find EOS Session", Category="EOS Integration Kit || Sessions")
-	void FindEOSSession(const FBP_FindSession_Callback& Result, TMap<FString, FString> Search_Settings,int32 MaxResults = 1000, EMatchType MatchType = EMatchType::MT_Lobby, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection);
+	void FindEOSSession(const FBP_FindSession_Callback& Result, TMap<FString, FString> Search_Settings, EMatchType MatchType = EMatchType::MT_Lobby, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection);
 
 	// This is a C++ method definition for destroying Epic Online Services Sessions
 	// Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/destroy-sessions
@@ -362,6 +363,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Data")
 	void GetPlayerData(const FBP_GetFile_Callback& Result, FString FileName);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Data")
+	void PlayerDataDownload(const FBP_DownloadFile_Callback& Result, FString FileName);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Data")
+	void PlayerDataUpload(const FBP_WriteFile_Callback& Result, FString FilePath);
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Data")
 	void EnumerateTitleFiles(const FBP_TitleFileList_Callback& Result);
@@ -413,6 +420,7 @@ public:
 	void OnGetStatsCompleted(const FOnlineError &ResultState, const TArray<TSharedRef<const FOnlineStatsUserStats>> &UsersStatsResult) const;
 	void OnWriteFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
 	void OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
+	void OnDownloadFile(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
 	void OnTitleFileListComplete(bool bSuccess, const FString& Error) const;
 	void OnTitleFileComplete(bool bSuccess, const FString& FileName) const;
 
@@ -443,6 +451,7 @@ public:
 	FBP_UpdateStat_Callback UpdateStat_CallbackBP;
 	FBP_GetStats_Callback GetStats_CallbackBP;
 	FBP_GetFile_Callback GetFile_CallbackBP;
+	FBP_DownloadFile_Callback DownloadFile_CallbackBP;
 	FBP_GetOwnedItems_Callback GetOwnedItems_CallbackBP;
 	FBP_PurchaseOffer_Callback PurchaseOffer_CallbackBP;
 	FBP_GetOffers_Callback GetOffers_CallbackBP;
