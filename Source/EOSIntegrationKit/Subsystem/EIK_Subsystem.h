@@ -315,7 +315,7 @@ public:
 	// This is a C++ method definition for finding Epic Online Services Sessions
 	// Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/find-sessions-and-lobbies
 	UFUNCTION(BlueprintCallable, DisplayName="Find EOS Session", Category="EOS Integration Kit || Sessions")
-	void FindEOSSession(const FBP_FindSession_Callback& Result, TMap<FString, FString> Search_Settings, EMatchType MatchType = EMatchType::MT_Lobby, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection);
+	void FindEOSSession(const FBP_FindSession_Callback& Result, TMap<FString, FString> Search_Settings,int32 MaxResults = 1000, EMatchType MatchType = EMatchType::MT_Lobby, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection);
 
 	// This is a C++ method definition for destroying Epic Online Services Sessions
 	// Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/destroy-sessions
