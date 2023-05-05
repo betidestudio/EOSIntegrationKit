@@ -11,4 +11,4 @@
 ###
 
 <h2 align="center"> Documentation - https://betide-studio.gitbook.io/eos-integration-kit/ </h2>
-<h3 align="center"> Discord - https://discord.gg/2BtvDbmbEK </h3>
+<h3 align="center"> Discord - https://discord.gg/3xgSDhXqt4 </h3>
