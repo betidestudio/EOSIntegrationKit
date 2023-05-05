@@ -919,7 +919,6 @@ TArray<FFileListStruct> UEIK_Subsystem::GetTitleFileList()
 			{
 				TArray<FCloudFileHeader> Files;
 				TitleFilePtr->GetFileList(Files);
-				TitleFilePtr->GetFileList(Files);
 				TArray<FFileListStruct> Local_FileList;
 				for(int i =0; i< Files.Num(); i++)
 				{
