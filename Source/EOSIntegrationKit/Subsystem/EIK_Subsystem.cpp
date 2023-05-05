@@ -813,6 +813,73 @@ void UEIK_Subsystem::GetPlayerData(const FBP_GetFile_Callback& Result, FString F
 	}
 }
 
+void UEIK_Subsystem::PlayerDataDownload(const FBP_DownloadFile_Callback& Result, FString FileName)
+{
+	DownloadFile_CallbackBP = Result;
+	if (const IOnlineSubsystem* SubsystemRef = IOnlineSubsystem::Get())
+	{
+		if (const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+		{
+			if (const IOnlineUserCloudPtr CloudPointerRef = SubsystemRef->GetUserCloudInterface())
+			{
+				TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
+				CloudPointerRef->OnReadUserFileCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnDownloadFile);
+				CloudPointerRef->ReadUserFile(*UserIDRef, FileName);
+			}
+			else
+			{
+				GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
+			}
+		}
+		else
+		{
+			GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
+		}
+	}
+	else
+	{
+		GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
+	}
+}
+
+void UEIK_Subsystem::PlayerDataUpload(const FBP_WriteFile_Callback& Result, FString FilePath)
+{
+	WriteFile_CallbackBP = Result;
+	TArray<uint8> LocalArray;
+	if (FFileHelper::LoadFileToArray(LocalArray, *FilePath))
+	{
+		if (const IOnlineSubsystem* SubsystemRef = IOnlineSubsystem::Get())
+		{
+			if (const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+			{
+				if (const IOnlineUserCloudPtr CloudPointerRef = SubsystemRef->GetUserCloudInterface())
+				{
+					const TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
+					CloudPointerRef->OnWriteUserFileCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnWriteFileComplete);
+					FString FileName = FPaths::GetCleanFilename(FilePath);
+					CloudPointerRef->WriteUserFile(*UserIDRef, FileName, LocalArray);
+				}
+				else
+				{
+					WriteFile_CallbackBP.ExecuteIfBound(false);
+				}
+			}
+			else
+			{
+				WriteFile_CallbackBP.ExecuteIfBound(false);
+			}
+		}
+		else
+		{
+			WriteFile_CallbackBP.ExecuteIfBound(false);
+		}
+	}
+	else
+	{
+		WriteFile_CallbackBP.ExecuteIfBound(false);
+	}
+}
+
 void UEIK_Subsystem::EnumerateTitleFiles(const FBP_TitleFileList_Callback& Result)
 {
 	//Coming in Update 1.12
@@ -1178,6 +1245,52 @@ void UEIK_Subsystem::OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID
 	else
 	{
 		GetFile_CallbackBP.ExecuteIfBound(false, nullptr);
+	}
+}
+
+void UEIK_Subsystem::OnDownloadFile(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const
+{
+	FString Path;
+	if (bSuccess)
+	{
+		if (const IOnlineSubsystem* SubsystemRef = IOnlineSubsystem::Get())
+		{
+			if (const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+			{
+				if (const IOnlineUserCloudPtr CloudPointerRef = SubsystemRef->GetUserCloudInterface())
+				{
+					TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
+					TArray<uint8> FileContents;
+					CloudPointerRef->GetFileContents(*UserIDRef, FileName, FileContents);
+					if (!FileContents.IsEmpty())
+					{
+						Path = FPaths::ProjectSavedDir() + "/PlayerData/" + FileName;
+						FFileHelper::SaveArrayToFile(FileContents, *Path);
+						DownloadFile_CallbackBP.ExecuteIfBound(true, Path);
+					}
+					else
+					{
+						DownloadFile_CallbackBP.ExecuteIfBound(false, Path);
+					}
+				}
+				else
+				{
+					DownloadFile_CallbackBP.ExecuteIfBound(false, Path);
+				}
+			}
+			else
+			{
+				DownloadFile_CallbackBP.ExecuteIfBound(false, Path);
+			}
+		}
+		else
+		{
+			DownloadFile_CallbackBP.ExecuteIfBound(false, Path);
+		}
+	}
+	else
+	{
+		DownloadFile_CallbackBP.ExecuteIfBound(false, Path);
 	}
 }
 

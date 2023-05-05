@@ -233,6 +233,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FBP_WriteFile_Callback, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetOffers_Callback, bool, bWasSuccess, const TArray<FOffersStruct>&, Offers);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetOwnedItems_Callback, bool, bWasSuccess, const TArray<FString>&, OwnedItemNames);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetFile_Callback, bool, bWasSuccess, USaveGame*,SaveGame);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_DownloadFile_Callback, bool, bWasSuccess, const FString&, Path);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_ConnectEOSAndPlayFab_Callback, bool, bWasSuccess, const FString&, Error);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_TitleFileList_Callback, bool, bWasSuccess, const FString&, Error);
 
@@ -363,6 +364,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Data")
 	void GetPlayerData(const FBP_GetFile_Callback& Result, FString FileName);
 
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Data")
+	void PlayerDataDownload(const FBP_DownloadFile_Callback& Result, FString FileName);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Data")
+	void PlayerDataUpload(const FBP_WriteFile_Callback& Result, FString FilePath);
+
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Data")
 	void EnumerateTitleFiles(const FBP_TitleFileList_Callback& Result);
 
@@ -413,6 +420,7 @@ public:
 	void OnGetStatsCompleted(const FOnlineError &ResultState, const TArray<TSharedRef<const FOnlineStatsUserStats>> &UsersStatsResult) const;
 	void OnWriteFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
 	void OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
+	void OnDownloadFile(bool bSuccess, const FUniqueNetId& UserID, const FString& FileName) const;
 	void OnTitleFileListComplete(bool bSuccess, const FString& Error) const;
 	void OnTitleFileComplete(bool bSuccess, const FString& FileName) const;
 
@@ -443,6 +451,7 @@ public:
 	FBP_UpdateStat_Callback UpdateStat_CallbackBP;
 	FBP_GetStats_Callback GetStats_CallbackBP;
 	FBP_GetFile_Callback GetFile_CallbackBP;
+	FBP_DownloadFile_Callback DownloadFile_CallbackBP;
 	FBP_GetOwnedItems_Callback GetOwnedItems_CallbackBP;
 	FBP_PurchaseOffer_Callback PurchaseOffer_CallbackBP;
 	FBP_GetOffers_Callback GetOffers_CallbackBP;
