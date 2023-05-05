@@ -283,7 +283,7 @@ void UEIK_Subsystem::CreateEOSLobby(const FBP_CreateLobby_Callback& Result, TMap
 	}
 }
 
-void UEIK_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap<FString, FString> Search_Settings,
+void UEIK_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap<FString, FString> Search_Settings,int32 MaxResults,
 	EMatchType MatchType, ERegionInfo RegionToSearch)
 {
 	FindSession_CallbackBP = Result;
@@ -316,7 +316,7 @@ void UEIK_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap
 					SessionSearch->QuerySettings.Set(FName(*Settings_SingleValue.Key), Settings_SingleValue.Value, EOnlineComparisonOp::Equals);
 				}
 			}
-			SessionSearch->MaxSearchResults = 1000;
+			SessionSearch->MaxSearchResults = MaxResults;
 			SessionPtrRef->OnFindSessionsCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnFindSessionCompleted);
 			SessionPtrRef->FindSessions(0,SessionSearch.ToSharedRef());
 		}
