@@ -1,0 +1,50 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintAsyncActionBase.h"
+#include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
+#include "EIK_FindSessions_AsyncFunction.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFindSession_Delegate, const TArray<FSessionFindStruct>&, SessionResults);
+
+/**
+ * 
+ */
+UCLASS()
+class ONLINESUBSYSTEMEIK_API UEIK_FindSessions_AsyncFunction : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintAssignable, DisplayName="Success")
+	FFindSession_Delegate OnSuccess;
+	UPROPERTY(BlueprintAssignable, DisplayName="Failure")
+	FFindSession_Delegate OnFail;
+	/*
+	This C++ method searches for sessions in an online subsystem using the selected method and sets up a callback function to handle the search response.
+	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/
+	For Input Parameters, please refer to the documentation link above.
+	*/
+	UFUNCTION(BlueprintCallable, DisplayName="Find EIK Sessions",meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
+	static UEIK_FindSessions_AsyncFunction* FindEIKSessions(TMap<FString, FString> SessionSettings, EMatchType MatchType = EMatchType::MT_Lobby, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection);
+
+
+	virtual void Activate() override;
+
+	void FindSession();
+
+	void OnFindSessionCompleted(bool bWasSuccess);
+
+	// This is a C++ variable for storing a reference to an online session search.
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+
+	TMap<FString, FString> SessionSettings;
+	ERegionInfo E_RegionToSearch;
+	EMatchType E_MatchType;
+
+	bool bDelegateCalled = false;
+
+};

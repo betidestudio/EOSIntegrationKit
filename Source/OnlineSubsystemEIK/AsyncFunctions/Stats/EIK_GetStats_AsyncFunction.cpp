@@ -1,0 +1,95 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "EIK_GetStats_AsyncFunction.h"
+
+#include "OnlineStatsEOS.h"
+#include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
+
+UEIK_GetStats_AsyncFunction* UEIK_GetStats_AsyncFunction::GetStats(TArray<FString> StatName)
+{
+	UEIK_GetStats_AsyncFunction* BlueprintNode = NewObject<UEIK_GetStats_AsyncFunction>();
+	BlueprintNode->StatName = StatName;
+	return BlueprintNode;
+}
+
+void UEIK_GetStats_AsyncFunction::Activate()
+{
+	GetStats();
+	Super::Activate();
+}
+
+void UEIK_GetStats_AsyncFunction::GetStats()
+{
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	{
+		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+		{
+			if(const IOnlineStatsPtr StatsPointerRef = SubsystemRef->GetStatsInterface())
+			{
+				TArray<TSharedRef<const FUniqueNetId>> Usersvar;
+				Usersvar.Add(IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef());
+				StatsPointerRef->QueryStats(IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef(),Usersvar,StatName,FOnlineStatsQueryUsersStatsComplete::CreateUObject(this, &UEIK_GetStats_AsyncFunction::OnGetStatsCompleted));
+			}
+			else
+			{
+				if(!bDelegateCalled)
+				{
+					OnFail.Broadcast(TArray<FEIK_Stats>());
+					bDelegateCalled = true;
+				}
+			}
+		}
+		else
+		{
+			if(!bDelegateCalled)
+			{
+				OnFail.Broadcast(TArray<FEIK_Stats>());
+				bDelegateCalled = true;
+			}
+		}
+	}
+	else
+	{
+		if(!bDelegateCalled)
+		{
+			OnFail.Broadcast(TArray<FEIK_Stats>());
+			bDelegateCalled = true;
+		}
+	}
+}
+
+void UEIK_GetStats_AsyncFunction::OnGetStatsCompleted(const FOnlineError& ResultState,
+	const TArray<TSharedRef<const FOnlineStatsUserStats>>& UsersStatsResult)
+{
+	if(ResultState.WasSuccessful())
+	{
+		TArray<FEIK_Stats> LocalStatsArray;
+		for(const auto& StatsVar : UsersStatsResult)
+		{
+			for(auto StoredValueRef : StatsVar->Stats)
+			{
+				FString Keyname = StoredValueRef.Key;
+				int32 Value;
+				StoredValueRef.Value.GetValue(Value);
+				FEIK_Stats LocalStats;
+				LocalStats.StatsName = Keyname;
+				LocalStats.StatsValue = FString::FromInt(Value);
+				LocalStatsArray.Add(LocalStats);
+			}
+		}
+		if(!bDelegateCalled)
+		{
+			OnSuccess.Broadcast(LocalStatsArray);
+			bDelegateCalled = true;
+		}
+	}
+	else
+	{
+		if(!bDelegateCalled)
+		{
+			OnFail.Broadcast(TArray<FEIK_Stats>());
+			bDelegateCalled = true;
+		}
+	}
+}

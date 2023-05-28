@@ -1,0 +1,41 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintAsyncActionBase.h"
+#include "EIK_GetPlayerData_AsyncFunction.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetDataResult, bool, bWasSuccess, USaveGame*,SaveGame);
+
+UCLASS()
+class ONLINESUBSYSTEMEIK_API UEIK_GetPlayerData_AsyncFunction : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FGetDataResult OnSuccess;
+	
+	UPROPERTY(BlueprintAssignable)
+	FGetDataResult OnFail;
+
+	bool bDelegateCalled = false;
+
+	FString FileName;
+	
+	/*
+	This C++ method gets the player data in the online subsystem using the selected method and sets up a callback function to handle the response.
+	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/playerdata/
+	For Input Parameters, please refer to the documentation link above.
+	*/
+	UFUNCTION(BlueprintCallable, DisplayName="Get EIK Player Data", meta = (BlueprintInternalUseOnly = "true"))
+	static UEIK_GetPlayerData_AsyncFunction* GetPlayerData( FString FileName);
+
+	virtual void Activate() override;
+
+	void GetPlayerData();
+
+	void OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& V_FileName);
+
+};

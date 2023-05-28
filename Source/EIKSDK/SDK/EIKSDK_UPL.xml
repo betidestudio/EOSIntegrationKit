@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--EOSSDK module additions-->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- init section is always evaluated once per architecture -->
+	<init>
+		<log text="EOSSDK init"/>
+	
+		<setBool result="bSupported" value="false"/>
+		<isArch arch="armeabi-v7a">
+			<setBool result="bSupported" value="true"/>
+		</isArch>
+		<isArch arch="arm64-v8a">
+			<setBool result="bSupported" value="true"/>
+		</isArch>
+		<if condition="bSupported">
+			<false>
+				<log text="EOSSDK unsupported architecture: $S(Architecture)"/>
+			</false>
+		</if>		
+	</init>
+
+	<resourceCopies>
+		<isArch arch="armeabi-v7a">
+			<log text="Copying libEOSSDK.so"/>
+			<copyFile src="$S(PluginDir)/SDK/Bin/Android/armeabi-v7a/libEOSSDK.so" dst="$S(BuildDir)/libs/armeabi-v7a/libEOSSDK.so" />
+		</isArch>
+		<isArch arch="arm64-v8a">
+			<log text="Copying libEOSSDK.so"/>
+			<copyFile src="$S(PluginDir)/SDK/Bin/Android/arm64-v8a/libEOSSDK.so" dst="$S(BuildDir)/libs/arm64-v8a/libEOSSDK.so" />
+		</isArch>
+		<log text="Copying eos-sdk.aar"/>
+		<copyFile src="$S(PluginDir)/SDK/Bin/eos-sdk.aar" dst="$S(BuildDir)/lib/arm64/eos-sdk.aar" />
+	</resourceCopies>
+
+	<baseBuildGradleAdditions>
+	<if condition="bSupported">
+		<true>
+			<insert>
+				allprojects {
+				repositories {
+				repositories {
+				flatDir {
+			</insert>
+			<insertValue value="dirs '$S(PluginDir)/SDK/Bin/Android/static-stdc++/aar'"/>
+			<insertValue value="dirs '$S(PluginDir)/SDK/Bin'"/>
+            <insertNewline/>
+            <insertValue value="dirs '$S(AbsPluginDir)/Lib'"/>
+            <insertNewline/>
+			<insertNewline/>
+			<insert>
+				}
+				}
+				}
+				}
+			</insert>
+		</true>
+	</if>
+	</baseBuildGradleAdditions>
+
+	<buildGradleAdditions>
+		<if condition="bSupported">
+			<true>
+				<insert>
+					android {
+					packagingOptions {
+					exclude 'build-data.properties'
+					}
+					}
+			
+					dependencies.implementation(name: 'eos-sdk', ext: 'aar')
+					dependencies {
+					implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+					implementation 'com.android.support:appcompat-v7:28.0.0'
+					implementation 'androidx.security:security-crypto:1.0.0-rc03'
+					}
+				</insert>
+			</true>
+		</if>
+	</buildGradleAdditions>
+	
+	<gameActivityImportAdditions>
+		<insert>
+			import com.epicgames.mobile.eossdk.EOSSDK;
+		</insert>
+	</gameActivityImportAdditions>
+
+	<soLoadLibrary>
+		<loadLibrary name="EOSSDK" failmsg="EOSSDK library not loaded and required!" />
+	</soLoadLibrary>
+
+	<!-- optional additions to GameActivity onCreate in GameActivity.java -->
+	<gameActivityOnCreateAdditions>
+		<if condition="bSupported">
+			<true>
+				<insert>
+					EOSSDK.init(getApplicationContext());
+				</insert>
+			</true>
+		</if>
+	</gameActivityOnCreateAdditions>
+
+	<androidManifestUpdates>
+		<!-- Construct the intent filter element, to which we will add the client ids -->
+		<setElement result="intentFilterAction" value="action"/>
+		<addAttribute tag="$intentFilterAction" name="android:name" value="android.intent.action.VIEW"/>
+		<setElement result="intentFilterCategoryDefault" value="category"/>
+		<addAttribute tag="$intentFilterCategoryDefault" name="android:name" value="android.intent.category.DEFAULT"/>
+		<setElement result="intentFilterCategoryBrowsable" value="category"/>
+		<addAttribute tag="$intentFilterCategoryBrowsable" name="android:name" value="android.intent.category.BROWSABLE"/>
+		<setElement result="intentFilter" value="intent-filter"/>
+		<addElement tag="$intentFilter" name="intentFilterAction"/>
+		<addElement tag="$intentFilter" name="intentFilterCategoryDefault"/>
+		<addElement tag="$intentFilter" name="intentFilterCategoryBrowsable"/>
+		
+		<!-- Loop over all Artifacts defined in OnlineSubsystemEOS config, adding each client id to the intent filter. -->
+		<!-- TODO when EOS config is consolidated in EOSShared/EOSSDK then this will read from there instead. -->
+		<setString result="foundEosClientIds"/>
+		<setIntFromPropertyArrayNum result="numEosArtifacts" ini="Engine" section="/Script/OnlineSubsystemEOS.EOSSettings" property="Artifacts"/>
+		<setInt result="loopIndex" value="0"/>
+		<setBoolIsLess result="loopRun" arg1="$I(loopIndex)" arg2="$I(numEosArtifacts)"/>
+		<while condition="loopRun">
+			<!-- Get the artifact string -->
+			<setStringFromPropertyArray result="eosClientId" ini="Engine" section="/Script/OnlineSubsystemEOS.EOSSettings" property="Artifacts" index="$I(loopIndex)"/>
+			
+			<!-- Increment loopIndex and set loopRun for next iteration -->
+			<setIntAdd result="loopIndex" arg1="$I(loopIndex)" arg2="1"/>
+			<setBoolIsLess result="loopRun" arg1="$I(loopIndex)" arg2="$I(numEosArtifacts)"/>
+			
+			<!-- Extract the clientid from the artifact string -->
+			<setStringReplace result="eosClientId" source="$S(eosClientId)" find="&quot;" with=""/>
+			<setStringSubstringAfterFind result="eosClientId" source="$S(eosClientId)" find="ClientId=" length="32"/>
+			<setStringToLower result="eosClientId" source="$S(eosClientId)"/>
+			
+			<!-- Skip client id's we've already added -->
+			<setBoolContains result="eosClientIdAlreadyAdded" source="$S(foundEosClientIds)" find="$S(eosClientId)"/>
+			<if condition="eosClientIdAlreadyAdded">
+				<true>
+					<continue/>
+				</true>
+			</if>
+			<setStringAdd result="foundEosClientIds" arg1="$S(foundEosClientIds)" arg2=",$S(eosClientId)"/>
+
+			<!-- Add an entry to the intent-filter for this client id -->
+			<setElement result="intentFilterData" value="data"/>
+			<addAttribute tag="$intentFilterData" name="android:scheme" value="eos.$S(eosClientId)"/>
+			<addElement tag="$intentFilter" name="intentFilterData"/>
+		</while>
+		
+		<!-- Also check OnlineServicesEOS. -->
+		<!-- TODO when EOS config is consolidated in EOSShared/EOSSDK then this will read from there instead. -->
+		<setStringFromProperty result="eosClientId" ini="Engine" section="OnlineServices.EOS" property="ClientId"/>
+		<setStringReplace result="eosClientId" source="$S(eosClientId)" find="&quot;" with=""/>
+		<setStringToLower result="eosClientId" source="$S(eosClientId)"/>
+		<setBoolIsEqual result="eosClientIdInvalid" arg1="$S(eosClientId)" arg2=""/>
+		<if condition="eosClientIdInvalid">
+			<false>
+				<setBoolContains result="eosClientIdAlreadyAdded" source="$S(foundEosClientIds)" find="$S(eosClientId)"/>
+				<if condition="eosClientIdAlreadyAdded">
+					<false>
+						<!-- Add an entry to the intent-filter for this client id -->
+						<setElement result="intentFilterData" value="data"/>
+						<addAttribute tag="$intentFilterData" name="android:scheme" value="eos.$S(eosClientId)"/>
+						<addElement tag="$intentFilter" name="intentFilterData"/>
+					</false>
+				</if>
+			</false>
+		</if>
+
+		<!-- Create the auth handler activity element. -->
+		<setElement result="eosAuthHandlerActivity" value="activity"/>
+		<addAttribute tag="$eosAuthHandlerActivity" name="android:name" value="com.epicgames.mobile.eossdk.EOSAuthHandlerActivity"/>
+		<addAttribute tag="$eosAuthHandlerActivity" name="android:configChanges" value="keyboardHidden|orientation|screenSize"/>
+		<addAttribute tag="$eosAuthHandlerActivity" name="android:noHistory" value="true"/>
+		<addAttribute tag="$eosAuthHandlerActivity" name="android:exported" value="true"/>
+		
+		<!-- Add the intent-filter to the activity -->
+		<addElement tag="$eosAuthHandlerActivity" name="intentFilter"/>
+
+		<!-- Add the activity to the application -->
+		<addElement tag="application" name="eosAuthHandlerActivity"/>
+	</androidManifestUpdates>
+
+	<gameActivityClassAdditions>
+		<insert>
+			static { System.loadLibrary("EOSSDK"); }
+		</insert>
+	</gameActivityClassAdditions>
+
+	<gameActivityImportAdditions>
+		<insert>
+			import com.epicgames.mobile.eossdk.EOSSDK;
+		</insert>
+	</gameActivityImportAdditions>
+
+	<gameActivityOnCreateAdditions>
+		<insert>
+			EOSSDK.init(getApplicationContext());
+		</insert>
+	</gameActivityOnCreateAdditions>
+
+	<androidManifestUpdates>
+		<addAttribute tag="application" name="android:theme" value="@style/UE4AppCompatTheme"/>
+		<addPermission android:name="android.permission.INTERNET"/>
+		<addPermission android:name="android.permission.RECORD_AUDIO"/>
+	</androidManifestUpdates>
+
+	<soLoadLibrary>
+		<loadLibrary name="EOSSDK" failmsg="EOSSDK library not loaded!" />
+	</soLoadLibrary>
+</root>
