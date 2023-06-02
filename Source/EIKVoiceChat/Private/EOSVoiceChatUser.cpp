@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "EOSVoiceChatUser.h"
 
@@ -12,7 +12,7 @@
 #include "EOSSharedTypes.h"
 #include "EOSVoiceChat.h"
 #include "EOSVoiceChatErrors.h"
-#include "EOSVoiceChatModule.h"
+#include "EIKVoiceChatModule.h"
 #include "EOSVoiceChatTypes.h"
 #include "VoiceChatErrors.h"
 #include "EOSAudioDevicePool.h"

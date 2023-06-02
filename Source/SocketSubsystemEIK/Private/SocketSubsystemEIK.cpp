@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "..\Public\SocketSubsystemEIK.h"
 #include "..\Public\InternetAddrEIK.h"
@@ -15,10 +15,10 @@
 	#include "eos_sdk.h"
 #endif
 
-TArray<FSocketSubsystemEOS*> FSocketSubsystemEOS::SocketSubsystemEOSInstances;
-TMap<UWorld*, FSocketSubsystemEOS*> FSocketSubsystemEOS::SocketSubsystemEOSPerWorldMap;
+TArray<FSocketSubsystemEIK*> FSocketSubsystemEIK::SocketSubsystemEOSInstances;
+TMap<UWorld*, FSocketSubsystemEIK*> FSocketSubsystemEIK::SocketSubsystemEOSPerWorldMap;
 
-FSocketSubsystemEOS::FSocketSubsystemEOS(IEOSPlatformHandlePtr InPlatformHandle, ISocketSubsystemEOSUtilsPtr InUtils)
+FSocketSubsystemEIK::FSocketSubsystemEIK(IEOSPlatformHandlePtr InPlatformHandle, ISocketSubsystemEOSUtilsPtr InUtils)
 	: P2PHandle(nullptr)
 	, Utils(InUtils)
 	, LastSocketError(ESocketErrors::SE_NO_ERROR)
@@ -32,18 +32,18 @@ FSocketSubsystemEOS::FSocketSubsystemEOS(IEOSPlatformHandlePtr InPlatformHandle,
 #endif
 }
 
-FSocketSubsystemEOS::~FSocketSubsystemEOS()
+FSocketSubsystemEIK::~FSocketSubsystemEIK()
 {
 	Utils = nullptr;
 }
 
-FSocketSubsystemEOS* FSocketSubsystemEOS::GetSocketSubsystemForWorld(UWorld* InWorld)
+FSocketSubsystemEIK* FSocketSubsystemEIK::GetSocketSubsystemForWorld(UWorld* InWorld)
 {
-	FSocketSubsystemEOS** Result = SocketSubsystemEOSPerWorldMap.Find(InWorld);
+	FSocketSubsystemEIK** Result = SocketSubsystemEOSPerWorldMap.Find(InWorld);
 
 	if(!Result)
 	{
-		for (FSocketSubsystemEOS* SocketSubsystem : SocketSubsystemEOSInstances)
+		for (FSocketSubsystemEIK* SocketSubsystem : SocketSubsystemEOSInstances)
 		{
 			const UWorld* NewWorld = GetWorldForOnline(SocketSubsystem->Utils->GetSubsystemInstanceName());
 
@@ -61,7 +61,7 @@ FSocketSubsystemEOS* FSocketSubsystemEOS::GetSocketSubsystemForWorld(UWorld* InW
 	return Result ? *Result : nullptr;
 }
 
-bool FSocketSubsystemEOS::Init(FString& Error)
+bool FSocketSubsystemEIK::Init(FString& Error)
 {
 	SocketSubsystemEOSInstances.Add(this);
 
@@ -71,7 +71,7 @@ bool FSocketSubsystemEOS::Init(FString& Error)
 	return true;
 }
 
-void FSocketSubsystemEOS::Shutdown()
+void FSocketSubsystemEIK::Shutdown()
 {
 	RemoveFromStaticContainers();
 
@@ -84,9 +84,9 @@ void FSocketSubsystemEOS::Shutdown()
 	}
 }
 
-void FSocketSubsystemEOS::RemoveFromStaticContainers()
+void FSocketSubsystemEIK::RemoveFromStaticContainers()
 {
-	for (TMap<UWorld*, FSocketSubsystemEOS*>::TIterator Iter(SocketSubsystemEOSPerWorldMap); Iter; ++Iter)
+	for (TMap<UWorld*, FSocketSubsystemEIK*>::TIterator Iter(SocketSubsystemEOSPerWorldMap); Iter; ++Iter)
 	{
 		if (Iter.Value() == this)
 		{
@@ -97,17 +97,17 @@ void FSocketSubsystemEOS::RemoveFromStaticContainers()
 	SocketSubsystemEOSInstances.Remove(this);
 }
 
-FSocket* FSocketSubsystemEOS::CreateSocket(const FName& SocketTypeName, const FString& SocketDescription, const FName& /*unused*/)
+FSocket* FSocketSubsystemEIK::CreateSocket(const FName& SocketTypeName, const FString& SocketDescription, const FName& /*unused*/)
 {
 	return TrackedSockets.Emplace_GetRef(MakeUnique<FSocketEOS>(*this, SocketDescription)).Get();
 }
 
-FResolveInfoCached* FSocketSubsystemEOS::CreateResolveInfoCached(TSharedPtr<FInternetAddr> Addr) const
+FResolveInfoCached* FSocketSubsystemEIK::CreateResolveInfoCached(TSharedPtr<FInternetAddr> Addr) const
 {
 	return nullptr;
 }
 
-void FSocketSubsystemEOS::DestroySocket(FSocket* Socket)
+void FSocketSubsystemEIK::DestroySocket(FSocket* Socket)
 {
 	for (auto It = TrackedSockets.CreateIterator(); It; ++It)
 	{
@@ -119,32 +119,32 @@ void FSocketSubsystemEOS::DestroySocket(FSocket* Socket)
 	}
 }
 
-FAddressInfoResult FSocketSubsystemEOS::GetAddressInfo(const TCHAR* HostName, const TCHAR* ServiceName, EAddressInfoFlags /*unused*/, const FName /*unused*/, ESocketType /*unused*/)
+FAddressInfoResult FSocketSubsystemEIK::GetAddressInfo(const TCHAR* HostName, const TCHAR* ServiceName, EAddressInfoFlags /*unused*/, const FName /*unused*/, ESocketType /*unused*/)
 {
 	return FAddressInfoResult(HostName, ServiceName);
 }
 
-bool FSocketSubsystemEOS::RequiresChatDataBeSeparate()
+bool FSocketSubsystemEIK::RequiresChatDataBeSeparate()
 {
 	return false;
 }
 
-bool FSocketSubsystemEOS::RequiresEncryptedPackets()
+bool FSocketSubsystemEIK::RequiresEncryptedPackets()
 {
 	return false;
 }
 
-bool FSocketSubsystemEOS::GetHostName(FString& HostName)
+bool FSocketSubsystemEIK::GetHostName(FString& HostName)
 {
 	return false;
 }
 
-TSharedRef<FInternetAddr> FSocketSubsystemEOS::CreateInternetAddr()
+TSharedRef<FInternetAddr> FSocketSubsystemEIK::CreateInternetAddr()
 {
 	return MakeShared<FInternetAddrEOS>();
 }
 
-TSharedPtr<FInternetAddr> FSocketSubsystemEOS::GetAddressFromString(const FString& InString)
+TSharedPtr<FInternetAddr> FSocketSubsystemEIK::GetAddressFromString(const FString& InString)
 {
 	bool bUnused;
 	TSharedPtr<FInternetAddrEOS> NewAddress = StaticCastSharedRef<FInternetAddrEOS>(CreateInternetAddr());
@@ -152,59 +152,59 @@ TSharedPtr<FInternetAddr> FSocketSubsystemEOS::GetAddressFromString(const FStrin
 	return NewAddress;
 }
 
-bool FSocketSubsystemEOS::HasNetworkDevice()
+bool FSocketSubsystemEIK::HasNetworkDevice()
 {
 	return true;
 }
 
-const TCHAR* FSocketSubsystemEOS::GetSocketAPIName() const
+const TCHAR* FSocketSubsystemEIK::GetSocketAPIName() const
 {
 	return TEXT("p2pSocketsEOS");
 }
 
-ESocketErrors FSocketSubsystemEOS::GetLastErrorCode()
+ESocketErrors FSocketSubsystemEIK::GetLastErrorCode()
 {
 	return TranslateErrorCode(LastSocketError);
 }
 
-ESocketErrors FSocketSubsystemEOS::TranslateErrorCode(int32 Code)
+ESocketErrors FSocketSubsystemEIK::TranslateErrorCode(int32 Code)
 {
 	return static_cast<ESocketErrors>(Code);
 }
 
-bool FSocketSubsystemEOS::GetLocalAdapterAddresses(TArray<TSharedPtr<FInternetAddr>>& OutAddresses)
+bool FSocketSubsystemEIK::GetLocalAdapterAddresses(TArray<TSharedPtr<FInternetAddr>>& OutAddresses)
 {
 	TSharedRef<FInternetAddr> AdapterAddress = GetLocalBindAddr(nullptr, *GLog);
 	OutAddresses.Add(AdapterAddress);
 	return true;
 }
 
-TArray<TSharedRef<FInternetAddr>> FSocketSubsystemEOS::GetLocalBindAddresses()
+TArray<TSharedRef<FInternetAddr>> FSocketSubsystemEIK::GetLocalBindAddresses()
 {
 	TArray<TSharedRef<FInternetAddr>> OutAddresses;
 	OutAddresses.Add(GetLocalBindAddr(nullptr, *GLog));
 	return OutAddresses;
 }
 
-TSharedRef<FInternetAddr> FSocketSubsystemEOS::GetLocalBindAddr(FOutputDevice& Out)
+TSharedRef<FInternetAddr> FSocketSubsystemEIK::GetLocalBindAddr(FOutputDevice& Out)
 {
 	return GetLocalBindAddr(nullptr, Out);
 }
 
 #if WITH_EOS_SDK
-EOS_HP2P FSocketSubsystemEOS::GetP2PHandle()
+EOS_HP2P FSocketSubsystemEIK::GetP2PHandle()
 {
 	check(P2PHandle != nullptr);
 	return P2PHandle;
 }
 
-EOS_ProductUserId FSocketSubsystemEOS::GetLocalUserId()
+EOS_ProductUserId FSocketSubsystemEIK::GetLocalUserId()
 {
 	return Utils->GetLocalUserId();
 }
 #endif
 
-TSharedRef<FInternetAddr> FSocketSubsystemEOS::GetLocalBindAddr(const UWorld* const OwningWorld, FOutputDevice& Out)
+TSharedRef<FInternetAddr> FSocketSubsystemEIK::GetLocalBindAddr(const UWorld* const OwningWorld, FOutputDevice& Out)
 {
 	TSharedRef<FInternetAddrEOS> BoundAddr = MakeShared<FInternetAddrEOS>();
 
@@ -232,17 +232,17 @@ TSharedRef<FInternetAddr> FSocketSubsystemEOS::GetLocalBindAddr(const UWorld* co
 	return BoundAddr;
 }
 
-bool FSocketSubsystemEOS::IsSocketWaitSupported() const
+bool FSocketSubsystemEIK::IsSocketWaitSupported() const
 {
 	return false;
 }
 
-void FSocketSubsystemEOS::SetLastSocketError(const ESocketErrors NewSocketError)
+void FSocketSubsystemEIK::SetLastSocketError(const ESocketErrors NewSocketError)
 {
 	LastSocketError = NewSocketError;
 }
 
-bool FSocketSubsystemEOS::BindChannel(const FInternetAddrEOS& Address)
+bool FSocketSubsystemEIK::BindChannel(const FInternetAddrEOS& Address)
 {
 	if (!Address.IsValid())
 	{
@@ -263,7 +263,7 @@ bool FSocketSubsystemEOS::BindChannel(const FInternetAddrEOS& Address)
 	return true;
 }
 
-bool FSocketSubsystemEOS::UnbindChannel(const FInternetAddrEOS& Address)
+bool FSocketSubsystemEIK::UnbindChannel(const FInternetAddrEOS& Address)
 {
 	if (!Address.IsValid())
 	{

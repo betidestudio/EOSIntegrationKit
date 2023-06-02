@@ -5,6 +5,8 @@
 #include "OnlineSubsystemUtils.h"
 #include "OnlineSubsystem.h"
 #include "Engine/LocalPlayer.h"
+#include "Runtime\Core\Public\Misc\CommandLine.h"
+#include "Engine/GameInstance.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/SaveGame.h"

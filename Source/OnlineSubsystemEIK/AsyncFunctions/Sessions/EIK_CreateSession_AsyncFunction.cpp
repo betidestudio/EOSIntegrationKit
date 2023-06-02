@@ -1,7 +1,9 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_CreateSession_AsyncFunction.h"
+
+#include "Online/OnlineSessionNames.h"
 
 void UEIK_CreateSession_AsyncFunction::Activate()
 {

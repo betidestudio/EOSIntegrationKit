@@ -1,8 +1,9 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Online/CoreOnline.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_GetAchievement_AsyncFunction.generated.h"
 

@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -90,14 +90,7 @@ enum class EAutoLoginTypes : uint8 {
 	None 			UMETA(DisplayName="None"),
 	AccountPortal       UMETA(DisplayName="Account Portal"),
 	PersistentAuth              UMETA(DisplayName="Persistent Auth"),
-	EpicLauncher        UMETA(DisplayName="Epic Launcher"),
 	DeviceID        UMETA(DisplayName="Device ID"),
-	Google              UMETA(DisplayName="Google"),
-	Apple              UMETA(DisplayName="Apple"),
-	Discord              UMETA(DisplayName="Discord"),
-	Oculus              UMETA(DisplayName="Oculus"),
-	OpenID              UMETA(DisplayName="OpenID"),
-	Developer           UMETA(DisplayName="Developer"),
 };
 
 UCLASS(Config=Engine, DefaultConfig)
@@ -115,9 +108,28 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
 	FString ProductName;
 	/** Auto-Logins the player into the game. Can be used for testing or games with only 1 type of login */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
 	EAutoLoginTypes AutoLoginType;
+	/** This will request the country code from the EOS SDK and login */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
+	bool bUseCountryScope;	
+	/** This will show the advanced logs for the EOS SDK and EOS Integration Kit functions*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
+	bool bShowAdvancedLogs;
 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
+	FString ClientId;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
+	FString ClientSecret;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
+	FString ProductId;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
+	FString SandboxId;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
+	FString DeploymentId;
 	/**
 	 * The directory any PDS/TDS files are cached into. This is per artifact e.g.:
 	 *

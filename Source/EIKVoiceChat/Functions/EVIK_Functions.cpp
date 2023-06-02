@@ -62,8 +62,8 @@ void UEVIK_Functions::LoginEOSVoiceChat(APlayerController* PlayerController, FSt
 			{
 				if(LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
 				{
-					//LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->
-					LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->Login(0, PlayerName, "", FOnVoiceChatLoginCompleteDelegate::CreateLambda([Result](const FString& PlayerName, const FVoiceChatResult& Result1)
+					const FPlatformUserId PlatformUserId = FPlatformMisc::GetPlatformUserForUserIndex(0);
+					LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->Login(PlatformUserId, PlayerName, "", FOnVoiceChatLoginCompleteDelegate::CreateLambda([Result](const FString& PlayerName, const FVoiceChatResult& Result1)
 					{
 						if(Result1.IsSuccess())
 						{
@@ -140,7 +140,6 @@ FString UEVIK_Functions::LoggedInUser(APlayerController* PlayerController)
 
 #include "Misc/ConfigCacheIni.h"
 #include "Http.h"
-#include "Json.h"
 
 void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString VoiceRoomName, FString PlayerName, FString ClientIP, const FEIKRoomTokenResultDelegate& Result)
 {

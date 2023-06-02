@@ -4,8 +4,11 @@
 #include "CoreMinimal.h"
 #include "FindSessionsCallbackProxy.h"
 #include "OnlineLeaderboardsEOS.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Interfaces/OnlineStatsInterface.h"
+#include "Interfaces/OnlinePurchaseInterface.h"
+#include "Online/OnlineSessionNames.h"
 #ifdef PLAYFAB_PLUGIN_INSTALLED
 #include "PlayFab.h"
 #include "Core/PlayFabError.h"

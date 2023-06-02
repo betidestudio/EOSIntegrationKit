@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -7,6 +7,7 @@
 #include "OnlineSubsystem.h"
 #include "Engine/LocalPlayer.h"
 #include "Interfaces/OnlineIdentityInterface.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
@@ -28,11 +29,11 @@ class ONLINESUBSYSTEMEIK_API UEIK_BlueprintFunctions : public UBlueprintFunction
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra")
-	static FString GetEpicAccountId();
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
+	static FString GetEpicAccountId(UObject* Context);
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra")
-	static FString GetProductUserID();
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
+	static FString GetProductUserID(UObject* Context);
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Friends")
 	static bool ShowFriendsList();

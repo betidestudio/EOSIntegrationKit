@@ -1,8 +1,8 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "..\Public\EIKSettings.h"
 #include "OnlineSubsystemEOS.h"
-#include "OnlineSubsystemEOSModule.h"
+#include "OnlineSubsystemEIKModule.h"
 #include "OnlineSubsystemEOSPrivate.h"
 
 #include "Algo/Transform.h"
@@ -295,6 +295,61 @@ void UEIKSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 		Super::PostEditChangeProperty(PropertyChangedEvent);
 		return;
 	}
+
+if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
+{
+    FString authType;
+
+    switch (AutoLoginType)
+    {
+        case EAutoLoginTypes::None:
+            authType = TEXT("none");
+            break;
+        case EAutoLoginTypes::AccountPortal:
+            authType = TEXT("accountportal");
+            break;
+        case EAutoLoginTypes::PersistentAuth:
+            authType = TEXT("persistentauth");
+            break;
+        case EAutoLoginTypes::DeviceID:
+            authType = TEXT("deviceid");
+            break;
+        default:
+            break;
+    }
+
+    FString IniPath = FPaths::ProjectConfigDir() / TEXT("WindowsEditor/EditorPerProjectUserSettings.ini");
+    FConfigCacheIni::LoadGlobalIniFile(IniPath, TEXT("EditorPerProjectUserSettings"));
+
+    // Get the current value of AdditionalLaunchParameters
+    FString LaunchParameters;
+    GConfig->GetString(TEXT("/Script/UnrealEd.LevelEditorPlaySettings"), TEXT("AdditionalLaunchParameters"), LaunchParameters, IniPath);
+
+    // Check if -auth_type parameter already exists
+    FString AuthTypeParam = FString::Printf(TEXT("-auth_type="));
+    bool bAuthTypeParamExists = LaunchParameters.Contains(AuthTypeParam);
+
+    if (bAuthTypeParamExists)
+    {
+        // If -auth_type parameter already exists, update its value
+        LaunchParameters.ReplaceInline(*AuthTypeParam, *FString::Printf(TEXT("-AUTH_TYPE=%s"), *authType));
+    }
+    else
+    {
+        // If -auth_type parameter doesn't exist, append it to the existing launch parameters
+        LaunchParameters += FString::Printf(TEXT(" -AUTH_TYPE=%s"), *authType);
+    }
+
+    // Set the modified AdditionalLaunchParameters
+    GConfig->SetString(TEXT("/Script/UnrealEd.LevelEditorPlaySettings"), TEXT("AdditionalLaunchParameters"), *LaunchParameters, IniPath);
+
+	GConfig->Flush(false, IniPath);
+
+	FConfigCacheIni::LoadGlobalIniFile(IniPath, TEXT("EditorPerProjectUserSettings")); // Reload the ini file after flushing
+
+}
+
+	
 
 	// Turning off the overlay in general turns off the social overlay too
 	if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("bEnableOverlay")))

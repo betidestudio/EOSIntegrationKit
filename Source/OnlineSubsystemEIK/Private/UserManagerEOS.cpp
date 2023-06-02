@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "UserManagerEOS.h"
 #include "OnlineSubsystemEOS.h"
@@ -425,7 +425,6 @@ void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& Account
 	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
 
 	FString DisplayNameStr = DisplayName;
-	const char* DisplayNameChar = TCHAR_TO_ANSI(*DisplayNameStr);
 	LoginInfo.DisplayName = "DisplayNameChar";
 	EOS_Connect_LoginOptions LoginOptions;
 	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;
@@ -551,61 +550,6 @@ void FUserManagerEOS::CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountI
 	TriggerOnLoginStatusChangedDelegates(LocalUserNum, ELoginStatus::NotLoggedIn, ELoginStatus::LoggedIn, *UserNetId);
 }
 
-void FUserManagerEOS::EIK_Auto_Login()
-{
-	if(EOSSubsystem)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("EOSSubsystem is valid"));
-		if(EOSSubsystem->ConnectHandle && EOSSubsystem->bTickerStarted)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("EOSSubsystem is valid and connected"));
-			if(IsRunningGame())
-			{
-				UE_LOG(LogTemp, Warning, TEXT("EOSSubsystem is valid and connected and game is running"));
-				if(GetMutableDefault<UEIKSettings>())
-				{
-					UE_LOG(LogTemp, Warning, TEXT("EOSSubsystem is valid and connected and game is running and settings are valid"));
-					if(UEIKSettings* UEikSettings = GetMutableDefault<UEIKSettings>())
-					{
-						FOnlineAccountCredentials AccountCredentials;
-						UE_LOG(LogTemp, Warning, TEXT("Autologin type %hhd"), UEikSettings->AutoLoginType)
-						switch (UEikSettings->AutoLoginType) {
-						case EAutoLoginTypes::None:
-							return;
-							break;
-						case EAutoLoginTypes::AccountPortal:
-							AccountCredentials.Type = "accountportal";
-							break;
-						case EAutoLoginTypes::PersistentAuth:
-							AccountCredentials.Type = "persistentauth";
-							break;
-						case EAutoLoginTypes::EpicLauncher: break;
-						case EAutoLoginTypes::DeviceID:
-							AccountCredentials.Type = "deviceid";
-							break;
-						case EAutoLoginTypes::Google: break;
-						case EAutoLoginTypes::Apple: break;
-						case EAutoLoginTypes::Discord: break;
-						case EAutoLoginTypes::Oculus: break;
-						case EAutoLoginTypes::OpenID: break;
-						case EAutoLoginTypes::Developer: break;
-						default: ;
-						}
-						Login(0, AccountCredentials);
-					}
-				}		
-			}
-			else
-			{
-				return;
-			}
-			UE_LOG(LogTemp, Warning, TEXT("EOSSubsystem is v "
-								 "alid and connected and game is running and settings are valid and autologin is valid"));
-		}
-	}
-	EIK_Auto_Login();
-}
-
 bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials)
 {
 	LocalUserNumToLastLoginCredentials.Emplace(LocalUserNum, MakeShared<FOnlineAccountCredentials>(AccountCredentials));
@@ -650,7 +594,22 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	
 	EOS_Auth_LoginOptions LoginOptions = { };
 	LoginOptions.ApiVersion = EOS_AUTH_LOGIN_API_LATEST;
-	LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_FriendsList | EOS_EAuthScopeFlags::EOS_AS_Presence;
+	if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
+	{
+		if(EIKSettings->bUseCountryScope)
+		{
+			LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_FriendsList | EOS_EAuthScopeFlags::EOS_AS_Presence | EOS_EAuthScopeFlags::EOS_AS_Country;
+		}
+		else
+		{
+			LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_FriendsList | EOS_EAuthScopeFlags::EOS_AS_Presence;
+
+		}
+	}
+	else
+	{
+		LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_FriendsList | EOS_EAuthScopeFlags::EOS_AS_Presence;
+	}
 
 	FPlatformEOSHelpersPtr EOSHelpers = EOSSubsystem->GetEOSHelpers();
 
@@ -1230,8 +1189,6 @@ bool FUserManagerEOS::Logout(int32 LocalUserNum)
 
 bool FUserManagerEOS::AutoLogin(int32 LocalUserNum)
 {
-
-	
 	FString LoginId;
 	FString Password;
 	FString AuthType;

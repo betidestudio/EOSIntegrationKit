@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -29,12 +29,12 @@ class FSocketEOS;
 
 typedef TSet<uint8> FChannelSet;
 
-class SOCKETSUBSYSTEMEIK_API FSocketSubsystemEOS
+class SOCKETSUBSYSTEMEIK_API FSocketSubsystemEIK
 	: public ISocketSubsystem
 {
 public:
-	FSocketSubsystemEOS(IEOSPlatformHandlePtr InPlatformHandle, ISocketSubsystemEOSUtilsPtr InUtils);
-	virtual ~FSocketSubsystemEOS();
+	FSocketSubsystemEIK(IEOSPlatformHandlePtr InPlatformHandle, ISocketSubsystemEOSUtilsPtr InUtils);
+	virtual ~FSocketSubsystemEIK();
 
 //~ Begin ISocketSubsystem Interface
 	virtual bool Init(FString& Error) override;
@@ -87,12 +87,12 @@ public:
 	 * If no entry exists for the given UWorld*, it will add it if a valid instance is found.
 	 * 
 	 * @param InWorld UWorld* to be used in the search
-	 * @return The FSocketSubsystemEOS instance associated with InWorld
+	 * @return The FSocketSubsystemEIK instance associated with InWorld
 	 */
-	FSocketSubsystemEOS* GetSocketSubsystemForWorld(UWorld* InWorld);
+	FSocketSubsystemEIK* GetSocketSubsystemForWorld(UWorld* InWorld);
 
 private:
-	/** Removes the FSocketSubsystemEOS instance from SocketSubsystemEOSInstances and all related entries from SocketSubsystemEOSPerWorldMap */
+	/** Removes the FSocketSubsystemEIK instance from SocketSubsystemEOSInstances and all related entries from SocketSubsystemEOSPerWorldMap */
 	void RemoveFromStaticContainers();
 
 private:
@@ -110,9 +110,9 @@ private:
 	/** The last error we received */
 	ESocketErrors LastSocketError;
 
-	/** Static array of all instances of FSocketSubsystemEOS running concurrently (can be more than one in PIE) */
-	static TArray<FSocketSubsystemEOS*> SocketSubsystemEOSInstances;
+	/** Static array of all instances of FSocketSubsystemEIK running concurrently (can be more than one in PIE) */
+	static TArray<FSocketSubsystemEIK*> SocketSubsystemEOSInstances;
 
-	/** Static map of world to corresponding FSocketSubsystemeOS instance */
-	static TMap<UWorld*, FSocketSubsystemEOS*> SocketSubsystemEOSPerWorldMap;
+	/** Static map of world to corresponding FSocketSubsystemEIK instance */
+	static TMap<UWorld*, FSocketSubsystemEIK*> SocketSubsystemEOSPerWorldMap;
 };

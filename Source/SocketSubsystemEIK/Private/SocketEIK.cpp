@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "..\Public\SocketEIK.h"
 #include "SocketTypes.h"
@@ -54,7 +54,7 @@ void NpLog(const TCHAR* Msg)
 #include "Windows/HideWindowsPlatformTypes.h"
 #endif
 
-FSocketEOS::FSocketEOS(FSocketSubsystemEOS& InSocketSubsystem, const FString& InSocketDescription)
+FSocketEOS::FSocketEOS(FSocketSubsystemEIK& InSocketSubsystem, const FString& InSocketDescription)
 	: FSocket(ESocketType::SOCKTYPE_Datagram, InSocketDescription, NAME_None)
 	, SocketSubsystem(InSocketSubsystem)
 	, bIsListening(false)

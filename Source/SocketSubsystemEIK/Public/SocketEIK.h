@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -8,7 +8,7 @@
 #include "EOSSharedTypes.h"
 
 class FOnlineSubsystemEOS;
-class FSocketSubsystemEOS;
+class FSocketSubsystemEIK;
 
 #define WANTS_NP_LOGGING 0
 
@@ -28,7 +28,7 @@ class SOCKETSUBSYSTEMEIK_API FSocketEOS
 	: public FSocket
 {
 public:
-	FSocketEOS(FSocketSubsystemEOS& SocketSubsystem, const FString& InSocketDescription);
+	FSocketEOS(FSocketSubsystemEIK& SocketSubsystem, const FString& InSocketDescription);
 	virtual ~FSocketEOS();
 
 	//~ Begin FSocket Interface
@@ -84,7 +84,7 @@ private:
 	TSharedPtr<FCallbackBase> CallbackAliveTracker;
 
 	/** Reference to our subsystem */
-	FSocketSubsystemEOS& SocketSubsystem;
+	FSocketSubsystemEIK& SocketSubsystem;
 
 	/** Our local address; session/port will be invalid when not bound */
 	FInternetAddrEOS LocalAddress;

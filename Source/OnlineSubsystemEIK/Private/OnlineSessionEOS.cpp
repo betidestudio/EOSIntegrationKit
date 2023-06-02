@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "OnlineSessionEOS.h"
 #include "Misc/Guid.h"
@@ -15,6 +15,8 @@
 #include "IEOSSDKManager.h"
 #include "NetDriverEIK.h"
 #include "EOSVoiceChatUser.h"
+#include "Online/OnlineBase.h"
+#include "Online/OnlineSessionNames.h"
 
 #if WITH_EOS_SDK
 	#include "eos_sessions.h"

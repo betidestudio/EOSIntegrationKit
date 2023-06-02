@@ -1,10 +1,11 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "OnlineSubsystemUtils.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSubsystem.h"
 #include "Engine/LocalPlayer.h"
 #include "Interfaces/OnlineIdentityInterface.h"

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_GetAchievementDetails_AsyncFunction.h"
@@ -57,8 +57,7 @@ void UEIK_GetAchievementDetails_AsyncFunction::GetAchievementDescription()
 		}
 	}
 }
-void UEIK_GetAchievementDetails_AsyncFunction::OnAchievementDescriptionCompleted(const FUniqueNetId& UniqueNetId,
-	bool bWasSuccess)
+void UEIK_GetAchievementDetails_AsyncFunction::OnAchievementDescriptionCompleted(const FUniqueNetId& UniqueNetId,bool bWasSuccess)
 {
 	if(bWasSuccess)
 	{

@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "..\Public\NetDriverEIKBase.h"
 #include "NetConnectionEIK.h"
@@ -40,7 +40,7 @@ bool UNetDriverEIKBase::InitBase(bool bInitAsClient, FNetworkNotify* InNotify, c
 		return false;
 	}
 
-	FSocketSubsystemEOS* const SocketSubsystem = static_cast<FSocketSubsystemEOS*>(GetSocketSubsystem());
+	FSocketSubsystemEIK* const SocketSubsystem = static_cast<FSocketSubsystemEIK*>(GetSocketSubsystem());
 	if (!SocketSubsystem)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Could not get socket subsystem"));
@@ -120,7 +120,7 @@ bool UNetDriverEIKBase::InitConnect(FNetworkNotify* InNotify, const FURL& Connec
 	FSocket* CurSocket = GetSocket();
 
 	// Bind our local port
-	FSocketSubsystemEOS* const SocketSubsystem = static_cast<FSocketSubsystemEOS*>(GetSocketSubsystem());
+	FSocketSubsystemEIK* const SocketSubsystem = static_cast<FSocketSubsystemEIK*>(GetSocketSubsystem());
 	check(SocketSubsystem);
 	if (!SocketSubsystem->BindNextPort(CurSocket, *LocalAddr, MaxPortCountToTry + 1, 1))
 	{
@@ -184,7 +184,7 @@ ISocketSubsystem* UNetDriverEIKBase::GetSocketSubsystem()
 	else
 	{
 		UWorld* CurrentWorld = FindWorld();
-		FSocketSubsystemEOS* DefaultSocketSubsystem = static_cast<FSocketSubsystemEOS*>(ISocketSubsystem::Get(EOS_SOCKETSUBSYSTEM));
+		FSocketSubsystemEIK* DefaultSocketSubsystem = static_cast<FSocketSubsystemEIK*>(ISocketSubsystem::Get(EOS_SOCKETSUBSYSTEM));
 		return DefaultSocketSubsystem->GetSocketSubsystemForWorld(CurrentWorld);
 	}
 }

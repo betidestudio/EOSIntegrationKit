@@ -1,18 +1,21 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+﻿//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "EIK_BlueprintFunctions.h"
+#include "Engine/GameInstance.h"
 
-FString UEIK_BlueprintFunctions::GetEpicAccountId()
+FString UEIK_BlueprintFunctions::GetEpicAccountId(UObject* Context)
 {
-	UWorld* World = GEngine->GameViewport->GetWorld();
-	if(World)
+	if(Context)
 	{
+		if(!Context->GetWorld())
+		{
+			return FString();
+		}
 		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 		{
 			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
-				if(const TSharedPtr<const FUniqueNetId> EIK_NetID = UGameplayStatics::GetGameInstance(World)->GetFirstGamePlayer()->GetPreferredUniqueNetId().GetUniqueNetId())
+				if(const TSharedPtr<const FUniqueNetId> EIK_NetID = UGameplayStatics::GetGameInstance(Context->GetWorld())->GetFirstGamePlayer()->GetPreferredUniqueNetId().GetUniqueNetId())
 				{
 					const FString String_UserID = EIK_NetID.Get()->ToString();
 					TArray<FString> Substrings;
@@ -48,16 +51,19 @@ FString UEIK_BlueprintFunctions::GetEpicAccountId()
 	}
 }
 
-FString UEIK_BlueprintFunctions::GetProductUserID()
+FString UEIK_BlueprintFunctions::GetProductUserID(UObject* Context)
 {
-	UWorld* World = GEngine->GameViewport->GetWorld();
-	if(World)
+	if(Context)
 	{
+		if(!Context->GetWorld())
+		{
+			return FString();
+		}
 		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 		{
 			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
-				if(const TSharedPtr<const FUniqueNetId> EIK_NetID = UGameplayStatics::GetGameInstance(World)->GetFirstGamePlayer()->GetPreferredUniqueNetId().GetUniqueNetId())
+				if(const TSharedPtr<const FUniqueNetId> EIK_NetID = UGameplayStatics::GetGameInstance(Context->GetWorld())->GetFirstGamePlayer()->GetPreferredUniqueNetId().GetUniqueNetId())
 				{
 					const FString String_UserID = EIK_NetID.Get()->ToString();
 					TArray<FString> Substrings;

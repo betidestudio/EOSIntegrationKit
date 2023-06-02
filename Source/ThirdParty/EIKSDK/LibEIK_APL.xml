@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--LibEOSSDK plugin additions-->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<init>
+		<log text="LibEOSSDK init"/>
+		<setBool result="bSupported" value="false"/>
+		<isArch arch="armeabi-v7a">
+			<setBool result="bSupported" value="true"/>
+		</isArch>
+		<isArch arch="arm64-v8a">
+			<setBool result="bSupported" value="true"/>
+		</isArch>
+    
+    <setStringFromProperty result="ClientId" ini="Engine" section="/Script/OnlineSubsystemEIK.EIKSettings" property="ClientId" default="xyza7891naMfZYKiUr8eb7A0rLHpsnDa"/>
+    
+	</init>
+
+	<resourceCopies>
+		<isArch arch="armeabi-v7a">
+    		<log text="Copying libEOSSDK.so"/>
+			<copyFile src="$S(PluginDir)/Bin/Android/armeabi-v7a/libEOSSDK.so" dst="$S(BuildDir)/libs/armeabi-v7a/libEOSSDK.so" />
+		</isArch>
+		<isArch arch="arm64-v8a">
+    		<log text="Copying libEOSSDK.so"/>
+      <copyFile src="$S(PluginDir)/Bin/Android/arm64-v8a/libEOSSDK.so" dst="$S(BuildDir)/libs/arm64-v8a/libEOSSDK.so" />
+		</isArch>
+    <log text="Copying eos-sdk.aar"/>
+    <copyFile src="$S(PluginDir)/Bin/eos-sdk.aar" dst="$S(BuildDir)/lib/arm64/eos-sdk.aar" />
+	</resourceCopies>
+
+  <baseBuildGradleAdditions>
+    <if condition="bSupported">
+      <true>
+        <insert>
+          allprojects {
+          repositories {
+          repositories {
+          flatDir {
+        </insert>
+        <insertValue value="dirs '$S(PluginDir)/Bin'"/>
+        <insertNewline/>
+        <insertValue value="dirs '$S(AbsPluginDir)/Lib'"/>
+        <insertNewline/>
+        <insert>
+          }
+          }
+          }
+          }
+        </insert>
+           <insert>
+              allprojects {
+                  def ReplaceMap = [
+                      'android.support.v4.app.ActivityCompat': 'androidx.core.app.ActivityCompat',
+                      'android.support.annotation': 'androidx.annotation',
+                      'android.support.v4.app.NotificationCompat': 'androidx.core.app.NotificationCompat',
+                      'android.support.v4.app.NotificationManagerCompat': 'androidx.core.app.NotificationManagerCompat',
+                      'android.support.v4.content.ContextCompat': 'androidx.core.content.ContextCompat',
+                      'android.support.v4.content.FileProvider': 'androidx.core.content.FileProvider',
+                      'android.support.v13.app.FragmentCompat': 'androidx.legacy.app.FragmentCompat',
+                      'android.arch.lifecycle': 'androidx.lifecycle',
+                      'android.arch.lifecycle.Lifecycle': 'androidx.lifecycle.Lifecycle',
+                      'android.arch.lifecycle.LifecycleObserver': 'androidx.lifecycle.LifecycleObserver',
+                      'android.arch.lifecycle.OnLifecycleEvent': 'androidx.lifecycle.OnLifecycleEvent',
+                      'android.arch.lifecycle.ProcessLifecycleOwner': 'androidx.lifecycle.ProcessLifecycleOwner',
+                  ]
+
+                  afterEvaluate { project ->
+                      project.rootProject.projectDir.traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.java$/) { f ->
+                          ReplaceMap.each { entry ->
+                              if (f.getText('UTF-8').contains(entry.key)) { 
+                                ant.replace(file: f, token: entry.key, value: entry.value)
+                              }
+                          }
+                      }
+                  }
+              }
+          </insert>
+      </true>
+    </if>
+  </baseBuildGradleAdditions>
+
+  <gradleProperties>
+      <insertValue value="ProductId=&quot;$S(ProductId)&quot;"></insertValue>
+      <insertNewline />
+      <insertValue value="SandboxId=&quot;$S(SandboxId)&quot;"></insertValue>
+      <insertNewline />
+      <insertValue value="DeploymentId=&quot;$S(DeploymentId)&quot;"></insertValue>
+      <insertNewline />
+      <insertValue value="ClientId=&quot;$S(ClientId)&quot;"></insertValue>
+      <insertNewline />
+      <insertValue value="ClientSecret=&quot;$S(ClientSecret)&quot;"></insertValue>
+      <insertNewline />
+      <insert>
+          android.useAndroidX=true
+          android.enableJetifier=true
+      </insert>
+  </gradleProperties>
+  
+    <buildGradleAdditions>
+    <if condition="bSupported">
+      <true>
+          <insert>
+              android {
+
+              packagingOptions {
+                exclude  'build-data.properties'
+              }
+              dependencies {
+                  implementation 'com.android.support:appcompat-v7:28.0.0'
+                  implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+                  implementation 'androidx.security:security-crypto:1.0.0-rc03'
+              }
+              }
+              
+              dependencies.implementation(name: 'eos-sdk', ext: 'aar')
+          </insert>
+          <insert>
+            android {
+             packagingOptions {
+                    pickFirst  'build-data.properties'
+             }
+              preBuild {
+                doFirst {
+                  </insert>
+                  <insert>
+                      String str = &quot;&lt;string name=\&quot;eos_login_protocol_scheme\&quot;&gt;eos.${ClientId}&lt;/string&gt;&quot;
+                  </insert>
+                  <insertNewline />
+                  <insert>
+                      str = str.toLowerCase();
+                    File xmlFile = new File("${project.projectDir}/src/main/res/values/strings.xml")
+
+                    if (xmlFile) {
+                      if (!xmlFile.text.contains(str)) {
+                        xmlFile.text = xmlFile.text.replaceAll("&lt;/resources&gt;","    " + str + "\n&lt;/resources&gt;")
+                      }
+                    }
+                </insert>
+
+              <insert>
+                  String StyleString = &quot;&lt;style name=\&quot;UEAppCompatTheme\&quot; parent=\&quot;@style/Theme.AppCompat.Light.NoActionBar\&quot;&gt;&quot;
+                  StyleString += &quot;&lt;item name=\&quot;android:windowNoTitle\&quot;&gt;true&lt;/item&gt;&quot;
+                  StyleString += &quot;&lt;item name=\&quot;android:windowActionBar\&quot;&gt;false&lt;/item&gt;&quot;
+                  StyleString += &quot;&lt;item name=\&quot;android:windowFullscreen\&quot;&gt;true&lt;/item&gt;&quot;
+                  StyleString += &quot;&lt;item name=\&quot;android:windowContentOverlay\&quot;&gt;@null&lt;/item&gt;&quot;
+                  StyleString += &quot;&lt;/style&gt;&quot;
+              </insert>
+
+          <insert>
+              File StyleXMLFile = new File("${project.projectDir}/src/main/res/values/styles.xml")
+              if (StyleXMLFile) {
+                  if (!StyleXMLFile.text.contains(StyleString)) {
+                    StyleXMLFile.text = StyleXMLFile.text.replaceAll("&lt;/resources&gt;","    " + StyleString + "\n&lt;/resources&gt;")
+                  }
+              }
+          </insert>
+          
+                <insert>
+                }
+              }
+            }
+          </insert>  
+      </true>
+    </if>
+  </buildGradleAdditions>
+
+    <gameActivityClassAdditions>
+        <insert>
+            static { System.loadLibrary("EOSSDK"); }
+        </insert>
+    </gameActivityClassAdditions>
+  
+  <gameActivityImportAdditions>
+        <insert>
+            import com.epicgames.mobile.eossdk.EOSSDK;
+        </insert>
+    </gameActivityImportAdditions>
+  
+  <gameActivityOnCreateAdditions>
+        <insert>
+            EOSSDK.init(getApplicationContext());
+        </insert>
+    </gameActivityOnCreateAdditions>
+
+  <androidManifestUpdates>
+      <addAttribute tag="application" name="android:theme" value="@android:style/Theme.Translucent.NoTitleBar"/>
+      <addPermission android:name="android.permission.INTERNET"/>
+      <addPermission android:name="android.permission.RECORD_AUDIO"/>
+  </androidManifestUpdates>
+
+  <soLoadLibrary>
+      <loadLibrary name="EOSSDK" failmsg="EOSSDK library not loaded!" />
+  </soLoadLibrary>
+
+</root>

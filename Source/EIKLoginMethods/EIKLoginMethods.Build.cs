@@ -19,7 +19,8 @@ public class EIKLoginMethods : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "OnlineSubsystemEIK"
             }
         );
     }

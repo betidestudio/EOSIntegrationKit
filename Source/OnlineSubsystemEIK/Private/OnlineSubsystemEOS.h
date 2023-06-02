@@ -1,10 +1,11 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "IOnlineSubsystemEOS.h"
 #include "OnlineSubsystemNames.h"
+#include "SocketSubsystemEIK.h"
 
 #include COMPILED_PLATFORM_HEADER(EOSHelpers.h)
 
@@ -153,7 +154,7 @@ public:
 	bool bIsDefaultOSS;
 	bool bIsPlatformOSS;
 
-	TSharedPtr<FSocketSubsystemEOS, ESPMode::ThreadSafe> SocketSubsystem;
+	TSharedPtr<FSocketSubsystemEIK, ESPMode::ThreadSafe> SocketSubsystem;
 
 	static FPlatformEOSHelpersPtr EOSHelpersPtr;
 

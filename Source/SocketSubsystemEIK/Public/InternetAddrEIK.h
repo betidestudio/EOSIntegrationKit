@@ -1,9 +1,10 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "IPAddress.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 #if WITH_EOS_SDK
 #if defined(EOS_PLATFORM_BASE_FILE_NAME)

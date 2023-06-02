@@ -1,7 +1,7 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "OnlineTitleFileEOSPlus.h"
-#include "OnlineSubsystemEOSPlus.h"
+#include "OnlineSubsystemEIKPlus.h"
 #include "OnlineError.h"
 
 FOnlineTitleFileEOSPlus::FOnlineTitleFileEOSPlus(FOnlineSubsystemEOSPlus* InSubsystem)

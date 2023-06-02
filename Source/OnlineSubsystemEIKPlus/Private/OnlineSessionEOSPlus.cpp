@@ -1,9 +1,9 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "OnlineSessionEOSPlus.h"
 #include "Misc/Guid.h"
 #include "OnlineSubsystem.h"
-#include "OnlineSubsystemEOSPlus.h"
+#include "OnlineSubsystemEIKPlus.h"
 #include "OnlineUserEOSPlus.h"
 #include "..\..\OnlineSubsystemEIK\Public\EIKSettings.h"
 

@@ -1,8 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Login_AsyncFunction.h"
 
+#include "EIKSettings.h"
+#include "Misc/CommandLine.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 
@@ -50,17 +52,33 @@ void UEIK_Login_AsyncFunction::Login()
 				AccountDetails.Type = "exchangecode";
 				break;
 			case ELoginTypes::DeviceID:
+				if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
+				{
+					if(EIKSettings->bShowAdvancedLogs)
+					{
+						if(EIKSettings->bEnableOverlay || EIKSettings->bEnableEditorOverlay || EIKSettings->bEnableSocialOverlay)
+						{
+							UE_LOG(LogTemp, Error, TEXT("EIK: Device ID Login is not supported with Overlay Enabled. Please disable Overlay to use this login type."));
+						}
+					}
+				}
 				AccountDetails.Id = Input1;
 				AccountDetails.Token = Input2;
 				AccountDetails.Type = "deviceid";
 				break;
-			case ELoginTypes::Google: break;
-			case ELoginTypes::Apple: break;
-			case ELoginTypes::Discord: break;
-			case ELoginTypes::Oculus: break;
-			case ELoginTypes::OpenID: break;
-			case ELoginTypes::Developer: break;
-			default: ;
+			case ELoginTypes::Developer:
+				AccountDetails.Id = Input1;
+				AccountDetails.Token = Input2;
+				AccountDetails.Type = "developer";
+				break;
+			default:
+				if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
+				{
+					if(EIKSettings->bShowAdvancedLogs)
+					{
+							UE_LOG(LogTemp, Error, TEXT("EIK: Invalid Login Type. Please use a valid Login Type."));
+					}
+				}
 			}
 
 			IdentityPointerRef->OnLoginCompleteDelegates->AddUObject(this,&UEIK_Login_AsyncFunction::LoginCallback);
