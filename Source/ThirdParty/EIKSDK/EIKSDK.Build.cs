@@ -126,6 +126,7 @@ public class EIKSDK : ModuleRules
 		PublicDefinitions.Add("WITH_EOS_SDK=1");
 		PublicDefinitions.Add(String.Format("EOSSDK_RUNTIME_LOAD_REQUIRED={0}", bRequiresRuntimeLoad ? 1 : 0));
 		PublicDefinitions.Add(String.Format("EOSSDK_RUNTIME_LIBRARY_NAME=\"{0}\"", RuntimeLibraryFileName));
+		Console.WriteLine(RuntimeLibraryFileName);
 		PublicIncludePaths.Add(SDKIncludesDir);
 		PublicSystemIncludePaths.Add(SDKIncludesDir);
 		PrivateIncludePaths.Add(SDKIncludesDir);
@@ -133,10 +134,44 @@ public class EIKSDK : ModuleRules
 
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
-			PublicAdditionalLibraries.Add(Path.Combine(SDKLibsDir, "EOSSDK-Win64-Shipping.lib"));
-			PublicDelayLoadDLLs.Add("EOSSDK-Win64-Shipping.dll");
-			RuntimeDependencies.Add(Path.Combine(SDKBinariesDir, "EOSSDK-Win64-Shipping.dll"));
+			string PluginDir = Path.GetFullPath(Path.Combine(ModuleDirectory, "..", ".."));
+			string DLLFileName = "EOSSDK-Win64-Shipping.dll";
+			string DLLSourcePath = Path.Combine(PluginDir, "ThirdParty", "EIKSDK", "Bin", DLLFileName);
+			string DLLTargetPath = "$(BinaryOutputDir)/" + DLLFileName;
+
+			string LIBFileName = "EOSSDK-Win64-Shipping.lib";
+			string LIBSourcePath = Path.Combine(ModuleDirectory, "Bin", LIBFileName);
+			string LIBTargetPath = "$(BinaryOutputDir)/" + LIBFileName;
+
+			if (File.Exists(DLLSourcePath))
+			{
+				Console.WriteLine("EOS Integration Kit: DLL file exists at the specified source path.");
+			}
+			else
+			{
+				Console.WriteLine("EOS Integration Kit: DLL file does not exist at the specified source path.");
+			}
+
+			if (File.Exists(LIBSourcePath))
+			{
+				Console.WriteLine("EOS Integration Kit: LIB file exists at the specified source path.");
+			}
+			else
+			{
+				Console.WriteLine("EOS Integration Kit: LIB file does not exist at the specified source path.");
+			}
+
+			// Add the import library
+			PublicAdditionalLibraries.Add(LIBSourcePath);
+
+			// Delay-load the DLL, so we can load it from the right place first
+			PublicDelayLoadDLLs.Add(DLLFileName);
+
+			// Ensure that the DLL and LIB are staged along with the executable
+			RuntimeDependencies.Add(DLLTargetPath, DLLSourcePath, StagedFileType.NonUFS);
+			RuntimeDependencies.Add(LIBTargetPath, LIBSourcePath, StagedFileType.NonUFS);
 		}
+
 		else if (Target.Platform == UnrealTargetPlatform.Linux)
 		{
 			PrivateRuntimeLibraryPaths.Add(SDKBinariesDir);

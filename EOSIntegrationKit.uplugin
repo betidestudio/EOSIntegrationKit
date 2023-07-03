@@ -7,9 +7,9 @@
 	"Category": "Betide Studio",
 	"CreatedBy": "Betide Studio",
 	"CreatedByURL": "https://betide.studio",
-	"DocsURL": "https://betide-studio.gitbook.io/eos-integration-kit/",
+	"DocsURL": "https://eik.betide.studio/",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/dba0aa05bdd144e69405653a387ad63e",
-	"SupportURL": "https://discord.gg/2BtvDbmbEK",
+	"SupportURL": "https://discord.gg/betidestudio",
 	"EngineVersion": "5.1.0",
 	"CanContainContent": true,
 	"Installed": true,
@@ -17,7 +17,7 @@
 		{
 			"Name": "EOSIntegrationKit",
 			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
+			"LoadingPhase": "EarliestPossible",
 			"PlatformAllowList": [
 				"Win64",
 				"Android",
@@ -27,14 +27,17 @@
 		{
 			"Name": "SocketSubsystemEIK",
 			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
-			"PlatformAllowList": [ "Win64", "Android", "Linux" ]
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Android",
+				"Linux"
+			]
 		},
-		
 		{
 			"Name": "OnlineSubsystemEIK",
 			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
+			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
 				"Android",

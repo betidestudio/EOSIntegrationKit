@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "OnlineError.h"
 #include "EIK_SetStats_AsyncFunction.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSetStatsResult);

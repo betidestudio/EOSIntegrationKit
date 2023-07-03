@@ -910,6 +910,7 @@ bool FOnlineSessionEOS::CreateSession(int32 HostingPlayerNum, FName SessionName,
 {
 	uint32 Result = ONLINE_FAIL;
 
+	UE_LOG(LogTemp, Warning, TEXT("FOnlineSessionEOS::CreateSession()"));
 	// Check for an existing session
 	FNamedOnlineSession* Session = GetNamedSession(SessionName);
 	if (Session == nullptr)
@@ -1209,14 +1210,19 @@ void FOnlineSessionEOS::BeginSessionAnalytics(FNamedOnlineSession* Session)
 	if (LocalUser.IsValid())
 	{
 		TSharedPtr<const FOnlineSessionInfoEOS> SessionInfoEOS = StaticCastSharedPtr<const FOnlineSessionInfoEOS>(Session->SessionInfo);
-
+		//We do not need to use this if user is not using a Epic Account
+		if(!EOSSubsystem->UserManager->GetLocalEpicAccountId(LocalUserNum))
+		{
+			UE_LOG_ONLINE_SESSION(Log, TEXT("Not using Epic Account, skipping BeginSessionAnalytics"));
+			return;
+		}
 		FBeginMetricsOptions Options;
 		FCStringAnsi::Strncpy(Options.ServerIpAnsi, TCHAR_TO_UTF8(*SessionInfoEOS->HostAddr->ToString(false)), EOS_OSS_STRING_BUFFER_LENGTH);
 		FString DisplayName = LocalUser->GetDisplayName();
 		FCStringAnsi::Strncpy(Options.DisplayNameAnsi, TCHAR_TO_UTF8(*DisplayName), EOS_OSS_STRING_BUFFER_LENGTH);
 		Options.AccountIdType = EOS_EMetricsAccountIdType::EOS_MAIT_Epic;
 		Options.AccountId.Epic = EOSSubsystem->UserManager->GetLocalEpicAccountId(LocalUserNum);
-
+		
 		EOS_EResult Result = EOS_Metrics_BeginPlayerSession(EOSSubsystem->MetricsHandle, &Options);
 		if (Result != EOS_EResult::EOS_Success)
 		{
@@ -1252,6 +1258,7 @@ struct FSessionCreateOptions :
 
 uint32 FOnlineSessionEOS::CreateEOSSession(int32 HostingPlayerNum, FNamedOnlineSession* Session)
 {
+	UE_LOG(LogTemp, Warning, TEXT("FOnlineSessionEOS::CreateEOSSession"));
 	check(Session != nullptr);
 
 	EOS_HSessionModification SessionModHandle = nullptr;
@@ -1290,6 +1297,7 @@ uint32 FOnlineSessionEOS::CreateEOSSession(int32 HostingPlayerNum, FNamedOnlineS
 		// Expect URLs to look like "EOS:PUID:SocketName:Channel" and channel can be optional
 		HostOptions.HostAddress = HostAddrAnsi;
 		EOS_EResult HostResult = EOS_SessionModification_SetHostAddress(SessionModHandle, &HostOptions);
+		UE_LOG(LogTemp, Warning, TEXT("EOS_SessionModification_SetHostAddress(%s) returned (%hs)"), *HostAddr, ANSI_TO_TCHAR(EOS_EResult_ToString(HostResult)));
 		UE_LOG_ONLINE_SESSION(Log, TEXT("EOS_SessionModification_SetHostAddress(%s) returned (%s)"), *HostAddr, ANSI_TO_TCHAR(EOS_EResult_ToString(HostResult)));
 	}
 	else
@@ -3790,8 +3798,18 @@ void FOnlineSessionEOS::SetLobbyAttributes(EOS_HLobbyModification LobbyModificat
 	const FLobbyAttributeOptions OwnerId("OwningUserId", TCHAR_TO_UTF8(*Session->OwningUserId->ToString()));
 	AddLobbyAttribute(LobbyModificationHandle, &OwnerId);
 
-	const FLobbyAttributeOptions OwnerName("OwningUserName", TCHAR_TO_UTF8(*Session->OwningUserName));
-	AddLobbyAttribute(LobbyModificationHandle, &OwnerName);
+	if(TCHAR_TO_UTF8(*Session->OwningUserName) != nullptr && Session->OwningUserName != "")
+	{
+		const FLobbyAttributeOptions OwnerName("OwningUserName", TCHAR_TO_UTF8(*Session->OwningUserName));
+        AddLobbyAttribute(LobbyModificationHandle, &OwnerName);
+		UE_LOG(LogTemp, Warning, TEXT("OwningUserName: %s"), *Session->OwningUserName);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("OwningUserName is null"));
+	}
+	
+
 
 	// Now the session settings
 	const FLobbyAttributeOptions Opt1("NumPrivateConnections", Session->SessionSettings.NumPrivateConnections);

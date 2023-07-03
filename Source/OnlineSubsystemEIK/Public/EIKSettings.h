@@ -101,6 +101,12 @@ class ONLINESUBSYSTEMEIK_API UEIKSettings :
 
 public:
 
+	/** This will automatically setup EOS Integration Kit.
+	 *
+	 * Restart the editor after changing this value.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK  Settings")
+	bool bAutomaticallySetupEIK;
 	/** An organization is the highest level in the Epic Online Services (EOS) product management ecosystem. It encompasses all the products and the associated members, such as a publisher or game studio. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
 	FString OrganizationName;
@@ -115,6 +121,7 @@ public:
 	/** This will show the advanced logs for the EOS SDK and EOS Integration Kit functions*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
 	bool bShowAdvancedLogs;
+
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
 	FString ClientId;

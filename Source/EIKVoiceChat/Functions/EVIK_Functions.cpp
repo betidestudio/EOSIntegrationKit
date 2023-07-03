@@ -148,7 +148,6 @@ void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString 
     if (!GConfig->GetBool(TEXT("EOSVoiceChat"), TEXT("bEnabled"), bEnabled, GEngineIni) || !bEnabled)
     {
     	Result.ExecuteIfBound(false, "Error");
-    	UE_LOG(LogTemp, Warning, TEXT("Code 14"));
         return;
     }
 
@@ -190,7 +189,6 @@ void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString 
         }
         else
         {
-        	UE_LOG(LogTemp, Warning, TEXT("Code 1"));
         	Result.ExecuteIfBound(false, "Error");
         	return;
         }
@@ -207,7 +205,6 @@ void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString 
 			bool bHardMuted = false; 
 
 			const FString JsonRequestString = FString::Printf(TEXT("{\"participants\":[{\"puid\":\"%s\",\"clientIp\":\"%s\",\"hardMuted\":%s}] }"), *ProductUserId, *ClientIP, bHardMuted ? TEXT("true") : TEXT("false"));
-			UE_LOG(LogTemp, Warning, TEXT("Fd -> %s"), *JsonRequestString);
 			RoomTokenRequest->SetContentAsString(JsonRequestString);
 			RoomTokenRequest->SetURL(FString::Printf(TEXT("https://api.epicgames.dev/rtc/v1/%s/room/%s"), *DeploymentId, *VoiceRoomName));
 			RoomTokenRequest->SetVerb("POST");
@@ -221,12 +218,10 @@ void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString 
 				{
 					TSharedPtr<FJsonObject> JsonObject;
 					const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(HttpResponsePtr->GetContentAsString());
-					UE_LOG(LogTemp, Warning, TEXT("roken d2ew2e232sds"));
 					if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 					{
 						const TSharedPtr<FJsonValue> ClientBaseUrlObject = JsonObject->TryGetField(TEXT("clientBaseUrl"));
 						const TSharedPtr<FJsonValue> ParticipantsObject = JsonObject->TryGetField(TEXT("participants"));
-						UE_LOG(LogTemp, Warning, TEXT("roken dsds"));
 
 						if (ParticipantsObject)
 						{
@@ -247,14 +242,12 @@ void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString 
 					}
 					else
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Code 17"));
 						Result.ExecuteIfBound(false, "Error");
 						return;
 					}
 				}
 				else
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Code 97"));
 					Result.ExecuteIfBound(false, "Error");
 					return;
 				}
@@ -270,7 +263,6 @@ void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString 
 				}
 				else
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Code 1345"));
 					Result.ExecuteIfBound(false, "Error");
 				}
 			});
@@ -279,7 +271,6 @@ void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString 
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Code 12241"));
 			Result.ExecuteIfBound(false, "Error");
 		}
     });

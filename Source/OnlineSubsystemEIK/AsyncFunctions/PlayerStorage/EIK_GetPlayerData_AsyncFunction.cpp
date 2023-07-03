@@ -3,6 +3,7 @@
 
 #include "EIK_GetPlayerData_AsyncFunction.h"
 
+#include "EIKSettings.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineUserCloudInterface.h"
@@ -29,6 +30,21 @@ void UEIK_GetPlayerData_AsyncFunction::GetPlayerData()
 		{
 			if(const IOnlineUserCloudPtr CloudPointerRef = SubsystemRef->GetUserCloudInterface())
 			{
+				if(!IdentityPointerRef->GetUniquePlayerId(0))
+				{
+					if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
+					{
+						if (EIKSettings->bShowAdvancedLogs)
+						{
+							UE_LOG(LogTemp, Error, TEXT("EIK Log: GetPlayerData: IdentityPointerRef->GetUniquePlayerId(0) is nullptr"));
+						}
+					}
+					if(!bDelegateCalled)
+					{
+						bDelegateCalled = true;
+						OnFail.Broadcast(false, nullptr);
+					}
+				}
 				TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
 				CloudPointerRef->OnReadUserFileCompleteDelegates.AddUObject(this, &UEIK_GetPlayerData_AsyncFunction::OnGetFileComplete);
 				CloudPointerRef->ReadUserFile(*UserIDRef, FileName);

@@ -20,4 +20,6 @@ public:
 
 public:
 	TSharedPtr< FUICommandInfo > PluginAction;
+	TSharedPtr<FUICommandInfo> CreateNewMasterSequenceInLevel;
+	TSharedPtr<FUICommandInfo> ToggleCinematicViewportCommand;
 };

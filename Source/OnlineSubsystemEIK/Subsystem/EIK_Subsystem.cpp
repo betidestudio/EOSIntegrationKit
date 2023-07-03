@@ -55,7 +55,6 @@ bool UEIK_Subsystem::InitializeEIK()
 			if (SessionInt.IsValid())
 			{
 				SessionInt->AddOnSessionUserInviteAcceptedDelegate_Handle(OnSessionUserInviteAcceptedDelegate);
-				UE_LOG(LogTemp, Warning, TEXT("Bound success"));
 			}
 			return true;
 		}
