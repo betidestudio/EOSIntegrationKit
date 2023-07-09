@@ -2,15 +2,16 @@
 
 
 #include "EVIK_Functions.h"
-#include "Runtime\Engine/Classes/GameFramework/PlayerController.h"
 #include "Interfaces/IHttpResponse.h"
 
 
-bool UEVIK_Functions::InitializeEOSVoiceChat(APlayerController* PlayerController)
+bool UEVIK_Functions::InitializeEOSVoiceChat(const UObject* WorldContextObject)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -22,11 +23,13 @@ bool UEVIK_Functions::InitializeEOSVoiceChat(APlayerController* PlayerController
 	return false;
 }
 
-void UEVIK_Functions::ConnectVoiceChat(APlayerController* PlayerController, const FEIKResultDelegate& Result)
+void UEVIK_Functions::ConnectVoiceChat(const UObject* WorldContextObject, const FEIKResultDelegate& Result)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -51,11 +54,13 @@ void UEVIK_Functions::ConnectVoiceChat(APlayerController* PlayerController, cons
 	}
 }
 
-void UEVIK_Functions::LoginEOSVoiceChat(APlayerController* PlayerController, FString PlayerName, const FEIKResultDelegate& Result)
+void UEVIK_Functions::LoginEOSVoiceChat(const UObject* WorldContextObject, FString PlayerName, const FEIKResultDelegate& Result)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -87,12 +92,14 @@ void UEVIK_Functions::LoginEOSVoiceChat(APlayerController* PlayerController, FSt
 	}
 }
 
-void UEVIK_Functions::LogoutEOSVoiceChat(APlayerController* PlayerController, FString PlayerName,
+void UEVIK_Functions::LogoutEOSVoiceChat(const UObject* WorldContextObject, FString PlayerName,
 	const FEIKResultDelegate& Result)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -117,11 +124,13 @@ void UEVIK_Functions::LogoutEOSVoiceChat(APlayerController* PlayerController, FS
 	}
 }
 
-FString UEVIK_Functions::LoggedInUser(APlayerController* PlayerController)
+FString UEVIK_Functions::LoggedInUser(const UObject* WorldContextObject)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -141,7 +150,7 @@ FString UEVIK_Functions::LoggedInUser(APlayerController* PlayerController)
 #include "Misc/ConfigCacheIni.h"
 #include "Http.h"
 
-void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString VoiceRoomName, FString PlayerName, FString ClientIP, const FEIKRoomTokenResultDelegate& Result)
+void UEVIK_Functions::EOSRoomToken(FString VoiceRoomName, FString PlayerName, FString ClientIP, const FEIKRoomTokenResultDelegate& Result)
 {
     FString ProductId, SandboxId, DeploymentId, ClientId, ClientSecret, EncryptionKey;
     bool bEnabled;
@@ -278,11 +287,13 @@ void UEVIK_Functions::EOSRoomToken(APlayerController* PlayerController, FString 
     HttpRequest->ProcessRequest();
 }
 
-void UEVIK_Functions::JoinEOSRoom(APlayerController* PlayerController, FString VoiceRoomName, FString ChannelCredentialsJson,bool bEnableEcho, const FEIKResultDelegate& Result)
+void UEVIK_Functions::JoinEOSRoom(const UObject* WorldContextObject, FString VoiceRoomName, FString ChannelCredentialsJson,bool bEnableEcho, const FEIKResultDelegate& Result)
 {
-    if (PlayerController)
-    {
-        if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
         {
             UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
             if (LocalVoiceSubsystem)
@@ -331,12 +342,14 @@ void UEVIK_Functions::JoinEOSRoom(APlayerController* PlayerController, FString V
     }
 }
 
-void UEVIK_Functions::LeaveEOSRoom(APlayerController* PlayerController, FString VoiceRoomName,
+void UEVIK_Functions::LeaveEOSRoom(const UObject* WorldContextObject, FString VoiceRoomName,
 	const FEIKResultDelegate& Result)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -360,12 +373,14 @@ void UEVIK_Functions::LeaveEOSRoom(APlayerController* PlayerController, FString 
 	}
 }
 
-TArray<FString> UEVIK_Functions::GetPlayersInRoom(APlayerController* PlayerController, FString VoiceRoomName)
+TArray<FString> UEVIK_Functions::GetPlayersInRoom(const UObject* WorldContextObject, FString VoiceRoomName)
 {
 	TArray<FString> Local_PlayersInRoom;
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -380,12 +395,14 @@ TArray<FString> UEVIK_Functions::GetPlayersInRoom(APlayerController* PlayerContr
 	return Local_PlayersInRoom;
 }
 
-TArray<FString> UEVIK_Functions::GetAllRooms(APlayerController* PlayerController)
+TArray<FString> UEVIK_Functions::GetAllRooms(const UObject* WorldContextObject)
 {
 	TArray<FString> Local_PlayersJoinedRooms;
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -400,12 +417,14 @@ TArray<FString> UEVIK_Functions::GetAllRooms(APlayerController* PlayerController
 	return Local_PlayersJoinedRooms;
 }
 
-float UEVIK_Functions::GetPlayerVolume(const APlayerController* PlayerController, const FString& PlayerName)
+float UEVIK_Functions::GetPlayerVolume(const UObject* WorldContextObject, const FString& PlayerName)
 {
 	float Local_PlayerVolume = 0;
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -434,12 +453,14 @@ char* UEVIK_Functions::GetProductUserID(const FString& PlayerName)
 	return Local_ProductUserID;
 }
 
-bool UEVIK_Functions::SetPlayerVolume(const APlayerController* PlayerController, const FString& PlayerName,
+bool UEVIK_Functions::SetPlayerVolume(const UObject* WorldContextObject, const FString& PlayerName,
                                       float NewVolume)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -455,11 +476,13 @@ bool UEVIK_Functions::SetPlayerVolume(const APlayerController* PlayerController,
 	return false;
 }
 
-bool UEVIK_Functions::IsPlayerMuted(const APlayerController* PlayerController, const FString& PlayerName)
+bool UEVIK_Functions::IsPlayerMuted(const UObject* WorldContextObject, const FString& PlayerName)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -474,11 +497,13 @@ bool UEVIK_Functions::IsPlayerMuted(const APlayerController* PlayerController, c
 	return false;
 }
 
-bool UEVIK_Functions::SetPlayerMuted(const APlayerController* PlayerController, const FString& PlayerName, bool MutePlayer)
+bool UEVIK_Functions::SetPlayerMuted(const UObject* WorldContextObject, const FString& PlayerName, bool MutePlayer)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -494,11 +519,13 @@ bool UEVIK_Functions::SetPlayerMuted(const APlayerController* PlayerController, 
 	return false;
 }
 
-bool UEVIK_Functions::TransmitToAllRooms(const APlayerController* PlayerController)
+bool UEVIK_Functions::TransmitToAllRooms(const UObject* WorldContextObject)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -514,11 +541,13 @@ bool UEVIK_Functions::TransmitToAllRooms(const APlayerController* PlayerControll
 	return false;
 }
 
-bool UEVIK_Functions::TransmitToSelectedRoom(const APlayerController* PlayerController, FString RoomName)
+bool UEVIK_Functions::TransmitToSelectedRoom(const UObject* WorldContextObject, FString RoomName)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -534,11 +563,13 @@ bool UEVIK_Functions::TransmitToSelectedRoom(const APlayerController* PlayerCont
 	return false;
 }
 
-bool UEVIK_Functions::TransmitToNoRoom(const APlayerController* PlayerController)
+bool UEVIK_Functions::TransmitToNoRoom(const UObject* WorldContextObject)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -554,12 +585,14 @@ bool UEVIK_Functions::TransmitToNoRoom(const APlayerController* PlayerController
 	return false;
 }
 
-TArray<FDeviceEVIKSettings> UEVIK_Functions::GetInputMethods(const APlayerController* PlayerController)
+TArray<FDeviceEVIKSettings> UEVIK_Functions::GetInputMethods(const UObject* WorldContextObject)
 {
 	TArray<FDeviceEVIKSettings> Local_DeviceSettingArray;
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -582,12 +615,14 @@ TArray<FDeviceEVIKSettings> UEVIK_Functions::GetInputMethods(const APlayerContro
 	return Local_DeviceSettingArray;
 }
 
-TArray<FDeviceEVIKSettings> UEVIK_Functions::GetOutputMethods(const APlayerController* PlayerController)
+TArray<FDeviceEVIKSettings> UEVIK_Functions::GetOutputMethods(const UObject* WorldContextObject)
 {
 	TArray<FDeviceEVIKSettings> Local_DeviceSettingArray;
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -610,11 +645,13 @@ TArray<FDeviceEVIKSettings> UEVIK_Functions::GetOutputMethods(const APlayerContr
 	return Local_DeviceSettingArray;
 }
 
-bool UEVIK_Functions::SetOutputMethods(const APlayerController* PlayerController, FString MethodID)
+bool UEVIK_Functions::SetOutputMethods(const UObject* WorldContextObject, FString MethodID)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
@@ -630,11 +667,13 @@ bool UEVIK_Functions::SetOutputMethods(const APlayerController* PlayerController
 	return false;
 }
 
-bool UEVIK_Functions::SetInputMethods(const APlayerController* PlayerController, FString MethodID)
+bool UEVIK_Functions::SetInputMethods(const UObject* WorldContextObject, FString MethodID)
 {
-	if (PlayerController)
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
 	{
-		if (const UGameInstance* GameInstance = PlayerController->GetGameInstance())
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
 			if (LocalVoiceSubsystem)
