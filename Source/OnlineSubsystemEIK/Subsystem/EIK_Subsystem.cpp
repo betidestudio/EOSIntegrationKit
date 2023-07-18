@@ -629,7 +629,10 @@ void UEIK_Subsystem::QueryOffers(const FBP_GetOffers_Callback& Result)
 		{
 			if (const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
-				StoreV2Ptr->QueryOffersByFilter(*IdentityPointerRef->GetUniquePlayerId(0).Get(), FOnlineStoreFilter(),
+				const FUniqueNetIdPtr UserIdPtr{ IdentityPointerRef->GetUniquePlayerId(0) };
+				if (UserIdPtr)
+				{
+					StoreV2Ptr->QueryOffersByFilter(*UserIdPtr.Get(), FOnlineStoreFilter(),
 				                                FOnQueryOnlineStoreOffersComplete::CreateLambda([
 						                                StoreV2Wk = TWeakPtr<IOnlineStoreV2, ESPMode::ThreadSafe>(
 							                                StoreV2Ptr), this](
@@ -646,21 +649,23 @@ void UEIK_Subsystem::QueryOffers(const FBP_GetOffers_Callback& Result)
 								                                TArray<FOffersStruct> OfferArray;
 								                                for (int32 i = 0; i < Offers.Num(); ++i)
 								                                {
-								                                	OfferArray[i].ItemID = Offers[i]->OfferId;
-									                                OfferArray[i].ItemName = Offers[i]->Title;
-									                                OfferArray[i].Description = Offers[i]->Description;
-									                                OfferArray[i].ExpirationDate = Offers[i]->
+																	FOffersStruct NewOfferStruct;
+								                                	NewOfferStruct.ItemID = Offers[i]->OfferId;
+									                                NewOfferStruct.ItemName = Offers[i]->Title;
+									                                NewOfferStruct.Description = Offers[i]->Description;
+									                                NewOfferStruct.ExpirationDate = Offers[i]->
 										                                ExpirationDate;
-									                                OfferArray[i].LongDescription = Offers[i]->
+									                                NewOfferStruct.LongDescription = Offers[i]->
 										                                LongDescription;
-									                                OfferArray[i].NumericPrice = Offers[i]->
+									                                NewOfferStruct.NumericPrice = Offers[i]->
 										                                NumericPrice;
-									                                OfferArray[i].PriceText = Offers[i]->PriceText;
-									                                OfferArray[i].RegularPrice = Offers[i]->
+									                                NewOfferStruct.PriceText = Offers[i]->PriceText;
+									                                NewOfferStruct.RegularPrice = Offers[i]->
 										                                RegularPrice;
-									                                OfferArray[i].ReleaseDate = Offers[i]->ReleaseDate;
-									                                OfferArray[i].RegularPriceText = Offers[i]->
+									                                NewOfferStruct.ReleaseDate = Offers[i]->ReleaseDate;
+									                                NewOfferStruct.RegularPriceText = Offers[i]->
 										                                RegularPriceText;
+																	OfferArray.Add(NewOfferStruct);
 								                                }
 								                                GetOffers_CallbackBP.ExecuteIfBound(true, OfferArray);
 							                                }
@@ -674,6 +679,11 @@ void UEIK_Subsystem::QueryOffers(const FBP_GetOffers_Callback& Result)
 						                                	GetOffers_CallbackBP.ExecuteIfBound(false, 	TArray<FOffersStruct>());
 						                                }
 					                                }));
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Invalid User ID"));
+				}
 			}
 			else
 			{
