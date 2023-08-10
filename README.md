@@ -10,5 +10,6 @@
 
 ###
 
-<h2 align="center"> Documentation - https://betide-studio.gitbook.io/eos-integration-kit/ </h2>
-<h3 align="center"> Discord - https://discord.gg/3xgSDhXqt4 </h3>
+<h2 align="center"> PLUGIN HAS NOW MOVED TO GITLAB - https://git.betide.studio/plugins/eos-integration-kit/-/releases </h2>
+<h2 align="center"> NEW DOCS - https://eik.betide.studio/ </h2>
+<h3 align="center"> Discord - https://discord.gg/betidestudio </h3>
