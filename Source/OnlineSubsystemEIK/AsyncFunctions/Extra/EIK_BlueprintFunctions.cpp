@@ -142,15 +142,8 @@ bool UEIK_BlueprintFunctions::StartSession(FName SessionName)
 		{
 			return SessionPtrRef->StartSession(SessionName);
 		}
-		else
-		{
-			return false;
-		}
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 bool UEIK_BlueprintFunctions::RegisterPlayer(FName SessionName, FEIKUniqueNetId PlayerId, bool bWasInvited)
@@ -339,13 +332,31 @@ TArray<uint8> UEIK_BlueprintFunctions::StringToByteArray(const FString& DataToCo
 
 FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueID(const APlayerController* PlayerController, bool& bIsValid)
 {
-	APlayerState* PlayerState = PlayerController->PlayerState;
-	if(!PlayerState)
+	if(const APlayerState* PlayerState = PlayerController->PlayerState; !PlayerState)
+	{
+		bIsValid = false;
+	}
+	else
+	{
+		if(const TSharedPtr<const FUniqueNetId> EIK_NetID = PlayerState->GetUniqueId().GetUniqueNetId())
+		{
+			FEIKUniqueNetId LocalUNetID;
+			LocalUNetID.SetUniqueNetId(EIK_NetID);
+			if(LocalUNetID.IsValid())
+			{
+				bIsValid = true;
+				return LocalUNetID;
+			}
+		}
+	}
+	
+	const IOnlineIdentityPtr IdentityInterface = Online::GetIdentityInterface(PlayerController->GetWorld());
+	if(!IdentityInterface.IsValid())
 	{
 		bIsValid = false;
 		return FEIKUniqueNetId();
 	}
-	if(const TSharedPtr<const FUniqueNetId> EIK_NetID = PlayerState->GetUniqueId().GetUniqueNetId())
+	if(const TSharedPtr<const FUniqueNetId> EIK_NetID = IdentityInterface->GetUniquePlayerId(0))
 	{
 		FEIKUniqueNetId LocalUNetID;
 		LocalUNetID.SetUniqueNetId(EIK_NetID);
@@ -354,7 +365,6 @@ FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueID(const APlayerController
 			bIsValid = true;
 			return LocalUNetID;
 		}
-		return FEIKUniqueNetId();
 	}
 	return FEIKUniqueNetId();
 }

@@ -910,7 +910,6 @@ bool FOnlineSessionEOS::CreateSession(int32 HostingPlayerNum, FName SessionName,
 {
 	uint32 Result = ONLINE_FAIL;
 
-	UE_LOG(LogTemp, Warning, TEXT("FOnlineSessionEOS::CreateSession()"));
 	// Check for an existing session
 	FNamedOnlineSession* Session = GetNamedSession(SessionName);
 	if (Session == nullptr)
@@ -1258,7 +1257,6 @@ struct FSessionCreateOptions :
 
 uint32 FOnlineSessionEOS::CreateEOSSession(int32 HostingPlayerNum, FNamedOnlineSession* Session)
 {
-	UE_LOG(LogTemp, Warning, TEXT("FOnlineSessionEOS::CreateEOSSession"));
 	check(Session != nullptr);
 
 	EOS_HSessionModification SessionModHandle = nullptr;
@@ -1297,7 +1295,6 @@ uint32 FOnlineSessionEOS::CreateEOSSession(int32 HostingPlayerNum, FNamedOnlineS
 		// Expect URLs to look like "EOS:PUID:SocketName:Channel" and channel can be optional
 		HostOptions.HostAddress = HostAddrAnsi;
 		EOS_EResult HostResult = EOS_SessionModification_SetHostAddress(SessionModHandle, &HostOptions);
-		UE_LOG(LogTemp, Warning, TEXT("EOS_SessionModification_SetHostAddress(%s) returned (%hs)"), *HostAddr, ANSI_TO_TCHAR(EOS_EResult_ToString(HostResult)));
 		UE_LOG_ONLINE_SESSION(Log, TEXT("EOS_SessionModification_SetHostAddress(%s) returned (%s)"), *HostAddr, ANSI_TO_TCHAR(EOS_EResult_ToString(HostResult)));
 	}
 	else
@@ -3593,7 +3590,6 @@ uint32_t FOnlineSessionEOS::GetLobbyMaxMembersFromSessionSettings(const FOnlineS
 uint32 FOnlineSessionEOS::CreateLobbySession(int32 HostingPlayerNum, FNamedOnlineSession* Session)
 {
 	check(Session != nullptr);
-
 	Session->SessionState = EOnlineSessionState::Creating;
 	Session->bHosting = true;
 
@@ -3849,7 +3845,6 @@ void FOnlineSessionEOS::SetLobbyAttributes(EOS_HLobbyModification LobbyModificat
 	{
 		const FLobbyAttributeOptions OwnerName("OwningUserName", TCHAR_TO_UTF8(*Session->OwningUserName));
         AddLobbyAttribute(LobbyModificationHandle, &OwnerName);
-		UE_LOG(LogTemp, Warning, TEXT("OwningUserName: %s"), *Session->OwningUserName);
 	}
 	else
 	{

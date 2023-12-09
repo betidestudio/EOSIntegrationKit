@@ -14,23 +14,24 @@ struct FSanctionsStruct
 public:
 	/** API Version: This will be set to EOS_SANCTIONS_PLAYERSANCTION_API_LATEST. */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	int32 ApiVersion;
+	int32 ApiVersion = EOS_SANCTIONS_PLAYERSANCTION_API_LATEST;
 	/** The POSIX timestamp when the sanction was placed */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	int64 TimePlaced;
+	int64 TimePlaced = 0;
 	/** The action associated with this sanction */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	FString Action;
+	FString Action = "";
 	/** The POSIX timestamp when the sanction will expire. If the sanction is permanent, this will be 0. */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	int64 TimeExpires;
+	int64 TimeExpires = 0;
 	/** A unique identifier for this specific sanction */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	FString ReferenceId;
+	FString ReferenceId = "";
 	
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSanctionsDelegate, const TArray<FSanctionsStruct>&, Sanctions);
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SanctionsAsyncFunction : public UBlueprintAsyncActionBase
 {
