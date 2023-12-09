@@ -8,7 +8,7 @@
 #include "OnlineSubsystemNames.h"
 #include "OnlineSubsystemEOS.h"
 #include "OnlineSubsystemEOSTypes.h"
-#include "..\Public\EIKSettings.h"
+#include "EIKSettings.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Features/IModularFeature.h"
@@ -240,12 +240,12 @@ void FOnlineSubsystemEIKModule::ConfigureOnlineSubsystemEIK()
             bConfigChanged = true;
         }
 
-        // Update [/Script/OnlineSubsystemEIK.NetDriverEOS] section
-        if (!EngineIniText.Contains(TEXT("\n[/Script/OnlineSubsystemEIK.NetDriverEOS]")))
+        // Update [/Script/OnlineSubsystemEIK.NetDriverEIK] section
+        if (!EngineIniText.Contains(TEXT("\n[/Script/OnlineSubsystemEIK.NetDriverEIK]")))
         {
         	FString Comment = TEXT(";EIK Comment: You do not need to worry about this setting as we dynamically set it in Travel URL depending upon if we are using Listen Server or Dedicated Server\n");
         	EngineIniText += Comment;
-            EngineIniText += TEXT("[/Script/OnlineSubsystemEIK.NetDriverEOS]\nbIsUsingP2PSockets=true\n");
+            EngineIniText += TEXT("[/Script/OnlineSubsystemEIK.NetDriverEIK]\nbIsUsingP2PSockets=true\n");
             bConfigChanged = true;
         }
 
@@ -256,7 +256,7 @@ void FOnlineSubsystemEIKModule::ConfigureOnlineSubsystemEIK()
 
             // Update NetDriverDefinitions in [/Script/Engine.GameEngine] section
             FString NetDriverDefinitions = FString::Printf(
-                TEXT("!NetDriverDefinitions=ClearArray\n+NetDriverDefinitions=(DefName=\"GameNetDriver\",DriverClassName=\"OnlineSubsystemEIK.NetDriverEOS\",DriverClassNameFallback=\"OnlineSubsystemUtils.IpNetDriver\")\n")
+                TEXT("!NetDriverDefinitions=ClearArray\n+NetDriverDefinitions=(DefName=\"GameNetDriver\",DriverClassName=\"OnlineSubsystemEIK.NetDriverEIK\",DriverClassNameFallback=\"OnlineSubsystemUtils.IpNetDriver\")\n")
             );
             EngineIniText += NetDriverDefinitions;
             

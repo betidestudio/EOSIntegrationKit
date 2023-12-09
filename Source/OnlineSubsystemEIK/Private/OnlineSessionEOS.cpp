@@ -3002,8 +3002,62 @@ bool FOnlineSessionEOS::RegisterPlayer(FName SessionName, const FUniqueNetId& Pl
 }
 
 typedef TEOSCallback<EOS_Sessions_OnRegisterPlayersCallback, EOS_Sessions_RegisterPlayersCallbackInfo, FOnlineSessionEOS> FRegisterPlayersCallback;
-
 bool FOnlineSessionEOS::RegisterPlayers(FName SessionName, const TArray< FUniqueNetIdRef >& Players, bool bWasInvited)
+{
+	bool bSuccess = false;
+	FNamedOnlineSession* Session = GetNamedSession(SessionName);
+	if (Session)
+	{
+		TArray<EOS_ProductUserId> EOSIds;
+		EOSIds.Empty();
+		bSuccess = true;
+		bool bRegisterEOS = !Session->SessionSettings.bUseLobbiesIfAvailable;
+		const FUniqueNetIdRef& PlayerId = Players[0];
+		const FUniqueNetIdEOS& PlayerEOSId = FUniqueNetIdEOS::Cast(*PlayerId);
+		EOSIds.Add(PlayerEOSId.GetProductUserId());
+		if (bRegisterEOS && EOSIds.Num() > 0)
+		{
+			EOSIds.Empty();
+			EOSIds.Add(PlayerEOSId.GetProductUserId());
+			EOS_Sessions_RegisterPlayersOptions Options = { };
+			Options.ApiVersion = EOS_SESSIONS_REGISTERPLAYERS_API_LATEST;
+			EOS_ProductUserId SinglePlayerId = PlayerEOSId.GetProductUserId();
+			Options.PlayersToRegister = &SinglePlayerId; 
+			Options.PlayersToRegisterCount = EOSIds.Num();
+			const FTCHARToUTF8 Utf8SessionName(*SessionName.ToString());
+			Options.SessionName = Utf8SessionName.Get();
+
+			FRegisterPlayersCallback* CallbackObj = new FRegisterPlayersCallback(FOnlineSessionEOSWeakPtr(AsShared()));
+			CallbackObj->CallbackLambda = [this, SessionName, RegisteredPlayers = TArray<FUniqueNetIdRef>(Players)](const EOS_Sessions_RegisterPlayersCallbackInfo* Data)
+			{
+				bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success || Data->ResultCode == EOS_EResult::EOS_NoChange;
+				TriggerOnRegisterPlayersCompleteDelegates(SessionName, RegisteredPlayers, bWasSuccessful);
+			};
+			EOS_Sessions_RegisterPlayers(EOSSubsystem->SessionsHandle, &Options, CallbackObj, CallbackObj->GetCallbackPtr());
+			for(int32 i=0; i<EOSIds.Num(); i++)
+			{
+				char PuidBuffer[256];
+				int32 BufferLen = 256;
+				EOS_ProductUserId_ToString(SinglePlayerId, PuidBuffer, &BufferLen );
+			}
+			return true;
+		}
+	}
+	else
+	{
+		UE_LOG_ONLINE_SESSION(Warning, TEXT("RegisterPlayers: No game present to join for session (%s)"), *SessionName.ToString());
+	}
+
+	EOSSubsystem->ExecuteNextTick([this, SessionName, RegisteredPlayers = TArray<FUniqueNetIdRef>(Players), bSuccess]()
+	{
+		TriggerOnRegisterPlayersCompleteDelegates(SessionName, RegisteredPlayers, bSuccess);
+		UE_LOG_ONLINE_SESSION(Log, TEXT("RegisterPlayers: Triggering completion delegates"));
+	});
+
+	return true;
+}
+
+/*bool FOnlineSessionEOS::RegisterPlayers(FName SessionName, const TArray< FUniqueNetIdRef >& Players, bool bWasInvited)
 {
 	bool bSuccess = false;
 	FNamedOnlineSession* Session = GetNamedSession(SessionName);
@@ -3019,20 +3073,13 @@ bool FOnlineSessionEOS::RegisterPlayers(FName SessionName, const TArray< FUnique
 			const FUniqueNetIdEOS& PlayerEOSId = FUniqueNetIdEOS::Cast(*PlayerId);
 
 			FUniqueNetIdMatcher PlayerMatch(*PlayerId);
-			if (Session->RegisteredPlayers.IndexOfByPredicate(PlayerMatch) == INDEX_NONE)
+			Session->RegisteredPlayers.Add(PlayerId);
+			if (bRegisterEOS)
 			{
-				Session->RegisteredPlayers.Add(PlayerId);
-				if (bRegisterEOS)
-				{
-					EOSIds.Add(PlayerEOSId.GetProductUserId());
-				}
-
-				AddOnlineSessionMember(SessionName, PlayerId);
+				EOSIds.Add(PlayerEOSId.GetProductUserId());
 			}
-			else
-			{
-				UE_LOG_ONLINE_SESSION(Log, TEXT("Player %s already registered in session %s"), *PlayerId->ToDebugString(), *SessionName.ToString());
-			}
+			AddOnlineSessionMember(SessionName, PlayerId);
+			
 		}
 
 		if (bRegisterEOS && EOSIds.Num() > 0)
@@ -3065,7 +3112,7 @@ bool FOnlineSessionEOS::RegisterPlayers(FName SessionName, const TArray< FUnique
 	});
 
 	return true;
-}
+}*/
 
 bool FOnlineSessionEOS::UnregisterPlayer(FName SessionName, const FUniqueNetId& PlayerId)
 {

@@ -20,7 +20,7 @@ const FUniqueNetIdEOSRef& FUniqueNetIdEOS::EmptyId()
 
 FName FUniqueNetIdEOS::GetTypeStatic()
 {
-	static FName NAME_Eos(TEXT("EOS"));
+	static FName NAME_Eos(TEXT("EIK"));
 	return NAME_Eos;
 }
 
@@ -41,7 +41,20 @@ int32 FUniqueNetIdEOS::GetSize() const
 
 bool FUniqueNetIdEOS::IsValid() const
 {
-	return EOS_EpicAccountId_IsValid(EpicAccountId) || EOS_ProductUserId_IsValid(ProductUserId);
+	if(EOS_ProductUserId_IsValid(ProductUserId))
+	{
+		return true;
+	}
+	else if(EOS_EpicAccountId_IsValid(EpicAccountId))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	//return EOS_ProductUserId_IsValid(ProductUserId);
+	//return EOS_EpicAccountId_IsValid(EpicAccountId) || EOS_ProductUserId_IsValid(ProductUserId);
 }
 
 uint32 FUniqueNetIdEOS::GetTypeHash() const
@@ -51,6 +64,10 @@ uint32 FUniqueNetIdEOS::GetTypeHash() const
 
 FString FUniqueNetIdEOS::ToString() const
 {
+	if(LexToString(EpicAccountId).IsEmpty())
+	{
+		return LexToString(ProductUserId);
+	}
 	return LexToString(EpicAccountId) + EOS_ID_SEPARATOR + LexToString(ProductUserId);
 }
 
@@ -60,7 +77,14 @@ FString FUniqueNetIdEOS::ToDebugString() const
 	{
 		const FString EpicAccountIdStr = LexToString(EpicAccountId);
 		const FString ProductUserIdStr = LexToString(ProductUserId);
-		return OSS_UNIQUEID_REDACT(*this, EpicAccountIdStr) + EOS_ID_SEPARATOR + OSS_UNIQUEID_REDACT(*this, ProductUserIdStr);
+		if(EpicAccountIdStr.IsEmpty())
+		{
+			return OSS_UNIQUEID_REDACT(*this, ProductUserIdStr);
+		}
+		else
+		{
+			return OSS_UNIQUEID_REDACT(*this, EpicAccountIdStr) + EOS_ID_SEPARATOR + OSS_UNIQUEID_REDACT(*this, ProductUserIdStr);
+		}
 	}
 	else
 	{

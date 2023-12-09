@@ -2,6 +2,7 @@
 
 
 #include "EVIK_Functions.h"
+#include "Engine/Engine.h"
 #include "Interfaces/IHttpResponse.h"
 
 
@@ -54,6 +55,27 @@ void UEVIK_Functions::ConnectVoiceChat(const UObject* WorldContextObject, const 
 	}
 }
 
+bool UEVIK_Functions::IsVoiceChatConnected(const UObject* WorldContextObject)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
+		{
+			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
+			if (LocalVoiceSubsystem)
+			{
+				if(LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
+				{
+					return LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->IsConnected();
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void UEVIK_Functions::LoginEOSVoiceChat(const UObject* WorldContextObject, FString PlayerName, const FEIKResultDelegate& Result)
 {
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
@@ -75,9 +97,9 @@ void UEVIK_Functions::LoginEOSVoiceChat(const UObject* WorldContextObject, FStri
 							EOS_ProductUserId ProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*PlayerName));
 							if(ProductUserId != nullptr)
 							{
-								UE_LOG(LogTemp, Warning, TEXT("ProductUserId: %p"), ProductUserId);
+								UE_LOG(LogTemp, Log, TEXT("ProductUserId: %p"), ProductUserId);
 							}
-							UE_LOG(LogTemp, Warning, TEXT("Player Name: %s"), *PlayerName);
+							UE_LOG(LogTemp, Log, TEXT("Player Name: %s"), *PlayerName);
 							Result.ExecuteIfBound(true, EEVIKResultCodes::Success);
 						}
 						else
@@ -122,6 +144,49 @@ void UEVIK_Functions::LogoutEOSVoiceChat(const UObject* WorldContextObject, FStr
 			}
 		}
 	}
+}
+
+bool UEVIK_Functions::IsEOSVoiceChatLoggingIn(const UObject* WorldContextObject)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
+		{
+			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
+			if (LocalVoiceSubsystem)
+			{
+				if(LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
+				{
+					return LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->IsLoggingIn();
+				}
+			}
+		}
+	}
+	return false;
+
+}
+
+bool UEVIK_Functions::IsEOSVoiceChatLoggedIn(const UObject* WorldContextObject)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	
+	if (World)
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
+		{
+			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
+			if (LocalVoiceSubsystem)
+			{
+				if(LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
+				{
+					return LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->IsLoggedIn();
+				}
+			}
+		}
+	}
+	return false;
 }
 
 FString UEVIK_Functions::LoggedInUser(const UObject* WorldContextObject)
@@ -554,7 +619,7 @@ bool UEVIK_Functions::TransmitToSelectedRoom(const UObject* WorldContextObject, 
 			{
 				if (LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
 				{
-					LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->TransmitToSpecificChannel(RoomName);
+					//LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->TransmitToSpecificChannel(RoomName);
 					return true;
 				}
 			}
@@ -688,4 +753,3 @@ bool UEVIK_Functions::SetInputMethods(const UObject* WorldContextObject, FString
 	}
 	return false;
 }
-

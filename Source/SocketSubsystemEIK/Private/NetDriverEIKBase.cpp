@@ -1,9 +1,9 @@
 //Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
-#include "..\Public\NetDriverEIKBase.h"
+#include "NetDriverEIKBase.h"
 #include "NetConnectionEIK.h"
-#include "..\Public\SocketEIK.h"
-#include "..\Public\SocketSubsystemEIK.h"
+#include "SocketEIK.h"
+#include "SocketSubsystemEIK.h"
 #include "Misc/EngineVersionComparison.h"
 #include "EOSSharedTypes.h"
 #include "Engine/Engine.h"
@@ -145,6 +145,7 @@ bool UNetDriverEIKBase::InitConnect(FNetworkNotify* InNotify, const FURL& Connec
 
 bool UNetDriverEIKBase::InitListen(FNetworkNotify* InNotify, FURL& LocalURL, bool bReuseAddressAndPort, FString& Error)
 {
+	
 	if (!bIsUsingP2PSockets || !IsAvailable() || LocalURL.HasOption(TEXT("bIsLanMatch")) || LocalURL.HasOption(TEXT("bUseIPSockets")))
 	{
 		UE_LOG(LogTemp, Verbose, TEXT("Init as IPNetDriver listen server. LocalURL = (%s)"), *LocalURL.ToString());

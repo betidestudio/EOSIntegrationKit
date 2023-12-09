@@ -120,7 +120,7 @@ void FEOSVoiceChat::Initialize(const FOnVoiceChatInitializeCompleteDelegate& Ini
 					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("DeploymentId"), ConfigDeploymentId, GEngineIni);
 					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientId"), ConfigClientId, GEngineIni);
 					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientSecret"), ConfigClientSecret, GEngineIni);
-					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("EncryptionKey"), ConfigEncryptionKey, GEngineIni);
+					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientEncryptionKey"), ConfigEncryptionKey, GEngineIni);
 					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("OverrideCountryCode"), ConfigOverrideCountryCode, GEngineIni);
 					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("OverrideLocaleCode"), ConfigOverrideLocaleCode, GEngineIni);
 
@@ -704,19 +704,33 @@ void FEOSVoiceChat::TransmitToNoChannels()
 	GetVoiceChatUser().TransmitToNoChannels();
 }
 
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >=3
+void FEOSVoiceChat::TransmitToSpecificChannels(const TSet<FString>& ChannelNames)
+{
+	GetVoiceChatUser().TransmitToSpecificChannels(ChannelNames);
+}
+
+TSet<FString> FEOSVoiceChat::GetTransmitChannels() const
+{
+	return GetVoiceChatUser().GetTransmitChannels();
+}
+
+#elif ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >=1
 void FEOSVoiceChat::TransmitToSpecificChannel(const FString& ChannelName)
 {
 	GetVoiceChatUser().TransmitToSpecificChannel(ChannelName);
 }
 
-EVoiceChatTransmitMode FEOSVoiceChat::GetTransmitMode() const
-{
-	return GetVoiceChatUser().GetTransmitMode();
-}
-
 FString FEOSVoiceChat::GetTransmitChannel() const
 {
 	return GetVoiceChatUser().GetTransmitChannel();
+}
+
+#endif
+
+EVoiceChatTransmitMode FEOSVoiceChat::GetTransmitMode() const
+{
+	return GetVoiceChatUser().GetTransmitMode();
 }
 
 FDelegateHandle FEOSVoiceChat::StartRecording(const FOnVoiceChatRecordSamplesAvailableDelegate::FDelegate& Delegate)

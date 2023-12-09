@@ -1,9 +1,9 @@
 //Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "NetConnectionEIK.h"
-#include "..\Public\NetDriverEIKBase.h"
-#include "..\Public\InternetAddrEIK.h"
-#include "..\Public\SocketEIK.h"
+#include "NetDriverEIKBase.h"
+#include "InternetAddrEIK.h"
+#include "SocketEIK.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(NetConnectionEIK)
 

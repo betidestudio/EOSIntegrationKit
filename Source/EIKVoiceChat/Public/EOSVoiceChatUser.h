@@ -71,9 +71,15 @@ public:
 	virtual FOnVoiceChatPlayerVolumeUpdatedDelegate& OnVoiceChatPlayerVolumeUpdated() override { return OnVoiceChatPlayerVolumeUpdatedDelegate; }
 	virtual void TransmitToAllChannels() override;
 	virtual void TransmitToNoChannels() override;
-	virtual void TransmitToSpecificChannel(const FString& ChannelName) override;
+	
 	virtual EVoiceChatTransmitMode GetTransmitMode() const override;
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
+	virtual void TransmitToSpecificChannels(const TSet<FString>& ChannelNames) override;
+	virtual TSet<FString> GetTransmitChannels() const override;
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
+	virtual void TransmitToSpecificChannel(const FString& ChannelName) override;
 	virtual FString GetTransmitChannel() const override;
+#endif
 	virtual FDelegateHandle StartRecording(const FOnVoiceChatRecordSamplesAvailableDelegate::FDelegate& Delegate) override;
 	virtual void StopRecording(FDelegateHandle Handle) override;
 	virtual FDelegateHandle RegisterOnVoiceChatAfterCaptureAudioReadDelegate(const FOnVoiceChatAfterCaptureAudioReadDelegate::FDelegate& Delegate) override;
@@ -270,7 +276,11 @@ protected:
 	struct FTransmitState
 	{
 		EVoiceChatTransmitMode Mode = EVoiceChatTransmitMode::All;
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
+		TSet<FString> SpecificChannels;
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
 		FString ChannelName;
+#endif
 	};
 	FTransmitState TransmitState;
 

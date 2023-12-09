@@ -23,6 +23,7 @@ void UEIK_SetStats_AsyncFunction::OnEUpdateStatsCompleted(const FOnlineError& Re
 		{
 			OnSuccess.Broadcast();
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 	else
@@ -31,6 +32,7 @@ void UEIK_SetStats_AsyncFunction::OnEUpdateStatsCompleted(const FOnlineError& Re
 		{
 			OnFail.Broadcast();
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 	return;
@@ -62,6 +64,7 @@ void UEIK_SetStats_AsyncFunction::SetEIKStatsLocal()
 				{
 					OnFail.Broadcast();
 					bDelegateCalled = true;
+					SetReadyToDestroy();
 				}
 			}
 		}
@@ -71,6 +74,7 @@ void UEIK_SetStats_AsyncFunction::SetEIKStatsLocal()
 			{
 				OnFail.Broadcast();
 				bDelegateCalled = true;
+				SetReadyToDestroy();
 			}
 		}
 	}
@@ -80,6 +84,7 @@ void UEIK_SetStats_AsyncFunction::SetEIKStatsLocal()
 		{
 			OnFail.Broadcast();
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 }

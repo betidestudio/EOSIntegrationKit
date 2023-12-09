@@ -34,6 +34,7 @@ void UEIK_GetAchievement_AsyncFunction::GetAchievements()
 				{
 					OnFail.Broadcast(TArray<FEIK_Achievement>());
 					bDelegateCalled = true;
+					SetReadyToDestroy();
 				}
 			}
 		}
@@ -43,6 +44,7 @@ void UEIK_GetAchievement_AsyncFunction::GetAchievements()
 			{
 				OnFail.Broadcast(TArray<FEIK_Achievement>());
 				bDelegateCalled = true;
+				SetReadyToDestroy();
 			}
 		}
 	}
@@ -52,6 +54,7 @@ void UEIK_GetAchievement_AsyncFunction::GetAchievements()
 		{
 			OnFail.Broadcast(TArray<FEIK_Achievement>());
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 }
@@ -75,6 +78,7 @@ void UEIK_GetAchievement_AsyncFunction::OnAchievementsCompleted(const FUniqueNet
 					AchievementsArray.Add(LocalAchievement);
 				}
 				OnSuccess.Broadcast(AchievementsArray);
+				SetReadyToDestroy();
 				return;
 			}
 		}
@@ -83,5 +87,6 @@ void UEIK_GetAchievement_AsyncFunction::OnAchievementsCompleted(const FUniqueNet
 	{
 		OnFail.Broadcast(TArray<FEIK_Achievement>());
 		bDelegateCalled = true;
+		SetReadyToDestroy();
 	}
 }

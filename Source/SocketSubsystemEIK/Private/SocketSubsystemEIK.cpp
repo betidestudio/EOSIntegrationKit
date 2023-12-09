@@ -1,8 +1,8 @@
 //Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
-#include "..\Public\SocketSubsystemEIK.h"
-#include "..\Public\InternetAddrEIK.h"
-#include "..\Public\SocketEIK.h"
+#include "SocketSubsystemEIK.h"
+#include "InternetAddrEIK.h"
+#include "SocketEIK.h"
 #include "SocketTypes.h"
 #include "Containers/Ticker.h"
 #include "Misc/ConfigCacheIni.h"

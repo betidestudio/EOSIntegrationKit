@@ -1,0 +1,190 @@
+cpp11-on-multicore (zlib License, Altered source version)
+	https://github.com/preshing/cpp11-on-multicore/blob/master/LICENSE
+	https://github.com/preshing/cpp11-on-multicore
+
+	Copyright (c) 2015 Jeff Preshing
+
+	This software is provided 'as-is', without any express or implied
+	warranty. In no event will the authors be held liable for any damages
+	arising from the use of this software.
+
+	Permission is granted to anyone to use this software for any purpose,
+	including commercial applications, and to alter it and redistribute it
+	freely, subject to the following restrictions:
+
+	1. The origin of this software must not be misrepresented; you must not
+	   claim that you wrote the original software. If you use this software
+	   in a product, an acknowledgement in the product documentation would be
+	   appreciated but is not required.
+	2. Altered source versions must be plainly marked as such, and must not be
+	   misrepresented as being the original software.
+	3. This notice may not be removed or altered from any source distribution.
+
+Hacker Disassembler Engine (custom license, attribution & license distribution required)
+    https://github.com/kimperator/MologieDetours/blob/master/hde32/LICENSE
+
+	License agreement
+
+	Hacker Disassembler Engine 32 C
+	Copyright (c) 2008-2009, Vyacheslav Patkov.
+	All rights reserved.
+
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
+
+	 1. Redistributions of source code must retain the above copyright
+		notice, this list of conditions and the following disclaimer.
+	 2. Redistributions in binary form must reproduce the above copyright
+		notice, this list of conditions and the following disclaimer in the
+		documentation and/or other materials provided with the distribution.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+	TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+	PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR
+	CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+	EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+	PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+	PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+mbed TLS (Apache 2.0)
+    https://www.apache.org/licenses/LICENSE-2.0
+	https://github.com/ARMmbed/mbedtls
+	
+mini-printf (BSD License)
+	https://github.com/mludvig/mini-printf
+
+	Copyright (c) 2013,2014 Michal Ludvig <michal@logix.cz>
+	All rights reserved.
+
+	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+	
+		* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+		* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+		* Neither the name of the auhor nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+	
+miniz (Public Domain)
+	https://code.google.com/archive/p/miniz/
+	
+	Copyright 2013-2014 RAD Game Tools and Valve Software
+	Copyright 2010-2014 Rich Geldreich and Tenacious Software LLC
+
+	All Rights Reserved.
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+	
+musl (MIT License)
+	https://git.musl-libc.org/cgit/musl/tree/COPYRIGHT
+	
+	musl as a whole is licensed under the following standard MIT license:
+	----------------------------------------------------------------------
+	Copyright © 2005-2014 Rich Felker, et al.
+
+	Permission is hereby granted, free of charge, to any person obtaining
+	a copy of this software and associated documentation files (the
+	"Software"), to deal in the Software without restriction, including
+	without limitation the rights to use, copy, modify, merge, publish,
+	distribute, sublicense, and/or sell copies of the Software, and to
+	permit persons to whom the Software is furnished to do so, subject to
+	the following conditions:
+
+	The above copyright notice and this permission notice shall be
+	included in all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+	----------------------------------------------------------------------
+	
+Roboto Regular, Google Fonts (Apache 2.0)
+	https://github.com/google/roboto/blob/master/LICENSE
+	https://developers.google.com/fonts/
+	
+SimpleGlob, SimpleOpt (MIT)
+	https://opensource.org/licenses/MIT
+	https://github.com/brofield/simpleopt
+	
+SDL 2.0.12 (zlib3):
+	https://www.libsdl.org/license.php
+	https://github.com/libsdl-org/SDL
+
+	This software is provided 'as-is', without any express or implied
+	warranty.  In no event will the authors be held liable for any damages
+	arising from the use of this software.
+
+	Permission is granted to anyone to use this software for any purpose,
+	including commercial applications, and to alter it and redistribute it
+	freely, subject to the following restrictions:
+
+	1. The origin of this software must not be misrepresented; you must not
+	   claim that you wrote the original software. If you use this software
+	   in a product, an acknowledgment in the product documentation would be
+	   appreciated but is not required.
+	2. Altered source versions must be plainly marked as such, and must not be
+	   misrepresented as being the original software.
+	3. This notice may not be removed or altered from any source distribution.
+	SDL 1.2 and older are available under the GNU LGPL license (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html).
+
+SDL Image 2.0.5 (zlib):
+	https://github.com/libsdl-org/SDL_image/blob/main/LICENSE.txt
+	https://github.com/libsdl-org/SDL_image
+
+	Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
+
+	This software is provided 'as-is', without any express or implied
+	warranty.  In no event will the authors be held liable for any damages
+	arising from the use of this software.
+
+	Permission is granted to anyone to use this software for any purpose,
+	including commercial applications, and to alter it and redistribute it
+	freely, subject to the following restrictions:
+
+	1. The origin of this software must not be misrepresented; you must not
+	   claim that you wrote the original software. If you use this software
+	   in a product, an acknowledgment in the product documentation would be
+	   appreciated but is not required.
+	2. Altered source versions must be plainly marked as such, and must not be
+	   misrepresented as being the original software.
+	3. This notice may not be removed or altered from any source distribution.
+
+SDL TTF 2.0.15 (zlib, since 2.0.11):
+	https://github.com/SDL-mirror/SDL_ttf/blob/master/COPYING.txt
+	https://github.com/SDL-mirror/SDL_ttf
+
+Freetype 2.10.2:
+	https://www.freetype.org/license.html
+	https://download.savannah.gnu.org/releases/freetype/
+
+libpng 1.6.37:
+	https://github.com/glennrp/libpng/blob/libpng16/LICENSE
+	https://github.com/glennrp/libpng
+
+zlib 1.2.11:
+	https://github.com/madler/zlib/blob/master/README
+	https://github.com/madler/zlib

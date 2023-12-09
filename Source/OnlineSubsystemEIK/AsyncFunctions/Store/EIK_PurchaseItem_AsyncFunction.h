@@ -30,7 +30,7 @@ public:
 	This C++ method purchases an item in the online subsystem using the selected method and sets up a callback function to handle the response.
 	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/
 	*/
-	UFUNCTION(BlueprintCallable, DisplayName="Purchase EIK Item", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, DisplayName="Purchase EIK Item", meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Store")
 	static UEIK_PurchaseItem_AsyncFunction* PurchaseItem(FString ItemID);
 
 	 void Activate() override;

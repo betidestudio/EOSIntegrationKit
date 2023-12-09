@@ -1,4 +1,4 @@
-﻿//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_OwnedItems_AsyncFunction.h"
@@ -22,39 +22,47 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 			{
 				if (const IOnlinePurchasePtr Purchase = SubsystemRef->GetPurchaseInterface())
 				{
-					Purchase->QueryReceipts(*IdentityPointerRef->GetUniquePlayerId(0).Get(), false,
-										   FOnQueryReceiptsComplete::CreateLambda(
-											   [this, SubsystemRef, IdentityPointerRef, Purchase
-											   ](const FOnlineError& Error)
-											   {
-												   if (Error.WasSuccessful())
-												   {
-													   if (Purchase)
-													   {
-														   TArray<FString> ItemNames;
-														   TArray<FPurchaseReceipt> Receipts;
-														   Purchase->GetReceipts(
-															   *IdentityPointerRef->GetUniquePlayerId(0).Get(), Receipts);
-														   for (int i = 0; i < Receipts.Num(); i++)
-														   {
-															   ItemNames.Add(Receipts[i].ReceiptOffers[0].LineItems[0].ItemName);
-														   }
-													   	if(!bDelegateCalled)
-													   	{
-													   		bDelegateCalled = true;
-													   		OnSuccess.Broadcast(ItemNames);
-													   	}
-													   }
-													   else
-													   {
-													   	if(!bDelegateCalled)
-													   	{
-															   bDelegateCalled = true;
-															   OnFail.Broadcast(TArray<FString>());
-													   	}
-													   }
-												   }
-											   }));
+					const FUniqueNetIdPtr UserIdPtr{ IdentityPointerRef->GetUniquePlayerId(0) };
+					if (UserIdPtr)
+					{
+						Purchase->QueryReceipts(*UserIdPtr.Get(), false,
+							FOnQueryReceiptsComplete::CreateLambda(
+								[this, SubsystemRef, IdentityPointerRef, Purchase
+								](const FOnlineError& Error)
+								{
+									if (Error.WasSuccessful())
+									{
+										if (Purchase)
+										{
+											TArray<FString> ItemNames;
+											TArray<FPurchaseReceipt> Receipts;
+											Purchase->GetReceipts(
+												*IdentityPointerRef->GetUniquePlayerId(0).Get(), Receipts);
+											for (int i = 0; i < Receipts.Num(); i++)
+											{
+												ItemNames.Add(Receipts[i].ReceiptOffers[0].LineItems[0].ItemName);
+											}
+											if (!bDelegateCalled)
+											{
+												bDelegateCalled = true;
+												OnSuccess.Broadcast(ItemNames);
+											}
+										}
+										else
+										{
+											if (!bDelegateCalled)
+											{
+												bDelegateCalled = true;
+												OnFail.Broadcast(TArray<FString>());
+											}
+										}
+									}
+								}));
+					}
+					else
+					{
+						UE_LOG(LogTemp, Warning, TEXT("Invalid User ID"));
+					}
 				}
 				else
 				{

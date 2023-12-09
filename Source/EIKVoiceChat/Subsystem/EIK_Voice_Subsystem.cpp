@@ -42,11 +42,12 @@ void UEIK_Voice_Subsystem::EVIK_Local_Connect(const FEIKResultDelegate& ResultDe
 	}	
 }
 
-void UEIK_Voice_Subsystem::UpdatePositionalVoiceChat(bool UsePositionalVoiceChat, float FMaxHearingDistance, bool UseDebugCube)
+void UEIK_Voice_Subsystem::UpdatePositionalVoiceChat(bool UsePositionalVoiceChat, float FMaxHearingDistance, bool V_bUseDebugPoint, FVector V_DebugPointLocation)
 {
 	bIsPositionalVoiceChatUsed = UsePositionalVoiceChat;
 	MaxHearingDistance = FMaxHearingDistance;
-	bUseDebugCube = UseDebugCube;
+	bUseDebugPoint = V_bUseDebugPoint;
+	DebugPointLocation = V_DebugPointLocation;
 }
 
 void UEIK_Voice_Subsystem::ForceUpdateOutputVolume(bool bUseThisVolume, bool bUseWithPositionalChat, float Volume)

@@ -30,24 +30,28 @@ void UEIK_Logout_AsyncFunction::LogoutPlayer()
 		else
 		{
 			OnFail.Broadcast();
+			SetReadyToDestroy();
 		}
 	}
 	else
 	{
 		OnFail.Broadcast();
+		SetReadyToDestroy();
 	}
 }
 
-void UEIK_Logout_AsyncFunction::LogoutCallback(int32 LocalUserNum, bool bWasSuccess) const
+void UEIK_Logout_AsyncFunction::LogoutCallback(int32 LocalUserNum, bool bWasSuccess)
 {
 	if(bWasSuccess)
 	{
 		OnSuccess.Broadcast();
+		SetReadyToDestroy();
 		return;
 	}
 	else
 	{
 		OnFail.Broadcast();
+		SetReadyToDestroy();
 		return;
 	}
 }

@@ -32,7 +32,7 @@ class ONLINESUBSYSTEMEIK_API UEIK_GetLeaderboards_AsyncFunction : public UBluepr
 public:
 	bool bDelegateCalled = false;
 	
-	UFUNCTION(BlueprintCallable, DisplayName="Get EIK Leaderboard", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, DisplayName="Get EIK Leaderboard", meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Statistics")
 	static UEIK_GetLeaderboards_AsyncFunction* GetLeaderboard(const FName LeaderboardName,const int32 Range, const int32 AroundRank);
 
 	virtual void Activate() override;

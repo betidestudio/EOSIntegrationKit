@@ -8,13 +8,14 @@
 #include "Misc/CommandLine.h"
 #include "Misc/Guid.h"
 #include "Misc/OutputDeviceRedirector.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "IPAddress.h"
 #include "SocketSubsystem.h"
 #include "OnlineError.h"
 #include "Engine/GameInstance.h"
 #include "UnrealEngine.h"
 #include "Kismet/GameplayStatics.h"
-#include "..\Public\EIKSettings.h"
+#include "EIKSettings.h"
 #include "CoreMinimal.h"
 #include "IEOSSDKManager.h"
 
@@ -108,12 +109,10 @@ static inline EOS_EExternalCredentialType ToEOS_EExternalCredentialType(FName OS
 	{
 		return EOS_EExternalCredentialType::EOS_ECT_PSN_ID_TOKEN;
 	}
-PRAGMA_DISABLE_DEPRECATION_WARNINGS
-	else if (OSSName == LIVE_SUBSYSTEM || USE_XBL_XSTS_TOKEN)
+	else if (USE_XBL_XSTS_TOKEN)
 	{
 		return EOS_EExternalCredentialType::EOS_ECT_XBL_XSTS_TOKEN;
 	}
-PRAGMA_ENABLE_DEPRECATION_WARNINGS
 	else if (OSSName == SWITCH_SUBSYSTEM)
 	{
 		if (AccountCredentials.Type == TEXT("NintendoAccount"))
@@ -286,8 +285,21 @@ void FUserManagerEOS::GetPlatformAuthToken(int32 LocalUserNum, const FOnGetLinke
 		Delegate.ExecuteIfBound(LocalUserNum, false, FExternalAuthToken());
 		return;
 	}
+
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 2
+	FString TokenType;
+	// TODO config map of OSS -> token type?
+	if (PlatformOSS->GetSubsystemName() == STEAM_SUBSYSTEM)
+	{
+		TokenType = TEXT("Session");
+	}
+
 	// Request the auth token from the platform
+	PlatformIdentity->GetLinkedAccountAuthToken(LocalUserNum, TokenType, Delegate);
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 1
 	PlatformIdentity->GetLinkedAccountAuthToken(LocalUserNum, Delegate);
+#endif
+	// Request the auth token from the platform
 }
 
 FString FUserManagerEOS::GetPlatformDisplayName(int32 LocalUserNum) const
@@ -438,7 +450,6 @@ void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& Account
 		{
 			//TriggerOnLoginCompleteDelegates(LocalUserNum, true, *NetIdEos.ToSharedRef(), "");
 			CompleteDeviceIDLogin(LocalUserNum,nullptr,Data->LocalUserId);
-
 		}
 		else if(Data->ResultCode == EOS_EResult::EOS_NotFound)
 		{
@@ -467,7 +478,7 @@ void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCre
 		DisplayName = "DefaultName";
 	}
 	FString DisplayNameStr = DisplayName;
-	DeviceIdOptions.DeviceModel = TCHAR_TO_UTF8(*DisplayNameStr);
+	DeviceIdOptions.DeviceModel = "ExampleDeviceModel";
 	
 	int32 LocalUserNum = 0;
 	FCreateDeviceIDCallback* CallbackObj = new FCreateDeviceIDCallback(AsWeak());
@@ -591,7 +602,10 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 		LoginWithDeviceID(AccountCredentials);
 		return true;
 	}
-	
+	if(AccountCredentials.Type == TEXT("steam"))
+	{
+		return ConnectLoginNoEAS(LocalUserNum);
+	}
 	EOS_Auth_LoginOptions LoginOptions = { };
 	LoginOptions.ApiVersion = EOS_AUTH_LOGIN_API_LATEST;
 	if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())

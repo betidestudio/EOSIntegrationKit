@@ -39,6 +39,7 @@ void UEIK_JoinSession_AsyncFunction::JoinSession()
 				}
 				OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 				bDelegateCalled = true;
+				SetReadyToDestroy();
 			}
 		}
 		else
@@ -49,6 +50,7 @@ void UEIK_JoinSession_AsyncFunction::JoinSession()
 			}
 			OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 	else
@@ -59,6 +61,7 @@ void UEIK_JoinSession_AsyncFunction::JoinSession()
 		}
 		OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 		bDelegateCalled = true;
+		SetReadyToDestroy();
 	}
 }
 
@@ -70,11 +73,9 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 	}
 	if (Result == EOnJoinSessionCompleteResult::Success)
 	{
-		APlayerController* PlayerControllerRef = UGameplayStatics::GetPlayerController(Var_WorldContextObject, 0);
-		if (PlayerControllerRef)
+		if (APlayerController* PlayerControllerRef = UGameplayStatics::GetPlayerController(Var_WorldContextObject, 0))
 		{
-			const IOnlineSubsystem* SubsystemRef = IOnlineSubsystem::Get();
-			if (SubsystemRef)
+			if (const IOnlineSubsystem* SubsystemRef = IOnlineSubsystem::Get())
 			{
 				const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface();
 				if (SessionPtrRef.IsValid())
@@ -83,7 +84,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 					SessionPtrRef->GetResolvedConnectString(SessionName, JoinAddress);
 					if (Var_SessionToJoin.bIsDedicatedServer)
 					{
-						int32 PortInfo = 7777;
+						FString PortInfo = "7777";
 						if (Var_SessionToJoin.SessionSettings.Contains("PortInfo"))
 						{
 							Var_SessionToJoin.SessionResult.OnlineResult.Session.SessionSettings.Get("PortInfo", PortInfo);
@@ -91,8 +92,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 						TArray<FString> IpPortArray;
 						JoinAddress.ParseIntoArray(IpPortArray, TEXT(":"), true);
 						const FString IpAddress = IpPortArray[0];
-						const FString NewCustomIP = IpAddress + ":" + FString::FromInt(PortInfo);
-						JoinAddress = NewCustomIP + "?bUseIPSockets";
+						JoinAddress = IpAddress + ":" + PortInfo;
 					}
 
 					if (!JoinAddress.IsEmpty())
@@ -100,12 +100,14 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 						PlayerControllerRef->ClientTravel(JoinAddress, ETravelType::TRAVEL_Absolute);
 						OnSuccess.Broadcast(EEIKJoinResult::Success, JoinAddress);
 						bDelegateCalled = true;
+						SetReadyToDestroy();
 						return;
 					}
 					else
 					{
 						OnFail.Broadcast(EEIKJoinResult::CouldNotRetrieveAddress, FString());
 						bDelegateCalled = true;
+						SetReadyToDestroy();
 						return;
 					}
 				}
@@ -115,6 +117,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 		{
 			OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 			return;
 		}
 	}
@@ -137,7 +140,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 			default:
 				OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 		}
-
+		SetReadyToDestroy();
 		bDelegateCalled = true;
 	}
 

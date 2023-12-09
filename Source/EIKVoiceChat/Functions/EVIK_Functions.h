@@ -27,6 +27,10 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Connect to EOS Voice Chat", Category="EVIK", meta = (AutoCreateRefTerm = "Result", WorldContext="WorldContextObject"))
 	static void ConnectVoiceChat(const UObject* WorldContextObject, const FEIKResultDelegate& Result);
 
+	// Returns whether the EOS Voice Chat system is connected.
+	UFUNCTION(BlueprintPure, DisplayName = "Is EOS Voice Chat Connected?", Category = "EVIK", meta = (WorldContext = "WorldContextObject"))
+	static bool IsVoiceChatConnected(const UObject* WorldContextObject);
+
     // Logs the player into the EOS Voice Chat system.
 	UFUNCTION(BlueprintCallable, DisplayName="Login to EOS Voice Chat", Category="EVIK", meta = (AutoCreateRefTerm = "Result", WorldContext="WorldContextObject"))
 	static void LoginEOSVoiceChat(const UObject* WorldContextObject, FString PlayerName, const FEIKResultDelegate& Result);
@@ -34,6 +38,14 @@ public:
     // Logs the player out of the EOS Voice Chat system.
 	UFUNCTION(BlueprintCallable, DisplayName="Logout from EOS Voice Chat", Category="EVIK", meta = (AutoCreateRefTerm = "Result", WorldContext="WorldContextObject"))
 	static void LogoutEOSVoiceChat(const UObject* WorldContextObject, FString PlayerName, const FEIKResultDelegate& Result);
+
+	// Returns whether the EOS Voice Chat system is currently logging-in.
+	UFUNCTION(BlueprintPure, DisplayName = "Is EOS Voice Chat Logging-In?", Category = "EVIK", meta = (WorldContext = "WorldContextObject"))
+	static bool IsEOSVoiceChatLoggingIn(const UObject* WorldContextObject);
+
+	// Returns whether the EOS Voice Chat system is logged-in.
+	UFUNCTION(BlueprintPure, DisplayName = "Is EOS Voice Chat Logged-In?", Category = "EVIK", meta = (WorldContext = "WorldContextObject"))
+	static bool IsEOSVoiceChatLoggedIn(const UObject* WorldContextObject);
 
     // Gets the logged-in user's name for the EOS Voice Chat system.
 	UFUNCTION(BlueprintPure, DisplayName="Get Logged in EOS Voice Chat User", Category="EVIK", meta=(WorldContext="WorldContextObject"))
@@ -103,7 +115,7 @@ public:
     static bool SetOutputMethods(const UObject* WorldContextObject, FString MethodID);
 
     // Sets the EOS Voice Chat input method based on the provided method ID.
-    UFUNCTION(BlueprintCallable, DisplayName="Set EOS Voice Output Method", Category="EVIK", meta=(WorldContext="WorldContextObject"))
+    UFUNCTION(BlueprintCallable, DisplayName="Set EOS Voice Input Method", Category="EVIK", meta=(WorldContext="WorldContextObject"))
     static bool SetInputMethods(const UObject* WorldContextObject, FString MethodID);
 
 	

@@ -51,6 +51,7 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 			if(bDelegateCalled == false)
 			{
 				OnFail.Broadcast("");
+				SetReadyToDestroy();
 				bDelegateCalled = true;
 			}
 		}
@@ -60,6 +61,7 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 		if(bDelegateCalled == false)
 		{
 			OnFail.Broadcast("");
+			SetReadyToDestroy();
 			bDelegateCalled = true;
 		}
 	}
@@ -73,6 +75,7 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName VSessionName, 
 		{
 			OnSuccess.Broadcast(VSessionName);
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 	else
@@ -80,6 +83,7 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName VSessionName, 
 		if(bDelegateCalled == false)
 		{
 			OnFail.Broadcast("");
+			SetReadyToDestroy();
 			bDelegateCalled = true;
 		}
 	}

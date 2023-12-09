@@ -1,6 +1,6 @@
 //Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
-#include "..\Public\EIKStyle.h"
+#include "EIKStyle.h"
 #include "OnlineSubsystemEOS.h"
 #include "Framework/Application/SlateApplication.h"
 #include "Styling/SlateStyleRegistry.h"

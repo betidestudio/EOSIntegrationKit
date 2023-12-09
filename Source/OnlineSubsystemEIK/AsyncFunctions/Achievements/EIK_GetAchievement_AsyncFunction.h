@@ -53,6 +53,7 @@ public:
 
 	void Activate() override;
 
+
 	void GetAchievements();
 
 	bool bDelegateCalled = false;

@@ -5,7 +5,7 @@
 #include "OnlineSubsystemUtils.h"
 #include "OnlineSubsystem.h"
 #include "Engine/LocalPlayer.h"
-#include "Runtime\Core\Public\Misc\CommandLine.h"
+#include "Runtime/Core/Public/Misc/CommandLine.h"
 #include "Engine/GameInstance.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -58,15 +58,8 @@ bool UEIK_Subsystem::InitializeEIK()
 			}
 			return true;
 		}
-		else
-		{
-			return false;
-		}
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 /*
@@ -629,10 +622,7 @@ void UEIK_Subsystem::QueryOffers(const FBP_GetOffers_Callback& Result)
 		{
 			if (const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
-				const FUniqueNetIdPtr UserIdPtr{ IdentityPointerRef->GetUniquePlayerId(0) };
-				if (UserIdPtr)
-				{
-					StoreV2Ptr->QueryOffersByFilter(*UserIdPtr.Get(), FOnlineStoreFilter(),
+				StoreV2Ptr->QueryOffersByFilter(*IdentityPointerRef->GetUniquePlayerId(0).Get(), FOnlineStoreFilter(),
 				                                FOnQueryOnlineStoreOffersComplete::CreateLambda([
 						                                StoreV2Wk = TWeakPtr<IOnlineStoreV2, ESPMode::ThreadSafe>(
 							                                StoreV2Ptr), this](
@@ -649,23 +639,21 @@ void UEIK_Subsystem::QueryOffers(const FBP_GetOffers_Callback& Result)
 								                                TArray<FOffersStruct> OfferArray;
 								                                for (int32 i = 0; i < Offers.Num(); ++i)
 								                                {
-																	FOffersStruct NewOfferStruct;
-								                                	NewOfferStruct.ItemID = Offers[i]->OfferId;
-									                                NewOfferStruct.ItemName = Offers[i]->Title;
-									                                NewOfferStruct.Description = Offers[i]->Description;
-									                                NewOfferStruct.ExpirationDate = Offers[i]->
+								                                	OfferArray[i].ItemID = Offers[i]->OfferId;
+									                                OfferArray[i].ItemName = Offers[i]->Title;
+									                                OfferArray[i].Description = Offers[i]->Description;
+									                                OfferArray[i].ExpirationDate = Offers[i]->
 										                                ExpirationDate;
-									                                NewOfferStruct.LongDescription = Offers[i]->
+									                                OfferArray[i].LongDescription = Offers[i]->
 										                                LongDescription;
-									                                NewOfferStruct.NumericPrice = Offers[i]->
+									                                OfferArray[i].NumericPrice = Offers[i]->
 										                                NumericPrice;
-									                                NewOfferStruct.PriceText = Offers[i]->PriceText;
-									                                NewOfferStruct.RegularPrice = Offers[i]->
+									                                OfferArray[i].PriceText = Offers[i]->PriceText;
+									                                OfferArray[i].RegularPrice = Offers[i]->
 										                                RegularPrice;
-									                                NewOfferStruct.ReleaseDate = Offers[i]->ReleaseDate;
-									                                NewOfferStruct.RegularPriceText = Offers[i]->
+									                                OfferArray[i].ReleaseDate = Offers[i]->ReleaseDate;
+									                                OfferArray[i].RegularPriceText = Offers[i]->
 										                                RegularPriceText;
-																	OfferArray.Add(NewOfferStruct);
 								                                }
 								                                GetOffers_CallbackBP.ExecuteIfBound(true, OfferArray);
 							                                }
@@ -679,11 +667,6 @@ void UEIK_Subsystem::QueryOffers(const FBP_GetOffers_Callback& Result)
 						                                	GetOffers_CallbackBP.ExecuteIfBound(false, 	TArray<FOffersStruct>());
 						                                }
 					                                }));
-				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Invalid User ID"));
-				}
 			}
 			else
 			{

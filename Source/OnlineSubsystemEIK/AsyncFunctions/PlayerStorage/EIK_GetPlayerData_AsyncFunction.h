@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Online/CoreOnline.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_GetPlayerData_AsyncFunction.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetDataResult, bool, bWasSuccess, USaveGame*,SaveGame);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetDataResult, bool, bWasSuccess, const TArray<uint8>&,SavedData);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_GetPlayerData_AsyncFunction : public UBlueprintAsyncActionBase
@@ -29,7 +30,7 @@ public:
 	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/playerdata/
 	For Input Parameters, please refer to the documentation link above.
 	*/
-	UFUNCTION(BlueprintCallable, DisplayName="Get EIK Player Data", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, DisplayName="Get EIK Player Storage", meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Storage")
 	static UEIK_GetPlayerData_AsyncFunction* GetPlayerData( FString FileName);
 
 	virtual void Activate() override;

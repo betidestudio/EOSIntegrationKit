@@ -1,12 +1,13 @@
 //Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #include "EOSSDKManager.h"
-
+#include "Runtime/Launch/Resources/Version.h"
 #if WITH_EOS_SDK
 
 #include "Containers/Ticker.h"
 #include "HAL/LowLevelMemTracker.h"
 #include "Misc/App.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "Misc/CoreMisc.h"
 #include "Misc/CoreDelegates.h"
 #include "Misc/NetworkVersion.h"
@@ -225,9 +226,14 @@ EOS_EResult FEIKSDKManager::Initialize()
 		if (EosResult == EOS_EResult::EOS_Success)
 		{
 			bInitialized = true;
-
+#if ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 2
+			FCoreDelegates::TSOnConfigSectionsChanged().AddRaw(this, &FEIKSDKManager::OnConfigSectionsChanged);
+#elif ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 1
 			FCoreDelegates::OnConfigSectionsChanged.AddRaw(this, &FEIKSDKManager::OnConfigSectionsChanged);
+#endif
+
 			LoadConfig();
+
 
 #if !NO_LOGGING
 			FCoreDelegates::OnLogVerbosityChanged.AddRaw(this, &FEIKSDKManager::OnLogVerbosityChanged);
@@ -653,7 +659,12 @@ void FEIKSDKManager::Shutdown()
 			ReleaseReleasedPlatforms();
 		}
 
+#if ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 2
+		FCoreDelegates::TSOnConfigSectionsChanged().RemoveAll(this);
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 1
 		FCoreDelegates::OnConfigSectionsChanged.RemoveAll(this);
+#endif
+
 
 #if !NO_LOGGING
 		FCoreDelegates::OnLogVerbosityChanged.RemoveAll(this);

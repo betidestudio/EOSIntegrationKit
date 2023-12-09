@@ -42,7 +42,8 @@ void UEIK_GetPlayerData_AsyncFunction::GetPlayerData()
 					if(!bDelegateCalled)
 					{
 						bDelegateCalled = true;
-						OnFail.Broadcast(false, nullptr);
+						OnFail.Broadcast(false, TArray<uint8>());
+						SetReadyToDestroy();
 					}
 				}
 				TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
@@ -54,7 +55,8 @@ void UEIK_GetPlayerData_AsyncFunction::GetPlayerData()
 				if(!bDelegateCalled)
 				{
 					bDelegateCalled = true;
-					OnFail.Broadcast(false, nullptr);
+					OnFail.Broadcast(false, TArray<uint8>());
+					SetReadyToDestroy();
 				}
 			}
 		}
@@ -63,7 +65,8 @@ void UEIK_GetPlayerData_AsyncFunction::GetPlayerData()
 			if(!bDelegateCalled)
 			{
 				bDelegateCalled = true;
-				OnFail.Broadcast(false, nullptr);
+				OnFail.Broadcast(false, TArray<uint8>());
+				SetReadyToDestroy();
 			}
 		}
 	}
@@ -72,7 +75,8 @@ void UEIK_GetPlayerData_AsyncFunction::GetPlayerData()
 		if(!bDelegateCalled)
 		{
 			bDelegateCalled = true;
-			OnFail.Broadcast(false, nullptr);
+			OnFail.Broadcast(false, TArray<uint8>());
+			SetReadyToDestroy();
 		}
 	}
 }
@@ -93,11 +97,11 @@ void UEIK_GetPlayerData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FU
 					CloudPointerRef->GetFileContents(*UserIDRef,FileName,FileContents);
 					if(!FileContents.IsEmpty())
 					{
-						USaveGame* LocalSaveGame = UGameplayStatics::LoadGameFromMemory(FileContents);
 						if(!bDelegateCalled)
 						{
 							bDelegateCalled = true;
-							OnSuccess.Broadcast(true, LocalSaveGame);
+							OnSuccess.Broadcast(true, FileContents);
+							SetReadyToDestroy();
 						}
 					}
 					else
@@ -105,7 +109,8 @@ void UEIK_GetPlayerData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FU
 						if(!bDelegateCalled)
 						{
 							bDelegateCalled = true;
-							OnFail.Broadcast(false, nullptr);
+							OnFail.Broadcast(false, TArray<uint8>());
+							SetReadyToDestroy();
 						}
 					}
 				}
@@ -114,7 +119,8 @@ void UEIK_GetPlayerData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FU
 					if(!bDelegateCalled)
 					{
 						bDelegateCalled = true;
-						OnFail.Broadcast(false, nullptr);
+						OnFail.Broadcast(false, TArray<uint8>());
+						SetReadyToDestroy();
 					}
 				}
 			}
@@ -123,7 +129,8 @@ void UEIK_GetPlayerData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FU
 				if(!bDelegateCalled)
 				{
 					bDelegateCalled = true;
-					OnFail.Broadcast(false, nullptr);
+					OnFail.Broadcast(false, TArray<uint8>());
+					SetReadyToDestroy();
 				}
 			}
 		}
@@ -132,7 +139,8 @@ void UEIK_GetPlayerData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FU
 			if(!bDelegateCalled)
 			{
 				bDelegateCalled = true;
-				OnFail.Broadcast(false, nullptr);
+				OnFail.Broadcast(false, TArray<uint8>());
+				SetReadyToDestroy();
 			}
 		}
 	}
@@ -141,7 +149,8 @@ void UEIK_GetPlayerData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FU
 		if(!bDelegateCalled)
 		{
 			bDelegateCalled = true;
-			OnFail.Broadcast(false, nullptr);
+			OnFail.Broadcast(false, TArray<uint8>());
+			SetReadyToDestroy();
 		}
 	}
 }

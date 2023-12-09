@@ -365,6 +365,7 @@ public:
 		return &CallbackImpl;
 	}
 
+
 protected:
 	/** The object that needs to be checked for lifetime before calling the callback */
 	TWeakPtr<const OwningType> Owner;
@@ -502,6 +503,8 @@ private:
 		}
 	}
 };
+
+
 
 /**
  * Class to handle nested callbacks (callbacks that are tied to an external callback's lifetime,

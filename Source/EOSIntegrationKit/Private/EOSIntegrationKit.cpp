@@ -8,8 +8,9 @@ void FEOSIntegrationKitModule::StartupModule()
     ConfigureOnlineSubsystemEIK();
 }
 
-void FEOSIntegrationKitModule::ConfigureOnlineSubsystemEIK()
+void FEOSIntegrationKitModule::ConfigureOnlineSubsystemEIK() const
 {
+    ConfigureDedicatedServerConfigEIK();
     FString EngineIniPath = FPaths::ProjectConfigDir() / TEXT("DefaultEngine.ini");
     FString EngineIniText;
     if (FFileHelper::LoadFileToString(EngineIniText, *EngineIniPath))
@@ -50,7 +51,7 @@ void FEOSIntegrationKitModule::ConfigureOnlineSubsystemEIK()
 
             // Update NetDriverDefinitions in [/Script/Engine.GameEngine] section
             FString NetDriverDefinitions = FString::Printf(
-                TEXT("!NetDriverDefinitions=ClearArray\n+NetDriverDefinitions=(DefName=\"GameNetDriver\",DriverClassName=\"OnlineSubsystemEIK.NetDriverEOS\",DriverClassNameFallback=\"OnlineSubsystemUtils.IpNetDriver\")\n")
+                TEXT("!NetDriverDefinitions=ClearArray\n+NetDriverDefinitions=(DefName=\"GameNetDriver\",DriverClassName=\"OnlineSubsystemEIK.NetDriverEIK\",DriverClassNameFallback=\"OnlineSubsystemUtils.IpNetDriver\")\n")
             );
             EngineIniText += NetDriverDefinitions;
             
@@ -78,6 +79,11 @@ void FEOSIntegrationKitModule::ConfigureOnlineSubsystemEIK()
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to load DefaultEngine.ini"));
     }
+}
+
+void FEOSIntegrationKitModule::ConfigureDedicatedServerConfigEIK()
+{
+    FString EngineIniPath = FPaths::ProjectConfigDir() / TEXT("WindowsServer") / TEXT("Engine.ini");
 }
 
 void FEOSIntegrationKitModule::ShutdownModule()

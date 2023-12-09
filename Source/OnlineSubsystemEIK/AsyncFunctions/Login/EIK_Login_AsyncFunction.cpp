@@ -4,8 +4,10 @@
 #include "EIK_Login_AsyncFunction.h"
 
 #include "EIKSettings.h"
+#include "Online.h"
 #include "Misc/CommandLine.h"
 #include "OnlineSubsystem.h"
+#include "OnlineSubsystemUtils.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 
 
@@ -27,7 +29,7 @@ void UEIK_Login_AsyncFunction::Activate()
 
 void UEIK_Login_AsyncFunction::Login()
 {
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(GetWorld()))
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
@@ -50,6 +52,11 @@ void UEIK_Login_AsyncFunction::Login()
 				AccountDetails.Id = "";
 				AccountDetails.Token = EGS_Token;
 				AccountDetails.Type = "exchangecode";
+				break;
+			case ELoginTypes::Steam:
+				AccountDetails.Id = Input1;
+				AccountDetails.Token = Input2;
+				AccountDetails.Type = "steam";
 				break;
 			case ELoginTypes::DeviceID:
 				if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
@@ -89,6 +96,7 @@ void UEIK_Login_AsyncFunction::Login()
 			if(bDelegateCalled == false)
 			{
 				OnFail.Broadcast("", "Failed to get Identity Pointer Ref");
+				SetReadyToDestroy();
 				bDelegateCalled = true;
 			}
 		}
@@ -98,6 +106,7 @@ void UEIK_Login_AsyncFunction::Login()
 		if(bDelegateCalled == false)
 		{
 			OnFail.Broadcast("", "Failed to get Subsystem");
+			SetReadyToDestroy();
 			bDelegateCalled = true;
 		}
 	}
@@ -115,17 +124,20 @@ void UEIK_Login_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bWasSucces
 		if(UserId.IsValid())
 		{
 			OnSuccess.Broadcast(UserId.ToString(), "");
+			SetReadyToDestroy();
 			bDelegateCalled = true;
 		}
 		else
 		{
 			OnFail.Broadcast("", "UserID is not valid");
+			SetReadyToDestroy();
 			bDelegateCalled = true;
 		}
 	}
 	else
 	{
 		OnFail.Broadcast("", Error);
+		SetReadyToDestroy();
 		bDelegateCalled = true;
 	}
 }

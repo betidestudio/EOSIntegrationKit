@@ -38,6 +38,7 @@ void UEIK_GetLeaderboards_AsyncFunction::GetLeaderboardLocal()
 					{
 						OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 						bDelegateCalled = true;
+						SetReadyToDestroy();
 					}
 				}
 			}
@@ -47,6 +48,7 @@ void UEIK_GetLeaderboards_AsyncFunction::GetLeaderboardLocal()
 				{
 					OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 					bDelegateCalled = true;
+					SetReadyToDestroy();
 				}
 			}
 		}
@@ -56,6 +58,7 @@ void UEIK_GetLeaderboards_AsyncFunction::GetLeaderboardLocal()
 			{
 				OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 				bDelegateCalled = true;
+				SetReadyToDestroy();
 			}
 		}
 	}
@@ -65,6 +68,7 @@ void UEIK_GetLeaderboards_AsyncFunction::GetLeaderboardLocal()
 		{
 			OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 }
@@ -90,6 +94,7 @@ void UEIK_GetLeaderboards_AsyncFunction::OnGetLeaderboardCompleted(bool bWasSucc
 		{
 			OnSuccess.Broadcast(Result);
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 	else
@@ -98,6 +103,7 @@ void UEIK_GetLeaderboards_AsyncFunction::OnGetLeaderboardCompleted(bool bWasSucc
 		{
 			OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 }

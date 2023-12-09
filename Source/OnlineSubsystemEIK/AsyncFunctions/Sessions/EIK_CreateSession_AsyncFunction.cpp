@@ -2,7 +2,9 @@
 
 
 #include "EIK_CreateSession_AsyncFunction.h"
-
+#include "CoreGlobals.h"
+#include "Misc/ConfigCacheIni.h"
+#include "Engine/NetDriver.h"
 #include "Online/OnlineSessionNames.h"
 
 void UEIK_CreateSession_AsyncFunction::Activate()
@@ -41,7 +43,8 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 			SessionCreationInfo.Settings.Add( FName(TEXT("REGIONINFO")), FOnlineSessionSetting(UEnum::GetValueAsString(Region), EOnlineDataAdvertisementType::ViaOnlineService));
 			if(bIsDedicatedServer)
 			{
-				SessionCreationInfo.Settings.Add( FName(TEXT("PortInfo")), FOnlineSessionSetting(this->GetWorld()->URL.Port, EOnlineDataAdvertisementType::ViaOnlineService));
+				FString Port = iPortToUse;					
+				SessionCreationInfo.Settings.Add( FName(TEXT("PortInfo")), FOnlineSessionSetting(Port, EOnlineDataAdvertisementType::ViaOnlineService));
 				SessionCreationInfo.Settings.Add( FName(TEXT("IsDedicatedServer")), FOnlineSessionSetting(true, EOnlineDataAdvertisementType::ViaOnlineService));
 			}
 			SessionCreationInfo.Set(SEARCH_KEYWORDS, FString(SessionName), EOnlineDataAdvertisementType::ViaOnlineService);
@@ -65,6 +68,7 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 			if(bDelegateCalled == false)
 			{
 				OnFail.Broadcast("");
+				SetReadyToDestroy();
 				bDelegateCalled = true;
 			}
 		}
@@ -75,6 +79,7 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 		{
 			OnFail.Broadcast("");
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 }
@@ -87,6 +92,7 @@ void UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted(FName VSessionNa
 		{
 			OnSuccess.Broadcast(VSessionName);
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 	else
@@ -95,13 +101,14 @@ void UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted(FName VSessionNa
 		{
 			OnFail.Broadcast("");
 			bDelegateCalled = true;
+			SetReadyToDestroy();
 		}
 	}
 }
 
 UEIK_CreateSession_AsyncFunction* UEIK_CreateSession_AsyncFunction::CreateEIKSession(FString SessionName,
                                                                                      bool bIsDedicatedServer, bool bIsLan, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections,
-                                                                                     bool bShouldAdvertise, bool bAllowJoinInProgress, ERegionInfo Region, TMap<FString, FString> SessionSettings)
+                                                                                     bool bShouldAdvertise, bool bAllowJoinInProgress, ERegionInfo Region, TMap<FString, FString> SessionSettings, FString PortToUse)
 {
 	UEIK_CreateSession_AsyncFunction* Ueik_CreateSessionObject= NewObject<UEIK_CreateSession_AsyncFunction>();
 	Ueik_CreateSessionObject->Region = Region;
@@ -113,5 +120,6 @@ UEIK_CreateSession_AsyncFunction* UEIK_CreateSession_AsyncFunction::CreateEIKSes
 	Ueik_CreateSessionObject->bShouldAdvertise = bShouldAdvertise;
 	Ueik_CreateSessionObject->bAllowJoinInProgress = bAllowJoinInProgress;
 	Ueik_CreateSessionObject->SessionSettings = SessionSettings;
+	Ueik_CreateSessionObject->iPortToUse = PortToUse;
 	return Ueik_CreateSessionObject;
 }

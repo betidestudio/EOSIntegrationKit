@@ -11,7 +11,7 @@
 #include "OnlineTitleFileEOS.h"
 #include "OnlineUserCloudEOS.h"
 #include "OnlineStoreEOS.h"
-#include "..\Public\EIKSettings.h"
+#include "EIKSettings.h"
 #include "EOSShared.h"
 #include "IEOSSDKManager.h"
 #include "SocketSubsystemEOSUtils_OnlineSubsystemEOS.h"
@@ -104,9 +104,15 @@ public:
 	virtual FOnVoiceChatPlayerVolumeUpdatedDelegate& OnVoiceChatPlayerVolumeUpdated() override { return VoiceChatUser.OnVoiceChatPlayerVolumeUpdated(); }
 	virtual void TransmitToAllChannels() override { VoiceChatUser.TransmitToAllChannels(); }
 	virtual void TransmitToNoChannels() override { VoiceChatUser.TransmitToNoChannels(); }
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >=3
+	virtual void TransmitToSpecificChannels(const TSet<FString>& ChannelNames) override { VoiceChatUser.TransmitToSpecificChannels(ChannelNames); }
+	virtual TSet<FString> GetTransmitChannels() const override { return VoiceChatUser.GetTransmitChannels(); }
+
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
 	virtual void TransmitToSpecificChannel(const FString& ChannelName) override { VoiceChatUser.TransmitToSpecificChannel(ChannelName); }
-	virtual EVoiceChatTransmitMode GetTransmitMode() const override { return VoiceChatUser.GetTransmitMode(); }
 	virtual FString GetTransmitChannel() const override { return VoiceChatUser.GetTransmitChannel(); }
+#endif
+	virtual EVoiceChatTransmitMode GetTransmitMode() const override { return VoiceChatUser.GetTransmitMode(); }
 	virtual FDelegateHandle StartRecording(const FOnVoiceChatRecordSamplesAvailableDelegate::FDelegate& Delegate) override { return VoiceChatUser.StartRecording(Delegate); }
 	virtual void StopRecording(FDelegateHandle Handle) override { VoiceChatUser.StopRecording(Handle); }
 	virtual FDelegateHandle RegisterOnVoiceChatAfterCaptureAudioReadDelegate(const FOnVoiceChatAfterCaptureAudioReadDelegate::FDelegate& Delegate) override { return VoiceChatUser.RegisterOnVoiceChatAfterCaptureAudioReadDelegate(Delegate); }
@@ -256,7 +262,7 @@ bool FOnlineSubsystemEOS::PlatformCreate()
 		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS::PlatformCreate() failed to init EOS platform"));
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -301,6 +307,21 @@ bool FOnlineSubsystemEOS::Init()
 	{
 		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to init EOS platform, couldn't get auth handle"));
 		return false;
+	}
+	AntiCheatClientHandle = EOS_Platform_GetAntiCheatClientInterface(*EOSPlatformHandle);
+	if (AntiCheatClientHandle == nullptr)
+	{
+		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to init EOS platform, couldn't get anti cheat client handle"));
+	}
+	SanctionsHandle = EOS_Platform_GetSanctionsInterface(*EOSPlatformHandle);
+	if(SanctionsHandle == nullptr)
+	{
+		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to get Sanctions Handle"));
+	}
+	AntiCheatServerHandle = EOS_Platform_GetAntiCheatServerInterface(*EOSPlatformHandle);
+	if (AntiCheatServerHandle == nullptr)
+	{
+		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to init EOS platform, couldn't get anti cheat server handle"));
 	}
 	UserInfoHandle = EOS_Platform_GetUserInfoInterface(*EOSPlatformHandle);
 	if (UserInfoHandle == nullptr)
@@ -429,7 +450,7 @@ bool FOnlineSubsystemEOS::Init()
 bool FOnlineSubsystemEOS::Shutdown()
 {
 	UE_LOG_ONLINE(VeryVerbose, TEXT("FOnlineSubsystemEOS::Shutdown()"));
-
+	EOSCallbackContext.Invalidate();
 	// EOS-22677 workaround: Make sure tick is called at least once before shutting down.
 	if (EOSPlatformHandle)
 	{

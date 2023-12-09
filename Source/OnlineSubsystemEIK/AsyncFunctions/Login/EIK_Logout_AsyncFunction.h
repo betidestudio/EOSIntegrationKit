@@ -32,6 +32,6 @@ public:
 
 	void LogoutPlayer();
 
-	void LogoutCallback(int32 LocalUserNum, bool bWasSuccess) const;
+	void LogoutCallback(int32 LocalUserNum, bool bWasSuccess);
 
 };

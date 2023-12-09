@@ -28,7 +28,7 @@ public:
 	This C++ method sets the stats in the online subsystem using the selected method and sets up a callback function to handle the response.
 	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/
 	*/
-	UFUNCTION(BlueprintCallable, DisplayName="Set EIK Stats", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, DisplayName="Set EIK Stats", meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Statistics")
 	static UEIK_SetStats_AsyncFunction* SetEIKStats(const FString& StatName, const int32 StatValue);
 
 	void OnEUpdateStatsCompleted(const FOnlineError& Result);

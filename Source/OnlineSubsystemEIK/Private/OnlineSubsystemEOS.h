@@ -117,6 +117,10 @@ public:
 	IEOSSDKManager* EOSSDKManager;
 	bool bEOSSDKInitialized ;
 
+	
+	/** A unique identifier for associating with EOS native callbacks */
+	FGuid EOSCallbackContext;
+	
 	/** EOS handles */
 	IEOSPlatformHandlePtr EOSPlatformHandle;
 	EOS_HAuth AuthHandle;
@@ -133,6 +137,9 @@ public:
 	EOS_HEcom EcomHandle;
 	EOS_HTitleStorage TitleStorageHandle;
 	EOS_HPlayerDataStorage PlayerDataStorageHandle;
+	EOS_HAntiCheatClient AntiCheatClientHandle;
+	EOS_HAntiCheatServer AntiCheatServerHandle;
+	EOS_HSanctions SanctionsHandle;
 
 	/** Manager that handles all user interfaces */
 	FUserManagerEOSPtr UserManager;

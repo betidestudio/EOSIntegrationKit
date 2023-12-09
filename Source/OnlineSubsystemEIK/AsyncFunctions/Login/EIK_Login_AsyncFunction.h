@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "Runtime/CoreOnline/Public/Online/CoreOnline.h"
 #include "EIK_Login_AsyncFunction.generated.h"
 
 UENUM(BlueprintType)
@@ -13,11 +14,13 @@ enum class ELoginTypes : uint8 {
 	EpicLauncher        UMETA(DisplayName="Epic Launcher"),
 	DeviceID        UMETA(DisplayName="Device ID"),
 	Google              UMETA(DisplayName="Google"),
+	Steam              UMETA(DisplayName="Steam"),
 	Apple              UMETA(DisplayName="Apple"),
 	Discord              UMETA(DisplayName="Discord"),
 	Oculus              UMETA(DisplayName="Oculus"),
 	OpenID              UMETA(DisplayName="OpenID"),
 	Developer           UMETA(DisplayName="Developer"),
+	None           UMETA(DisplayName="None"),
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponsDelegate, FString, ProductUserID, FString, Error);
@@ -47,14 +50,13 @@ public:
 	
 	Following Methods are coming with upcoming build - Google, Apple, Discord, Oculus, OpenID
 	*/
-	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Login")
 	static UEIK_Login_AsyncFunction* LoginUsingEIK(ELoginTypes LoginMethod, FString Input1, FString Input2);
 	
 	virtual void Activate() override;
 
 	void Login();
 
-	void LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId,
-									   const FString& Error);
+	void LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId, const FString& Error);
 	
 };

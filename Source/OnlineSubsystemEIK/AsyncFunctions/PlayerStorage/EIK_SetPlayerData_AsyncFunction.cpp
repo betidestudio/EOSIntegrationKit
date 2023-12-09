@@ -8,12 +8,11 @@
 #include "Interfaces/OnlineUserCloudInterface.h"
 #include "Kismet/GameplayStatics.h"
 
-UEIK_SetPlayerData_AsyncFunction* UEIK_SetPlayerData_AsyncFunction::SetPlayerData(FString FileName,
-                                                                                  USaveGame* SavedGame)
+UEIK_SetPlayerData_AsyncFunction* UEIK_SetPlayerData_AsyncFunction::SetPlayerData(FString FileName, const TArray<uint8>& DataToSave)
 {
 	UEIK_SetPlayerData_AsyncFunction* BlueprintNode = NewObject<UEIK_SetPlayerData_AsyncFunction>();
 	BlueprintNode->FileName = FileName;
-	BlueprintNode->SavedGame = SavedGame;
+	BlueprintNode->DataToSave = DataToSave;
 	return BlueprintNode;
 }
 
@@ -25,30 +24,17 @@ void UEIK_SetPlayerData_AsyncFunction::Activate()
 
 void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 {
-	if(SavedGame)
+	if(!DataToSave.IsEmpty())
 	{
-		TArray<uint8> LocalArray;
-		UGameplayStatics::SaveGameToMemory(SavedGame,LocalArray);
-		if(!LocalArray.IsEmpty())
+		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get() )
 		{
-			if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get() )
+			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
-				if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+				if(const IOnlineUserCloudPtr CloudPointerRef = SubsystemRef->GetUserCloudInterface())
 				{
-					if(const IOnlineUserCloudPtr CloudPointerRef = SubsystemRef->GetUserCloudInterface())
-					{
-						const TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
-						CloudPointerRef->OnWriteUserFileCompleteDelegates.AddUObject(this, &UEIK_SetPlayerData_AsyncFunction::OnWriteFileComplete);
-						CloudPointerRef->WriteUserFile(*UserIDRef,FileName,LocalArray);
-					}
-					else
-					{
-						if(!bDelegateCalled)
-						{
-							bDelegateCalled = true;
-							OnFail.Broadcast();
-						}
-					}
+					const TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
+					CloudPointerRef->OnWriteUserFileCompleteDelegates.AddUObject(this, &UEIK_SetPlayerData_AsyncFunction::OnWriteFileComplete);
+					CloudPointerRef->WriteUserFile(*UserIDRef,FileName,DataToSave);
 				}
 				else
 				{
@@ -56,6 +42,7 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 					{
 						bDelegateCalled = true;
 						OnFail.Broadcast();
+						SetReadyToDestroy();
 					}
 				}
 			}
@@ -65,6 +52,7 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 				{
 					bDelegateCalled = true;
 					OnFail.Broadcast();
+					SetReadyToDestroy();
 				}
 			}
 		}
@@ -74,6 +62,7 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 			{
 				bDelegateCalled = true;
 				OnFail.Broadcast();
+				SetReadyToDestroy();
 			}
 		}
 	}
@@ -83,6 +72,7 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 		{
 			bDelegateCalled = true;
 			OnFail.Broadcast();
+			SetReadyToDestroy();
 		}
 	}
 }
@@ -96,6 +86,7 @@ void UEIK_SetPlayerData_AsyncFunction::OnWriteFileComplete(bool bSuccess, const 
 		{
 			bDelegateCalled = true;
 			OnSuccess.Broadcast();
+			SetReadyToDestroy();
 		}
 	}
 	else
@@ -104,6 +95,7 @@ void UEIK_SetPlayerData_AsyncFunction::OnWriteFileComplete(bool bSuccess, const 
 		{
 			bDelegateCalled = true;
 			OnFail.Broadcast();
+			SetReadyToDestroy();
 		}
 	}
 }

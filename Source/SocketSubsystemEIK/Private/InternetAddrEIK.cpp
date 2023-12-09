@@ -1,6 +1,6 @@
 //Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
-#include "..\Public\InternetAddrEIK.h"
+#include "InternetAddrEIK.h"
 #include "Online/CoreOnline.h"
 #include "EOSSharedTypes.h"
 #include "Containers/StringView.h"

@@ -89,7 +89,7 @@ public:
 	void SetupPlayerList(const TArray<FEVIKPlayerList>& PlayerList);
 
 	UFUNCTION(BlueprintCallable, Category="EVIK")
-	void UpdatePositionalVoiceChat(bool UsePositionalVoiceChat, float FMaxHearingDistance, bool UseDebugCube);
+	void UpdatePositionalVoiceChat(bool UsePositionalVoiceChat, float FMaxHearingDistance, bool V_bUseDebugPoint, FVector V_DebugPointLocation);
 
 	UFUNCTION(BlueprintCallable, Category="EVIK")
 	void ForceUpdateOutputVolume(bool bUseThisVolume, bool bUseWithPositionalChat,float Volume);
@@ -104,7 +104,8 @@ public:
 	TArray<FEVIKPlayerList> PlayerListVar;
 
 	bool bIsPositionalVoiceChatUsed = false;
-	bool bUseDebugCube = false;
+	bool bUseDebugPoint = false;
+	FVector DebugPointLocation;
 
 	float MaxHearingDistance;
 	float OutputVolume = 1.0f;

@@ -1,6 +1,6 @@
 //Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
-#include "..\Public\EIKSettings.h"
+#include "EIKSettings.h"
 #include "OnlineSubsystemEOS.h"
 #include "OnlineSubsystemEIKModule.h"
 #include "OnlineSubsystemEOSPrivate.h"
@@ -8,6 +8,7 @@
 #include "Algo/Transform.h"
 #include "Misc/CommandLine.h"
 #include "Misc/ConfigCacheIni.h"
+#include "Misc/FileHelper.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EIKSettings)
 
@@ -192,6 +193,18 @@ FEOSSettings UEIKSettings::ToNative() const
 	return Native;
 }
 
+
+#if WITH_EDITOR
+EAppReturnType::Type UEIKSettings::ShowRestartWarning(const FText& Title)
+{
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
+	return FMessageDialog::Open(EAppMsgType::OkCancel, LOCTEXT("ActionRestartMsg", "Imported settings won't be applied until the editor is restarted. Do you wish to restart now (you will be prompted to save any changes)?"), Title);
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=0
+	return FMessageDialog::Open(EAppMsgType::OkCancel, LOCTEXT("ActionRestartMsg", "Imported settings won't be applied until the editor is restarted. Do you wish to restart now (you will be prompted to save any changes)?"), &Title);
+#endif
+}
+#endif
+
 bool UEIKSettings::GetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings)
 {
 	if (UObjectInitialized())
@@ -295,6 +308,8 @@ void UEIKSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 		Super::PostEditChangeProperty(PropertyChangedEvent);
 		return;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("PostEditChangeProperty: %s"), *PropertyChangedEvent.Property->GetName());
 
 if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 {
@@ -420,6 +435,83 @@ if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 		if (!bUseEAS)
 		{
 			bMirrorPresenceToEAS = false;
+		}
+	}
+
+	if(PropertyChangedEvent.Property->GetFName()==FName(TEXT("bAutomaticallySetupEIK")))
+	{
+		if(bAutomaticallySetupEIK)
+		{
+			FString EngineIniPath = FPaths::ProjectConfigDir() / TEXT("DefaultEngine.ini");
+			FString EngineIniText;
+			if (FFileHelper::LoadFileToString(EngineIniText, *EngineIniPath))
+			{
+				bool bConfigChanged = false;
+
+				// Check if [OnlineSubsystemEIK] section exists and add it if not
+				if (!EngineIniText.Contains(TEXT("[OnlineSubsystemEIK]")))
+				{
+					EngineIniText += TEXT("\n[OnlineSubsystemEIK]\nbEnabled=true\n");
+					bConfigChanged = true;
+				}
+
+				// Update [OnlineSubsystem] section
+				if (!EngineIniText.Contains(TEXT("[OnlineSubsystem]")))
+				{
+					EngineIniText += TEXT("\n[OnlineSubsystem]\nDefaultPlatformService=EIK\n");
+					bConfigChanged = true;
+				}
+
+				// Update [/Script/OnlineSubsystemEIK.NetDriverEIK] section
+				if (!EngineIniText.Contains(TEXT("[/Script/OnlineSubsystemEIK.NetDriverEIK]")))
+				{
+					FString Comment = TEXT("\n;EIK Comment: You do not need to worry about this setting as we dynamically set it in Travel URL depending upon if we are using Listen Server or Dedicated Server\n");
+					EngineIniText += Comment;
+					EngineIniText += TEXT("[/Script/OnlineSubsystemEIK.NetDriverEIK]\nbIsUsingP2PSockets=true\n");
+					bConfigChanged = true;
+				}
+
+				// Update [/Script/Engine.GameEngine] section
+				if (!EngineIniText.Contains(TEXT("[/Script/Engine.GameEngine]")))
+				{
+					EngineIniText += TEXT("\n[/Script/Engine.GameEngine]\n");
+
+					// Update NetDriverDefinitions in [/Script/Engine.GameEngine] section
+					FString NetDriverDefinitions = FString::Printf(
+						TEXT("!NetDriverDefinitions=ClearArray\n+NetDriverDefinitions=(DefName=\"GameNetDriver\",DriverClassName=\"OnlineSubsystemEIK.NetDriverEIK\",DriverClassNameFallback=\"OnlineSubsystemUtils.IpNetDriver\")\n")
+					);
+					EngineIniText += NetDriverDefinitions;
+            
+					bConfigChanged = true;
+				}
+
+				// Save the modified text back to the DefaultEngine.ini file if any changes were made
+				if (bConfigChanged)
+				{
+					if (FFileHelper::SaveStringToFile(EngineIniText, *EngineIniPath))
+					{
+						UE_LOG(LogTemp, Warning, TEXT("OnlineSubsystemEIK configuration added/updated in DefaultEngine.ini"));
+					}
+					else
+					{
+						UE_LOG(LogTemp, Error, TEXT("Failed to save modified DefaultEngine.ini"));
+					}
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("OnlineSubsystemEIK configuration already exists in DefaultEngine.ini"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Failed to load DefaultEngine.ini"));
+			}
+		}
+
+		if(EAppReturnType::Ok == ShowRestartWarning(FText::FromString("Restart Editor")))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Restart Editor"));
+			FUnrealEdMisc::Get().RestartEditor(true);
 		}
 	}
 

@@ -29,11 +29,13 @@ public class OnlineSubsystemEIK : ModuleRules
 				"OnlineSubsystem",
 				"Sockets",
 				"VoiceChat",
-				"NetCore", "SocketSubsystemEIK",
+				"NetCore", 
+				"SocketSubsystemEIK",
 				"InputCore",
 				"Projects",
 				"Slate",
 				"SlateCore",
+				"HTTP",
 			}
 		);
 

@@ -30,7 +30,7 @@ public:
 	For Input Parameters, please refer to the documentation link above.
 	*/
 	UFUNCTION(BlueprintCallable, DisplayName="Find EIK Sessions",meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
-	static UEIK_FindSessions_AsyncFunction* FindEIKSessions(TMap<FString, FString> SessionSettings, EMatchType MatchType = EMatchType::MT_Lobby, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection);
+	static UEIK_FindSessions_AsyncFunction* FindEIKSessions(TMap<FString, FString> SessionSettings, EMatchType MatchType = EMatchType::MT_Lobby, int32 MaxResults = 15, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection);
 
 
 	virtual void Activate() override;
@@ -45,6 +45,7 @@ public:
 	TMap<FString, FString> SessionSettings;
 	ERegionInfo E_RegionToSearch;
 	EMatchType E_MatchType;
+	int32 I_MaxResults;
 
 	bool bDelegateCalled = false;
 

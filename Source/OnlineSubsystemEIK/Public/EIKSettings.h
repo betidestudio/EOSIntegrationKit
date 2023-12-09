@@ -4,6 +4,8 @@
 
 #include "UObject/ObjectMacros.h"
 #include "Engine/RuntimeOptionsBase.h"
+#include "GenericPlatform/GenericPlatformMisc.h"
+#include "Misc/MessageDialog.h"
 #include "Engine/DataAsset.h"
 #include "EIKSettings.generated.h"
 
@@ -214,6 +216,7 @@ public:
 
 private:
 #if WITH_EDITOR
+	EAppReturnType::Type ShowRestartWarning(const FText& Title);
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 	static bool AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings);

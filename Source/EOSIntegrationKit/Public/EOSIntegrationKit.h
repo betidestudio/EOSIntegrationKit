@@ -7,6 +7,7 @@ class FEOSIntegrationKitModule : public IModuleInterface
 {
 public:
     virtual void StartupModule() override;
-    void ConfigureOnlineSubsystemEIK();
+    void ConfigureOnlineSubsystemEIK() const;
+    static void ConfigureDedicatedServerConfigEIK();
     virtual void ShutdownModule() override;
 };

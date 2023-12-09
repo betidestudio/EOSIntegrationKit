@@ -16,6 +16,7 @@
 #endif
 #include "EIK_Subsystem.generated.h"
 
+
 USTRUCT(BlueprintType)
 struct FOffersStruct
 {

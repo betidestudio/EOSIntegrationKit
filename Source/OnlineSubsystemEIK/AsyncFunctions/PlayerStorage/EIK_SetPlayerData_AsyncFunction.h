@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "Online/CoreOnline.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_SetPlayerData_AsyncFunction.generated.h"
 
@@ -24,14 +25,14 @@ public:
 	bool bDelegateCalled = false;
 
 	FString FileName;
-	USaveGame* SavedGame;
+	TArray<uint8> DataToSave;
 	/*
 	This C++ method updates the player data in the online subsystem using the selected method and sets up a callback function to handle the response.
 	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/playerdata/
 	For Input Parameters, please refer to the documentation link above.
 	*/
-	UFUNCTION(BlueprintCallable, DisplayName="Set EIK Player Data", meta = (BlueprintInternalUseOnly = "true"))
-	static UEIK_SetPlayerData_AsyncFunction* SetPlayerData(FString FileName, USaveGame* SavedGame);
+	UFUNCTION(BlueprintCallable, DisplayName="Set EIK Player Storage", meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Storage")
+	static UEIK_SetPlayerData_AsyncFunction* SetPlayerData(FString FileName, const TArray<uint8>& DataToSave);
 
 	virtual void Activate() override;
 

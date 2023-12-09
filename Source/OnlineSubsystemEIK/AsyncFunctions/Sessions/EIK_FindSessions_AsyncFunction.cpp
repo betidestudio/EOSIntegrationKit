@@ -6,13 +6,14 @@
 #include "Online/OnlineSessionNames.h"
 
 UEIK_FindSessions_AsyncFunction* UEIK_FindSessions_AsyncFunction::FindEIKSessions(
-	TMap<FString, FString> SessionSettings, EMatchType MatchType, ERegionInfo RegionToSearch)
+	TMap<FString, FString> SessionSettings, EMatchType MatchType, int32 MaxResults, ERegionInfo RegionToSearch)
 
 {
 	UEIK_FindSessions_AsyncFunction* Ueik_FindSessionObject= NewObject<UEIK_FindSessions_AsyncFunction>();
 	Ueik_FindSessionObject->E_MatchType = MatchType;
 	Ueik_FindSessionObject->E_RegionToSearch = RegionToSearch;
 	Ueik_FindSessionObject->SessionSettings = SessionSettings;
+	Ueik_FindSessionObject->I_MaxResults = MaxResults;
 	return Ueik_FindSessionObject;
 }
 
@@ -53,7 +54,7 @@ void UEIK_FindSessions_AsyncFunction::FindSession()
 					SessionSearch->QuerySettings.Set(FName(*Settings_SingleValue.Key), Settings_SingleValue.Value, EOnlineComparisonOp::Equals);
 				}
 			}
-			SessionSearch->MaxSearchResults = 1000;
+			SessionSearch->MaxSearchResults = I_MaxResults;
 			SessionPtrRef->OnFindSessionsCompleteDelegates.AddUObject(this, &UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted);
 			SessionPtrRef->FindSessions(0,SessionSearch.ToSharedRef());
 		}
@@ -64,6 +65,7 @@ void UEIK_FindSessions_AsyncFunction::FindSession()
 				return;
 			}
 			OnFail.Broadcast(TArray<FSessionFindStruct>());
+			SetReadyToDestroy();
 		}
 	}
 	else
@@ -73,6 +75,7 @@ void UEIK_FindSessions_AsyncFunction::FindSession()
 			return;
 		}
 		OnFail.Broadcast(TArray<FSessionFindStruct>());
+		SetReadyToDestroy();
 	}
 }
 
@@ -86,6 +89,7 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 		}
 		OnFail.Broadcast(TArray<FSessionFindStruct>());
 		bDelegateCalled = true;
+		SetReadyToDestroy();
 	}
 	if (const IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
 	{
@@ -112,11 +116,8 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 						LocalArraySettings.Add(*SettingName.ToString(), *SettingValueString);
 						++It;
 					}
-					bool IsServer = false;
-					if(LocalArraySettings.Contains("IsDedicatedServer"))
-					{
-						IsServer = LocalArraySettings.FindKey("IsDedicatedServer")->ToBool();
-					}
+					
+					bool IsServer = LocalArraySettings.Contains("IsDedicatedServer") ? true : false;
 					FSessionFindStruct LocalStruct;
 					LocalStruct.SessionName = LocalArraySettings.FindRef("SEARCHKEYWORDS");
 					LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
@@ -134,5 +135,6 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 		}
 		bDelegateCalled = true;
 		OnSuccess.Broadcast(SessionResult_Array);
+		SetReadyToDestroy();
 	}
 }

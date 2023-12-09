@@ -1,0 +1,11 @@
+{
+	"title"											: "Example Game",
+	"executable"									: "<gamebinary.exe>",
+	"productid"										: "<your_eos_productid>",
+	"sandboxid"										: "<your_eos_sandboxid>",
+	"deploymentid"									: "<your_eos_deploymentid>",
+	"requested_splash"								: "EasyAntiCheat/SplashScreen.png",
+	"wait_for_game_process_exit"					: "false",
+	"hide_bootstrapper"								: "false",
+	"hide_gui"										: "false"
+}

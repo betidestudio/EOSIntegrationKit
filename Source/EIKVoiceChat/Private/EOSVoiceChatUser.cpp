@@ -2,8 +2,11 @@
 
 #include "EOSVoiceChatUser.h"
 
-#if WITH_EOS_RTC
+#include "EIKVoiceChat/Subsystem/EIK_Voice_Subsystem.h"
 
+#if WITH_EOS_RTC
+#include "HAL/IConsoleManager.h"
+#include "Stats/Stats.h"
 #include "Misc/ConfigCacheIni.h"
 #include "Misc/ScopeLock.h" 
 #include "ProfilingDebugging/CsvProfiler.h"
@@ -800,6 +803,20 @@ void FEOSVoiceChatUser::TransmitToNoChannels()
 	}
 }
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
+void FEOSVoiceChatUser::TransmitToSpecificChannels(const TSet<FString>& ChannelNames)
+{
+	if (TransmitState.Mode != EVoiceChatTransmitMode::SpecificChannels || 
+		!TransmitState.SpecificChannels.Difference(ChannelNames).IsEmpty() || 
+		!ChannelNames.Difference(TransmitState.SpecificChannels).IsEmpty())
+	{
+		TransmitState.Mode = EVoiceChatTransmitMode::SpecificChannels;
+		TransmitState.SpecificChannels = ChannelNames;
+		ApplySendingOptions();
+	}
+}
+
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
 void FEOSVoiceChatUser::TransmitToSpecificChannel(const FString& Channel)
 {
 	if (TransmitState.Mode != EVoiceChatTransmitMode::Channel ||
@@ -810,12 +827,23 @@ void FEOSVoiceChatUser::TransmitToSpecificChannel(const FString& Channel)
 		ApplySendingOptions();
 	}
 }
+#endif
 
 EVoiceChatTransmitMode FEOSVoiceChatUser::GetTransmitMode() const
 {
 	return TransmitState.Mode;
 }
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
+TSet<FString> FEOSVoiceChatUser::GetTransmitChannels() const
+{
+	if (TransmitState.Mode == EVoiceChatTransmitMode::SpecificChannels)
+	{
+		return TransmitState.SpecificChannels;
+	}
+	return TSet<FString>();
+}
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
 FString FEOSVoiceChatUser::GetTransmitChannel() const
 {
 	FString TransmitChannel;
@@ -825,6 +853,9 @@ FString FEOSVoiceChatUser::GetTransmitChannel() const
 	}
 	return TransmitChannel;
 }
+#endif
+
+
 
 FDelegateHandle FEOSVoiceChatUser::StartRecording(const FOnVoiceChatRecordSamplesAvailableDelegate::FDelegate& Delegate)
 {
@@ -1308,9 +1339,13 @@ void FEOSVoiceChatUser::ApplySendingOptions()
 
 void FEOSVoiceChatUser::ApplySendingOptions(FChannelSession& ChannelSession)
 {
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
+	const bool bCanTransmitToChannel = TransmitState.Mode == EVoiceChatTransmitMode::All
+|| (TransmitState.Mode == EVoiceChatTransmitMode::SpecificChannels && TransmitState.SpecificChannels.Contains(ChannelSession.ChannelName));
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
 	const bool bCanTransmitToChannel = TransmitState.Mode == EVoiceChatTransmitMode::All ||
 		(TransmitState.Mode == EVoiceChatTransmitMode::Channel && TransmitState.ChannelName == ChannelSession.ChannelName);
-
+#endif
 	ChannelSession.DesiredSendingState.bAudioEnabled = bCanTransmitToChannel && !AudioInputOptions.bMuted && !ChannelSession.bIsNotListening;
 
 	const FTCHARToUTF8 Utf8RoomName(*ChannelSession.ChannelName);
@@ -2320,7 +2355,86 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 			const bool bIsSilence = false;
 			const FString PlayerName = LexToString(CallbackInfo->ParticipantId);
 			const FString ChannelName = UTF8_TO_TCHAR(CallbackInfo->RoomName);
+			if(GEngine)
+			{
+				if (const UWorld* World = GEngine->GetWorldContexts()[0].World())
+				{
+					if (const UGameInstance* GameInstance = World->GetGameInstance())
+					{
+						if (UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>())
+						{
+							if(LocalVoiceSubsystem->bIsPositionalVoiceChatUsed && LocalVoiceSubsystem->PlayerListVar.IsValidIndex(0))
+							{
+								AActor* SpeakerActor = nullptr;
+								AActor* ListenerActor = nullptr;
+								for(int i=0; i<LocalVoiceSubsystem->PlayerListVar.Num(); i++)
+								{
+									EOS_ProductUserId ProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*LocalVoiceSubsystem->PlayerListVar[i].PlayerEOSVoiceChatName));
+									if(ProductUserId == nullptr)
+									{
+										continue;
+									}
+									if(ProductUserId == CallbackInfo->ParticipantId)
+									{
+										SpeakerActor = LocalVoiceSubsystem->PlayerListVar[i].PlayerActor;
+									}
+									if(ProductUserId == CallbackInfo->LocalUserId)
+									{
+										ListenerActor = LocalVoiceSubsystem->PlayerListVar[i].PlayerActor;
+									}
 
+								}
+								if(ListenerActor && SpeakerActor)
+								{
+									const FVector PlayerLocation = ListenerActor->GetActorLocation();
+									FVector AudioSourceLocation;
+										
+									if(LocalVoiceSubsystem->bUseDebugPoint)
+									{
+										AudioSourceLocation = LocalVoiceSubsystem->DebugPointLocation;
+									}
+									else
+									{
+										AudioSourceLocation = SpeakerActor->GetActorLocation();
+									}
+																				
+									const float Distance = FVector::Dist(PlayerLocation, AudioSourceLocation);
+									float VolumeMultiplier = FMath::Clamp(1.f - (Distance / LocalVoiceSubsystem->MaxHearingDistance), 0.f, 1.f);
+									float VolumeForceMultiplier = 1.f;
+									if(LocalVoiceSubsystem->bUseOutputVolumeWithPositionalChat && LocalVoiceSubsystem->bUseOutputVolume)
+									{
+										VolumeForceMultiplier = LocalVoiceSubsystem->OutputVolume;
+									}
+									VolumeMultiplier = VolumeMultiplier * VolumeForceMultiplier;
+									if(LocalVoiceSubsystem->bUseDebugPoint)
+									{
+										UE_LOG(LogTemp,Warning,TEXT("Positional Volume Scale: %f"), VolumeMultiplier);
+									}
+									for (int i = 0; i < Samples.Num(); i++)
+									{
+										// Apply volume attenuation
+										Samples[i] *= VolumeMultiplier;
+									}
+								}
+							}
+							else
+							{
+								if(LocalVoiceSubsystem->bUseOutputVolume)
+								{
+									for (int i = 0; i < Samples.Num(); i++)
+									{
+										float VolumeForceMultiplier = LocalVoiceSubsystem->OutputVolume;
+										// Apply volume attenuation
+										Samples[i] *= VolumeForceMultiplier;
+										// Apply spatialization
+										// TODO: Implement spatialization algorithm
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 			FScopeLock Lock(&BeforeRecvAudioRenderedLock);
 			OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence, ChannelName, PlayerName);
 		}
@@ -2430,9 +2544,16 @@ bool FEOSVoiceChatUser::Exec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& A
 					case EVoiceChatTransmitMode::None:
 						TransmitString = TEXT("NONE");
 						break;
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
+					case EVoiceChatTransmitMode::SpecificChannels:
+						TransmitString = FString::Printf(TEXT("CHANNELS:[%s]"), *FString::Join(GetTransmitChannels(), TEXT(", ")));
+						break;
+#elif ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION >=1
 					case EVoiceChatTransmitMode::Channel:
 						TransmitString = FString::Printf(TEXT("CHANNEL:%s"), *GetTransmitChannel());
 						break;
+#endif
+						
 					}
 					EOS_EXEC_LOG(TEXT("    Channels: transmitting:%s"), *TransmitString);
 					for (const TPair<FString, FChannelSession>& ChannelSessionPair : LoginSession.ChannelSessions)
@@ -2625,7 +2746,11 @@ bool FEOSVoiceChatUser::Exec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& A
 			FString ChannelName;
 			if (FParse::Value(Cmd, TEXT("ChannelName="), ChannelName))
 			{
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >=3
+				TransmitToSpecificChannels({ ChannelName });
+#elif ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >=1
 				TransmitToSpecificChannel(ChannelName);
+#endif
 				return true;
 			}
 		}

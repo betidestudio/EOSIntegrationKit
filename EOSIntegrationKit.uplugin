@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 2,
-	"VersionName": "2",
+	"VersionName": "3.0.0",
 	"FriendlyName": "EOS Integration Kit",
 	"Description": "EIK (Epic Online Services Integration Kit) is a plugin that enables seamless integration between Epic Online Services (EOS) and Unreal Engine. The plugin provides access to the EOS SDK (Software Development Kit) within Unreal Engine, allowing developers to easily implement features such as matchmaking, achievements, leaderboards, and more.",
 	"Category": "Betide Studio",
@@ -10,19 +10,20 @@
 	"DocsURL": "https://eik.betide.studio/",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/dba0aa05bdd144e69405653a387ad63e",
 	"SupportURL": "https://discord.gg/betidestudio",
-	"EngineVersion": "5.2.1",
+	"EngineVersion": "5.1.0",
 	"CanContainContent": true,
 	"Installed": true,
 	"Modules": [
 		{
 			"Name": "EOSIntegrationKit",
 			"Type": "Runtime",
-			"LoadingPhase": "EarliestPossible",
+			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Mac",
 				"Android",
-				"Linux"
+				"Linux",
+				"Mac",
+				"IOS"
 			]
 		},
 		{
@@ -31,9 +32,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Mac",
 				"Android",
-				"Linux"
+				"Linux",
+				"Mac",
+				"IOS"
 			]
 		},
 		{
@@ -42,20 +44,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Mac",
 				"Android",
-				"Linux"
-			]
-		},
-		{
-			"Name": "OnlineSubsystemEIKPlus",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Win64",
+				"Linux",
 				"Mac",
-				"Android",
-				"Linux"
+				"IOS"
 			]
 		},
 		{
@@ -64,9 +56,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Mac",
 				"Android",
-				"Linux"
+				"Linux",
+				"Mac",
+				"IOS"
 			]
 		},
 		{
@@ -75,9 +68,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Mac",
 				"Android",
-				"Linux"
+				"Linux",
+				"Mac",
+				"IOS"
 			]
 		},
 		{
@@ -86,9 +80,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Mac",
 				"Android",
-				"Linux"
+				"Linux",
+				"Mac",
+				"IOS"
 			]
 		}
 	],
@@ -97,5 +92,7 @@
 			"Name": "OnlineSubsystemUtils",
 			"Enabled": true
 		}
-	]
+	],
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false
 }

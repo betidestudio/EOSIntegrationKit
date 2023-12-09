@@ -31,6 +31,7 @@ public:
 	int32 NumberOfPrivateConnections;
 	bool bShouldAdvertise;
 	bool bAllowJoinInProgress;
+	FString iPortToUse;
 	ERegionInfo Region;
 	TMap<FString, FString> SessionSettings;
 
@@ -52,5 +53,5 @@ public:
 	For Input Parameters, please refer to the documentation link above.
 	*/
 	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Session", meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
-	static UEIK_CreateSession_AsyncFunction* CreateEIKSession(FString SessionName, bool bIsDedicatedServer, bool bIsLan, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections, bool bShouldAdvertise, bool bAllowJoinInProgress, ERegionInfo Region, TMap<FString, FString> SessionSettings);
+	static UEIK_CreateSession_AsyncFunction* CreateEIKSession(FString SessionName, bool bIsDedicatedServer, bool bIsLan, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections, bool bShouldAdvertise, bool bAllowJoinInProgress, ERegionInfo Region, TMap<FString, FString> SessionSettings, FString PortToUse = "7777");
 };

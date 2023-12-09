@@ -30,7 +30,7 @@ public:
 	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/stats/
 	For Input Parameters, please refer to the documentation link above.
 	*/
-	UFUNCTION(BlueprintCallable, DisplayName="Get EIK Stats", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, DisplayName="Get EIK Stats", meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Statistics")
 	static UEIK_GetStats_AsyncFunction* GetStats( TArray<FString> StatName);
 
 	virtual void Activate() override;

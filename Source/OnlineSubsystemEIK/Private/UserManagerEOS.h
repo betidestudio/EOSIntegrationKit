@@ -7,6 +7,7 @@
 #include "Interfaces/OnlineFriendsInterface.h"
 #include "Interfaces/OnlinePresenceInterface.h"
 
+
 #if WITH_EOS_SDK
 	#include "eos_auth_types.h"
 	#include "eos_friends_types.h"
@@ -261,12 +262,16 @@ public:
 	void Init();
 	void Shutdown();
 
+
+	
+
 	//Custom Function
 	void LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void CreateDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void DeleteDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountId AccountId, EOS_ProductUserId UserId);
 	void EIK_Auto_Login();
+	
 
 // IOnlineIdentity Interface
 	virtual bool Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials) override;

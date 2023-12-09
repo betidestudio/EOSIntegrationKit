@@ -6,7 +6,7 @@
 #include "OnlineSubsystemEOSPrivate.h"
 #include "OnlineSubsystemEOSTypes.h"
 #include "UserManagerEOS.h"
-#include "..\Public\EIKSettings.h"
+#include "EIKSettings.h"
 
 #if WITH_EOS_SDK
 #include "eos_titlestorage.h"

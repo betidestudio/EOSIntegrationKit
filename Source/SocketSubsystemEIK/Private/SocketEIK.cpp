@@ -1,8 +1,8 @@
 //Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
-#include "..\Public\SocketEIK.h"
+#include "SocketEIK.h"
 #include "SocketTypes.h"
-#include "..\Public\SocketSubsystemEIK.h"
+#include "SocketSubsystemEIK.h"
 
 #if WITH_EOS_SDK
 	#include "eos_p2p.h"
