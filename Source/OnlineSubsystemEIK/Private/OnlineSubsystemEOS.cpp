@@ -321,7 +321,7 @@ bool FOnlineSubsystemEOS::Init()
 	AntiCheatServerHandle = EOS_Platform_GetAntiCheatServerInterface(*EOSPlatformHandle);
 	if (AntiCheatServerHandle == nullptr)
 	{
-		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to init EOS platform, couldn't get anti cheat server handle"));
+		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to init EOS platform, couldn't get anti cheat server handle. This is expected if you are not using Easy Anti Cheat."));
 	}
 	UserInfoHandle = EOS_Platform_GetUserInfoInterface(*EOSPlatformHandle);
 	if (UserInfoHandle == nullptr)
