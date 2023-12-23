@@ -241,6 +241,8 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetOwnedItems_Callback, bool, bWasSuccess
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetFile_Callback, bool, bWasSuccess, USaveGame*,SaveGame);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_ConnectEOSAndPlayFab_Callback, bool, bWasSuccess, const FString&, Error);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_TitleFileList_Callback, bool, bWasSuccess, const FString&, Error);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FBP_HostMigration_Callback, bool, bLocalHost, const FString&, PromotedMember, const FString&, JoinAddress);
+
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_Subsystem : public UGameInstanceSubsystem
@@ -416,6 +418,9 @@ public:
 	// This is a C++ method definition for purchasing an item from the store. - Switch to Async Nodes
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
 	FString GenerateSessionCode(int32 CodeLength = 9) const;
+
+	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Sessions")
+	static bool OnHostMigrated(const FBP_HostMigration_Callback& Result);
 
 	// This is a C++ method definition for logging in a user locally.
 	void Login(int32 LocalUserNum, FString ID, FString Token, FString Type, const FBP_Login_Callback& Result);

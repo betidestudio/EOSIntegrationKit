@@ -492,10 +492,13 @@ void FOnlineSessionEOS::Init(const FString& InBucketId)
 	bIsDedicatedServer = IsRunningDedicatedServer();
 	bIsUsingP2PSockets = false;
 
- 	if (!GConfig->GetBool(TEXT("/Script/OnlineSubsystemEIK.NetDriverEIK"), TEXT("bIsUsingP2PSockets"), bIsUsingP2PSockets, GEngineIni))
+	if(!bIsDedicatedServer)
 	{
-		// Fallback to base location
-		GConfig->GetBool(TEXT("/Script/SocketSubsystemEOS.NetDriverEOSBase"), TEXT("bIsUsingP2PSockets"), bIsUsingP2PSockets, GEngineIni);
+		if (!GConfig->GetBool(TEXT("/Script/OnlineSubsystemEIK.NetDriverEIK"), TEXT("bIsUsingP2PSockets"), bIsUsingP2PSockets, GEngineIni))
+		{
+			// Fallback to base location
+			GConfig->GetBool(TEXT("/Script/SocketSubsystemEOS.NetDriverEOSBase"), TEXT("bIsUsingP2PSockets"), bIsUsingP2PSockets, GEngineIni);
+		}
 	}
 }
 
@@ -609,6 +612,7 @@ FOnlineSession* FOnlineSessionEOS::GetOnlineSessionFromLobbyId(const FUniqueNetI
 
 void FOnlineSessionEOS::RegisterLobbyNotifications()
 {
+	UE_LOG(LogTemp, Warning, TEXT("RegisterLobbyNotifications LALALA"));
 	// Lobby data updates
 	EOS_Lobby_AddNotifyLobbyUpdateReceivedOptions AddNotifyLobbyUpdateReceivedOptions = { 0 };
 	AddNotifyLobbyUpdateReceivedOptions.ApiVersion = EOS_LOBBY_ADDNOTIFYLOBBYUPDATERECEIVED_API_LATEST;
@@ -618,6 +622,7 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	LobbyUpdateReceivedCallbackObj->CallbackLambda = [this](const EOS_Lobby_LobbyUpdateReceivedCallbackInfo* Data)
 	{
 		OnLobbyUpdateReceived(Data->LobbyId);
+		UE_LOG(LogTemp, Warning, TEXT("OnLobbyUpdateReceived"));
 	};
 
 	LobbyUpdateReceivedId = EOS_Lobby_AddNotifyLobbyUpdateReceived(LobbyHandle, &AddNotifyLobbyUpdateReceivedOptions, LobbyUpdateReceivedCallbackObj, LobbyUpdateReceivedCallbackObj->GetCallbackPtr());
@@ -631,6 +636,7 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	LobbyMemberUpdateReceivedCallbackObj->CallbackLambda = [this](const EOS_Lobby_LobbyMemberUpdateReceivedCallbackInfo* Data)
 	{
 		OnLobbyMemberUpdateReceived(Data->LobbyId, Data->TargetUserId);
+		UE_LOG(LogTemp, Warning, TEXT("OnLobbyMemberUpdateReceived"));
 	};
 
 	LobbyMemberUpdateReceivedId = EOS_Lobby_AddNotifyLobbyMemberUpdateReceived(LobbyHandle, &AddNotifyLobbyMemberUpdateReceivedOptions, LobbyMemberUpdateReceivedCallbackObj, LobbyMemberUpdateReceivedCallbackObj->GetCallbackPtr());
@@ -644,6 +650,9 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	LobbyMemberStatusReceivedCallbackObj->CallbackLambda = [this](const EOS_Lobby_LobbyMemberStatusReceivedCallbackInfo* Data)
 	{
 		OnMemberStatusReceived(Data->LobbyId, Data->TargetUserId, Data->CurrentStatus);
+		UE_LOG(LogTemp, Warning, TEXT("OnMemberStatusReceived"));
+		UE_LOG(LogTemp, Warning, TEXT("CurrentStatus: %d"), Data->CurrentStatus);
+		UE_LOG(LogTemp, Warning, TEXT("TargetUserId: %s"), *LexToString(Data->TargetUserId));
 	};
 
 	LobbyMemberStatusReceivedId = EOS_Lobby_AddNotifyLobbyMemberStatusReceived(LobbyHandle, &AddNotifyLobbyMemberStatusReceivedOptions, LobbyMemberStatusReceivedCallbackObj, LobbyMemberStatusReceivedCallbackObj->GetCallbackPtr());
@@ -659,6 +668,7 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	LobbyInviteAcceptedCallbackObj->CallbackLambda = [this](const EOS_Lobby_LobbyInviteAcceptedCallbackInfo* Data)
 	{
 		OnLobbyInviteAccepted(Data->InviteId, Data->LocalUserId, Data->TargetUserId);
+		UE_LOG(LogTemp, Warning, TEXT("OnLobbyInviteAccepted"));
 	};
 
 	LobbyInviteAcceptedId = EOS_Lobby_AddNotifyLobbyInviteAccepted(LobbyHandle, &AddNotifyLobbyInviteAcceptedOptions, LobbyInviteAcceptedCallbackObj, LobbyInviteAcceptedCallbackObj->GetCallbackPtr());
@@ -672,6 +682,7 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	JoinLobbyAcceptedCallbackObj->CallbackLambda = [this](const EOS_Lobby_JoinLobbyAcceptedCallbackInfo* Data)
 	{
 		OnJoinLobbyAccepted(Data->LocalUserId, Data->UiEventId);
+		UE_LOG(LogTemp, Warning, TEXT("OnJoinLobbyAccepted"));
 	};
 
 	JoinLobbyAcceptedId = EOS_Lobby_AddNotifyJoinLobbyAccepted(LobbyHandle, &AddNotifyJoinLobbyAcceptedOptions, JoinLobbyAcceptedCallbackObj, JoinLobbyAcceptedCallbackObj->GetCallbackPtr());
@@ -813,8 +824,55 @@ void FOnlineSessionEOS::OnMemberStatusReceived(const EOS_LobbyId& LobbyId, const
 								Session->bHosting = true;
 
 								UpdateLobbySession(Session);
+								if(EOSSubsystem->HostMigrationCallback.IsBound())
+								{
+									FString JoinAddress;
+									if(ResolvedUniqueNetId.Get().ToString().Contains("|"))
+									{
+										FString UserProductID;
+										ResolvedUniqueNetId.Get().ToString().Split("|", nullptr, &UserProductID);
+										JoinAddress = "EOS:" + UserProductID + ":GameNetDriver:26";
+									}
+									else
+									{
+										JoinAddress = "EOS:" + ResolvedUniqueNetId.Get().ToString() + ":GameNetDriver:26";
+									}
+									EOSSubsystem->HostMigrationCallback.ExecuteIfBound(true, ResolvedUniqueNetId.Get().ToString(),JoinAddress);
+								}
+								else
+								{
+									UE_LOG(LogTemp, Warning, TEXT("HostMigrationCallback not bound."));
+								}
 							}
-
+							else
+							{
+								if(EOSSubsystem->HostMigrationCallback.IsBound())
+								{
+									FString JoinAddress;
+									if(ResolvedUniqueNetId.Get().ToString().Contains("|"))
+									{
+										FString UserProductID;
+										ResolvedUniqueNetId.Get().ToString().Split("|", nullptr, &UserProductID);
+										JoinAddress = "EOS:" + UserProductID + ":GameNetDriver:26";
+									}
+									else
+									{
+										JoinAddress = "EOS:" + ResolvedUniqueNetId.Get().ToString() + ":GameNetDriver:26";
+									}
+									if(!JoinAddress.IsEmpty())
+									{
+										EOSSubsystem->HostMigrationCallback.ExecuteIfBound(false, ResolvedUniqueNetId.Get().ToString(), JoinAddress);
+									}
+									else
+									{
+										UE_LOG(LogTemp, Warning, TEXT("JoinAddress is empty for Host Migration."));
+									}
+								}
+								else
+								{
+									UE_LOG(LogTemp, Warning, TEXT("HostMigrationCallback not bound."));
+								}
+							}
 							// If we are not the new owner, the new owner will update the session and we'll receive the notification, updating ours as well
 						}
 						else

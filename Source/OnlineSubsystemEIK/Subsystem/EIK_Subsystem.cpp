@@ -4,6 +4,7 @@
 #include "EIK_Subsystem.h"
 #include "OnlineSubsystemUtils.h"
 #include "OnlineSubsystem.h"
+#include "OnlineSubsystemEOS.h"
 #include "Engine/LocalPlayer.h"
 #include "Runtime/Core/Public/Misc/CommandLine.h"
 #include "Engine/GameInstance.h"
@@ -758,6 +759,19 @@ FString UEIK_Subsystem::GenerateSessionCode(int32 CodeLength) const
 	}
 
 	return SessionCode;
+}
+
+bool UEIK_Subsystem::OnHostMigrated(const FBP_HostMigration_Callback& Result)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOSRef->HostMigrationCallback = Result;
+			return true;
+		}
+	}
+	return false;
 }
 
 

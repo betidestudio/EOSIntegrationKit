@@ -7,6 +7,7 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Online/LANBeacon.h"
 #include "OnlineSubsystemEOSTypes.h"
+#include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 
 class FOnlineSubsystemEOS;
 
@@ -322,6 +323,7 @@ private:
 
 	/** Reference to the main EOS subsystem */
 	FOnlineSubsystemEOS* EOSSubsystem;
+
 
 	/** Handles advertising sessions over LAN and client searches */
 	TSharedPtr<FLANSession> LANSession;

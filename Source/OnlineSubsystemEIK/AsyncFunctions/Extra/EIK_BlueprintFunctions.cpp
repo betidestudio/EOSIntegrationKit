@@ -369,6 +369,11 @@ FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueID(const APlayerController
 	return FEIKUniqueNetId();
 }
 
+FString UEIK_BlueprintFunctions::GetEOSSDKVersion()
+{
+	return EOS_GetVersion();
+}
+
 bool UEIK_BlueprintFunctions::IsValidSession(FSessionFindStruct Session)
 {
 	if(Session.bIsDedicatedServer)

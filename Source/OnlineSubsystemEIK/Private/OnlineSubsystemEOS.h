@@ -6,6 +6,7 @@
 #include "IOnlineSubsystemEOS.h"
 #include "OnlineSubsystemNames.h"
 #include "SocketSubsystemEIK.h"
+#include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 
 #include COMPILED_PLATFORM_HEADER(EOSHelpers.h)
 
@@ -167,6 +168,8 @@ public:
 
 	FEOSVoiceChatUser* GetEOSVoiceChatUserInterface(const FUniqueNetId& LocalUserId);
 	void ReleaseVoiceChatUserInterface(const FUniqueNetId& LocalUserId);
+
+	FBP_HostMigration_Callback HostMigrationCallback;
 
 private:
 	bool PlatformCreate();
