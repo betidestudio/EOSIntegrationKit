@@ -143,8 +143,6 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 		SetReadyToDestroy();
 		bDelegateCalled = true;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Join Session Failed"));
 }
 
 

@@ -4,6 +4,7 @@
 
 #include "EOSVoiceChat.h"
 #include "EOSVoiceChatLog.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 #if WITH_EOS_RTC
 

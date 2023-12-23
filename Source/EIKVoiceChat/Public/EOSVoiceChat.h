@@ -8,7 +8,7 @@
 
 #include "Misc/CoreMisc.h"
 #include "VoiceChat.h"
-
+#include "Runtime/Launch/Resources/Version.h"
 #include "eos_types.h"
 #include "eos_rtc_types.h"
 #include "eos_rtc_audio_types.h"
