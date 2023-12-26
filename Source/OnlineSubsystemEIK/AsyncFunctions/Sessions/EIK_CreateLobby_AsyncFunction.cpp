@@ -13,25 +13,26 @@ void UEIK_CreateLobby_AsyncFunction::Activate()
 
 void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 {
-	if(IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
 	{
-		if(IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
 			FOnlineSessionSettings SessionCreationInfo;
 			SessionCreationInfo.bIsDedicated = false;
-			SessionCreationInfo.bAllowInvites = bAllowInvites;
-			SessionCreationInfo.bIsLANMatch = bIsLan;
+			SessionCreationInfo.bAllowInvites = Var_CreateLobbySettings.bAllowInvites;
+			SessionCreationInfo.bIsLANMatch = false;
 			SessionCreationInfo.NumPublicConnections = NumberOfPublicConnections;
-			SessionCreationInfo.NumPrivateConnections = NumberOfPrivateConnections;
+			SessionCreationInfo.NumPrivateConnections = Var_CreateLobbySettings.NumberOfPrivateConnections;
 			SessionCreationInfo.bUseLobbiesIfAvailable = true;
-			SessionCreationInfo.bUseLobbiesVoiceChatIfAvailable = bUseVoiceChat;
-			SessionCreationInfo.bUsesPresence =bUsePresence;
-			SessionCreationInfo.bAllowJoinViaPresence = bUsePresence;
-			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = bUsePresence;
-			SessionCreationInfo.bShouldAdvertise = bShouldAdvertise;
-			SessionCreationInfo.bAllowJoinInProgress = bAllowJoinInProgress;
-			
-			SessionCreationInfo.Set(SEARCH_KEYWORDS, FString(SessionName), EOnlineDataAdvertisementType::ViaOnlineService);
+			SessionCreationInfo.bUseLobbiesVoiceChatIfAvailable = Var_CreateLobbySettings.bUseVoiceChat;
+			SessionCreationInfo.bUsesPresence = Var_CreateLobbySettings.bUsePresence;
+			SessionCreationInfo.bAllowJoinViaPresence = Var_CreateLobbySettings.bUsePresence;
+			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = Var_CreateLobbySettings.bUsePresence;
+			SessionCreationInfo.bShouldAdvertise = Var_CreateLobbySettings.bShouldAdvertise;
+			SessionCreationInfo.bAllowJoinInProgress = Var_CreateLobbySettings.bAllowJoinInProgress;
+			SessionCreationInfo.SessionIdOverride = Var_CreateLobbySettings.LobbyIDOverride;
+			SessionCreationInfo.Set(SETTING_HOST_MIGRATION, Var_CreateLobbySettings.bSupportHostMigration, EOnlineDataAdvertisementType::ViaOnlineService);
+			//SessionCreationInfo.Set(SEARCH_KEYWORDS, NAME_GameSession, EOnlineDataAdvertisementType::ViaOnlineService);
 			for (auto& Settings_SingleValue : SessionSettings)
 			{
 				if (Settings_SingleValue.Key.Len() == 0)
@@ -44,7 +45,7 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 				SessionCreationInfo.Set(FName(*Settings_SingleValue.Key), Setting);
 			}
 			SessionPtrRef->OnCreateSessionCompleteDelegates.AddUObject(this, &UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted);
-			SessionPtrRef->CreateSession(0,*SessionName,SessionCreationInfo);
+			SessionPtrRef->CreateSession(0,NAME_GameSession,SessionCreationInfo);
 		}
 		else
 		{
@@ -73,7 +74,20 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName VSessionName, 
 	{
 		if(bDelegateCalled == false)
 		{
-			OnSuccess.Broadcast(VSessionName);
+			const IOnlineSessionPtr Sessions = IOnlineSubsystem::Get()->GetSessionInterface();
+			if(const FOnlineSession* CurrentSession = Sessions->GetNamedSession(NAME_GameSession))
+			{
+				OnSuccess.Broadcast(CurrentSession->SessionInfo.Get()->GetSessionId().ToString());
+				bDelegateCalled = true;
+				SetReadyToDestroy();
+			}
+			else
+			{
+				OnSuccess.Broadcast("");
+				bDelegateCalled = true;
+				SetReadyToDestroy();
+			}
+			OnSuccess.Broadcast(VSessionName.ToString());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
 		}
@@ -89,21 +103,12 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName VSessionName, 
 	}
 }
 
-UEIK_CreateLobby_AsyncFunction* UEIK_CreateLobby_AsyncFunction::CreateEIKLobby(FString SessionName,
-                                                                               bool bAllowInvites, bool bIsLan, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections,
-                                                                               bool bShouldAdvertise, bool bAllowJoinInProgress,  bool bUseVoiceChat, bool bUsePresence, ERegionInfo Region, TMap<FString, FString> SessionSettings)
+UEIK_CreateLobby_AsyncFunction* UEIK_CreateLobby_AsyncFunction::CreateEIKLobby(TMap<FString, FString> SessionSettings,
+	int32 NumberOfPublicConnections, FCreateLobbySettings ExtraSettings)
 {
 	UEIK_CreateLobby_AsyncFunction* Ueik_CreateLobbyObject= NewObject<UEIK_CreateLobby_AsyncFunction>();
-	Ueik_CreateLobbyObject->Region = Region;
-	Ueik_CreateLobbyObject->SessionName = SessionName;
-	Ueik_CreateLobbyObject->bAllowInvites = bAllowInvites;
-	Ueik_CreateLobbyObject->bIsLan = bIsLan;
 	Ueik_CreateLobbyObject->NumberOfPublicConnections = NumberOfPublicConnections;
-	Ueik_CreateLobbyObject->NumberOfPrivateConnections = NumberOfPrivateConnections;
-	Ueik_CreateLobbyObject->bShouldAdvertise = bShouldAdvertise;
-	Ueik_CreateLobbyObject->bAllowJoinInProgress = bAllowJoinInProgress;
 	Ueik_CreateLobbyObject->SessionSettings = SessionSettings;
-	Ueik_CreateLobbyObject->bUseVoiceChat = bUseVoiceChat;
-	Ueik_CreateLobbyObject->bUsePresence = bUsePresence;
+	Ueik_CreateLobbyObject->Var_CreateLobbySettings = ExtraSettings;
 	return Ueik_CreateLobbyObject;
 }

@@ -13,30 +13,58 @@
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 #include "EIK_CreateLobby_AsyncFunction.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCreateLobby_Delegate, FName, SessionName);
+USTRUCT(BlueprintType)
+struct FCreateLobbySettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bAllowInvites = true;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	int32 NumberOfPrivateConnections = 0;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bShouldAdvertise = true;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bAllowJoinInProgress = true;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	ERegionInfo Region = ERegionInfo::RE_NoSelection;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bUseVoiceChat = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bUsePresence = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	FString BucketID = "";
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bSupportHostMigration = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bEnableJoinViaID = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	FString LobbyIDOverride = "";
+	
+};
 
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCreateLobby_Delegate, const FString&, LobbyID);
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_CreateLobby_AsyncFunction : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
 
 public:
-	FString SessionName;
-	bool bAllowInvites;
-	bool bIsLan;
 	int32 NumberOfPublicConnections;
-	int32 NumberOfPrivateConnections;
-	bool bShouldAdvertise;
-	bool bAllowJoinInProgress;
-	ERegionInfo Region;
 	TMap<FString, FString> SessionSettings;
-	 bool bUseVoiceChat;
-	 bool bUsePresence;
-
+	FCreateLobbySettings Var_CreateLobbySettings;
 	bool bDelegateCalled = false;
 	
 	UPROPERTY(BlueprintAssignable, DisplayName="Success")
@@ -51,10 +79,12 @@ public:
 	void OnCreateLobbyCompleted(FName VSessionName, bool bWasSuccessful);
 
 	/*
-	This C++ method creates a lobby in EOS using the selected method and sets up a callback function to handle the response.
-	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/
-	For Input Parameters, please refer to the documentation link above.
+	This function is used to create a lobby with the given settings and returns a result delegate which can be used to determine if the lobby was created successfully or not.
+	@param SessionSettings - A map of session settings to be used when creating the lobby.
+	@param NumberOfPublicConnections - The number of public connections to be used when creating the lobby.
+	@param ExtraSettings - A struct containing extra settings to be used when creating the lobby which is completely optional.
+	Documentation link: https://eik.betide.studio/multiplayer/sessions/lobbies/
 	*/
 	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Lobby",meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
-	static UEIK_CreateLobby_AsyncFunction* CreateEIKLobby(FString SessionName, bool bAllowInvites, bool bIsLan, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections, bool bShouldAdvertise, bool bAllowJoinInProgress, bool bUseVoiceChat, bool bUsePresence, ERegionInfo Region, TMap<FString, FString> SessionSettings);
+	static UEIK_CreateLobby_AsyncFunction* CreateEIKLobby(TMap<FString, FString> SessionSettings, int32 NumberOfPublicConnections = 0, FCreateLobbySettings ExtraSettings = FCreateLobbySettings());
 };
