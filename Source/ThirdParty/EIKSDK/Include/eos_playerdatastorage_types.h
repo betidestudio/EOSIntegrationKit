@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -9,10 +9,10 @@
 /** Maximum File Name Length in bytes */
 #define EOS_PLAYERDATASTORAGE_FILENAME_MAX_LENGTH_BYTES 64
 
-/** Maximum File size in bytes*/
-#define EOS_PLAYERDATASTORAGE_FILE_MAX_SIZE_BYTES (64 * 1024 * 1024)
-
 EXTERN_C typedef struct EOS_PlayerDataStorageHandle* EOS_HPlayerDataStorage;
+
+/** Timestamp value representing an undefined time for Player Data Storage. */
+#define EOS_PLAYERDATASTORAGE_TIME_UNDEFINED -1
 
 #define EOS_PLAYERDATASTORAGE_FILEMETADATA_API_LATEST 3
 
@@ -28,9 +28,12 @@ EOS_STRUCT(EOS_PlayerDataStorage_FileMetadata, (
 	const char* MD5Hash;
 	/** The file's name */
 	const char* Filename;
-	/** The POSIX timestamp when the file was saved last time. */
+	/**
+	 * The POSIX timestamp when the file was saved last time or EOS_PLAYERDATASTORAGE_TIME_UNDEFINED if the time is undefined.
+	 * It will be undefined after a file is written and uploaded at first before a query operation is completed.
+	 */
 	int64_t LastModifiedTime;
-	/** The size of data (payload) in file in unencrypted (original) form.  */
+	/** The size of data (payload) in file in unencrypted (original) form. */
 	uint32_t UnencryptedDataSizeBytes;
 ));
 
@@ -73,7 +76,7 @@ EOS_STRUCT(EOS_PlayerDataStorage_QueryFileCallbackInfo, (
 EOS_DECLARE_CALLBACK(EOS_PlayerDataStorage_OnQueryFileCompleteCallback, const EOS_PlayerDataStorage_QueryFileCallbackInfo* Data);
 
 /** The most recent version of the EOS_PlayerDataStorage_QueryFileList API. */
-#define EOS_PLAYERDATASTORAGE_QUERYFILELIST_API_LATEST 1
+#define EOS_PLAYERDATASTORAGE_QUERYFILELIST_API_LATEST 2
 /** DEPRECATED! Use EOS_PLAYERDATASTORAGE_QUERYFILELIST_API_LATEST instead. */
 #define EOS_PLAYERDATASTORAGE_QUERYFILELISTOPTIONS_API_LATEST EOS_PLAYERDATASTORAGE_QUERYFILELIST_API_LATEST
 
@@ -429,7 +432,7 @@ EOS_STRUCT(EOS_PlayerDataStorage_WriteFileCallbackInfo, (
 	 * EOS_PlayerDataStorage_EncryptionKeyNotSet: The encryption key value was not set when calling EOS_Platform_Create.
 	 * EOS_InvalidState: The read operation is not allowed (e.g. when application is suspended).
 	 * EOS_UnexpectedError: An unexpected error occurred either downloading, or reading the downloaded file. This most commonly means there were file IO issues such as: permission issues, disk is full, etc. (potentially retryable)
-	*/
+	 */
 	EOS_EResult ResultCode;
 	/** Client-specified data passed into the file write request */
 	void* ClientData;

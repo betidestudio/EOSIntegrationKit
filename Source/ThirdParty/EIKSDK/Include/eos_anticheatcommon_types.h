@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -7,12 +7,12 @@
 #pragma pack(push, 8)
 
 /**
-  * Arbitrary data that is a unique local identifier for
-  * a single remote client or peer.
-  *
-  * Typically this is a pointer to an object describing the
-  * player, but it can be anything that is locally unique.
-  */
+ * Arbitrary data that is a unique local identifier for
+ * a single remote client or peer.
+ *
+ * Typically this is a pointer to an object describing the
+ * player, but it can be anything that is locally unique.
+ */
 EXTERN_C typedef void* EOS_AntiCheatCommon_ClientHandle;
 
 /** Flags describing the type of a remote client */
@@ -460,11 +460,11 @@ EOS_STRUCT(EOS_AntiCheatCommon_LogPlayerTakeDamageOptions, (
 	EOS_AntiCheatCommon_Vec3f* VictimPlayerPosition;
 	/** Victim player's view rotation as a quaternion */
 	EOS_AntiCheatCommon_Quat* VictimPlayerViewRotation;
-	/** Locally unique value used in RegisterClient/RegisterPeer */
+	/** Locally unique value used in RegisterClient/RegisterPeer if applicable, otherwise 0. */
 	EOS_AntiCheatCommon_ClientHandle AttackerPlayerHandle;
-	/** Attacker player's current world position as a 3D vector */
+	/** Attacker player's current world position as a 3D vector if applicable, otherwise NULL. */
 	EOS_AntiCheatCommon_Vec3f* AttackerPlayerPosition;
-	/** Attacker player's view rotation as a quaternion */
+	/** Attacker player's view rotation as a quaternion if applicable, otherwise NULL. */
 	EOS_AntiCheatCommon_Quat* AttackerPlayerViewRotation;
 	/**
 	 * True if the damage was applied instantly at the time of attack from the game
@@ -477,7 +477,7 @@ EOS_STRUCT(EOS_AntiCheatCommon_LogPlayerTakeDamageOptions, (
 	 * the way. For some situations like melee or hitscan weapons this is trivially
 	 * true, for others like projectiles with simulated physics it may not be e.g. a player
 	 * could fire a slow moving projectile and then move behind cover before it strikes.
-	 * 
+	 *
 	 * This can be an estimate, or can simply be always set to true if it is not feasible
 	 * to compute in your game.
 	 */

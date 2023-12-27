@@ -16,7 +16,7 @@
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "ProfilingDebugging/CallstackTrace.h"
 #include "Stats/Stats.h"
-
+#include "Runtime/Projects/Public/Interfaces/IPluginManager.h"
 #include "CoreGlobals.h"
 
 #include "EOSShared.h"
@@ -117,14 +117,51 @@ namespace
 	{
 		void* Result = nullptr;
 
-		const FString ProjectBinaryPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), TEXT("Binaries"), FPlatformProcess::GetBinariesSubdirectory(), TEXT(EOSSDK_RUNTIME_LIBRARY_NAME)));
+		FString PluginModuleName = TEXT("EosIntegrationKit");
+
+		// Get a reference to the plugin manager
+		IPluginManager& PluginManager = IPluginManager::Get();
+
+		// Get the plugin object by module name
+		TSharedPtr<IPlugin> Plugin = PluginManager.FindPlugin(PluginModuleName);
+
+		if (Plugin.IsValid())
+		{
+			// Get the plugin's directory
+			FString PluginDirectory = Plugin->GetBaseDir();
+
+			// Build the path to the binary
+			FString BinaryPath = FPaths::Combine(*PluginDirectory, TEXT("Binaries"), FPlatformProcess::GetBinariesSubdirectory(), TEXT(EOSSDK_RUNTIME_LIBRARY_NAME));
+
+			// Check if the file exists before attempting to load
+			if (FPaths::FileExists(BinaryPath))
+			{
+				UE_LOG(LogEOSSDK, Log, TEXT("Loading EOS SDK from plugin binaries: %s"), *BinaryPath);
+				Result = FPlatformProcess::GetDllHandle(*BinaryPath);
+			}
+			else
+			{
+				UE_LOG(LogEOSSDK, Log, TEXT("EOS SDK binary not found: %s"), *BinaryPath);
+			}
+		}
+		else
+		{
+			UE_LOG(LogEOSSDK, Log, TEXT("Plugin not found: %s"), *PluginModuleName);
+		}
+		const FString ProjectBinaryPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::GetRelativePathToRoot(), TEXT("Binaries"), FPlatformProcess::GetBinariesSubdirectory(), TEXT(EOSSDK_RUNTIME_LIBRARY_NAME)));
 		if (FPaths::FileExists(ProjectBinaryPath))
 		{
+			UE_LOG(LogEOSSDK, Log, TEXT("Loading EOS SDK from project binaries: %s"), *ProjectBinaryPath);
 			Result = FPlatformProcess::GetDllHandle(*ProjectBinaryPath);
+		}
+		else
+		{
+			UE_LOG(LogEOSSDK, Log, TEXT("Unable to find EOS SDK in project binaries: %s"), *ProjectBinaryPath);
 		}
 
 		if (!Result)
 		{
+			UE_LOG(LogEOSSDK, Log, TEXT("Loading EOS SDK from engine binaries"));
 			const FString EngineBinaryPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::EngineDir(), TEXT("Binaries"), FPlatformProcess::GetBinariesSubdirectory(), TEXT(EOSSDK_RUNTIME_LIBRARY_NAME)));
 			if (FPaths::FileExists(EngineBinaryPath))
 			{
@@ -134,6 +171,7 @@ namespace
 
 		if (!Result)
 		{
+			UE_LOG(LogEOSSDK, Warning, TEXT("Loading EOS SDK from system path"));
 			Result = FPlatformProcess::GetDllHandle(TEXT(EOSSDK_RUNTIME_LIBRARY_NAME));
 		}
 
@@ -226,7 +264,7 @@ EOS_EResult FEIKSDKManager::Initialize()
 		if (EosResult == EOS_EResult::EOS_Success)
 		{
 			bInitialized = true;
-#if ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 2
+#if ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 2 || ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 3
 			FCoreDelegates::TSOnConfigSectionsChanged().AddRaw(this, &FEIKSDKManager::OnConfigSectionsChanged);
 #elif ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 1
 			FCoreDelegates::OnConfigSectionsChanged.AddRaw(this, &FEIKSDKManager::OnConfigSectionsChanged);
@@ -396,7 +434,7 @@ IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(const FString& PlatformConf
 	const FTCHARToUTF8 Utf8DeploymentId(*PlatformConfig->DeploymentId);
 	const FTCHARToUTF8 Utf8CacheDirectory(*PlatformConfig->CacheDirectory);
 
-	static_assert(EOS_PLATFORM_OPTIONS_API_LATEST == 12, "EOS_Platform_Options updated");
+	static_assert(EOS_PLATFORM_OPTIONS_API_LATEST == 13, "EOS_Platform_Options updated");
 	EOS_Platform_Options PlatformOptions = {};
 	PlatformOptions.ApiVersion = EOS_PLATFORM_OPTIONS_API_LATEST;
 	PlatformOptions.Reserved = nullptr;
@@ -418,7 +456,7 @@ IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(const FString& PlatformConf
 	PlatformOptions.CacheDirectory = Utf8CacheDirectory.Length() ? Utf8DeploymentId.Get() : nullptr;
 	PlatformOptions.TickBudgetInMilliseconds = PlatformConfig->TickBudgetInMilliseconds;
 
-	static_assert(EOS_PLATFORM_RTCOPTIONS_API_LATEST == 1, "EOS_Platform_RTCOptions updated");
+	static_assert(EOS_PLATFORM_RTCOPTIONS_API_LATEST == 2, "EOS_Platform_RTCOptions updated");
 	EOS_Platform_RTCOptions PlatformRTCOptions = {};
 	PlatformRTCOptions.ApiVersion = EOS_PLATFORM_RTCOPTIONS_API_LATEST;
 	PlatformRTCOptions.PlatformSpecificOptions = nullptr;

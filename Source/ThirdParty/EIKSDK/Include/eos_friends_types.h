@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_common.h"
@@ -8,7 +8,7 @@
 EXTERN_C typedef struct EOS_FriendsHandle* EOS_HFriends;
 
 /**
- * EOS_Friends_QueryFriends is used to start an asynchronous query to retrieve friends and pending outbound/inbound friends list invitations for a user account.
+ * EOS_Friends_QueryFriends is used to start an asynchronous query to retrieve friends, blocked users and pending outbound/inbound friends list invitations for a user account.
  * The following types are used to work with the API.
  */
 
@@ -173,49 +173,7 @@ EOS_DECLARE_CALLBACK(EOS_Friends_OnRejectInviteCallback, const EOS_Friends_Rejec
 
 
 /**
- * EOS_Friends_DeleteFriend is used to start an asynchronous operation to delete a friend from the friend list.
- * The following types are used to work with the API.
- */
-
-/** The most recent version of the EOS_Friends_DeleteFriend API. */
-#define EOS_FRIENDS_DELETEFRIEND_API_LATEST 1
-
-/**
- * Input parameters for the EOS_Friends_DeleteFriend function.
- */
-EOS_STRUCT(EOS_Friends_DeleteFriendOptions, (
-	/** API Version: Set this to EOS_FRIENDS_DELETEFRIEND_API_LATEST. */
-	int32_t ApiVersion;
-	/** The Epic Account ID of the local, logged-in user who is deleting a friend. */
-	EOS_EpicAccountId LocalUserId;
-	/** The Epic Account ID of the user to remove from the friends list. */
-	EOS_EpicAccountId TargetUserId;
-));
-
-/**
- * Output parameters for the EOS_Friends_DeleteFriend Function.
- */
-EOS_STRUCT(EOS_Friends_DeleteFriendCallbackInfo, (
-	/** Result code for the operation. EOS_Success is returned if an invite was accepted, otherwise one of the error codes is returned. See eos_common.h */
-	EOS_EResult ResultCode;
-	/** Context that is passed into EOS_Friends_DeleteFriend */
-	void* ClientData;
-	/** The Epic Account ID of the user who is removing a user from their friends list. */
-	EOS_EpicAccountId LocalUserId;
-	/** The Epic Account ID of the user who is being removed from the friends list. */
-	EOS_EpicAccountId TargetUserId;
-));
-
-/**
- * Function prototype definition for callbacks passed to EOS_Friends_DeleteFriend
- * @param Data A EOS_Friends_DeleteFriendCallbackInfo containing output information and the result.
- */
-EOS_DECLARE_CALLBACK(EOS_Friends_OnDeleteFriendCallback, const EOS_Friends_DeleteFriendCallbackInfo* Data);
-
-
-
-/**
- * EOS_Friends_GetFriendsCount is used to immediately retrieve the number of cached friendships. 
+ * EOS_Friends_GetFriendsCount is used to immediately retrieve the number of cached friendships.
  * The following types are used to work with the API.
  */
 
@@ -300,7 +258,7 @@ EOS_STRUCT(EOS_Friends_GetStatusOptions, (
 /** The most recent version of the EOS_Friends_AddNotifyFriendsUpdate API. */
 #define EOS_FRIENDS_ADDNOTIFYFRIENDSUPDATE_API_LATEST 1
 
-/** Input parameters for the EOS_Friends_AddNotifyFriendsUpdate function.  */
+/** Input parameters for the EOS_Friends_AddNotifyFriendsUpdate function. */
 EOS_STRUCT(EOS_Friends_AddNotifyFriendsUpdateOptions, (
 	/** API Version: Set this to EOS_FRIENDS_ADDNOTIFYFRIENDSUPDATE_API_LATEST. */
 	int32_t ApiVersion;
@@ -327,5 +285,70 @@ EOS_STRUCT(EOS_Friends_OnFriendsUpdateInfo, (
  */
 EOS_DECLARE_CALLBACK(EOS_Friends_OnFriendsUpdateCallback, const EOS_Friends_OnFriendsUpdateInfo* Data);
 
+/**
+ * EOS_Friends_GetBlockedUsersCount is used to immediately retrieve the number of cached blocked users.
+ * The following types are used to work with the API.
+ */
+
+/** The most recent version of the EOS_Friends_GetBlockedUsersCount API. */
+#define EOS_FRIENDS_GETBLOCKEDUSERSCOUNT_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_Friends_GetBlockedUsersCount function.
+ */
+EOS_STRUCT(EOS_Friends_GetBlockedUsersCountOptions, (
+	/** API Version: Set this to EOS_FRIENDS_GETBLOCKEDUSERSCOUNT_API_LATEST. */
+	int32_t ApiVersion;
+	/** The Epic Account ID of the user whose blocked users should be counted. */
+	EOS_EpicAccountId LocalUserId;
+));
+
+/**
+ * EOS_Friends_GetBlockedUserAtIndex is used to immediately retrieve the account ID of user who is blocked.
+ * The following types are used to work with the API.
+ */
+
+/** The most recent version of the EOS_Friends_GetBlockedUserAtIndex API. */
+#define EOS_FRIENDS_GETBLOCKEDUSERATINDEX_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_Friends_GetBlockedUserAtIndex function.
+ */
+EOS_STRUCT(EOS_Friends_GetBlockedUserAtIndexOptions, (
+	/** API Version: Set this to EOS_FRIENDS_GETBLOCKEDUSERATINDEX_API_LATEST. */
+	int32_t ApiVersion;
+	/** The Epic Account ID of the user whose blocked users list is being queried. */
+	EOS_EpicAccountId LocalUserId;
+	/** Index into the blocked users list. This value must be between 0 and EOS_Friends_GetBlockedUsersCount-1 inclusively. */
+	int32_t Index;
+));
+
+/** The most recent version of the EOS_Friends_AddNotifyBlockedUsersUpdate API. */
+#define EOS_FRIENDS_ADDNOTIFYBLOCKEDUSERSUPDATE_API_LATEST 1
+
+/** Input parameters for the EOS_Friends_AddNotifyBlockedUsersUpdate function. */
+EOS_STRUCT(EOS_Friends_AddNotifyBlockedUsersUpdateOptions, (
+	/** API Version: Set this to EOS_FRIENDS_ADDNOTIFYBLOCKEDUSERSUPDATE_API_LATEST. */
+	int32_t ApiVersion;
+));
+
+/**
+ * Structure containing information about a blocklist update.
+ */
+EOS_STRUCT(EOS_Friends_OnBlockedUsersUpdateInfo, (
+	/** Client-specified data passed into EOS_Friends_AddNotifyBlockedUsersUpdate */
+	void* ClientData;
+	/** The Epic Account ID of the local user who is receiving the update */
+	EOS_EpicAccountId LocalUserId;
+	/** The Epic Account ID of the user whose blocked status is being updated. */
+	EOS_EpicAccountId TargetUserId;
+	/** TargetUserId block status (blocked or not). */
+	EOS_Bool bBlocked;
+));
+
+/**
+ * Callback for information related to a blocklist update.
+ */
+EOS_DECLARE_CALLBACK(EOS_Friends_OnBlockedUsersUpdateCallback, const EOS_Friends_OnBlockedUsersUpdateInfo* Data);
 
 #pragma pack(pop)

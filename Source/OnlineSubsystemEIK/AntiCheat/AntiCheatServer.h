@@ -10,9 +10,39 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "AntiCheatServer.generated.h"
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum EUserPlatform
+{
+	/** Unknown platform */
+	EOS_Unknown UMETA(DisplayName = "Unknown"),
+	/** The client is playing on Windows */
+	EOS_Windows UMETA(DisplayName = "Windows"),
+	/** The client is playing on Mac */
+	EOS_Mac UMETA(DisplayName = "Mac"),
+	/** The client is playing on Linux */
+	EOS_Linux UMETA(DisplayName = "Linux"),
+	/** The client is playing on an Xbox device */
+	EOS_Xbox UMETA(DisplayName = "Xbox"),
+	/** The client is playing on a PlayStation device */
+	EOS_PlayStation UMETA(DisplayName = "PlayStation"),
+	/** The client is playing on a Nintendo device */
+	EOS_Nintendo UMETA(DisplayName = "Nintendo"),
+	/** The client is playing on iOS */
+	EOS_IOS UMETA(DisplayName = "IOS"),
+	/** The client is playing on Android */
+	EOS_Android UMETA(DisplayName = "Android"),	
+};
+
+UENUM(BlueprintType)
+enum EEOS_ClientType
+{
+	/** An ordinary player that requires anti-cheat client protection to play */
+	EOS_ProtectedClient UMETA(DisplayName = "ProtectedClient"),
+	/** The player does not need the anti-cheat client to play because of their platform or other factors */
+	EOS_UnprotectedClient UMETA(DisplayName = "UnprotectedClient"),
+	/** The client is an AI bot, not an actual human */
+	EOS_AIBot UMETA(DisplayName = "AIBot"),
+};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAntiCheatActionRequired, APlayerController*, ControllerRef, bool, bRemoveFromSession);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAntiCheatRegisterClient, APlayerController*, ControllerRef, const TArray<uint8>&, ClientData);
@@ -27,10 +57,10 @@ public:
 	static void PrintAdvancedLogs(FString Log);
 
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|AntiCheat")
-	bool RegisterAntiCheatServer(FString ServerName, FString ClientProductID);
+	bool RegisterAntiCheatServer(FString ClientProductID);
 
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|AntiCheat")
-	bool RegisterClientForAntiCheat(FString ClientProductID, APlayerController* ControllerRef);
+	bool RegisterClientForAntiCheat(FString ClientProductID, APlayerController* ControllerRef, TEnumAsByte<EUserPlatform> UserPlatform, TEnumAsByte<EEOS_ClientType> ClientType);
 
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|AntiCheat")
 	bool RecievedMessageFromClient(APlayerController* Controller, const TArray<uint8>& Message);

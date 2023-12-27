@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -19,7 +19,7 @@ EOS_ENUM_END(EOS_EResult);
 #undef EOS_RESULT_VALUE_LAST
 
 /**
- * Returns a string representation of an EOS_EResult. 
+ * Returns a string representation of an EOS_EResult.
  * The return value is never null.
  * The return value must not be freed.
  *
@@ -57,7 +57,7 @@ typedef struct EOS_EpicAccountIdDetails* EOS_EpicAccountId;
 /**
  * Check whether or not the given Epic Account ID is considered valid
  * NOTE: This will return true for any EOS_EpicAccountId created with EOS_EpicAccountId_FromString as there is no validation
- * 
+ *
  * @param AccountId The Epic Account ID to check for validity
  * @return EOS_TRUE if the EOS_EpicAccountId is valid, otherwise EOS_FALSE
  */
@@ -99,9 +99,9 @@ EOS_DECLARE_FUNC(EOS_EpicAccountId) EOS_EpicAccountId_FromString(const char* Acc
 /**
  * A handle to a user's Product User ID (game services related ecosystem)
  * This ID is associated with any of the external account providers (of which Epic Account Services is one)
- * 
+ *
  * @see EOS_Connect_Login
- * @see EOS_EExternalCredentialType 
+ * @see EOS_EExternalCredentialType
  */
 typedef struct EOS_ProductUserIdDetails* EOS_ProductUserId;
 
@@ -358,6 +358,9 @@ EOS_ENUM(EOS_EExternalCredentialType,
 	 * EOS_ByteArray_ToString can be used for this conversion.
 	 *
 	 * Supported with EOS_Connect_Login.
+	 * Note that EOS_ECT_STEAM_APP_TICKET is deprecated for use with EOS_Auth_Login. Use EOS_ECT_STEAM_SESSION_TICKET instead.
+	 *
+	 * @see EOS_ECT_STEAM_SESSION_TICKET
 	 */
 	EOS_ECT_STEAM_APP_TICKET = 1,
 	/**
@@ -498,7 +501,7 @@ EOS_ENUM(EOS_EExternalCredentialType,
 	EOS_ECT_ITCHIO_KEY = 15,
 	/**
 	 * Epic Games ID Token
-	 * 
+	 *
 	 * Acquired using EOS_Auth_CopyIdToken that returns EOS_Auth_IdToken::JsonWebToken.
 	 *
 	 * Supported with EOS_Connect_Login.
@@ -513,12 +516,30 @@ EOS_ENUM(EOS_EExternalCredentialType,
 	/**
 	 * Steam Auth Session Ticket
 	 *
-	 * Generated using the ISteamUser::GetAuthSessionTicket API of Steamworks SDK.
+	 * Generated using the ISteamUser::GetAuthTicketForWebApi API of Steamworks SDK.
+	 *
+	 * @attention
+	 * The pchIdentity input parameter of GetAuthTicketForWebApi API must be set to a valid non-empty string value.
+	 * The string value used by the game client must match identically to the backend-configured value in EOS Dev Portal.
+	 * The recommended value to use is "epiconlineservices" in lowercase, matching the default value for new Steam identity provider credentials in EOS Dev Portal.
+	 * This identifier is important for security reasons to prevent session hijacking. Applications must use a dedicated unique identity identifier for Session Tickets passed to the EOS SDK APIs.
+	 * Session Tickets using the EOS-assigned identifier must not be used with anything else than the EOS SDK APIs. You must use a different identifier when generating Session Tickets to authenticate with other parties.
+	 *
+	 * @warning
+	 * To update an already live game to use the new GetAuthTicketForWebApi API instead of the deprecated GetAuthSessionTicket API, follow these steps in this order to prevent breaking the live game for players:
+	 * 1. Update your game client code to use the new ISteamUser::GetAuthTicketForWebApi API.
+	 * 2. Publish the new game client update to end-users.
+	 * 3. Update the existing Steam identity provider credentials entry in EOS Dev Portal to use the same identity string identifier as the game client.
+	 *
+	 * @example
+	 * SteamUser()->GetAuthTicketForWebApi("epiconlineservices");
 	 *
 	 * The retrieved Auth Session Ticket byte buffer needs to be converted into a hex-encoded UTF-8 string (e.g. "FA87097A..") before passing it to the EOS_Auth_Login or EOS_Connect_Login APIs.
 	 * EOS_ByteArray_ToString can be used for this conversion.
 	 *
 	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
+	 *
+	 * @version 1.15.1+
 	 */
 	EOS_ECT_STEAM_SESSION_TICKET = 18
 );
@@ -530,5 +551,12 @@ EOS_ENUM(EOS_EExternalCredentialType,
 EXTERN_C typedef const char* EOS_IntegratedPlatformType;
 /** A macro to identify an unknown integrated platform. */
 #define EOS_IPT_Unknown (const char*)NULL
+
+/** This type is used to distinguish between different online platforms. */
+EXTERN_C typedef uint32_t EOS_OnlinePlatformType;
+
+#define EOS_OPT_Unknown 0
+#define EOS_OPT_Epic 100
+#define EOS_OPT_Steam 4000
 
 #pragma pack(pop)

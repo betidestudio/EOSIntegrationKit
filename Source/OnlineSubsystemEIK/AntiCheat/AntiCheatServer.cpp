@@ -17,7 +17,7 @@ void UAntiCheatServer::PrintAdvancedLogs(FString Log)
 		}
 	}
 }
-bool UAntiCheatServer::RegisterAntiCheatServer(FString ServerName, FString ClientProductID)
+bool UAntiCheatServer::RegisterAntiCheatServer(FString ClientProductID)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
 	{
@@ -38,7 +38,7 @@ bool UAntiCheatServer::RegisterAntiCheatServer(FString ServerName, FString Clien
 				EOS_AntiCheatServer_BeginSessionOptions Options = {};
 				Options.ApiVersion = EOS_ANTICHEATSERVER_BEGINSESSION_API_LATEST;
 				Options.RegisterTimeoutSeconds = EOS_ANTICHEATSERVER_BEGINSESSION_MAX_REGISTERTIMEOUT;
-				Options.ServerName = TCHAR_TO_UTF8(*ServerName);
+				Options.ServerName = TCHAR_TO_UTF8(NAME_GameSession);
 				Options.bEnableGameplayData = EOS_FALSE;
 #if UE_SERVER
 				Options.LocalUserId = nullptr;
@@ -61,7 +61,7 @@ bool UAntiCheatServer::RegisterAntiCheatServer(FString ServerName, FString Clien
 	return false;
 }
 
-bool UAntiCheatServer::RegisterClientForAntiCheat(FString ClientProductID, APlayerController* ControllerRef)
+bool UAntiCheatServer::RegisterClientForAntiCheat(FString ClientProductID, APlayerController* ControllerRef, TEnumAsByte<EUserPlatform> UserPlatform, TEnumAsByte<EEOS_ClientType> ClientType)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
 	{
@@ -70,11 +70,10 @@ bool UAntiCheatServer::RegisterClientForAntiCheat(FString ClientProductID, APlay
 			EOS_AntiCheatServer_RegisterClientOptions Options = {};
 			Options.ApiVersion = EOS_ANTICHEATSERVER_REGISTERCLIENT_API_LATEST;
 			Options.ClientHandle = ControllerRef;
-			Options.ClientType = EOS_EAntiCheatCommonClientType::EOS_ACCCT_ProtectedClient;
-			Options.ClientPlatform = EOS_EAntiCheatCommonClientPlatform::EOS_ACCCP_Windows;
+			Options.ClientType = static_cast<EOS_EAntiCheatCommonClientType>(ClientType.GetValue());
+			Options.ClientPlatform = static_cast<EOS_EAntiCheatCommonClientPlatform>(UserPlatform.GetValue());
 			Options.UserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*ClientProductID));
 			const EOS_EResult Result = EOS_AntiCheatServer_RegisterClient(EOSRef->AntiCheatServerHandle, &Options);
-			UE_LOG(LogTemp,Warning, TEXT("RegisterClientForAntiCheat-> %d"), Result);
 			if(Result == EOS_EResult::EOS_Success)
 			{
 				return true;
@@ -119,7 +118,6 @@ void UAntiCheatServer::OnMessageToClientCb(const EOS_AntiCheatCommon_OnMessageTo
 {
 	TArray<uint8> MessageData;
 	MessageData.Append((uint8*)Data->MessageData, Data->MessageDataSizeBytes);
-	UE_LOG(LogTemp,Warning, TEXT("OnMessageToClientCb-> %s"), *FString(UTF8_TO_TCHAR(Data->MessageData)));
 	if(const UAntiCheatServer* AntiCheatServer = static_cast<UAntiCheatServer*>(Data->ClientData))
 	{
 		AntiCheatServer->OnAntiCheatRegisterClient.Broadcast(static_cast<APlayerController*>(Data->ClientHandle), MessageData);

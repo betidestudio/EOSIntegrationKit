@@ -1,11 +1,12 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_common.h"
 
 #pragma pack(push, 8)
 
-EXTERN_C typedef struct EOS_IntegratedPlatformOptionsContainerHandle* EOS_HIntegratedPlatformOptionsContainer;
+typedef struct EOS_IntegratedPlatformOptionsContainerHandle* EOS_HIntegratedPlatformOptionsContainer;
+typedef struct EOS_IntegratedPlatformHandle* EOS_HIntegratedPlatform;
 
 /** These flags are used to determine how a specific Integrated Platform will be managed. */
 EOS_ENUM(EOS_EIntegratedPlatformManagementFlags,
@@ -37,9 +38,9 @@ EOS_ENUM(EOS_EIntegratedPlatformManagementFlags,
 	 * When determining an absolute platform preference those with this flag will be skipped.
 	 * The IntegratedPlatforms list is provided via the EOS_Platform_Options during EOS_Platform_Create.
 	 *
-	 * The primary usage of the EOS_IPMF_PreferEOSIdentity and EOS_IPMF_PreferIntegratedIdentity flags is with game invites 
+	 * The primary usage of the EOS_IPMF_PreferEOSIdentity and EOS_IPMF_PreferIntegratedIdentity flags is with game invites
 	 * from the Social Overlay.
-	 * 
+	 *
 	 * For game invites from the Social Overlay the EOS SDK will follow these rules:
 	 *     - If the only account ID we can determine for the target player is an EAS ID then the EOS system will be used.
 	 *     - If the only account ID we can determine for the target player is an integrated platform ID then the integrated platform system will be used.
@@ -56,7 +57,16 @@ EOS_ENUM(EOS_EIntegratedPlatformManagementFlags,
 	 *
 	 * @see EOS_IPMF_PreferEOSIdentity
 	 */
-	EOS_IPMF_PreferIntegratedIdentity = 0x0040
+	EOS_IPMF_PreferIntegratedIdentity = 0x0040,
+	/**
+	 * By default the EOS SDK will attempt to detect the login/logout events of local users and update local states accordingly. Setting this flag will disable this functionality,
+	 * relying on the application to process login/logout events and notify EOS SDK. It is not possible for the EOS SDK to do this on all platforms, making this flag not always
+	 * optional.
+	 *
+	 * This flag must be set to use the manual platform user login/logout functions, even on platforms where it is not possible for the EOS SDK to detect login/logout events,
+	 * making this a required flag for correct Integrated Platform behavior on those platforms.
+	 */
+	EOS_IPMF_ApplicationManagedIdentityLogin = 0x0080
 );
 EOS_ENUM_BOOLEAN_OPERATORS(EOS_EIntegratedPlatformManagementFlags);
 
@@ -87,7 +97,8 @@ EOS_STRUCT(EOS_IntegratedPlatform_Options, (
 
 /**
  * Required initialization options to use with EOS_IntegratedPlatform_Options for Steam.
- * Steamworks API needs to be at least v1.48
+ * Steamworks API needs to be at least v1.13
+ * Steam Sanitization requires at least v1.45
  *
  * @see EOS_IntegratedPlatform_Options
  */
@@ -118,7 +129,7 @@ EOS_STRUCT(EOS_IntegratedPlatform_Steam_Options, (
 	/**
 	 * Used to specify the minor version of the Steam SDK your game is compiled against, e.g.:
 	 *
-	 * Options.SteamMinorVersion = 48;
+	 * Options.SteamMinorVersion = 57;
 	 */
 	uint32_t SteamMinorVersion;
 ));
@@ -131,18 +142,6 @@ EOS_STRUCT(EOS_IntegratedPlatform_Steam_Options, (
 EOS_STRUCT(EOS_IntegratedPlatform_CreateIntegratedPlatformOptionsContainerOptions, (
 	/** API Version: Set this to EOS_INTEGRATEDPLATFORM_CREATEINTEGRATEDPLATFORMOPTIONSCONTAINER_API_LATEST. */
 	int32_t ApiVersion;
-));
-
-#define EOS_INTEGRATEDPLATFORMOPTIONSCONTAINER_ADD_API_LATEST 1
-
-/**
- * Data for the EOS_IntegratedPlatformOptionsContainer_Add function.
- */
-EOS_STRUCT(EOS_IntegratedPlatformOptionsContainer_AddOptions, (
-	/** API Version: Set this to EOS_INTEGRATEDPLATFORMOPTIONSCONTAINER_ADD_API_LATEST. */
-	int32_t ApiVersion;
-	/** The integrated platform options to add. */
-	const EOS_IntegratedPlatform_Options* Options;
 ));
 
 /**
@@ -168,5 +167,166 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_IntegratedPlatform_CreateIntegratedPlatformOpt
  * @see EOS_IntegratedPlatform_CreateIntegratedPlatformOptionsContainer
  */
 EOS_DECLARE_FUNC(void) EOS_IntegratedPlatformOptionsContainer_Release(EOS_HIntegratedPlatformOptionsContainer IntegratedPlatformOptionsContainerHandle);
+
+
+#define EOS_INTEGRATEDPLATFORMOPTIONSCONTAINER_ADD_API_LATEST 1
+
+/**
+ * Data for the EOS_IntegratedPlatformOptionsContainer_Add function.
+ */
+EOS_STRUCT(EOS_IntegratedPlatformOptionsContainer_AddOptions, (
+	/** API Version: Set this to EOS_INTEGRATEDPLATFORMOPTIONSCONTAINER_ADD_API_LATEST. */
+	int32_t ApiVersion;
+	/** The integrated platform options to add. */
+	const EOS_IntegratedPlatform_Options* Options;
+));
+
+/** The most recent version of the EOS_IntegratedPlatform_SetUserLoginStatus API. */
+#define EOS_INTEGRATEDPLATFORM_SETUSERLOGINSTATUS_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_IntegratedPlatform_SetUserLoginStatus function.
+ */
+EOS_STRUCT(EOS_IntegratedPlatform_SetUserLoginStatusOptions, (
+	/** API Version: Set this to EOS_INTEGRATEDPLATFORM_SETUSERLOGINSTATUS_API_LATEST. */
+	int32_t ApiVersion;
+
+	/** The integrated platform this user belongs to. */
+	EOS_IntegratedPlatformType PlatformType;
+	
+	/** String version of the integrated platform-dependent user id. */
+	const char* LocalPlatformUserId;
+	
+	/** The login status of the provided user */
+	EOS_ELoginStatus CurrentLoginStatus;
+));
+
+
+/** The most recent version of the EOS_IntegratedPlatform_AddNotifyUserLoginStatusChanged API. */
+#define EOS_INTEGRATEDPLATFORM_ADDNOTIFYUSERLOGINSTATUSCHANGED_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_IntegratedPlatform_AddNotifyUserLoginStatusChanged function.
+ */
+EOS_STRUCT(EOS_IntegratedPlatform_AddNotifyUserLoginStatusChangedOptions, (
+	/** API Version: Set this to EOS_INTEGRATEDPLATFORM_ADDNOTIFYUSERLOGINSTATUSCHANGED_API_LATEST. */
+	int32_t ApiVersion;
+));
+
+/**
+ * Data about which integrated platform and which user that had a login status change and what the login status changed to.
+ */
+EOS_STRUCT(EOS_IntegratedPlatform_UserLoginStatusChangedCallbackInfo, (
+	/** Context that was passed into EOS_IntegratedPlatform_AddNotifyUserLoginStatusChanged */
+	void* ClientData;
+	/** The integrated platform of the local platform user. */
+	EOS_IntegratedPlatformType PlatformType;
+	/** String version of platform's user id. */
+	const char* LocalPlatformUserId;
+	/** The Epic Games Account ID associated with this Integrated Platform's User (if there is one) */
+	EOS_EpicAccountId AccountId;
+	/** The EOS Product User ID associated with this Integrated Platform's User (if there is one) */
+	EOS_ProductUserId ProductUserId;
+	/** The login status prior to this change. */
+	EOS_ELoginStatus PreviousLoginStatus;
+	/** The login status at the time of this notification. */
+	EOS_ELoginStatus CurrentLoginStatus;
+));
+/**
+ * The callback function for when a local integrated platform user's login status has changed.
+ */
+EOS_DECLARE_CALLBACK(EOS_IntegratedPlatform_OnUserLoginStatusChangedCallback, const EOS_IntegratedPlatform_UserLoginStatusChangedCallbackInfo* Data);
+
+/** The most recent version of the EOS_IntegratedPlatform_SetUserPreLogoutCallback API. */
+#define EOS_INTEGRATEDPLATFORM_SETUSERPRELOGOUTCALLBACK_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_IntegratedPlatform_SetUserPreLogoutCallback function.
+ */
+EOS_STRUCT(EOS_IntegratedPlatform_SetUserPreLogoutCallbackOptions, (
+	/** API Version: Set this to EOS_INTEGRATEDPLATFORM_SETUSERPRELOGOUTCALLBACK_API_LATEST. */
+	int32_t ApiVersion;
+));
+
+/**
+ * The return value for the EOS_IntegratedPlatform_OnUserPreLogoutCallback callback function. This signifies what the application wants to do for
+ * the provided user of the integrated platform.
+ */
+EOS_ENUM(EOS_EIntegratedPlatformPreLogoutAction,
+	/**
+	 * The application accepts the user being logged-out. all cached data for the user will be cleared immediately and any pending
+	 * actions canceled.
+	 */
+	EOS_IPLA_ProcessLogoutImmediately = 0,
+	/**
+	 * Instead of the user being logged-out, the SDK will wait for a call to EOS_IntegratedPlatform_FinalizeDeferredUserLogout with the
+	 * expected login state of the user. If the expected state matches the current state, the user will continue to be logged-in or they
+	 * will be logged-out, depending on the value of the expected state. This lets the application choose to ask the user if they meant
+	 * to logout if it wishes, possibly preventing losing any unsaved changes, such as game progress, leaving a multiplayer match, or
+	 * similar.
+	 *
+	 * @see EOS_IntegratedPlatform_FinalizeDeferredUserLogout
+	 */
+	EOS_IPLA_DeferLogout = 1
+);
+
+/**
+ * Data passed to the application in the EOS_IntegratedPlatform_OnUserPreLogoutCallback function. This contains which user and associated
+ * Integrated Platform that was detected as logged-out.
+ */
+EOS_STRUCT(EOS_IntegratedPlatform_UserPreLogoutCallbackInfo, (
+	/** Context that was passed into EOS_IntegratedPlatform_SetUserPreLogoutCallback  */
+	void* ClientData;
+	/** The integrated platform the local user logged-out of. */
+	EOS_IntegratedPlatformType PlatformType;
+	/** String version of platform-dependent user id. */
+	const char* LocalPlatformUserId;
+	/** The Epic Games Account ID associated with this Integrated Platform's User (if there is one) */
+	EOS_EpicAccountId AccountId;
+	/** The EOS Product User ID associated with this Integrated Platform's User (if there is one) */
+	EOS_ProductUserId ProductUserId;
+));
+/**
+ * The callback function for when an integrated platform user is detected to have logged-out.
+ */
+EOS_DECLARE_CALLBACK_RETVALUE(EOS_EIntegratedPlatformPreLogoutAction, EOS_IntegratedPlatform_OnUserPreLogoutCallback, const EOS_IntegratedPlatform_UserPreLogoutCallbackInfo* Data);
+
+/** The most recent version of the EOS_IntegratedPlatform_ClearUserPreLogoutCallback API. */
+#define EOS_INTEGRATEDPLATFORM_CLEARUSERPRELOGOUTCALLBACK_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_IntegratedPlatform_ClearUserPreLogoutCallback function.
+ */
+EOS_STRUCT(EOS_IntegratedPlatform_ClearUserPreLogoutCallbackOptions, (
+	/** API Version: Set this to EOS_INTEGRATEDPLATFORM_CLEARUSERPRELOGOUTCALLBACK_API_LATEST. */
+	int32_t ApiVersion;
+));
+
+
+/** The most recent version of the EOS_IntegratedPlatform_FinalizeDeferredUserLogout API. */
+#define EOS_INTEGRATEDPLATFORM_FINALIZEDEFERREDUSERLOGOUT_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_IntegratedPlatform_FinalizeDeferredUserLogout function.
+ */
+EOS_STRUCT(EOS_IntegratedPlatform_FinalizeDeferredUserLogoutOptions, (
+	/** API Version: Set this to EOS_INTEGRATEDPLATFORM_FINALIZEDEFERREDUSERLOGOUT_API_LATEST. */
+	int32_t ApiVersion;
+
+	/** The integrated platform this user belongs to. */
+	EOS_IntegratedPlatformType PlatformType;
+
+	/** String version of the integrated platform-dependent user id. */
+	const char* LocalPlatformUserId;
+
+	/**
+	 * The logged-in state the user is expected to be (EOS_LS_LoggedIn or EOS_LS_NotLoggedIn). If the provided
+	 * state does not match internal EOS state, this function will return in failure. If the state is incorrect,
+	 * the application should wait and attempt to call the function again next tick, after both updating its own
+	 * state from the system and calling EOS_Platform_Tick, allowing the SDK to update its state from the system
+	 * as well.
+	 */
+	EOS_ELoginStatus ExpectedLoginStatus;
+));
 
 #pragma pack(pop)

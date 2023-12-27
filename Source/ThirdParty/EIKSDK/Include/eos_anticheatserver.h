@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_anticheatserver_types.h"
@@ -231,6 +231,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_RegisterEvent(EOS_HAntiCheatSe
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogEvent(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogEventOptions* Options);
 
@@ -245,6 +246,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogEvent(EOS_HAntiCheatServer 
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogGameRoundStart(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogGameRoundStartOptions* Options);
 
@@ -259,6 +261,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogGameRoundStart(EOS_HAntiChe
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogGameRoundEnd(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogGameRoundEndOptions* Options);
 
@@ -273,6 +276,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogGameRoundEnd(EOS_HAntiCheat
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerSpawn(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogPlayerSpawnOptions* Options);
 
@@ -288,6 +292,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerSpawn(EOS_HAntiCheatS
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerDespawn(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogPlayerDespawnOptions* Options);
 
@@ -302,6 +307,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerDespawn(EOS_HAntiChea
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerRevive(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogPlayerReviveOptions* Options);
 
@@ -316,6 +322,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerRevive(EOS_HAntiCheat
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerTick(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogPlayerTickOptions* Options);
 
@@ -330,6 +337,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerTick(EOS_HAntiCheatSe
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerUseWeapon(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogPlayerUseWeaponOptions* Options);
 
@@ -345,6 +353,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerUseWeapon(EOS_HAntiCh
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerUseAbility(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogPlayerUseAbilityOptions* Options);
 
@@ -359,5 +368,6 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerUseAbility(EOS_HAntiC
  *
  * @return EOS_Success - If the event was logged successfully
  *         EOS_InvalidParameters - If input data was invalid
+ *         EOS_NotConfigured - If called outside of BeginSession/EndSession boundaries
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_AntiCheatServer_LogPlayerTakeDamage(EOS_HAntiCheatServer Handle, const EOS_AntiCheatCommon_LogPlayerTakeDamageOptions* Options);

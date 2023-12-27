@@ -1,10 +1,10 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
 #include "eos_common.h"
 
-/*
+/**
  * This file contains the deprecated types for EOS AntiCheat Client. In a future version, these types will be removed.
  */
 

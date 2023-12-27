@@ -6,7 +6,7 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemEOS.h"
 
-bool UAntiCheatClient::RegisterAntiCheatClient(FString ServerName, FString ClientProductID)
+bool UAntiCheatClient::RegisterAntiCheatClient(FString ClientProductID)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
 	{
@@ -27,7 +27,7 @@ bool UAntiCheatClient::RegisterAntiCheatClient(FString ServerName, FString Clien
 				{
 					return true;
 				}
-				PrintAdvancedLogs(FString::Printf(TEXT("RegisterAntiCheatClient-> %hs"), EOS_EResult_ToString(Result)));
+				PrintAdvancedLogs(FString::Printf(TEXT("EOS_AntiCheatClient_BeginSession Result: %hs"), EOS_EResult_ToString(Result)));
 				return false;
 			}
 		}

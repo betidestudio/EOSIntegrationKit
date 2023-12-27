@@ -15,7 +15,8 @@ public class EIKShared : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
-				"EIKSDK"
+				"EIKSDK",
+				"Projects",
 			}
 		);
 	}

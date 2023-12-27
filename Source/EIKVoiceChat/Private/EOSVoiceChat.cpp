@@ -135,7 +135,6 @@ void FEOSVoiceChat::Initialize(const FOnVoiceChatInitializeCompleteDelegate& Ini
 
 					EOS_Platform_Options PlatformOptions = {};
 					PlatformOptions.ApiVersion = EOS_PLATFORM_OPTIONS_API_LATEST;
-					static_assert(EOS_PLATFORM_OPTIONS_API_LATEST == 12, "EOS_Platform_Options updated, check new fields");
 					PlatformOptions.Reserved = nullptr;
 					PlatformOptions.ProductId = ConfigProductId.IsEmpty() ? nullptr : Utf8ProductId.Get();
 					PlatformOptions.SandboxId = ConfigSandboxId.IsEmpty() ? nullptr : Utf8SandboxId.Get();
@@ -156,7 +155,6 @@ void FEOSVoiceChat::Initialize(const FOnVoiceChatInitializeCompleteDelegate& Ini
 
 					EOS_Platform_RTCOptions PlatformRTCOptions = {};
 					PlatformRTCOptions.ApiVersion = EOS_PLATFORM_RTCOPTIONS_API_LATEST;
-					static_assert(EOS_PLATFORM_RTCOPTIONS_API_LATEST == 1, "EOS_Platform_RTCOptions updated, check new fields");
 					PlatformOptions.RTCOptions = &PlatformRTCOptions;
 
 					EosPlatformHandle = EOSPlatformCreate(PlatformOptions);

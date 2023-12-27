@@ -25,7 +25,7 @@ public:
 	UPROPERTY(BlueprintAssignable, DisplayName="Failure")
 	FFindSessionByID_Delegate OnFail;
 	/*
-	 *This function is used to find a session by ID and return the result. The SessionID can be obtained from the CreateEIKSession function or CreateEIKLobby function.
+	This function is used to find a session by ID and return the result. The SessionID can be obtained from the CreateEIKSession function or CreateEIKLobby function.
 	@param SessionID - The ID of the session to find.
 	 
 	 Documentation link: https://eik.betide.studio/multiplayer/sessions/lobbies/

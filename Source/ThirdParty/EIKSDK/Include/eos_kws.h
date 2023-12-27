@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_kws_types.h"
@@ -7,7 +7,7 @@
  * This interface is not available for general access at this time.
  *
  * The KWS Interface exists as an integration for age gating functionality provided by Kids Web Services from SuperAwesome, using the EOS Connect interface.
- * 
+ *
  * All KWS Interface calls take a handle of type EOS_HKWS as the first parameter.
  * This handle can be retrieved from a EOS_HPlatform handle by using the EOS_Platform_GetKWSInterface function.
  *
