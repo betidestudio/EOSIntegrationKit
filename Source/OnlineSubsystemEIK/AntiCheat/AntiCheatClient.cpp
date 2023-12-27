@@ -6,6 +6,21 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemEOS.h"
 
+bool UAntiCheatClient::IsAntiCheatClientAvailable(const UObject* WorldContextObject)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			if(EOSRef->AntiCheatClientHandle)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 bool UAntiCheatClient::RegisterAntiCheatClient(FString ClientProductID)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
@@ -22,6 +37,7 @@ bool UAntiCheatClient::RegisterAntiCheatClient(FString ClientProductID)
 				Options.ApiVersion = EOS_ANTICHEATCLIENT_BEGINSESSION_API_LATEST;
 				Options.LocalUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*ClientProductID));
 				Options.Mode = EOS_EAntiCheatClientMode::EOS_ACCM_ClientServer;
+				
 				const EOS_EResult Result = EOS_AntiCheatClient_BeginSession(EOSRef->AntiCheatClientHandle, &Options);
 				if(Result == EOS_EResult::EOS_Success)
 				{

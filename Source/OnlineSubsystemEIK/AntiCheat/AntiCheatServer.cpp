@@ -7,6 +7,21 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemEOS.h"
 
+bool UAntiCheatServer::IsAntiCheatServerAvailable(const UObject* WorldContextObject)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			if(EOSRef->AntiCheatServerHandle)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void UAntiCheatServer::PrintAdvancedLogs(FString Log)
 {
 	if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
@@ -38,7 +53,8 @@ bool UAntiCheatServer::RegisterAntiCheatServer(FString ClientProductID)
 				EOS_AntiCheatServer_BeginSessionOptions Options = {};
 				Options.ApiVersion = EOS_ANTICHEATSERVER_BEGINSESSION_API_LATEST;
 				Options.RegisterTimeoutSeconds = EOS_ANTICHEATSERVER_BEGINSESSION_MAX_REGISTERTIMEOUT;
-				Options.ServerName = TCHAR_TO_UTF8(NAME_GameSession);
+				const FString LocalServerName = "GameSession";
+				Options.ServerName = TCHAR_TO_UTF8(*LocalServerName);
 				Options.bEnableGameplayData = EOS_FALSE;
 #if UE_SERVER
 				Options.LocalUserId = nullptr;

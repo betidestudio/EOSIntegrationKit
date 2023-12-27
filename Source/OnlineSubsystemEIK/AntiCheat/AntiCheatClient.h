@@ -23,6 +23,9 @@ class ONLINESUBSYSTEMEIK_API UAntiCheatClient : public UGameInstanceSubsystem
 
 public:
 
+	UFUNCTION(BlueprintPure, Category = "EOS Integration Kit|AntiCheat", meta = (WorldContext = "WorldContextObject"))
+	static bool IsAntiCheatClientAvailable(const UObject* WorldContextObject);
+
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|AntiCheat")
 	bool RegisterAntiCheatClient(FString ClientProductID);
 

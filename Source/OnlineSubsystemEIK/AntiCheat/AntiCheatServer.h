@@ -53,6 +53,9 @@ class ONLINESUBSYSTEMEIK_API UAntiCheatServer : public UGameInstanceSubsystem
 
 public:
 
+	UFUNCTION(BlueprintPure, Category = "EOS Integration Kit|AntiCheat", meta = (WorldContext = "WorldContextObject"))
+	static bool IsAntiCheatServerAvailable(const UObject* WorldContextObject);
+	
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|AntiCheat")
 	static void PrintAdvancedLogs(FString Log);
 
