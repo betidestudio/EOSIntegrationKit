@@ -51,6 +51,7 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 		{
 			if(bDelegateCalled == false)
 			{
+				UE_LOG(LogOnline, Warning, TEXT("EIK: SessionPtrRef is null"));
 				OnFail.Broadcast("");
 				SetReadyToDestroy();
 				bDelegateCalled = true;
@@ -61,6 +62,7 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 	{
 		if(bDelegateCalled == false)
 		{
+			UE_LOG(LogOnline, Warning, TEXT("EIK: SubsystemRef is null"));
 			OnFail.Broadcast("");
 			SetReadyToDestroy();
 			bDelegateCalled = true;
@@ -96,6 +98,7 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName VSessionName, 
 	{
 		if(bDelegateCalled == false)
 		{
+			UE_LOG(LogOnline, Warning, TEXT("EIK: CreateLobby failed and response was false. Check logs for more information."));
 			OnFail.Broadcast("");
 			SetReadyToDestroy();
 			bDelegateCalled = true;
