@@ -383,7 +383,7 @@ private:
 		TEOSCallback* CallbackThis = (TEOSCallback*)Data->ClientData;
 		check(CallbackThis);
 
-		if (CallbackThis->Owner.IsValid())
+		if (CallbackThis->Owner.IsValid() && CallbackThis->CallbackLambda)
 		{
 			check(CallbackThis->CallbackLambda);
 			CallbackThis->CallbackLambda(Data);
