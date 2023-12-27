@@ -20,7 +20,7 @@ jobs:
         BUILD_NUMBER=$((GITHUB_RUN_NUMBER % 1000))
 
         # Update the version in the file
-        jq --argjson MAJOR_VERSION $MAJOR_VERSION --arg BUILD_NUMBER $BUILD_NUMBER '.FileVersion = "\(.FileVersion + $MAJOR_VERSION * 1000 + $BUILD_NUMBER)" | .VersionName = "\($MAJOR_VERSION).0.\($BUILD_NUMBER)"' EOSIntegrationKit.uplugin > EOSIntegrationKit.uplugin.new
+        jq --argjson MAJOR_VERSION $MAJOR_VERSION --arg BUILD_NUMBER $BUILD_NUMBER '.FileVersion = "\(.FileVersion + $MAJOR_VERSION * 1000 + $BUILD_NUMBER | tostring)" | .VersionName = "\($MAJOR_VERSION).0.\($BUILD_NUMBER)"' EOSIntegrationKit.uplugin > EOSIntegrationKit.uplugin.new
         mv EOSIntegrationKit.uplugin.new EOSIntegrationKit.uplugin
 
     - name: Commit and push changes
