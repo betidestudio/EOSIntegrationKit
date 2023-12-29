@@ -1542,6 +1542,10 @@ void FUserManagerEOS::ResolveUniqueNetIds(const TArray<EOS_ProductUserId>& Produ
 
 			for (const EOS_ProductUserId& ProductUserId : ProductUserIdsToResolve)
 			{
+				if(ProductUserId == nullptr)
+				{
+					continue;
+				}
 				EOS_EpicAccountId EpicAccountId = nullptr;
 
 				GetEpicAccountIdFromProductUserId(ProductUserId, EpicAccountId);
@@ -1553,7 +1557,7 @@ void FUserManagerEOS::ResolveUniqueNetIds(const TArray<EOS_ProductUserId>& Produ
 
 			Callback(ResolvedUniqueNetIds);
 		};
-
+		
 		EOS_Connect_QueryProductUserIdMappings(EOSSubsystem->ConnectHandle, &QueryProductUserIdMappingsOptions, CallbackObj, CallbackObj->GetCallbackPtr());
 	}
 	else
