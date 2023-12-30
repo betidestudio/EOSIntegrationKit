@@ -24,7 +24,7 @@ void UEIK_SetPresence_AsyncFunction::SetPresence()
 		IOnlinePresencePtr Presence = Subsystem->GetPresenceInterface();
 		FOnlineUserPresenceStatus Status;
 
-		//Switch On Presence Status
+		/*//Switch On Presence Status
 		switch (PresenceStatus) 
 		{
 		case EPresenceStatus::PR_Online:
@@ -62,13 +62,14 @@ void UEIK_SetPresence_AsyncFunction::SetPresence()
 						UE_LOG(LogTemp, Log, TEXT("Presence Updated Successfully"));
 				}));
 		SetReadyToDestroy();
+	}*/
 	}
 }
 
-UEIK_SetPresence_AsyncFunction* UEIK_SetPresence_AsyncFunction::SetEOSPresence(FString RichPresense, EPresenceStatus PresenceStatus)
+UEIK_SetPresence_AsyncFunction* UEIK_SetPresence_AsyncFunction::SetEOSPresence(FString RichPresense)
 {
-	UEIK_SetPresence_AsyncFunction* Ueik_SetPresenceObject = NewObject< UEIK_SetPresence_AsyncFunction>();
-	Ueik_SetPresenceObject->RichPresense = RichPresense;
-	Ueik_SetPresenceObject->PresenceStatus = PresenceStatus;
-	return Ueik_SetPresenceObject;
+	UEIK_SetPresence_AsyncFunction* Obj = NewObject< UEIK_SetPresence_AsyncFunction>();
+	// Ueik_SetPresenceObject->RichPresence = RichPresense;
+	// Ueik_SetPresenceObject->PresenceStatus = PresenceStatus;
+	return Obj;
 }

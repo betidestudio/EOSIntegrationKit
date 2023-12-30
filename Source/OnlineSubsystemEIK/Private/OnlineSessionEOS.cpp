@@ -4344,14 +4344,22 @@ void FOnlineSessionEOS::CopyLobbyData(const TSharedRef<FLobbyDetailsEOS>& LobbyD
 
 	TArray<EOS_ProductUserId> TargetUserIds;
 	TargetUserIds.Reserve(Count);
+
+	EOS_LobbyDetails_GetLobbyOwnerOptions GetLobbyOwnerOptions = {};
+	GetLobbyOwnerOptions.ApiVersion = EOS_LOBBYDETAILS_GETLOBBYOWNER_API_LATEST;
+	EOS_ProductUserId OwnerID = EOS_LobbyDetails_GetLobbyOwner(LobbyDetails->LobbyDetailsHandle, &GetLobbyOwnerOptions);
+	TargetUserIds.Add(OwnerID);
 	for (int32 Index = 0; Index < Count; Index++)
 	{
 		EOS_LobbyDetails_GetMemberByIndexOptions GetMemberByIndexOptions = { };
 		GetMemberByIndexOptions.ApiVersion = EOS_LOBBYDETAILS_GETMEMBERBYINDEX_API_LATEST;
 		GetMemberByIndexOptions.MemberIndex = Index;
-
+		
 		EOS_ProductUserId TargetUserId = EOS_LobbyDetails_GetMemberByIndex(LobbyDetails->LobbyDetailsHandle, &GetMemberByIndexOptions);
-
+		if(TargetUserId == OwnerID || TargetUserId == nullptr || TargetUserId == EOS_ProductUserId())
+		{
+			continue;
+		}
 		TargetUserIds.Add(TargetUserId);
 	}
 
@@ -4359,7 +4367,6 @@ void FOnlineSessionEOS::CopyLobbyData(const TSharedRef<FLobbyDetailsEOS>& LobbyD
 	{
 		EOSSubsystem->UserManager->ResolveUniqueNetIds(TargetUserIds, [this, LobbyDetails, LobbyId = FUniqueNetIdEOSLobby::Create(LobbyDetailsInfo->LobbyId), OriginalCallback = Callback](TMap<EOS_ProductUserId, FUniqueNetIdEOSRef> ResolvedUniqueNetIds)
 			{
-				
 				FOnlineSession* Session = GetOnlineSessionFromLobbyId(*LobbyId);
 				if (Session)
 				{

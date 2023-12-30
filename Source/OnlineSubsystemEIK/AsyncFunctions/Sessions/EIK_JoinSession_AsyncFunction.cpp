@@ -22,25 +22,12 @@ void UEIK_JoinSession_AsyncFunction::Activate()
 void UEIK_JoinSession_AsyncFunction::JoinSession()
 {
 	const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld());
-	if(!Var_SessionToJoin.SessionName.IsEmpty())
+	if(SubsystemRef)
 	{
-		if(SubsystemRef)
+		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
-			if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
-			{
-				SessionPtrRef->OnJoinSessionCompleteDelegates.AddUObject(this, &UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted);
-				SessionPtrRef->JoinSession(0, FName(Var_SessionToJoin.SessionName),Var_SessionToJoin.SessionResult.OnlineResult);
-			}
-			else
-			{
-				if(bDelegateCalled)
-				{
-					return;
-				}
-				OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
-				bDelegateCalled = true;
-				SetReadyToDestroy();
-			}
+ 			SessionPtrRef->OnJoinSessionCompleteDelegates.AddUObject(this, &UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted);
+			SessionPtrRef->JoinSession(0, NAME_GameSession,Var_SessionToJoin.SessionResult.OnlineResult);
 		}
 		else
 		{
@@ -64,7 +51,6 @@ void UEIK_JoinSession_AsyncFunction::JoinSession()
 		SetReadyToDestroy();
 	}
 }
-
 void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
 	if (bDelegateCalled)
@@ -105,6 +91,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 					}
 					else
 					{
+						UE_LOG(LogTemp, Warning, TEXT("EIK: Could not retrieve address"));
 						OnFail.Broadcast(EEIKJoinResult::CouldNotRetrieveAddress, FString());
 						bDelegateCalled = true;
 						SetReadyToDestroy();

@@ -20,14 +20,15 @@ class ONLINESUBSYSTEMEIK_API UEIK_SetPresence_AsyncFunction : public UBlueprintA
 {
 	GENERATED_BODY()
 public:
-	FString RichPresense;
-	EPresenceStatus PresenceStatus;
+	FString RichPresence;
+	
+	//EPresenceStatus PresenceStatus;
 
 	virtual void Activate() override;
 
 	void SetPresence();
 
 	UFUNCTION(BlueprintCallable, DisplayName = "Set EOS Presence", meta = (BlueprintInternalUseOnly = "true"), Category = "EOS Integration Kit || Presence")
-		static UEIK_SetPresence_AsyncFunction* SetEOSPresence(FString RichPresense, EPresenceStatus PresenceStatus);
+	static UEIK_SetPresence_AsyncFunction* SetEOSPresence(FString RichPresense);//, EPresenceStatus PresenceStatus);
 
 };
