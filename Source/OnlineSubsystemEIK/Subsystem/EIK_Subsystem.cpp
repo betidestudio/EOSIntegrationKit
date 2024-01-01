@@ -1034,17 +1034,17 @@ void UEIK_Subsystem::OnFindSessionCompleted(bool bWasSuccess) const
 					TMap<FName, FString> AllSettingsWithData;
 					TMap<FName, FOnlineSessionSetting>::TIterator It(SessionSettings.Settings);
 
-					TMap<FString, FString> LocalArraySettings;
+					TMap<FString, FEIKAttribute> LocalArraySettings;
 					while (It)
 					{
 						const FName& SettingName = It.Key();
 						const FOnlineSessionSetting& Setting = It.Value();
 						FString SettingValueString = Setting.Data.ToString();
-						LocalArraySettings.Add(*SettingName.ToString(), *SettingValueString);
+						LocalArraySettings.Add(*SettingName.ToString(), FEIKAttribute(SettingValueString));
 						++It;
 					}
 					FSessionFindStruct LocalStruct;
-					LocalStruct.SessionName = LocalArraySettings.FindRef("SEARCHKEYWORDS");
+					LocalStruct.SessionName = "GameSession";
 					LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
 					LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections;
 					LocalStruct.SessionResult= SessionResult;
@@ -1229,6 +1229,10 @@ void UEIK_Subsystem::OnLeaderboardListCompleted(bool bWasSuccess) const
 {
 }
 
+void UEIK_Subsystem::OnFriendInviteAcceptedDestroySession(FName Name, bool bArg)
+{
+}
+
 void UEIK_Subsystem::OnSessionUserInviteAccepted(const bool bWasSuccessful, const int32 ControllerId,
                                                  FUniqueNetIdPtr UserId, const FOnlineSessionSearchResult& InviteResult)
 {
@@ -1238,10 +1242,13 @@ void UEIK_Subsystem::OnSessionUserInviteAccepted(const bool bWasSuccessful, cons
 		// Join the session
 		if (const IOnlineSessionPtr SessionInt = Online::GetSessionInterface(GetWorld()))
 		{
-			SessionInt->OnJoinSessionCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnJoinSessionCompleted);
-			const FString SessionName = InviteResult.GetSessionIdStr();
-			UE_LOG(LogTemp, Log, TEXT("User %s has accepted an invitation to join session %s"), *UserId->ToString(), *SessionName);
-			SessionInt->JoinSession(0, FName(*SessionName),InviteResult);
+			SessionInt->DestroySession(NAME_GameSession, FOnDestroySessionCompleteDelegate::CreateLambda(
+				[SessionInt,InviteResult,this,UserId](FName SessionName, bool bWasSuccessful)
+				{
+					SessionInt->OnJoinSessionCompleteDelegates.AddUObject(this, &UEIK_Subsystem::OnJoinSessionCompleted);
+					UE_LOG(LogTemp, Log, TEXT("User %s has accepted an invitation to join session"), *UserId->ToString());
+					SessionInt->JoinSession(0, NAME_GameSession,InviteResult);
+				}));
 		}
 	}
 	else

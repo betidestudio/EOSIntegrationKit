@@ -17,6 +17,84 @@
 #include "EIK_Subsystem.generated.h"
 
 
+UENUM(BlueprintType)
+enum EEIKAttributeType
+{
+	String,
+	Bool,
+	Integer
+};
+
+USTRUCT(BlueprintType)
+struct FEIKAttribute
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit")
+	TEnumAsByte<EEIKAttributeType> AttributeType = EEIKAttributeType::String;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit")
+	FString StringValue = "";
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit")
+	bool BoolValue = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit")
+	int32 IntValue = 0;
+	
+	FEIKAttribute()
+	{
+		AttributeType = EEIKAttributeType::String;
+		StringValue = "";
+		BoolValue = false;
+		IntValue = 0;
+	}
+	FVariantData GetVariantData() const
+	{
+		FVariantData VariantData;
+		switch (AttributeType)
+		{
+		case EEIKAttributeType::String:
+			VariantData.SetValue(StringValue);
+			break;
+		case EEIKAttributeType::Bool:
+			VariantData.SetValue(BoolValue);
+			break;
+		case EEIKAttributeType::Integer:
+			VariantData.SetValue(IntValue);
+			break;
+		default:
+			VariantData.SetValue(StringValue);
+			break;
+		}
+		return VariantData;
+	}
+
+	FEIKAttribute(FVariantData VariantData)
+	{
+		switch (VariantData.GetType())
+		{
+		case EOnlineKeyValuePairDataType::String:
+			AttributeType = EEIKAttributeType::String;
+			VariantData.GetValue(StringValue);
+			break;
+		case EOnlineKeyValuePairDataType::Bool:
+			AttributeType = EEIKAttributeType::Bool;
+			VariantData.GetValue(BoolValue);
+			break;
+		case EOnlineKeyValuePairDataType::Int32:
+			AttributeType = EEIKAttributeType::Integer;
+			VariantData.GetValue(IntValue);
+			break;
+		default:
+			AttributeType = EEIKAttributeType::String;
+			VariantData.GetValue(StringValue);
+			break;
+		}
+	}
+	
+};
+
 USTRUCT(BlueprintType)
 struct FOffersStruct
 {
@@ -62,7 +140,7 @@ struct FSessionFindStruct
 	FBlueprintSessionResult SessionResult = FBlueprintSessionResult();
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
-	TMap<FString, FString> SessionSettings = TMap<FString, FString>();
+	TMap<FString, FEIKAttribute> SessionSettings = TMap<FString, FEIKAttribute>();
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
 	FString SessionName = FString();
@@ -478,6 +556,7 @@ public:
 	FBP_GetTitleFile_Callback GetTitleFile_CallbackBP;
 
 	FOnSessionUserInviteAcceptedDelegate OnSessionUserInviteAcceptedDelegate;
+	void OnFriendInviteAcceptedDestroySession(FName Name, bool bArg);
 	void OnSessionUserInviteAccepted(const bool bWasSuccessful, const int32 ControllerId, FUniqueNetIdPtr UserId, const FOnlineSessionSearchResult& InviteResult);
 
 

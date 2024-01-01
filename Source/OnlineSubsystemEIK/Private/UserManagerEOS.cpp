@@ -419,9 +419,7 @@ struct FAuthCredentials :
 
 void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials)
 {
-
 	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
-
 	FString DisplayName = AccountCredentials.Id;
 	EOS_Connect_Credentials UserCredentials;
 	UserCredentials.Token = nullptr;
@@ -525,8 +523,10 @@ void FUserManagerEOS::CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountI
 		LoginNotificationCallback = CallbackObj;
 		CallbackObj->CallbackLambda = [this](const EOS_Connect_LoginStatusChangedCallbackInfo* Data)
 		{
-			UE_LOG_ONLINE(Display, TEXT("AddNotifyLoginStatusChanged Lambda"));
-			// LoginStatusChanged(Data);	
+			if(Data->CurrentStatus == EOS_ELoginStatus::EOS_LS_NotLoggedIn)
+			{
+				LoginWithDeviceID(*LocalUserNumToLastLoginCredentials[0]);
+			}	
 		};
 
 		EOS_Connect_AddNotifyLoginStatusChangedOptions Options = { };

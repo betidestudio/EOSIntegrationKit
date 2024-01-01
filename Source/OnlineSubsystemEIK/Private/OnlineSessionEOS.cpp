@@ -612,7 +612,6 @@ FOnlineSession* FOnlineSessionEOS::GetOnlineSessionFromLobbyId(const FUniqueNetI
 
 void FOnlineSessionEOS::RegisterLobbyNotifications()
 {
-	UE_LOG(LogTemp, Warning, TEXT("RegisterLobbyNotifications LALALA"));
 	// Lobby data updates
 	EOS_Lobby_AddNotifyLobbyUpdateReceivedOptions AddNotifyLobbyUpdateReceivedOptions = { 0 };
 	AddNotifyLobbyUpdateReceivedOptions.ApiVersion = EOS_LOBBY_ADDNOTIFYLOBBYUPDATERECEIVED_API_LATEST;

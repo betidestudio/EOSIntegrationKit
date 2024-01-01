@@ -2,7 +2,7 @@
 
 
 #include "EIK_CreateLobby_AsyncFunction.h"
-
+#include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 #include "Online/OnlineSessionNames.h"
 
 void UEIK_CreateLobby_AsyncFunction::Activate()
@@ -41,7 +41,7 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 				}
 				FOnlineSessionSetting Setting;
 				Setting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
-				Setting.Data.SetValue(Settings_SingleValue.Value);
+				Setting.Data = Settings_SingleValue.Value.GetVariantData();
 				SessionCreationInfo.Set(FName(*Settings_SingleValue.Key), Setting);
 			}
 			SessionPtrRef->OnCreateSessionCompleteDelegates.AddUObject(this, &UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted);
@@ -106,7 +106,7 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName VSessionName, 
 	}
 }
 
-UEIK_CreateLobby_AsyncFunction* UEIK_CreateLobby_AsyncFunction::CreateEIKLobby(TMap<FString, FString> SessionSettings,
+UEIK_CreateLobby_AsyncFunction* UEIK_CreateLobby_AsyncFunction::CreateEIKLobby(TMap<FString, FEIKAttribute> SessionSettings,
 	int32 NumberOfPublicConnections, FCreateLobbySettings ExtraSettings)
 {
 	UEIK_CreateLobby_AsyncFunction* Ueik_CreateLobbyObject= NewObject<UEIK_CreateLobby_AsyncFunction>();

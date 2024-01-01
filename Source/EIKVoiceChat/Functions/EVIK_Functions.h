@@ -20,7 +20,7 @@ class EIKVOICECHAT_API UEVIK_Functions : public UBlueprintFunctionLibrary
 
 public:
     // Initializes the EOS Voice Chat system.
-	UFUNCTION(BlueprintCallable, DisplayName="Intialize EOS Voice Chat", Category="EVIK", meta=(WorldContext="WorldContextObject"))
+	UFUNCTION(BlueprintCallable, DisplayName="Initialize EOS Voice Chat", Category="EVIK", meta=(WorldContext="WorldContextObject"))
 	static bool InitializeEOSVoiceChat(const UObject* WorldContextObject);
 
     // Connects the player to the EOS Voice Chat system.

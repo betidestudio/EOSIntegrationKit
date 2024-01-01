@@ -63,7 +63,7 @@ class ONLINESUBSYSTEMEIK_API UEIK_CreateLobby_AsyncFunction : public UBlueprintA
 
 public:
 	int32 NumberOfPublicConnections;
-	TMap<FString, FString> SessionSettings;
+	TMap<FString, FEIKAttribute> SessionSettings;
 	FCreateLobbySettings Var_CreateLobbySettings;
 	bool bDelegateCalled = false;
 	
@@ -86,5 +86,5 @@ public:
 	Documentation link: https://eik.betide.studio/multiplayer/sessions/lobbies/
 	*/
 	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Lobby",meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
-	static UEIK_CreateLobby_AsyncFunction* CreateEIKLobby(TMap<FString, FString> SessionSettings, int32 NumberOfPublicConnections = 0, FCreateLobbySettings ExtraSettings = FCreateLobbySettings());
+	static UEIK_CreateLobby_AsyncFunction* CreateEIKLobby(TMap<FString, FEIKAttribute> SessionSettings, int32 NumberOfPublicConnections = 0, FCreateLobbySettings ExtraSettings = FCreateLobbySettings());
 };

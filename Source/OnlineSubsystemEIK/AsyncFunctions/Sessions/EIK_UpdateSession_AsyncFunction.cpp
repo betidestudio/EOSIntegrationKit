@@ -3,12 +3,11 @@
 #include "EIK_UpdateSession_AsyncFunction.h"
 
 
-UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSessions(UObject* WorldContextObject, FName SessionName,TMap<FString, FString> SessionSettings, bool bShouldAdvertise, bool bAllowJoinInProgress, bool bAllowInvites, bool bUsesPresence, int32 NumberOfPublicConnections,int32 NumberOfPrivateConnections,bool bRefreshOnlineData)
+UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSessions(UObject* WorldContextObject,TMap<FString, FString> SessionSettings, bool bShouldAdvertise, bool bAllowJoinInProgress, bool bAllowInvites, bool bUsesPresence, int32 NumberOfPublicConnections,int32 NumberOfPrivateConnections,bool bRefreshOnlineData)
 {
 	UEIK_UpdateSession_AsyncFunction* UpdateSession = NewObject<UEIK_UpdateSession_AsyncFunction>();
 	UpdateSession->Var_WorldContextObject = WorldContextObject;
 	UpdateSession->Var_SessionSettings = SessionSettings;
-	UpdateSession->Var_SessionName = SessionName;
 	UpdateSession->Var_bShouldAdvertise = bShouldAdvertise;
 	UpdateSession->Var_bAllowJoinInProgress = bAllowJoinInProgress;
 	UpdateSession->Var_bAllowInvites = bAllowInvites;
@@ -57,7 +56,7 @@ void UEIK_UpdateSession_AsyncFunction::Activate()
 				SessionSettings.Settings.Add( FName(*Settings_SingleValue.Key), Setting);
 			}
 			SessionPtrRef->OnUpdateSessionCompleteDelegates.AddUObject(this, &UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete);
-			SessionPtrRef->UpdateSession(Var_SessionName, SessionSettings, Var_bRefreshOnlineData);
+			SessionPtrRef->UpdateSession(NAME_GameSession, SessionSettings, Var_bRefreshOnlineData);
  		}
 		else
 		{

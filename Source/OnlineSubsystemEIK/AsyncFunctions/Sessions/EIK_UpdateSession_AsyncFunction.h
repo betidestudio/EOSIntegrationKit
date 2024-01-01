@@ -18,10 +18,9 @@ class ONLINESUBSYSTEMEIK_API UEIK_UpdateSession_AsyncFunction : public UBlueprin
 public:
 
 	UFUNCTION(BlueprintCallable, DisplayName="Update EIK Session",meta = (BlueprintInternalUseOnly = "true",  WorldContext = "WorldContextObject"), Category="EOS Integration Kit || Sessions")
-	static UEIK_UpdateSession_AsyncFunction* UpdateEIKSessions(UObject* WorldContextObject, FName SessionName,TMap<FString, FString> SessionSettings, bool bShouldAdvertise = true, bool bAllowJoinInProgress = true, bool bAllowInvites = true, bool bUsesPresence = false, int32 NumberOfPublicConnections = 10,int32 NumberOfPrivateConnections = 10,bool bRefreshOnlineData = true);
+	static UEIK_UpdateSession_AsyncFunction* UpdateEIKSessions(UObject* WorldContextObject, TMap<FString, FString> SessionSettings, bool bShouldAdvertise = true, bool bAllowJoinInProgress = true, bool bAllowInvites = true, bool bUsesPresence = false, int32 NumberOfPublicConnections = 10,int32 NumberOfPrivateConnections = 10,bool bRefreshOnlineData = true);
 	UObject* Var_WorldContextObject;
 	TMap<FString, FString> Var_SessionSettings;
-	FName Var_SessionName;
 	bool Var_bShouldAdvertise;
 	bool Var_bAllowJoinInProgress;
 	bool Var_bAllowInvites;

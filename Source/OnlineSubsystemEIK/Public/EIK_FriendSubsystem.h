@@ -16,12 +16,6 @@ class ONLINESUBSYSTEMEIK_API UEIK_FriendSubsystem : public USubsystem
 
 public:
 
-	void AddFriend(FString FriendProductId);
-	void RemoveFriend(FString FriendProductId);
-	void GetFriends();
-	void GetFriendsStatus();
-	void GetFriendsPresence();
-	void GetFriendsAvatar();
 
 
 
@@ -29,6 +23,6 @@ public:
 
 
 
-	void OnWriteFileComplete(bool bSuccess, const FUniqueNetId& UserID, const FString& Var_FileName);
+
 
 };

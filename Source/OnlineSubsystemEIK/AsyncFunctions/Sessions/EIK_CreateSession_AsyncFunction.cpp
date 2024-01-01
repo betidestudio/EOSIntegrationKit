@@ -20,34 +20,33 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 		if(IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
 			FOnlineSessionSettings SessionCreationInfo;
-			SessionCreationInfo.bIsDedicated = bIsDedicatedServer;
-			SessionCreationInfo.bUsesPresence =true;
-			SessionCreationInfo.bAllowJoinViaPresence = true;
-			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = false;
+			SessionCreationInfo.bIsDedicated = DedicatedServerSettings.bIsDedicatedServer;
+			SessionCreationInfo.bUsesPresence = ExtraSettings.bUsePresence;
+			SessionCreationInfo.bAllowJoinViaPresence = ExtraSettings.bAllowJoinViaPresence;
+			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = ExtraSettings.bAllowJoinViaPresenceFriendsOnly;
 			SessionCreationInfo.bAllowInvites = true;
-			if(bIsDedicatedServer)
+			if(DedicatedServerSettings.bIsDedicatedServer)
 			{
 				SessionCreationInfo.bUsesPresence = false;
 				SessionCreationInfo.bAllowJoinViaPresence = false;
 				SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = false;
 				SessionCreationInfo.bAllowInvites = false;
 			}
-			SessionCreationInfo.bIsLANMatch = bIsLan;
+			SessionCreationInfo.bIsLANMatch = false;
 			SessionCreationInfo.NumPublicConnections = NumberOfPublicConnections;
-			SessionCreationInfo.NumPrivateConnections = NumberOfPrivateConnections;
+			SessionCreationInfo.NumPrivateConnections = ExtraSettings.NumberOfPrivateConnections;
 			SessionCreationInfo.bUseLobbiesIfAvailable = false;
 			SessionCreationInfo.bUseLobbiesVoiceChatIfAvailable = false;
-			SessionCreationInfo.bShouldAdvertise = bShouldAdvertise;
-			SessionCreationInfo.bAllowJoinInProgress = bAllowJoinInProgress;
+			SessionCreationInfo.bShouldAdvertise = ExtraSettings.bShouldAdvertise;
+			SessionCreationInfo.bAllowJoinInProgress = ExtraSettings.bAllowJoinInProgress;
 			
-			SessionCreationInfo.Settings.Add( FName(TEXT("REGIONINFO")), FOnlineSessionSetting(UEnum::GetValueAsString(Region), EOnlineDataAdvertisementType::ViaOnlineService));
-			if(bIsDedicatedServer)
+			SessionCreationInfo.Settings.Add( FName(TEXT("REGIONINFO")), FOnlineSessionSetting(UEnum::GetValueAsString(ExtraSettings.Region), EOnlineDataAdvertisementType::ViaOnlineService));
+			if(DedicatedServerSettings.bIsDedicatedServer)
 			{
-				FString Port = iPortToUse;					
+				FString Port = FString::FromInt(DedicatedServerSettings.PortInfo);				
 				SessionCreationInfo.Settings.Add( FName(TEXT("PortInfo")), FOnlineSessionSetting(Port, EOnlineDataAdvertisementType::ViaOnlineService));
 				SessionCreationInfo.Settings.Add( FName(TEXT("IsDedicatedServer")), FOnlineSessionSetting(true, EOnlineDataAdvertisementType::ViaOnlineService));
 			}
-			SessionCreationInfo.Set(SEARCH_KEYWORDS, FString(SessionName), EOnlineDataAdvertisementType::ViaOnlineService);
 			for (auto& Settings_SingleValue : SessionSettings)
 			{
 				if (Settings_SingleValue.Key.Len() == 0)
@@ -57,11 +56,11 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 
 				FOnlineSessionSetting Setting;
 				Setting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
-				Setting.Data.SetValue(Settings_SingleValue.Value);
+				Setting.Data = Settings_SingleValue.Value.GetVariantData();
 				SessionCreationInfo.Set(FName(*Settings_SingleValue.Key), Setting);
 			}
 			SessionPtrRef->OnCreateSessionCompleteDelegates.AddUObject(this, &UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted);
-			SessionPtrRef->CreateSession(0,*SessionName,SessionCreationInfo);
+			SessionPtrRef->CreateSession(0,NAME_GameSession,SessionCreationInfo);
 		}
 		else
 		{
@@ -90,7 +89,20 @@ void UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted(FName VSessionNa
 	{
 		if(bDelegateCalled == false)
 		{
-			OnSuccess.Broadcast(VSessionName);
+			const IOnlineSessionPtr Sessions = IOnlineSubsystem::Get()->GetSessionInterface();
+			if(const FOnlineSession* CurrentSession = Sessions->GetNamedSession(NAME_GameSession))
+			{
+				OnSuccess.Broadcast(CurrentSession->SessionInfo.Get()->GetSessionId().ToString());
+				bDelegateCalled = true;
+				SetReadyToDestroy();
+			}
+			else
+			{
+				OnSuccess.Broadcast("");
+				bDelegateCalled = true;
+				SetReadyToDestroy();
+			}
+			OnSuccess.Broadcast("");
 			bDelegateCalled = true;
 			SetReadyToDestroy();
 		}
@@ -106,20 +118,14 @@ void UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted(FName VSessionNa
 	}
 }
 
-UEIK_CreateSession_AsyncFunction* UEIK_CreateSession_AsyncFunction::CreateEIKSession(FString SessionName,
-                                                                                     bool bIsDedicatedServer, bool bIsLan, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections,
-                                                                                     bool bShouldAdvertise, bool bAllowJoinInProgress, ERegionInfo Region, TMap<FString, FString> SessionSettings, FString PortToUse)
+UEIK_CreateSession_AsyncFunction* UEIK_CreateSession_AsyncFunction::CreateEIKSession(
+	TMap<FString, FEIKAttribute> SessionSettings, int32 NumberOfPublicConnections,
+	FDedicatedServerSettings DedicatedServerSettings, FCreateSessionExtraSettings ExtraSettings)
 {
 	UEIK_CreateSession_AsyncFunction* Ueik_CreateSessionObject= NewObject<UEIK_CreateSession_AsyncFunction>();
-	Ueik_CreateSessionObject->Region = Region;
-	Ueik_CreateSessionObject->SessionName = SessionName;
-	Ueik_CreateSessionObject->bIsDedicatedServer = bIsDedicatedServer;
-	Ueik_CreateSessionObject->bIsLan = bIsLan;
-	Ueik_CreateSessionObject->NumberOfPublicConnections = NumberOfPublicConnections;
-	Ueik_CreateSessionObject->NumberOfPrivateConnections = NumberOfPrivateConnections;
-	Ueik_CreateSessionObject->bShouldAdvertise = bShouldAdvertise;
-	Ueik_CreateSessionObject->bAllowJoinInProgress = bAllowJoinInProgress;
 	Ueik_CreateSessionObject->SessionSettings = SessionSettings;
-	Ueik_CreateSessionObject->iPortToUse = PortToUse;
+	Ueik_CreateSessionObject->NumberOfPublicConnections = NumberOfPublicConnections;
+	Ueik_CreateSessionObject->DedicatedServerSettings = DedicatedServerSettings;
+	Ueik_CreateSessionObject->ExtraSettings = ExtraSettings;
 	return Ueik_CreateSessionObject;
 }

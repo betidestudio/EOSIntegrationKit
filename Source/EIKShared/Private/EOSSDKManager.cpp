@@ -434,7 +434,6 @@ IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(const FString& PlatformConf
 	const FTCHARToUTF8 Utf8DeploymentId(*PlatformConfig->DeploymentId);
 	const FTCHARToUTF8 Utf8CacheDirectory(*PlatformConfig->CacheDirectory);
 
-	static_assert(EOS_PLATFORM_OPTIONS_API_LATEST == 13, "EOS_Platform_Options updated");
 	EOS_Platform_Options PlatformOptions = {};
 	PlatformOptions.ApiVersion = EOS_PLATFORM_OPTIONS_API_LATEST;
 	PlatformOptions.Reserved = nullptr;
@@ -456,7 +455,6 @@ IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(const FString& PlatformConf
 	PlatformOptions.CacheDirectory = Utf8CacheDirectory.Length() ? Utf8DeploymentId.Get() : nullptr;
 	PlatformOptions.TickBudgetInMilliseconds = PlatformConfig->TickBudgetInMilliseconds;
 
-	static_assert(EOS_PLATFORM_RTCOPTIONS_API_LATEST == 2, "EOS_Platform_RTCOptions updated");
 	EOS_Platform_RTCOptions PlatformRTCOptions = {};
 	PlatformRTCOptions.ApiVersion = EOS_PLATFORM_RTCOPTIONS_API_LATEST;
 	PlatformRTCOptions.PlatformSpecificOptions = nullptr;
