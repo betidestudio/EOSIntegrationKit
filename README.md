@@ -1,4 +1,4 @@
-<h1 align="center" id="title">EOS Integration Kit</h1>
+<h1 align="center" id="title">EOS Integration Kit V3</h1>
 
 <p align="center"><img src="https://socialify.git.ci/betidestudio/EOSIntegrationKit/image?description=1&amp;descriptionEditable=Integrate%20EOS%20in%20few%20clicks%2C%20or%20that%27s%20what%20we%20want%20%3B)&amp;font=Inter&amp;forks=1&amp;language=1&amp;name=1&amp;pattern=Plus&amp;stargazers=1&amp;theme=Auto" alt="project-image" width="600" height="338/"></p>
 
