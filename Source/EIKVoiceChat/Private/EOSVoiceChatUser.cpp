@@ -2077,8 +2077,19 @@ void FEOSVoiceChatUser::OnChannelDisconnected(const EOS_RTC_DisconnectedCallback
 		else
 		{
 			ChannelSession->JoinState = EChannelJoinState::NotJoined;
-					
+
+			TArray<UEIK_Voice_Subsystem*> Objects;
+			for (TObjectIterator<UEIK_Voice_Subsystem> Itr; Itr; ++Itr)
+			{
+				Objects.Add(*Itr);
+			}
+			if(Objects[0])
+			{
+				Objects[0]->OnChannelExited.Broadcast(ChannelName, EOS_EResult_ToString(CallbackInfo->ResultCode));
+			}
+			
 			OnVoiceChatChannelExitedDelegate.Broadcast(ChannelName, Result);
+			EOS_EResult_ToString(CallbackInfo->ResultCode);
 
 			RemoveChannelSession(ChannelName);
 		}
@@ -2184,7 +2195,15 @@ void FEOSVoiceChatUser::OnChannelParticipantStatusChanged(const EOS_RTC_Particip
 					FString Value(UTF8_TO_TCHAR(CallbackInfo->ParticipantMetadata[i].Value));
 					Metadata.Emplace(FVoiceChatMetadataItem{ MoveTemp(Key), MoveTemp(Value) });
 				}
-
+				TArray<UEIK_Voice_Subsystem*> Objects;
+				for (TObjectIterator<UEIK_Voice_Subsystem> Itr; Itr; ++Itr)
+				{
+					Objects.Add(*Itr);
+				}
+				if(Objects[0])
+				{
+					Objects[0]->OnPlayerAdded.Broadcast(ChannelName, PlayerName);
+				}
 				OnVoiceChatPlayerAddedDelegate.Broadcast(ChannelName, PlayerName);
 				FEIKVoiceChatDelegates::OnVoiceChatPlayerAddedMetadata.Broadcast(LoginSession.PlayerName, ChannelName, PlayerName, Metadata);
 

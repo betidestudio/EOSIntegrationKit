@@ -66,7 +66,9 @@ public:
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FEIKResultDelegate, bool, bWasSuccess, EEVIKResultCodes, Result);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FEIKRoomTokenResultDelegate, bool, bWasSuccess, FString, RoomData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_OnPlayerAdded, FString, ChannelName, FString, PlayerName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_OnPlayerRemoved, FString, ChannelName, FString, PlayerName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_OnChannelExited, FString, ChannelName, FString, Result);
 /**
  * 
  */
@@ -105,6 +107,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Voice Chat")
 	FEIK_OnPlayerRemoved OnPlayerRemoved;
+
+	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Voice Chat")
+	FEIK_OnPlayerAdded OnPlayerAdded;
+
+	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Voice Chat")
+	FEIK_OnChannelExited OnChannelExited;
 
 	bool bIsPositionalVoiceChatUsed = false;
 	bool bUseDebugPoint = false;
