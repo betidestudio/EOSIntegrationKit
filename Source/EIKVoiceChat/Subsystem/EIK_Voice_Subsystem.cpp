@@ -55,7 +55,6 @@ void UEIK_Voice_Subsystem::ForceUpdateOutputVolume(bool bUseThisVolume, bool bUs
 	bUseOutputVolume = bUseThisVolume;
 	bUseOutputVolumeWithPositionalChat = bUseWithPositionalChat;
 	OutputVolume = FMath::Clamp(Volume, 0.0f, 1.0f);
-	return;
 }
 
 void UEIK_Voice_Subsystem::PlayerListUpdated()

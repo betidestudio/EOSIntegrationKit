@@ -42,10 +42,10 @@ struct FDeviceEVIKSettings
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EVIK")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EOS Integration Kit|Voice Chat")
 	FString ID;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EVIK")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EOS Integration Kit|Voice Chat")
 	FString DisplayName;
 	
 };
@@ -56,17 +56,17 @@ struct FEVIKPlayerList
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EVIK")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EOS Integration Kit|Voice Chat")
 	FString PlayerEOSVoiceChatName;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EVIK")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EOS Integration Kit|Voice Chat")
 	AActor* PlayerActor = nullptr;
 	
 };
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FEIKResultDelegate, bool, bWasSuccess, EEVIKResultCodes, Result);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FEIKRoomTokenResultDelegate, bool, bWasSuccess, FString, RoomData);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_OnPlayerRemoved, FString, ChannelName, FString, PlayerName);
 /**
  * 
  */
@@ -77,21 +77,21 @@ class EIKVOICECHAT_API UEIK_Voice_Subsystem : public UGameInstanceSubsystem
 
 public:
 
-	UFUNCTION(Category="EVIK")
+	UFUNCTION(Category="EOS Integration Kit|Voice Chat")
 	bool EVIK_Local_Initialize();
 	
 	IVoiceChat* EVIK_Local_GetVoiceChat();
 
-	UFUNCTION(Category="EVIK")
+	UFUNCTION(Category="EOS Integration Kit|Voice Chat")
 	void EVIK_Local_Connect(const FEIKResultDelegate& ResultDelegate);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category="EVIK")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category="EOS Integration Kit|Voice Chat")
 	void SetupPlayerList(const TArray<FEVIKPlayerList>& PlayerList);
 
-	UFUNCTION(BlueprintCallable, Category="EVIK")
+	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit|Voice Chat")
 	void UpdatePositionalVoiceChat(bool UsePositionalVoiceChat, float FMaxHearingDistance, bool V_bUseDebugPoint, FVector V_DebugPointLocation);
 
-	UFUNCTION(BlueprintCallable, Category="EVIK")
+	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit|Voice Chat")
 	void ForceUpdateOutputVolume(bool bUseThisVolume, bool bUseWithPositionalChat,float Volume);
 	FTimerHandle UpdatePositionalVoiceChatTimerHandle;
 
@@ -102,6 +102,9 @@ public:
 
 	UPROPERTY(ReplicatedUsing= PlayerListUpdated)
 	TArray<FEVIKPlayerList> PlayerListVar;
+
+	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Voice Chat")
+	FEIK_OnPlayerRemoved OnPlayerRemoved;
 
 	bool bIsPositionalVoiceChatUsed = false;
 	bool bUseDebugPoint = false;

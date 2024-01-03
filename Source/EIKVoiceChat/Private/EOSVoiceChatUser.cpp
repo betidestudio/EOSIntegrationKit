@@ -2205,6 +2205,15 @@ void FEOSVoiceChatUser::OnChannelParticipantStatusChanged(const EOS_RTC_Particip
 		{
 			ChannelSession->Participants.Remove(PlayerName);
 			OnVoiceChatPlayerRemovedDelegate.Broadcast(ChannelSession->ChannelName, PlayerName);
+			TArray<UEIK_Voice_Subsystem*> Objects;
+			for (TObjectIterator<UEIK_Voice_Subsystem> Itr; Itr; ++Itr)
+			{
+				Objects.Add(*Itr);
+			}
+			if(Objects[0])
+			{
+				Objects[0]->OnPlayerRemoved.Broadcast(ChannelSession->ChannelName, PlayerName);
+			}
 		}
 		else
 		{
