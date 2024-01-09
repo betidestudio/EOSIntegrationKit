@@ -134,19 +134,19 @@ bool UEIK_BlueprintFunctions::ShowFriendsList()
 	}
 }
 
-bool UEIK_BlueprintFunctions::StartSession(FName SessionName)
+bool UEIK_BlueprintFunctions::StartSession()
 {
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
-			return SessionPtrRef->StartSession(SessionName);
+			return SessionPtrRef->StartSession(NAME_GameSession);
 		}
 	}
 	return false;
 }
 
-bool UEIK_BlueprintFunctions::RegisterPlayer(FName SessionName, FEIKUniqueNetId PlayerId, bool bWasInvited)
+bool UEIK_BlueprintFunctions::RegisterPlayer(FEIKUniqueNetId PlayerId, bool bWasInvited)
 {
 	if(!PlayerId.UniqueNetId.IsValid())
 	{
@@ -158,14 +158,14 @@ bool UEIK_BlueprintFunctions::RegisterPlayer(FName SessionName, FEIKUniqueNetId 
 		{
 			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
-				return SessionPtrRef->RegisterPlayer(SessionName, PlayerId.UniqueNetId.ToSharedRef().Get(),bWasInvited);
+				return SessionPtrRef->RegisterPlayer(NAME_GameSession, PlayerId.UniqueNetId.ToSharedRef().Get(),bWasInvited);
 			}
 		}
 	}
 	return false;
 }
 
-bool UEIK_BlueprintFunctions::UnRegisterPlayer(FName SessionName, FEIKUniqueNetId PlayerId)
+bool UEIK_BlueprintFunctions::UnRegisterPlayer( FEIKUniqueNetId PlayerId)
 {
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
@@ -173,20 +173,20 @@ bool UEIK_BlueprintFunctions::UnRegisterPlayer(FName SessionName, FEIKUniqueNetI
 		{
 			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
-				return SessionPtrRef->UnregisterPlayer(SessionName, PlayerId.UniqueNetId.ToSharedRef().Get());
+				return SessionPtrRef->UnregisterPlayer(NAME_GameSession, PlayerId.UniqueNetId.ToSharedRef().Get());
 			}
 		}
 	}
 	return false;
 }
 
-bool UEIK_BlueprintFunctions::EndSession(FName SessionName)
+bool UEIK_BlueprintFunctions::EndSession()
 {
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
-			return SessionPtrRef->EndSession(SessionName);
+			return SessionPtrRef->EndSession(NAME_GameSession);
 		}
 		else
 		{
@@ -199,14 +199,13 @@ bool UEIK_BlueprintFunctions::EndSession(FName SessionName)
 	}
 }
 
-bool UEIK_BlueprintFunctions::IsInSession(FName SessionName, FEIKUniqueNetId PlayerId)
+bool UEIK_BlueprintFunctions::IsInSession(FEIKUniqueNetId PlayerId)
 {
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("PlayerId.UniqueNetId.IsValid() %s"), PlayerId.UniqueNetId.IsValid() ? TEXT("true") : TEXT("false"));
-			return SessionPtrRef->IsPlayerInSession(SessionName, PlayerId.UniqueNetId.ToSharedRef().Get());
+			return SessionPtrRef->IsPlayerInSession(NAME_GameSession, PlayerId.UniqueNetId.ToSharedRef().Get());
 		}
 	}
 	return false;
