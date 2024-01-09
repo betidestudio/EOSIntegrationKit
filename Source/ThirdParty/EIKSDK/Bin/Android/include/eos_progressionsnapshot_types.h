@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -48,7 +48,7 @@ EOS_STRUCT(EOS_ProgressionSnapshot_EndSnapshotOptions, (
 ));
 
 EOS_STRUCT(EOS_ProgressionSnapshot_SubmitSnapshotCallbackInfo, (
-	/* The EOS_EResult code for the operation. EOS_Success indicates that the operation succeeded; other codes indicate errors. */
+	/** The EOS_EResult code for the operation. EOS_Success indicates that the operation succeeded; other codes indicate errors. */
 	EOS_EResult ResultCode;
 	/** The Snapshot Id used in the Submit function. */
 	uint32_t SnapshotId;
@@ -67,7 +67,7 @@ EOS_STRUCT(EOS_ProgressionSnapshot_DeleteSnapshotOptions, (
 ));
 
 EOS_STRUCT(EOS_ProgressionSnapshot_DeleteSnapshotCallbackInfo, (
-	/* The EOS_EResult code for the operation. EOS_Success indicates that the operation succeeded; other codes indicate errors. */
+	/** The EOS_EResult code for the operation. EOS_Success indicates that the operation succeeded; other codes indicate errors. */
 	EOS_EResult ResultCode;
 	/** The Product User ID of the local user to whom the key/value pair belong */
 	EOS_ProductUserId LocalUserId;

@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_init.h"
@@ -28,6 +28,7 @@
 #include "eos_rtc_admin_types.h"
 #include "eos_progressionsnapshot_types.h"
 #include "eos_custominvites_types.h"
+#include "eos_integratedplatform_types.h"
 
 /**
  * The Platform Instance is used to gain access to all other Epic Online Service interfaces and to drive internal operations through the Tick.
@@ -287,6 +288,15 @@ EOS_DECLARE_FUNC(EOS_HKWS) EOS_Platform_GetKWSInterface(EOS_HPlatform Handle);
 EOS_DECLARE_FUNC(EOS_HCustomInvites) EOS_Platform_GetCustomInvitesInterface(EOS_HPlatform Handle);
 
 /**
+ * Get a handle to the Integrated Platform Interface.
+ * @return EOS_HIntegratedPlatform handle
+ *
+ * @see eos_integratedplatform.h
+ * @see eos_integratedplatform_types.h
+ */
+EOS_DECLARE_FUNC(EOS_HIntegratedPlatform) EOS_Platform_GetIntegratedPlatformInterface(EOS_HPlatform Handle);
+
+/**
  * This only will return the value set as the override otherwise EOS_NotFound is returned.
  * This is not currently used for anything internally.
  *
@@ -394,7 +404,14 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_Platform_SetOverrideCountryCode(EOS_HPlatform 
 EOS_DECLARE_FUNC(EOS_EResult) EOS_Platform_SetOverrideLocaleCode(EOS_HPlatform Handle, const char* NewLocaleCode);
 
 /**
- * Checks if the app was launched through the Epic Launcher, and relaunches it through the Epic Launcher if it wasn't.
+ * Checks if the app was launched through the Epic Games Launcher, and relaunches it through the Epic Games Launcher if it wasn't.
+ *
+ * NOTE: During the call to EOS_Platform_Create, the command line that was used to launch the app is inspected, and if it is
+ * recognized as coming from the Epic Games Launcher, an environment variable is set to 1. The name of the environment variable
+ * is defined by EOS_PLATFORM_CHECKFORLAUNCHERANDRESTART_ENV_VAR.
+ *
+ * You can force the EOS_Platform_CheckForLauncherAndRestart API to relaunch the title by
+ * explicitly unsetting this environment variable before calling EOS_Platform_CheckForLauncherAndRestart.
  *
  * @return An EOS_EResult is returned to indicate success or an error.
  *
@@ -421,7 +438,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_Platform_CheckForLauncherAndRestart(EOS_HPlatf
  * @return An EOS_EResult is returned to indicate success or an error.
  *		   EOS_NotImplemented is returned on non-Windows platforms.
  */
-EOS_DECLARE_FUNC(EOS_EResult) EOS_Platform_GetDesktopCrossplayStatus(EOS_HPlatform Handle, const EOS_Platform_GetDesktopCrossplayStatusOptions* Options, EOS_Platform_GetDesktopCrossplayStatusInfo* OutDesktopCrossplayStatusInfo);
+EOS_DECLARE_FUNC(EOS_EResult) EOS_Platform_GetDesktopCrossplayStatus(EOS_HPlatform Handle, const EOS_Platform_GetDesktopCrossplayStatusOptions* Options, EOS_Platform_DesktopCrossplayStatusInfo* OutDesktopCrossplayStatusInfo);
 
 /**
  * Notify a change in application state.
@@ -433,6 +450,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_Platform_GetDesktopCrossplayStatus(EOS_HPlatfo
  * @return An EOS_EResult that indicates whether we changed the application status successfully.
  *         EOS_Success if the application was changed successfully.
  *         EOS_InvalidParameters if the value of NewStatus is invalid.
+ *         EOS_NotImplemented if EOS_AS_BackgroundConstrained or EOS_AS_BackgroundUnconstrained are attempted to be set on platforms that do not have such application states.
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_Platform_SetApplicationStatus(EOS_HPlatform Handle, const EOS_EApplicationStatus NewStatus);
 

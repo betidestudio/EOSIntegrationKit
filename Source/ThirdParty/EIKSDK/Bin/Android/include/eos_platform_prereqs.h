@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -47,9 +47,13 @@ This can occur if `eos_platform_prereqs.h` is included after `eos_base.h` is inc
 Please refer to https://dev.epicgames.com/docs/services for more details.
 #endif
 
+#undef EOS_PREPROCESSOR_TO_STRING
 #define EOS_PREPROCESSOR_TO_STRING(x) EOS_PREPROCESSOR_TO_STRING_INNER(x)
+#undef EOS_PREPROCESSOR_TO_STRING_INNER
 #define EOS_PREPROCESSOR_TO_STRING_INNER(x) #x
+#undef EOS_PREPROCESSOR_JOIN
 #define EOS_PREPROCESSOR_JOIN(x,y) EOS_PREPROCESSOR_JOIN_INNER(x,y)
+#undef EOS_PREPROCESSOR_JOIN_INNER
 #define EOS_PREPROCESSOR_JOIN_INNER(x,y) x##y
 #define EOS_BUILD_PLATFORM_HEADER_BASE EOS_PREPROCESSOR_TO_STRING(EOS_PREPROCESSOR_JOIN(EOS_BUILD_PLATFORM_NAME/eos_,EOS_PREPROCESSOR_JOIN(EOS_BUILD_PLATFORM_NAME,_base.h)))
 

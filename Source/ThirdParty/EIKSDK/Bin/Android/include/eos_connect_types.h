@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_common.h"
@@ -15,7 +15,7 @@ EXTERN_C typedef struct EOS_ConnectHandle* EOS_HConnect;
 
 /**
  * A structure that contains external login credentials.
- * 
+ *
  * This is part of the input structure EOS_Connect_LoginOptions.
  *
  * @see EOS_EExternalCredentialType
@@ -34,14 +34,10 @@ EOS_STRUCT(EOS_Connect_Credentials, (
 #define EOS_CONNECT_USERLOGININFO_DISPLAYNAME_MAX_LENGTH 32
 
 /** The most recent version of the EOS_Connect_UserLoginInfo struct. */
-#define EOS_CONNECT_USERLOGININFO_API_LATEST 1
+#define EOS_CONNECT_USERLOGININFO_API_LATEST 2
 
 /**
  * Additional information about the local user.
- *
- * As the information passed here is client-controlled and not part of the user authentication tokens,
- * it is only treated as non-authoritative informational data to be used by some of the feature services.
- * For example displaying player names in Leaderboards rankings.
  */
 EOS_STRUCT(EOS_Connect_UserLoginInfo, (
 	/** API Version: Set this to EOS_CONNECT_USERLOGININFO_API_LATEST. */
@@ -49,8 +45,23 @@ EOS_STRUCT(EOS_Connect_UserLoginInfo, (
 	/**
 	 * The user's display name on the identity provider systems as UTF-8 encoded null-terminated string.
 	 * The length of the name can be at maximum up to EOS_CONNECT_USERLOGININFO_DISPLAYNAME_MAX_LENGTH bytes.
+	 *
+	 * As the display name passed here is client-controlled and not part of user authentication tokens,
+	 * it is only treated as non-authoritative informational data to be used by some of the feature services.
+	 * For example displaying player names in Leaderboards rankings.
 	 */
 	const char* DisplayName;
+	/**
+	 * Nintendo Service Account ID Token (NSA ID).
+	 * 
+	 * This field is required to be set and only used when running on the Nintendo Switch device,
+	 * and the user is being authenticated using any other credential type than EOS_ECT_NINTENDO_NSA_ID_TOKEN.
+	 *
+	 * In order to use the Lobbies and Sessions interfaces, a valid NSA ID Token is required to be provided
+	 * for the active local Nintendo Switch user. Otherwise, attempting to use either of the Lobbies or
+	 * Sessions interfaces will return the EOS_Permission_OnlinePlayRestricted error result.
+	 */
+	const char* NsaIdToken;
 ));
 
 /** The most recent version of the EOS_Connect_Login API. */
@@ -65,10 +76,11 @@ EOS_STRUCT(EOS_Connect_LoginOptions, (
 	/** Credentials specified for a given login method */
 	const EOS_Connect_Credentials* Credentials;
 	/**
-	 * Additional non-authoritative information about the local user.
+	 * Additional information about the local user.
 	 *
-	 * This field is required to be set and only used when authenticating the user using Amazon, Apple, Google, Nintendo Account, Nintendo Service Account, Oculus or the Device ID feature login.
-	 * When using other identity providers, set to NULL.
+	 * This field is required to be set and used when authenticating the user using Amazon, Apple, Google, Nintendo Account, Nintendo Service Account, Oculus or the Device ID feature login.
+	 * It is also required for using the Lobbies and Sessions interfaces when running on the Nintendo Switch device, and using any other credential type than EOS_ECT_NINTENDO_NSA_ID_TOKEN.
+	 * In all other cases, set this field to NULL.
 	 */
 	const EOS_Connect_UserLoginInfo* UserLoginInfo;
 ));
@@ -84,8 +96,8 @@ EOS_STRUCT(EOS_Connect_LoginCallbackInfo, (
 	/** If login was successful, this is the Product User ID of the local player that logged in. */
 	EOS_ProductUserId LocalUserId;
 	/**
-	 * If the user was not found with credentials passed into EOS_Connect_Login, 
-	 * this continuance token can be passed to either EOS_Connect_CreateUser 
+	 * If the user was not found with credentials passed into EOS_Connect_Login,
+	 * this continuance token can be passed to either EOS_Connect_CreateUser
 	 * or EOS_Connect_LinkAccount to continue the flow.
 	 */
 	EOS_ContinuanceToken ContinuanceToken;

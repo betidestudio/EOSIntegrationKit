@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_common.h"
@@ -287,5 +287,79 @@ EOS_STRUCT(EOS_UserInfo_CopyExternalUserInfoByAccountIdOptions, (
  * @see EOS_UserInfo_CopyExternalUserInfoByIndex
  */
 EOS_DECLARE_FUNC(void) EOS_UserInfo_ExternalUserInfo_Release(EOS_UserInfo_ExternalUserInfo* ExternalUserInfo);
+
+/** The most recent version of the EOS_UserInfo_BestDisplayName API. */
+#define EOS_USERINFO_BESTDISPLAYNAME_API_LATEST 1
+
+/** A structure that contains the user information. These structures are created by EOS_UserInfo_CopyBestDisplayName or EOS_UserInfo_CopyBestDisplayNameWithPlatform and must be passed to EOS_UserInfo_BestDisplayName_Release. */
+EOS_STRUCT(EOS_UserInfo_BestDisplayName, (
+	/** API Version: Set this to EOS_USERINFO_BESTDISPLAYNAME_API_LATEST. */
+	int32_t ApiVersion;
+	/** The Epic Account ID of the user */
+	EOS_EpicAccountId UserId;
+	/** The display name (un-sanitized). This may be null */
+	const char* DisplayName;
+	/** The raw display name (sanitized). This may be null */
+	const char* DisplayNameSanitized;
+	/** A nickname/alias for the target user assigned by the local user. This may be null */
+	const char* Nickname;
+	/** The platform type for the user which corresponds to the display name */
+	EOS_OnlinePlatformType PlatformType;
+));
+
+/**
+ * Release the memory associated with EOS_UserInfo_BestDisplayName. This must be called on data retrieved from
+ * EOS_UserInfo_CopyBestDisplayNameWithPlatform.
+ *
+ * @param BestDisplayName - The EOS_UserInfo_BestDisplayName structure to release
+ *
+ * @see EOS_UserInfo_BestDisplayName
+ * @see EOS_UserInfo_CopyBestDisplayName
+ * @see EOS_UserInfo_CopyBestDisplayNameWithPlatform
+ */
+EOS_DECLARE_FUNC(void) EOS_UserInfo_BestDisplayName_Release(EOS_UserInfo_BestDisplayName* BestDisplayName);
+
+/** The most recent version of the EOS_UserInfo_CopyBestDisplayName API. */
+#define EOS_USERINFO_COPYBESTDISPLAYNAME_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_UserInfo_CopyBestDisplayName function.
+ */
+EOS_STRUCT(EOS_UserInfo_CopyBestDisplayNameOptions, (
+	/** API Version: Set this to EOS_USERINFO_COPYBESTDISPLAYNAME_API_LATEST. */
+	int32_t ApiVersion;
+	/** The Epic Account ID of the local player requesting the information */
+	EOS_EpicAccountId LocalUserId;
+	/** The Epic Account ID of the player whose information is being retrieved */
+	EOS_EpicAccountId TargetUserId;
+));
+
+/** The most recent version of the EOS_UserInfo_CopyBestDisplayNameWithPlatform API. */
+#define EOS_USERINFO_COPYBESTDISPLAYNAMEWITHPLATFORM_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_UserInfo_CopyBestDisplayNameWithPlatform function.
+ */
+EOS_STRUCT(EOS_UserInfo_CopyBestDisplayNameWithPlatformOptions, (
+	/** API Version: Set this to EOS_USERINFO_COPYBESTDISPLAYNAMEWITHPLATFORM_API_LATEST. */
+	int32_t ApiVersion;
+	/** The Epic Account ID of the local player requesting the information */
+	EOS_EpicAccountId LocalUserId;
+	/** The Epic Account ID of the player whose information is being retrieved */
+	EOS_EpicAccountId TargetUserId;
+	/** The platform type of the player whose information is being retrieved */
+	EOS_OnlinePlatformType TargetPlatformType;
+));
+
+/** The most recent version of the EOS_UserInfo_GetLocalPlatformType API. */
+#define EOS_USERINFO_GETLOCALPLATFORMTYPE_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_UserInfo_GetLocalPlatformType function.
+ */
+EOS_STRUCT(EOS_UserInfo_GetLocalPlatformTypeOptions, (
+	/** API Version: Set this to EOS_USERINFO_GETLOCALPLATFORMTYPE_API_LATEST. */
+	int32_t ApiVersion;
+));
 
 #pragma pack(pop)

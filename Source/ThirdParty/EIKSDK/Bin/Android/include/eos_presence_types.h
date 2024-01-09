@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -263,7 +263,7 @@ EOS_STRUCT(EOS_Presence_JoinGameAcceptedCallbackInfo, (
  * Function prototype definition for notifications that come from EOS_Presence_AddNotifyJoinGameAccepted
  *
  * @param Data A EOS_Presence_JoinGameAcceptedCallbackInfo containing the output information and result
- * 
+ *
  * @note EOS_UI_AcknowledgeEventId must be called with any valid UiEventId passed via the data.
  */
 EOS_DECLARE_CALLBACK(EOS_Presence_OnJoinGameAcceptedCallback, const EOS_Presence_JoinGameAcceptedCallbackInfo* Data);
@@ -338,12 +338,12 @@ EOS_STRUCT(EOS_PresenceModification_SetJoinInfoOptions, (
 #define EOS_PRESENCE_RICH_TEXT_MAX_VALUE_LENGTH 255
 
 /**
-  * The presence key used to specify the local platform's presence string on platforms that use tokenized presence.
-  * For use with EOS_PresenceModification_SetData.
-  *
-  * @see EOS_PresenceModification_SetData
-  * @see EOS_Presence_DataRecord
-  */
+ * The presence key used to specify the local platform's presence string on platforms that use tokenized presence.
+ * For use with EOS_PresenceModification_SetData.
+ *
+ * @see EOS_PresenceModification_SetData
+ * @see EOS_Presence_DataRecord
+ */
 #define EOS_PRESENCE_KEY_PLATFORM_PRESENCE "EOS_PlatformPresence"
 
 /** The most recent version of the EOS_PresenceModification_SetStatus API. */

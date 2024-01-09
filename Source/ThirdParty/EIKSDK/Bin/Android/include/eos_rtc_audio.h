@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_rtc_audio_types.h"
@@ -8,91 +8,6 @@
  *
  * @see EOS_RTC_GetAudioInterface
  */
-
-/**
- * Use this function to inform the audio system of a user.
- *
- * This function is only necessary for some platforms.
- *
- * @param Options structure containing the parameters for the operation.
- * @return EOS_Success if the user was successfully registered, EOS_UnexpectedError otherwise.
- */
-EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_RegisterPlatformAudioUser(EOS_HRTCAudio Handle, const EOS_RTCAudio_RegisterPlatformAudioUserOptions* Options);
-
-/**
- * Use this function to remove a user that was added with EOS_RTCAudio_RegisterPlatformAudioUser.
- *
- * @param Options structure containing the parameters for the operation.
- * @return EOS_Success if the user was successfully unregistered, EOS_UnexpectedError otherwise.
- */
-EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_UnregisterPlatformAudioUser(EOS_HRTCAudio Handle, const EOS_RTCAudio_UnregisterPlatformAudioUserOptions* Options);
-
-/**
- * Returns the number of audio input devices available in the system.
- *
- * The returned value should not be cached and should instead be used immediately with the EOS_RTCAudio_GetAudioInputDeviceByIndex
- * function.
- *
- * @param Options structure containing the parameters for the operation
- * @return The number of audio input devices
- * @see EOS_RTCAudio_GetAudioInputDeviceByIndex
- * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
- */
-EOS_DECLARE_FUNC(uint32_t) EOS_RTCAudio_GetAudioInputDevicesCount(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetAudioInputDevicesCountOptions* Options);
-
-/**
- * Fetches an audio input device's info from then given index. The returned value should not be cached and important
- * information should be copied off of the result object immediately.
- *
- * @param Options structure containing the index being accessed
- * @return A pointer to the device information, or NULL on error. You should NOT keep hold of this pointer.
- * @see EOS_RTCAudio_GetAudioInputDevicesCount
- * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
- */
-EOS_DECLARE_FUNC(const EOS_RTCAudio_AudioInputDeviceInfo *) EOS_RTCAudio_GetAudioInputDeviceByIndex(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetAudioInputDeviceByIndexOptions* Options);
-
-/**
- * Returns the number of audio output devices available in the system.
- *
- * The returned value should not be cached and should instead be used immediately with the EOS_RTCAudio_GetAudioOutputDeviceByIndex
- * function.
- *
- * @param Options structure containing the parameters for the operation
- * @return The number of audio output devices
- * @see EOS_RTCAudio_GetAudioOutputDeviceByIndex
- * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
- */
-EOS_DECLARE_FUNC(uint32_t) EOS_RTCAudio_GetAudioOutputDevicesCount(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetAudioOutputDevicesCountOptions* Options);
-
-/**
- * Fetches an audio output device's info from then given index.
- *
- * The returned value should not be cached and important information should be copied off of the result object immediately.
- *
- * @param Options structure containing the index being accessed
- * @return A pointer to the device information, or NULL on error. You should NOT keep hold of this pointer.
- * @see EOS_RTCAudio_GetAudioOutputDevicesCount
- * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
- */
-EOS_DECLARE_FUNC(const EOS_RTCAudio_AudioOutputDeviceInfo *) EOS_RTCAudio_GetAudioOutputDeviceByIndex(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetAudioOutputDeviceByIndexOptions* Options);
-
-/**
- * Use this function to set audio input settings, such as the active input device, volume, or platform AEC.
- *
- * @param Options structure containing the parameters for the operation.
- * @return EOS_Success if the setting was successful
- *         EOS_InvalidParameters if any of the parameters are incorrect
- */
-EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_SetAudioInputSettings(EOS_HRTCAudio Handle, const EOS_RTCAudio_SetAudioInputSettingsOptions* Options);
-
-/**
- * Use this function to set audio output settings, such as the active output device or volume.
- *
- * @param Options structure containing the parameters for the operation.
- * @return EOS_Success if the setting was successful
- *         EOS_InvalidParameters if any of the parameters are incorrect
- */
-EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_SetAudioOutputSettings(EOS_HRTCAudio Handle, const EOS_RTCAudio_SetAudioOutputSettingsOptions* Options);
 
 /**
  * Use this function to push a new audio buffer to be sent to the participants of a room.
@@ -324,3 +239,236 @@ EOS_DECLARE_FUNC(EOS_NotificationId) EOS_RTCAudio_AddNotifyAudioBeforeRender(EOS
  * @param NotificationId The Notification ID representing the registered callback
  */
 EOS_DECLARE_FUNC(void) EOS_RTCAudio_RemoveNotifyAudioBeforeRender(EOS_HRTCAudio Handle, EOS_NotificationId NotificationId);
+
+/**
+ * Use this function to inform the audio system of a user.
+ *
+ * This function is only necessary for some platforms.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @param ClientData Arbitrary data that is passed back in the CompletionDelegate
+ * @param CompletionDelegate The callback to be fired when the operation completes, either successfully or in error
+ * @return EOS_Success if the user was successfully registered
+ *         EOS_InvalidParameters if any of the parameters are incorrect
+ *         EOS_UnexpectedError otherwise
+ *
+ * @see EOS_RTCAudio_UnregisterPlatformUser
+ */
+EOS_DECLARE_FUNC(void) EOS_RTCAudio_RegisterPlatformUser(EOS_HRTCAudio Handle, const EOS_RTCAudio_RegisterPlatformUserOptions* Options, void* ClientData, const EOS_RTCAudio_OnRegisterPlatformUserCallback CompletionDelegate);
+
+/**
+ * Use this function to remove a user that was added with EOS_RTCAudio_RegisterPlatformUser.
+ *
+ * This function is only necessary for some platforms.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @param ClientData Arbitrary data that is passed back in the CompletionDelegate
+ * @param CompletionDelegate The callback to be fired when the operation completes, either successfully or in error
+ * @return EOS_Success if the user was successfully unregistered
+ *         EOS_InvalidParameters if any of the parameters are incorrect
+ *         EOS_UnexpectedError otherwise
+ */
+EOS_DECLARE_FUNC(void) EOS_RTCAudio_UnregisterPlatformUser(EOS_HRTCAudio Handle, const EOS_RTCAudio_UnregisterPlatformUserOptions* Options, void* ClientData, const EOS_RTCAudio_OnUnregisterPlatformUserCallback CompletionDelegate);
+
+/**
+ * Query for a list of audio input devices available in the system together with their specifications.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @param ClientData Arbitrary data that is passed back in the CompletionDelegate
+ * @param CompletionDelegate The callback to be fired when the operation completes, either successfully or in error
+ * @return EOS_Success if the operation succeeded
+ *         EOS_InvalidParameters if any of the parameters are incorrect
+ */
+EOS_DECLARE_FUNC(void) EOS_RTCAudio_QueryInputDevicesInformation(EOS_HRTCAudio Handle, const EOS_RTCAudio_QueryInputDevicesInformationOptions* Options, void* ClientData, const EOS_RTCAudio_OnQueryInputDevicesInformationCallback CompletionDelegate);
+
+/**
+ * Fetch the number of audio input devices available in the system that are cached locally.
+ *
+ * The returned value should not be cached and should instead be used immediately with
+ * the EOS_RTCAudio_CopyInputDeviceInformationByIndex function.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @return The number of audio input devices available in the system or 0 if there is an error
+ *
+ * @see EOS_RTCAudio_CopyInputDeviceInformationByIndex
+ * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+ */
+EOS_DECLARE_FUNC(uint32_t) EOS_RTCAudio_GetInputDevicesCount(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetInputDevicesCountOptions* Options);
+
+/**
+ * Fetches an audio input device's information from then given index that are cached locally.
+ *
+ * @param Options structure containing the index being accessed
+ * @param OutInputDeviceInformation The audio input device's information for the given index, if it exists and is valid, use EOS_RTCAudio_InputDeviceInformation_Release when finished
+ * @return EOS_Success if the information is available and passed out in OutInputDeviceInformation
+ *         EOS_InvalidParameters if you pass a null pointer for the out parameter
+ *         EOS_NotFound if the audio input device's information is not found
+ *
+ * @see EOS_RTCAudio_InputDeviceInformation_Release
+ * @see EOS_RTCAudio_GetAudioInputDevicesCount
+ * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+ */
+EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_CopyInputDeviceInformationByIndex(EOS_HRTCAudio Handle, const EOS_RTCAudio_CopyInputDeviceInformationByIndexOptions* Options, EOS_RTCAudio_InputDeviceInformation ** OutInputDeviceInformation);
+
+/**
+ * Query for a list of audio output devices available in the system together with their specifications.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @param ClientData Arbitrary data that is passed back in the CompletionDelegate
+ * @param CompletionDelegate The callback to be fired when the operation completes, either successfully or in error
+ * @return EOS_Success if the operation succeeded
+ *         EOS_InvalidParameters if any of the parameters are incorrect
+ */
+EOS_DECLARE_FUNC(void) EOS_RTCAudio_QueryOutputDevicesInformation(EOS_HRTCAudio Handle, const EOS_RTCAudio_QueryOutputDevicesInformationOptions* Options, void* ClientData, const EOS_RTCAudio_OnQueryOutputDevicesInformationCallback CompletionDelegate);
+
+/**
+ * Fetch the number of audio output devices available in the system that are cached locally.
+ *
+ * The returned value should not be cached and should instead be used immediately with
+ * the EOS_RTCAudio_CopyOutputDeviceInformationByIndex function.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @return The number of audio output devices available in the system or 0 if there is an error
+ *
+ * @see EOS_RTCAudio_CopyOutputDeviceInformationByIndex
+ * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+ */
+EOS_DECLARE_FUNC(uint32_t) EOS_RTCAudio_GetOutputDevicesCount(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetOutputDevicesCountOptions* Options);
+
+/**
+ * Fetches an audio output device's information from then given index that are cached locally.
+ *
+ * @param Options structure containing the index being accessed
+ * @param OutOutputDeviceInformation The audio output device's information for the given index, if it exists and is valid, use EOS_RTCAudio_OutputDeviceInformation_Release when finished
+ * @return EOS_Success if the information is available and passed out in OutOutputDeviceInformation
+ *         EOS_InvalidParameters if you pass a null pointer for the out parameter
+ *         EOS_NotFound if the audio output device's information is not found
+ *
+ * @see EOS_RTCAudio_OutputDeviceInformation_Release
+ * @see EOS_RTCAudio_GetAudioOutputDevicesCount
+ * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+ */
+EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_CopyOutputDeviceInformationByIndex(EOS_HRTCAudio Handle, const EOS_RTCAudio_CopyOutputDeviceInformationByIndexOptions* Options, EOS_RTCAudio_OutputDeviceInformation ** OutOutputDeviceInformation);
+
+/**
+ * Use this function to set audio input device settings, such as the active input device, or platform AEC.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @param ClientData Arbitrary data that is passed back in the CompletionDelegate
+ * @param CompletionDelegate The callback to be fired when the operation completes, either successfully or in error
+ * @return EOS_Success if the setting was successful
+ *         EOS_InvalidParameters if any of the parameters are incorrect
+ */
+EOS_DECLARE_FUNC(void) EOS_RTCAudio_SetInputDeviceSettings(EOS_HRTCAudio Handle, const EOS_RTCAudio_SetInputDeviceSettingsOptions* Options, void* ClientData, const EOS_RTCAudio_OnSetInputDeviceSettingsCallback CompletionDelegate);
+
+/**
+ * Use this function to set audio output device settings, such as the active output device.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @param ClientData Arbitrary data that is passed back in the CompletionDelegate
+ * @param CompletionDelegate The callback to be fired when the operation completes, either successfully or in error
+ * @return EOS_Success if the setting was successful
+ *         EOS_InvalidParameters if any of the parameters are incorrect
+ */
+EOS_DECLARE_FUNC(void) EOS_RTCAudio_SetOutputDeviceSettings(EOS_HRTCAudio Handle, const EOS_RTCAudio_SetOutputDeviceSettingsOptions* Options, void* ClientData, const EOS_RTCAudio_OnSetOutputDeviceSettingsCallback CompletionDelegate);
+
+/**
+ * DEPRECATED! Use EOS_RTCAudio_RegisterPlatformUser instead.
+ *
+ * Use this function to inform the audio system of a user.
+ *
+ * This function is only necessary for some platforms.
+ *
+ * @param Options structure containing the parameters for the operation.
+ * @return EOS_Success if the user was successfully registered, EOS_UnexpectedError otherwise.
+ */
+EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_RegisterPlatformAudioUser(EOS_HRTCAudio Handle, const EOS_RTCAudio_RegisterPlatformAudioUserOptions* Options);
+
+/**
+ * DEPRECATED! Use EOS_RTCAudio_UnregisterPlatformUser instead.
+ *
+ * Use this function to remove a user that was added with EOS_RTCAudio_RegisterPlatformAudioUser.
+ *
+ * @param Options structure containing the parameters for the operation.
+ * @return EOS_Success if the user was successfully unregistered, EOS_UnexpectedError otherwise.
+ */
+EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_UnregisterPlatformAudioUser(EOS_HRTCAudio Handle, const EOS_RTCAudio_UnregisterPlatformAudioUserOptions* Options);
+
+/**
+ * DEPRECATED! Use EOS_RTCAudio_QueryInputDevicesInformation, EOS_RTCAudio_GetInputDevicesCount instead.
+ *
+ * Returns the number of audio input devices available in the system.
+ *
+ * The returned value should not be cached and should instead be used immediately with the EOS_RTCAudio_GetAudioInputDeviceByIndex
+ * function.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @return The number of audio input devices
+ * @see EOS_RTCAudio_GetAudioInputDeviceByIndex
+ * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+ */
+EOS_DECLARE_FUNC(uint32_t) EOS_RTCAudio_GetAudioInputDevicesCount(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetAudioInputDevicesCountOptions* Options);
+
+/**
+ * DEPRECATED! Use EOS_RTCAudio_QueryInputDevicesInformation, EOS_RTCAudio_CopyInputDeviceInformationByIndex instead.
+ *
+ * Fetches an audio input device's info from then given index. The returned value should not be cached and important
+ * information should be copied off of the result object immediately.
+ *
+ * @param Options structure containing the index being accessed
+ * @return A pointer to the device information, or NULL on error. You should NOT keep hold of this pointer.
+ * @see EOS_RTCAudio_GetAudioInputDevicesCount
+ * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+ */
+EOS_DECLARE_FUNC(const EOS_RTCAudio_AudioInputDeviceInfo *) EOS_RTCAudio_GetAudioInputDeviceByIndex(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetAudioInputDeviceByIndexOptions* Options);
+
+/**
+ * DEPRECATED! Use EOS_RTCAudio_QueryOutputDevicesInformation, EOS_RTCAudio_GetOutputDevicesCount instead.
+ *
+ * Returns the number of audio output devices available in the system.
+ *
+ * The returned value should not be cached and should instead be used immediately with the EOS_RTCAudio_GetAudioOutputDeviceByIndex
+ * function.
+ *
+ * @param Options structure containing the parameters for the operation
+ * @return The number of audio output devices
+ * @see EOS_RTCAudio_GetAudioOutputDeviceByIndex
+ * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+ */
+EOS_DECLARE_FUNC(uint32_t) EOS_RTCAudio_GetAudioOutputDevicesCount(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetAudioOutputDevicesCountOptions* Options);
+
+/**
+ * DEPRECATED! Use EOS_RTCAudio_QueryOutputDevicesInformation, EOS_RTCAudio_CopyOutputDeviceInformationByIndex instead.
+ *
+ * Fetches an audio output device's info from then given index.
+ *
+ * The returned value should not be cached and important information should be copied off of the result object immediately.
+ *
+ * @param Options structure containing the index being accessed
+ * @return A pointer to the device information, or NULL on error. You should NOT keep hold of this pointer.
+ * @see EOS_RTCAudio_GetAudioOutputDevicesCount
+ * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+ */
+EOS_DECLARE_FUNC(const EOS_RTCAudio_AudioOutputDeviceInfo *) EOS_RTCAudio_GetAudioOutputDeviceByIndex(EOS_HRTCAudio Handle, const EOS_RTCAudio_GetAudioOutputDeviceByIndexOptions* Options);
+
+/**
+ * DEPRECATED! Use EOS_RTCAudio_SetInputDeviceSettings instead.
+ *
+ * Use this function to set audio input settings, such as the active input device, volume, or platform AEC.
+ *
+ * @param Options structure containing the parameters for the operation.
+ * @return EOS_Success if the setting was successful
+ *         EOS_InvalidParameters if any of the parameters are incorrect
+ */
+EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_SetAudioInputSettings(EOS_HRTCAudio Handle, const EOS_RTCAudio_SetAudioInputSettingsOptions* Options);
+
+/**
+ * DEPRECATED! Use EOS_RTCAudio_SetOutputDeviceSettings instead.
+ *
+ * Use this function to set audio output settings, such as the active output device or volume.
+ *
+ * @param Options structure containing the parameters for the operation.
+ * @return EOS_Success if the setting was successful
+ *         EOS_InvalidParameters if any of the parameters are incorrect
+ */
+EOS_DECLARE_FUNC(EOS_EResult) EOS_RTCAudio_SetAudioOutputSettings(EOS_HRTCAudio Handle, const EOS_RTCAudio_SetAudioOutputSettingsOptions* Options);

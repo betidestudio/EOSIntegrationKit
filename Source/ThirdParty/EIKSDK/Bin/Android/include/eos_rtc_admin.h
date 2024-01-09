@@ -1,15 +1,15 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_rtc_admin_types.h"
 
 /**
-* The RTC Admin interface.
-*
-* This is used to manage admin-specific RTC features, such as requesting join tokens, kick users, etc.
-*
-* @see EOS_Platform_GetRTCAdminInterface
-*/
+ * The RTC Admin interface.
+ *
+ * This is used to manage admin-specific RTC features, such as requesting join tokens, kick users, etc.
+ *
+ * @see EOS_Platform_GetRTCAdminInterface
+ */
 
 /**
  * Query for a list of user tokens for joining a room.

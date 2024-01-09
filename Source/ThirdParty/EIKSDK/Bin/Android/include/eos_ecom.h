@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_ecom_types.h"
@@ -16,12 +16,24 @@
 /**
  * Query the ownership status for a given list of catalog item IDs defined with Epic Online Services.
  * This data will be cached for a limited time and retrieved again from the backend when necessary
+ * Depending on the number of catalog item ids passed, the SDK splits the query into smaller batch requests to the backend and aggregates the result.
+ * Note: If one of the request batches fails, no data is cached and the entire query is marked as failed.
  *
  * @param Options structure containing the account and catalog item IDs to retrieve
  * @param ClientData arbitrary data that is passed back to you in the CompletionDelegate
  * @param CompletionDelegate a callback that is fired when the async operation completes, either successfully or in error
  */
 EOS_DECLARE_FUNC(void) EOS_Ecom_QueryOwnership(EOS_HEcom Handle, const EOS_Ecom_QueryOwnershipOptions* Options, void* ClientData, const EOS_Ecom_OnQueryOwnershipCallback CompletionDelegate);
+
+/**
+ * Query the ownership status of all catalog item IDs under the given list of Sandbox IDs defined with Epic Online Services.
+ * This data will be cached for a limited time and retrieved again from the backend when necessary.
+ *
+ * @param Options structure containing the account and Sandbox IDs to retrieve.
+ * @param ClientData arbitrary data that is passed back to you in the CompletionDelegate.
+ * @param CompletionDelegate a callback that is fired when the async operation completes, either successfully or in error.
+ */
+EOS_DECLARE_FUNC(void) EOS_Ecom_QueryOwnershipBySandboxIds(EOS_HEcom Handle, const EOS_Ecom_QueryOwnershipBySandboxIdsOptions* Options, void* ClientData, const EOS_Ecom_OnQueryOwnershipBySandboxIdsCallback CompletionDelegate);
 
 /**
  * Query the ownership status for a given list of catalog item IDs defined with Epic Online Services.
@@ -37,6 +49,8 @@ EOS_DECLARE_FUNC(void) EOS_Ecom_QueryOwnershipToken(EOS_HEcom Handle, const EOS_
  * Query the entitlement information defined with Epic Online Services.
  * A set of entitlement names can be provided to filter the set of entitlements associated with the account.
  * This data will be cached for a limited time and retrieved again from the backend when necessary.
+ * Depending on the number of entitlements passed, the SDK splits the query into smaller batch requests to the backend and aggregates the result.
+ * Note: If one of the request batches fails, no data is cached and the entire query is marked as failed.
  * Use EOS_Ecom_CopyEntitlementByIndex, EOS_Ecom_CopyEntitlementByNameAndIndex, and EOS_Ecom_CopyEntitlementById to get the entitlement details.
  * Use EOS_Ecom_GetEntitlementsByNameCount to retrieve the number of entitlements with a specific entitlement name.
  *

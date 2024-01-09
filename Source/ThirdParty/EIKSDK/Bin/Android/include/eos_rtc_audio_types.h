@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -23,32 +23,6 @@ EOS_ENUM(EOS_ERTCAudioStatus,
 	/** Audio channel is disabled temporarily for both sending and receiving */
 	EOS_RTCAS_NotListeningDisabled = 4
 );
-
-/** The most recent version of the EOS_RTCAudio_RegisterPlatformAudioUser API. */
-#define EOS_RTCAUDIO_REGISTERPLATFORMAUDIOUSER_API_LATEST 1
-
-/**
- * This struct is used to inform the audio system of a user.
- */
-EOS_STRUCT(EOS_RTCAudio_RegisterPlatformAudioUserOptions, (
-	/** API Version: Set this to EOS_RTCAUDIO_REGISTERPLATFORMAUDIOUSER_API_LATEST. */
-	int32_t ApiVersion;
-	/** Platform dependent user id. */
-	const char* UserId;
-));
-
-/** The most recent version of the EOS_RTCAudio_UnregisterPlatformAudioUser API. */
-#define EOS_RTCAUDIO_UNREGISTERPLATFORMAUDIOUSER_API_LATEST 1
-
-/**
- * This struct is used to remove a user from the audio system.
- */
-EOS_STRUCT(EOS_RTCAudio_UnregisterPlatformAudioUserOptions, (
-	/** API Version: Set this to EOS_RTCAUDIO_UNREGISTERPLATFORMAUDIOUSER_API_LATEST. */
-	int32_t ApiVersion;
-	/** The account of a user associated with this event. */
-	const char* UserId;
-));
 
 /** The most recent version of the EOS_RTCAudio_AddNotifyParticipantUpdated API. */
 #define EOS_RTCAUDIO_ADDNOTIFYPARTICIPANTUPDATED_API_LATEST 1
@@ -98,170 +72,13 @@ EOS_STRUCT(EOS_RTCAudio_AddNotifyAudioDevicesChangedOptions, (
 
 /**
  * This struct is passed in with a call to EOS_RTCAudio_AddNotifyAudioDevicesChanged registered event.
-*/
+ */
 EOS_STRUCT(EOS_RTCAudio_AudioDevicesChangedCallbackInfo, (
 	/** Client-specified data passed into EOS_RTCAudio_AddNotifyAudioDevicesChanged. */
 	void* ClientData;
 ));
 
 EOS_DECLARE_CALLBACK(EOS_RTCAudio_OnAudioDevicesChangedCallback, const EOS_RTCAudio_AudioDevicesChangedCallbackInfo* Data);
-
-/** The most recent version of the EOS_RTCAudio_GetAudioInputDevicesCount API. */
-#define EOS_RTCAUDIO_GETAUDIOINPUTDEVICESCOUNT_API_LATEST 1
-
-/**
- * Input parameters for the EOS_RTCAudio_GetAudioInputDevicesCount function.
- */
-EOS_STRUCT(EOS_RTCAudio_GetAudioInputDevicesCountOptions, (
-	/** API Version: Set this to EOS_RTCAUDIO_GETAUDIOINPUTDEVICESCOUNT_API_LATEST. */
-	int32_t ApiVersion;
-));
-
-/** The most recent version of the EOS_RTCAudio_GetAudioInputDeviceByIndex API. */
-#define EOS_RTCAUDIO_GETAUDIOINPUTDEVICEBYINDEX_API_LATEST 1
-
-/**
- * Input parameters for the EOS_RTCAudio_GetAudioInputDeviceByIndex function.
- */
-EOS_STRUCT(EOS_RTCAudio_GetAudioInputDeviceByIndexOptions, (
-	/** API Version: Set this to EOS_RTCAUDIO_GETAUDIOINPUTDEVICEBYINDEX_API_LATEST. */
-	int32_t ApiVersion;
-	/** Index of the device info to retrieve. */
-	uint32_t DeviceInfoIndex;
-));
-
-/** The most recent version of the EOS_RTCAudio_AudioInputDeviceInfo struct. */
-#define EOS_RTCAUDIO_AUDIOINPUTDEVICEINFO_API_LATEST 1
-
-/**
- * This struct is used to get information about a specific input device.
- */
-EOS_STRUCT(EOS_RTCAudio_AudioInputDeviceInfo, (
-	/** API Version: Set this to EOS_RTCAUDIO_AUDIOINPUTDEVICEINFO_API_LATEST. */
-	int32_t ApiVersion;
-	/** True if this is the default audio input device in the system. */
-	EOS_Bool bDefaultDevice;
-	/**
-	 * The persistent unique id of the device.
-	 * The value can be cached - invalidated only when the audio device pool is changed.
-	 *
-	 * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
-	 */
-	const char* DeviceId;
-	/** Human-readable name of the device */
-	const char* DeviceName;
-));
-
-/** The most recent version of the EOS_RTCAudio_GetAudioOutputDevicesCount API. */
-#define EOS_RTCAUDIO_GETAUDIOOUTPUTDEVICESCOUNT_API_LATEST 1
-
-/**
- * Input parameters for the EOS_RTCAudio_GetAudioOutputDevicesCount function.
- */
-EOS_STRUCT(EOS_RTCAudio_GetAudioOutputDevicesCountOptions, (
-	/** API Version: Set this to EOS_RTCAUDIO_GETAUDIOOUTPUTDEVICESCOUNT_API_LATEST. */
-	int32_t ApiVersion;
-));
-
-/** The most recent version of the EOS_RTCAudio_GetAudioOutputDeviceByIndex API. */
-#define EOS_RTCAUDIO_GETAUDIOOUTPUTDEVICEBYINDEX_API_LATEST 1
-
-/**
- * Input parameters for the EOS_RTCAudio_GetAudioOutputDeviceByIndex function.
- */
-EOS_STRUCT(EOS_RTCAudio_GetAudioOutputDeviceByIndexOptions, (
-	/** API Version: Set this to EOS_RTCAUDIO_GETAUDIOOUTPUTDEVICEBYINDEX_API_LATEST. */
-	int32_t ApiVersion;
-	/** Index of the device info to retrieve. */
-	uint32_t DeviceInfoIndex;
-));
-
-/** The most recent version of the EOS_RTCAudio_AudioOutputDeviceInfo struct. */
-#define EOS_RTCAUDIO_AUDIOOUTPUTDEVICEINFO_API_LATEST 1
-
-/**
- * This struct is used to get information about a specific output device.
- */
-EOS_STRUCT(EOS_RTCAudio_AudioOutputDeviceInfo, (
-	/** API Version: Set this to EOS_RTCAUDIO_AUDIOOUTPUTDEVICEINFO_API_LATEST. */
-	int32_t ApiVersion;
-	/** True if this is the default audio output device in the system. */
-	EOS_Bool bDefaultDevice;
-	/**
-	 * The persistent unique id of the device.
-	 * The value can be cached - invalidated only when the audio device pool is changed.
-	 * 
-	 * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
-	 */
-	const char* DeviceId;
-	/** The human readable name of the device */
-	const char* DeviceName;
-));
-
-/** The most recent version of the EOS_RTCAudio_SetAudioInputSettings API. */
-#define EOS_RTCAUDIO_SETAUDIOINPUTSETTINGS_API_LATEST 1
-
-/**
- * This struct is used to call EOS_RTCAudio_SetAudioInputSettings.
- */
-EOS_STRUCT(EOS_RTCAudio_SetAudioInputSettingsOptions, (
-	/** API Version: Set this to EOS_RTCAUDIO_SETAUDIOINPUTSETTINGS_API_LATEST. */
-	int32_t ApiVersion;
-	/** The Product User ID of the user trying to request this operation. */
-	EOS_ProductUserId LocalUserId;
-	/** 
-	 * The device Id to be used for this user. Pass NULL or empty string to use default input device.
-	 * 
-	 * If the device ID is invalid, the default device will be used instead.
-	 * Despite this fact, that device ID will be stored and the library will try to move on it when an audio device pool is being changed.
-	 * 
-	 * The actual hardware audio device usage depends on the current payload and optimized not to use it
-	 * when generated audio frames cannot be processed by someone else based on a scope of rules (For instance, when a client is alone in a room).
-	 * 
-	 * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
-	 */
-	const char* DeviceId;
-	/**
-	 * The volume to be used for all rooms of this user (range 0.0 to 100.0).
-	 * 
-	 * At the moment, the only value that produce any effect is 0.0 (silence). Any other value is ignored and causes no change to the volume.
-	 */
-	float Volume;
-	/** Enable or disable Platform AEC (Acoustic Echo Cancellation) if available. */
-	EOS_Bool bPlatformAEC;
-));
-
-/** The most recent version of the EOS_RTCAudio_SetAudioOutputSettings API. */
-#define EOS_RTCAUDIO_SETAUDIOOUTPUTSETTINGS_API_LATEST 1
-
-/**
- * This struct is used to call EOS_RTCAudio_SetAudioOutputSettings.
- */
-EOS_STRUCT(EOS_RTCAudio_SetAudioOutputSettingsOptions, (
-	/** API Version: Set this to EOS_RTCAUDIO_SETAUDIOOUTPUTSETTINGS_API_LATEST. */
-	int32_t ApiVersion;
-	/** The Product User ID of the user who initiated this request. */
-	EOS_ProductUserId LocalUserId;
-	/** 
-	 * The device Id to be used for this user. Pass NULL or empty string to use default output device.
-	 * 
-	 * If the device ID is invalid, the default device will be used instead.
-	 * Despite of this fact, that device ID will be stored and the library will try to move on it when a device pool is being changed.
-	 * 
-	 * The actual hardware audio device usage depends on the current payload and optimized not to use it
-	 * when generated audio frames cannot be processed by someone else based on a scope of rules (For instance, when a client is alone in a room).
-	 * 
-	 * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
-	 * 
-	 */
-	const char* DeviceId;
-	/**
-	 * The volume to be used for all rooms of this user (range 0.0 to 100.0).
-	 *
-	 * Volume 50.0 means that the audio volume is not modified and stays in its source value.
-	 */
-	float Volume;
-));
 
 /**
  * An enumeration of the different audio input device statuses.
@@ -417,8 +234,8 @@ EOS_DECLARE_CALLBACK(EOS_RTCAudio_OnAudioBeforeSendCallback, const EOS_RTCAudio_
 #define EOS_RTCAUDIO_ADDNOTIFYAUDIOBEFORERENDER_API_LATEST 1
 
 /**
-* This struct is used to call EOS_RTCAudio_AddNotifyAudioBeforeRender.
-*/
+ * This struct is used to call EOS_RTCAudio_AddNotifyAudioBeforeRender.
+ */
 EOS_STRUCT(EOS_RTCAudio_AddNotifyAudioBeforeRenderOptions, (
 	/** API Version: Set this to EOS_RTCAUDIO_ADDNOTIFYAUDIOBEFORERENDER_API_LATEST. */
 	int32_t ApiVersion;
@@ -695,4 +512,338 @@ EOS_STRUCT(EOS_RTCAudio_UpdateParticipantVolumeCallbackInfo, (
  */
 EOS_DECLARE_CALLBACK(EOS_RTCAudio_OnUpdateParticipantVolumeCallback, const EOS_RTCAudio_UpdateParticipantVolumeCallbackInfo* Data);
 
+/** The most recent version of the EOS_RTCAudio_RegisterPlatformUser API. */
+#define EOS_RTCAUDIO_REGISTERPLATFORMUSER_API_LATEST 1
+
+/**
+ * This struct is used to inform the audio system of a user.
+ */
+EOS_STRUCT(EOS_RTCAudio_RegisterPlatformUserOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_REGISTERPLATFORMUSER_API_LATEST. */
+	int32_t ApiVersion;
+	/** Platform dependent user id. */
+	const char* PlatformUserId;
+));
+
+/**
+ * This struct is passed in with a call to EOS_RTCAudio_OnRegisterPlatformUserCallback.
+ */
+EOS_STRUCT(EOS_RTCAudio_OnRegisterPlatformUserCallbackInfo, (
+	/** This returns:
+	 * EOS_Success if the user was successfully registered.
+	 * EOS_InvalidParameters if any of the parameters are incorrect.
+	 * EOS_UnexpectedError otherwise.
+	 */
+	EOS_EResult ResultCode;
+	/** Client-specified data passed into EOS_RTCAudio_RegisterPlatformUser. */
+	void* ClientData;
+	/** Platform dependent user id. */
+	const char* PlatformUserId;
+));
+
+/**
+ * Callback for completion of register platform user request.
+ */
+EOS_DECLARE_CALLBACK(EOS_RTCAudio_OnRegisterPlatformUserCallback, const EOS_RTCAudio_OnRegisterPlatformUserCallbackInfo* Data);
+
+/** The most recent version of the EOS_RTCAudio_UnregisterPlatformUser API. */
+#define EOS_RTCAUDIO_UNREGISTERPLATFORMUSER_API_LATEST 1
+
+/**
+ * This struct is used to remove a user from the audio system.
+ */
+EOS_STRUCT(EOS_RTCAudio_UnregisterPlatformUserOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_UNREGISTERPLATFORMUSER_API_LATEST. */
+	int32_t ApiVersion;
+	/** The account of a user associated with this event. */
+	const char* PlatformUserId;
+));
+
+/**
+ * This struct is passed in with a call to EOS_RTCAudio_OnUnregisterPlatformUserCallback.
+ */
+EOS_STRUCT(EOS_RTCAudio_OnUnregisterPlatformUserCallbackInfo, (
+	/** This returns:
+	 * EOS_Success if the user was successfully unregistered.
+	 * EOS_InvalidParameters if any of the parameters are incorrect.
+	 * EOS_UnexpectedError otherwise.
+	 */
+	EOS_EResult ResultCode;
+	/** Client-specified data passed into EOS_RTCAudio_UnregisterPlatformUser. */
+	void* ClientData;
+	/** Platform dependent user id. */
+	const char* PlatformUserId;
+));
+
+/**
+ * Callback for completion of unregister platform user request.
+ */
+EOS_DECLARE_CALLBACK(EOS_RTCAudio_OnUnregisterPlatformUserCallback, const EOS_RTCAudio_OnUnregisterPlatformUserCallbackInfo* Data);
+
+/** The most recent version of the EOS_RTCAudio_QueryInputDevicesInformation API. */
+#define EOS_RTCAUDIO_QUERYINPUTDEVICESINFORMATION_API_LATEST 1
+
+/**
+ * This struct is passed in with a call to EOS_RTCAudio_QueryInputDevicesInformation.
+ */
+EOS_STRUCT(EOS_RTCAudio_QueryInputDevicesInformationOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_QUERYINPUTDEVICESINFORMATION_API_LATEST. */
+	int32_t ApiVersion;
+));
+
+/**
+ * This struct is passed in with a call to EOS_RTCAudio_OnQueryInputDevicesInformationCallback.
+ */
+EOS_STRUCT(EOS_RTCAudio_OnQueryInputDevicesInformationCallbackInfo, (
+	/** This returns:
+	 * EOS_Success if the operation succeeded.
+	 * EOS_InvalidParameters if any of the parameters are incorrect.
+	 */
+	EOS_EResult ResultCode;
+	/** Client-specified data passed into EOS_RTCAudio_QueryInputDevicesInformation. */
+	void* ClientData;
+));
+
+/**
+ * Callback for completion of query input devices information request.
+ */
+EOS_DECLARE_CALLBACK(EOS_RTCAudio_OnQueryInputDevicesInformationCallback, const EOS_RTCAudio_OnQueryInputDevicesInformationCallbackInfo* Data);
+
+/** The most recent version of the EOS_RTCAudio_GetInputDevicesCount API. */
+#define EOS_RTCAUDIO_GETINPUTDEVICESCOUNT_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_RTCAudio_GetInputDevicesCount function.
+ */
+EOS_STRUCT(EOS_RTCAudio_GetInputDevicesCountOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_GETINPUTDEVICESCOUNT_API_LATEST. */
+	int32_t ApiVersion;
+));
+
+/** The most recent version of the EOS_RTCAudio_CopyInputDeviceInformationByIndex API. */
+#define EOS_RTCAUDIO_COPYINPUTDEVICEINFORMATIONBYINDEX_API_LATEST 1
+
+/**
+ * Input parameters for the EOS_RTCAudio_CopyInputDeviceInformationByIndex function.
+ */
+EOS_STRUCT(EOS_RTCAudio_CopyInputDeviceInformationByIndexOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_COPYINPUTDEVICEINFORMATIONBYINDEX_API_LATEST. */
+	int32_t ApiVersion;
+	/** Index of the audio input device's information to retrieve. */
+	uint32_t DeviceIndex;
+));
+
+/** The most recent version of the EOS_RTCAudio_InputDeviceInformation struct. */
+#define EOS_RTCAUDIO_INPUTDEVICEINFORMATION_API_LATEST 1
+
+/**
+ * This struct is used to get information about a specific audio input device.
+ */
+EOS_STRUCT(EOS_RTCAudio_InputDeviceInformation, (
+	/** API Version: Set this to EOS_RTCAUDIO_INPUTDEVICEINFORMATION_API_LATEST. */
+	int32_t ApiVersion;
+	/** True if this is the default audio input device in the system. */
+	EOS_Bool bDefaultDevice;
+	/**
+	 * The persistent unique id of the audio input device.
+	 * The value can be cached - invalidated only when the audio device pool is changed.
+	 *
+	 * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+	 */
+	const char* DeviceId;
+	/** Human-readable name of the audio input device */
+	const char* DeviceName;
+));
+
+/**
+ * Release the memory associated with EOS_RTCAudio_InputDeviceInformation. This must be called on data retrieved from
+ * EOS_RTCAudio_CopyInputDeviceInformationByIndex.
+ *
+ * @param DeviceInformation - The audio input device's information to release.
+ *
+ * @see EOS_RTCAudio_InputDeviceInformation
+ * @see EOS_RTCAudio_CopyInputDeviceInformationByIndex
+ */
+EOS_DECLARE_FUNC(void) EOS_RTCAudio_InputDeviceInformation_Release(EOS_RTCAudio_InputDeviceInformation* DeviceInformation);
+
+/** The most recent version of the EOS_RTCAudio_QueryOutputDevicesInformation API. */
+#define EOS_RTCAUDIO_QUERYOUTPUTDEVICESINFORMATION_API_LATEST 1
+
+/**
+ * This struct is passed in with a call to EOS_RTCAudio_QueryOutputDevicesInformation.
+ */
+EOS_STRUCT(EOS_RTCAudio_QueryOutputDevicesInformationOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_QUERYOUTPUTDEVICESINFORMATION_API_LATEST. */
+	int32_t ApiVersion;
+));
+
+/**
+ * This struct is passed in with a call to EOS_RTCAudio_OnQueryOutputDevicesInformationCallback.
+ */
+EOS_STRUCT(EOS_RTCAudio_OnQueryOutputDevicesInformationCallbackInfo, (
+	/** This returns:
+	 * EOS_Success if the operation succeeded.
+	 * EOS_InvalidParameters if any of the parameters are incorrect.
+	 */
+	EOS_EResult ResultCode;
+	/** Client-specified data passed into EOS_RTCAudio_QueryOutputDevicesInformation. */
+	void* ClientData;
+));
+
+/**
+ * Callback for completion of query output devices information request.
+ */
+EOS_DECLARE_CALLBACK(EOS_RTCAudio_OnQueryOutputDevicesInformationCallback, const EOS_RTCAudio_OnQueryOutputDevicesInformationCallbackInfo* Data);
+
+/** The most recent version of the EOS_RTCAudio_GetOutputDevicesCount API. */
+#define EOS_RTCAUDIO_GETOUTPUTDEVICESCOUNT_API_LATEST 1
+
+/**
+ * Output parameters for the EOS_RTCAudio_GetOutputDevicesCount function.
+ */
+EOS_STRUCT(EOS_RTCAudio_GetOutputDevicesCountOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_GETOUTPUTDEVICESCOUNT_API_LATEST. */
+	int32_t ApiVersion;
+));
+
+/** The most recent version of the EOS_RTCAudio_CopyOutputDeviceInformationByIndex API. */
+#define EOS_RTCAUDIO_COPYOUTPUTDEVICEINFORMATIONBYINDEX_API_LATEST 1
+
+/**
+ * Output parameters for the EOS_RTCAudio_CopyOutputDeviceInformationByIndex function.
+ */
+EOS_STRUCT(EOS_RTCAudio_CopyOutputDeviceInformationByIndexOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_COPYOUTPUTDEVICEINFORMATIONBYINDEX_API_LATEST. */
+	int32_t ApiVersion;
+	/** Index of the audio output device's information to retrieve. */
+	uint32_t DeviceIndex;
+));
+
+/** The most recent version of the EOS_RTCAudio_OutputDeviceInformation struct. */
+#define EOS_RTCAUDIO_OUTPUTDEVICEINFORMATION_API_LATEST 1
+
+/**
+ * This struct is used to get information about a specific audio output device.
+ */
+EOS_STRUCT(EOS_RTCAudio_OutputDeviceInformation, (
+	/** API Version: Set this to EOS_RTCAUDIO_OUTPUTDEVICEINFORMATION_API_LATEST. */
+	int32_t ApiVersion;
+	/** True if this is the default audio output device in the system. */
+	EOS_Bool bDefaultDevice;
+	/**
+	 * The persistent unique id of the audio output device.
+	 * The value can be cached - invalidated only when the audio device pool is changed.
+	 *
+	 * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+	 */
+	const char* DeviceId;
+	/** Human-readable name of the audio output device */
+	const char* DeviceName;
+));
+
+/**
+ * Release the memory associated with EOS_RTCAudio_OutputDeviceInformation. This must be called on data retrieved from
+ * EOS_RTCAudio_CopyOutputDeviceInformationByIndex.
+ *
+ * @param DeviceInformation - The audio output device's information to release.
+ *
+ * @see EOS_RTCAudio_OutputDeviceInformation
+ * @see EOS_RTCAudio_CopyOutputDeviceInformationByIndex
+ */
+EOS_DECLARE_FUNC(void) EOS_RTCAudio_OutputDeviceInformation_Release(EOS_RTCAudio_OutputDeviceInformation* DeviceInformation);
+
+/** The most recent version of the EOS_RTCAudio_SetInputDeviceSettings API. */
+#define EOS_RTCAUDIO_SETINPUTDEVICESETTINGS_API_LATEST 1
+
+/**
+ * This struct is used to call EOS_RTCAudio_SetInputDeviceSettings.
+ */
+EOS_STRUCT(EOS_RTCAudio_SetInputDeviceSettingsOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_SETINPUTDEVICESETTINGS_API_LATEST. */
+	int32_t ApiVersion;
+	/** The Product User ID of the user trying to request this operation. */
+	EOS_ProductUserId LocalUserId;
+	/**
+	 * The device Id to be used for this user. Pass NULL or empty string to use a default input device.
+	 *
+	 * If the device ID is invalid, the default device will be used instead.
+	 * Despite this fact, that device ID will be stored and the library will try to move on it when an audio device pool is being changed.
+	 *
+	 * The actual hardware audio input device usage depends on the current payload and optimized not to use it
+	 * when generated audio frames cannot be processed by someone else based on a scope of rules (For instance, when a client is alone in a room).
+	 *
+	 * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+	 */
+	const char* RealDeviceId;
+	/** Enable or disable Platform AEC (Acoustic Echo Cancellation) if available. */
+	EOS_Bool bPlatformAEC;
+));
+
+/**
+ * This struct is passed in with a call to EOS_RTCAudio_OnSetInputDeviceSettingsCallback.
+ */
+EOS_STRUCT(EOS_RTCAudio_OnSetInputDeviceSettingsCallbackInfo, (
+	/** This returns:
+	 * EOS_Success if the operation succeeded.
+	 * EOS_InvalidParameters if any of the parameters are incorrect.
+	 */
+	EOS_EResult ResultCode;
+	/** Client-specified data passed into EOS_RTCAudio_SetInputDeviceSettings. */
+	void* ClientData;
+	/** Associated audio input device Id. */
+	const char* RealDeviceId;
+));
+
+/**
+ * Callback for completion of set input device settings request.
+ */
+EOS_DECLARE_CALLBACK(EOS_RTCAudio_OnSetInputDeviceSettingsCallback, const EOS_RTCAudio_OnSetInputDeviceSettingsCallbackInfo* Data);
+
+/** The most recent version of the EOS_RTCAudio_SetOutputDeviceSettings API. */
+#define EOS_RTCAUDIO_SETOUTPUTDEVICESETTINGS_API_LATEST 1
+
+/**
+ * This struct is used to call EOS_RTCAudio_SetOutputDeviceSettings.
+ */
+EOS_STRUCT(EOS_RTCAudio_SetOutputDeviceSettingsOptions, (
+	/** API Version: Set this to EOS_RTCAUDIO_SETOUTPUTDEVICESETTINGS_API_LATEST. */
+	int32_t ApiVersion;
+	/** The Product User ID of the user who initiated this request. */
+	EOS_ProductUserId LocalUserId;
+	/**
+	 * The device Id to be used for this user. Pass NULL or empty string to use a default output device.
+	 *
+	 * If the device ID is invalid, the default device will be used instead.
+	 * Despite this fact, that device ID will be stored and the library will try to move on it when an audio device pool is being changed.
+	 *
+	 * The actual hardware audio output device usage depends on the current payload and optimized not to use it
+	 * when generated audio frames cannot be processed by someone else based on a scope of rules (For instance, when a client is alone in a room).
+	 *
+	 * @see EOS_RTCAudio_AddNotifyAudioDevicesChanged
+	 */
+	const char* RealDeviceId;
+));
+
+/**
+ * This struct is passed in with a call to EOS_RTCAudio_OnSetOutputDeviceSettingsCallback.
+ */
+EOS_STRUCT(EOS_RTCAudio_OnSetOutputDeviceSettingsCallbackInfo, (
+	/** This returns:
+	 * EOS_Success if the operation succeeded.
+	 * EOS_InvalidParameters if any of the parameters are incorrect.
+	 */
+	EOS_EResult ResultCode;
+	/** Client-specified data passed into EOS_RTCAudio_SetOutputDeviceSettings. */
+	void* ClientData;
+	/** Associated audio output device Id. */
+	const char* RealDeviceId;
+));
+
+/**
+ * Callback for completion of set output device settings request.
+ */
+EOS_DECLARE_CALLBACK(EOS_RTCAudio_OnSetOutputDeviceSettingsCallback, const EOS_RTCAudio_OnSetOutputDeviceSettingsCallbackInfo* Data);
+
 #pragma pack(pop)
+
+#include "eos_rtc_audio_types_deprecated.inl"

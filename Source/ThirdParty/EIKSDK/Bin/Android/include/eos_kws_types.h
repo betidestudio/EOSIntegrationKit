@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_common.h"
@@ -139,6 +139,8 @@ EOS_STRUCT(EOS_KWS_QueryPermissionsCallbackInfo, (
 	const char* DateOfBirth;
 	/** Is this user a minor */
 	EOS_Bool bIsMinor;
+	/** Parent email. This value may be set to an empty string if the originally registered email recipient declined to be the right person to give consent. */
+	const char* ParentEmail;
 ));
 
 /**
@@ -274,6 +276,14 @@ EOS_STRUCT(EOS_KWS_PermissionsUpdateReceivedCallbackInfo, (
 	void* ClientData;
 	/** Recipient Local user id */
 	EOS_ProductUserId LocalUserId;
+	/** Recipient's associated KWS UserId */
+	const char* KWSUserId;
+	/** Date of birth in ISO8601 form (YYYY-MM-DD) */
+	const char* DateOfBirth;
+	/** Is this user a minor */
+	EOS_Bool bIsMinor;
+	/** Parent email. This value may be set to an empty string if the originally registered email recipient declined to be the right person to give consent. */
+	const char* ParentEmail;
 ));
 
 /**

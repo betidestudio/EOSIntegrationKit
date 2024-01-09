@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "eos_sessions_types.h"
@@ -51,6 +51,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_Sessions_UpdateSessionModification(EOS_HSessio
  *         EOS_Sessions_OutOfSync if the session is out of sync and will be updated on the next connection with the backend
  *         EOS_NotFound if a session to be updated does not exist
  *         EOS_LimitExceeded if a new session cannot be created because doing so would exceed the maximum allowed concurrent session count
+ *         EOS_InvalidUser if the local user associated with the session to update does not exist or is not authenticated
  */
 EOS_DECLARE_FUNC(void) EOS_Sessions_UpdateSession(EOS_HSessions Handle, const EOS_Sessions_UpdateSessionOptions* Options, void* ClientData, const EOS_Sessions_OnUpdateSessionCallback CompletionDelegate);
 
@@ -78,6 +79,7 @@ EOS_DECLARE_FUNC(void) EOS_Sessions_DestroySession(EOS_HSessions Handle, const E
  * @return EOS_Success if the join completes successfully
  *         EOS_InvalidParameters if any of the options are incorrect
  *         EOS_Sessions_SessionAlreadyExists if the session is already exists or is in the process of being joined
+ *         EOS_InvalidUser if the local user associated with the local session to be created does not exist or is not authenticated
  */
 EOS_DECLARE_FUNC(void) EOS_Sessions_JoinSession(EOS_HSessions Handle, const EOS_Sessions_JoinSessionOptions* Options, void* ClientData, const EOS_Sessions_OnJoinSessionCallback CompletionDelegate);
 
@@ -267,12 +269,31 @@ EOS_DECLARE_FUNC(EOS_NotificationId) EOS_Sessions_AddNotifySessionInviteAccepted
 EOS_DECLARE_FUNC(void) EOS_Sessions_RemoveNotifySessionInviteAccepted(EOS_HSessions Handle, EOS_NotificationId InId);
 
 /**
+ * Register to receive notifications when a user rejects a session invite.
+ * @note must call RemoveNotifySessionInviteRejected to remove the notification
+ *
+ * @param Options Structure containing information about the request.
+ * @param ClientData Arbitrary data that is passed back to you in the CompletionDelegate.
+ * @param NotificationFn A callback that is fired when a notification is received.
+ *
+ * @return handle representing the registered callback
+ */
+EOS_DECLARE_FUNC(EOS_NotificationId) EOS_Sessions_AddNotifySessionInviteRejected(EOS_HSessions Handle, const EOS_Sessions_AddNotifySessionInviteRejectedOptions* Options, void* ClientData, const EOS_Sessions_OnSessionInviteRejectedCallback NotificationFn);
+
+/**
+ * Unregister from receiving notifications when a user rejects a session invite via the social overlay.
+ *
+ * @param InId Handle representing the registered callback
+ */
+EOS_DECLARE_FUNC(void) EOS_Sessions_RemoveNotifySessionInviteRejected(EOS_HSessions Handle, EOS_NotificationId InId);
+
+/**
  * Register to receive notifications when a user accepts a session join game via the social overlay.
  * @note must call RemoveNotifyJoinSessionAccepted to remove the notification
  *
  * @param Options Structure containing information about the request.
  * @param ClientData Arbitrary data that is passed back to you in the CompletionDelegate.
- * @param NotificationFn A callback that is fired when a a notification is received.
+ * @param NotificationFn A callback that is fired when a notification is received.
  *
  * @return handle representing the registered callback
  */
@@ -362,6 +383,53 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_Sessions_IsUserInSession(EOS_HSessions Handle,
 EOS_DECLARE_FUNC(EOS_EResult) EOS_Sessions_DumpSessionState(EOS_HSessions Handle, const EOS_Sessions_DumpSessionStateOptions* Options);
 
 /**
+ * Register to receive notifications about leave session requests performed by local user via the overlay.
+ * When user requests to leave the session in the social overlay, the SDK does not automatically leave the session, it is up to the game to perform any necessary cleanup and call the EOS_Sessions_DestroySession method using the SessionName sent in the notification function.
+ * @note must call EOS_Sessions_RemoveNotifyLeaveSessionRequested to remove the notification.
+ *
+ * @param Options Structure containing information about the request.
+ * @param ClientData Arbitrary data that is passed back to you in the CompletionDelegate.
+ * @param NotificationFn A callback that is fired when a notification is received.
+ *
+ * @return handle representing the registered callback
+ */
+EOS_DECLARE_FUNC(EOS_NotificationId) EOS_Sessions_AddNotifyLeaveSessionRequested(EOS_HSessions Handle, const EOS_Sessions_AddNotifyLeaveSessionRequestedOptions* Options, void* ClientData, const EOS_Sessions_OnLeaveSessionRequestedCallback NotificationFn);
+
+/**
+ * Unregister from receiving notifications when a user performs a leave lobby action via the overlay.
+ *
+ * @param InId Handle representing the registered callback
+ */
+EOS_DECLARE_FUNC(void) EOS_Sessions_RemoveNotifyLeaveSessionRequested(EOS_HSessions Handle, EOS_NotificationId InId);
+
+/**
+ * Register to receive notifications about a session "INVITE" performed by a local user via the overlay.
+ * This is only needed when a configured integrated platform has EOS_IPMF_DisableSDKManagedSessions set.  The EOS SDK will
+ * then use the state of EOS_IPMF_PreferEOSIdentity and EOS_IPMF_PreferIntegratedIdentity to determine when the NotificationFn is
+ * called.
+ *
+ * @note must call EOS_Sessions_RemoveNotifySendSessionNativeInviteRequested to remove the notification.
+ *
+ * @param Options Structure containing information about the request.
+ * @param ClientData Arbitrary data that is passed back to you in the CompletionDelegate.
+ * @param NotificationFn A callback that is fired when a notification is received.
+ *
+ * @return handle representing the registered callback
+ *
+ * @see EOS_IPMF_DisableSDKManagedSessions
+ * @see EOS_IPMF_PreferEOSIdentity
+ * @see EOS_IPMF_PreferIntegratedIdentity
+ */
+EOS_DECLARE_FUNC(EOS_NotificationId) EOS_Sessions_AddNotifySendSessionNativeInviteRequested(EOS_HSessions Handle, const EOS_Sessions_AddNotifySendSessionNativeInviteRequestedOptions* Options, void* ClientData, const EOS_Sessions_OnSendSessionNativeInviteRequestedCallback NotificationFn);
+
+/**
+ * Unregister from receiving notifications when a user requests a send invite via the overlay.
+ *
+ * @param InId Handle representing the registered callback
+ */
+EOS_DECLARE_FUNC(void) EOS_Sessions_RemoveNotifySendSessionNativeInviteRequested(EOS_HSessions Handle, EOS_NotificationId InId);
+
+/**
  * To modify sessions, you must call EOS_Sessions_CreateSessionModification to create a Session Modification handle. To modify that handle, call
  * EOS_HSessionModification methods. Once you are finished, call EOS_Sessions_UpdateSession with your handle. You must then release your Session Modification
  * handle by calling EOS_SessionModification_Release.
@@ -440,6 +508,17 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_SessionModification_SetMaxPlayers(EOS_HSession
 EOS_DECLARE_FUNC(EOS_EResult) EOS_SessionModification_SetInvitesAllowed(EOS_HSessionModification Handle, const EOS_SessionModification_SetInvitesAllowedOptions* Options);
 
 /**
+ * Set the Allowed Platform IDs for the session.
+ *
+ * @param Options Options associated with allowed Platform IDs for this session.
+ *
+ * @return EOS_Success if setting this parameter was successful
+ *         EOS_IncompatibleVersion if the API version passed in is incorrect
+ *         EOS_InvalidParameters if the attribution is missing information or otherwise invalid
+ */
+EOS_DECLARE_FUNC(EOS_EResult) EOS_SessionModification_SetAllowedPlatformIds(EOS_HSessionModification Handle, const EOS_SessionModification_SetAllowedPlatformIdsOptions* Options);
+
+/**
  * Associate an attribute with this session
  * An attribute is something that may or may not be advertised with the session.
  * If advertised, it can be queried for in a search, otherwise the data remains local to the client
@@ -507,7 +586,7 @@ EOS_DECLARE_FUNC(EOS_ProductUserId) EOS_ActiveSession_GetRegisteredPlayerByIndex
 
 /**
  * This class represents the details of a session, including its session properties and the attribution associated with it
- * Locally created or joined active sessions will contain this information as will search results.   
+ * Locally created or joined active sessions will contain this information as will search results.
  * A handle to a session is required to join a session via search or invite
  */
 
@@ -620,7 +699,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_SessionSearch_SetParameter(EOS_HSessionSearch 
  *
  * @return EOS_Success if removing this search parameter was successful
  *         EOS_InvalidParameters if the search key is invalid or null
- *		   EOS_NotFound if the parameter was not a part of the search criteria
+ *         EOS_NotFound if the parameter was not a part of the search criteria
  *         EOS_IncompatibleVersion if the API version passed in is incorrect
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_SessionSearch_RemoveParameter(EOS_HSessionSearch Handle, const EOS_SessionSearch_RemoveParameterOptions* Options);

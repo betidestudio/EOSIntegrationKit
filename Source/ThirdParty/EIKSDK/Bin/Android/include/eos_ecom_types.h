@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+ // Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -55,6 +55,12 @@ EXTERN_C typedef const char* EOS_Ecom_EntitlementName;
  */
 EXTERN_C typedef const char* EOS_Ecom_EntitlementId;
 
+/**
+ * A unique identifier for the Sandbox.
+ * 
+ * @see EOS_Ecom_QueryOwnershipBySandboxIds
+ */
+EXTERN_C typedef const char* EOS_Ecom_SandboxId;
 
 /**
  * An enumeration of the different ownership statuses.
@@ -241,10 +247,10 @@ EOS_STRUCT(EOS_Ecom_CatalogOffer, (
 	uint8_t DiscountPercentage;
 	/** Contains the POSIX timestamp that the offer expires or -1 if it does not expire */
 	int64_t ExpirationTimestamp;
-	/** 
-	* The number of times that the requesting account has purchased this offer.
-	* This value is deprecated and the backend no longer returns this value.
-	*/
+	/**
+	 * The number of times that the requesting account has purchased this offer.
+	 * This value is deprecated and the backend no longer returns this value.
+	 */
 	uint32_t PurchasedCount_DEPRECATED;
 	/**
 	 * The maximum number of times that the offer can be purchased.
@@ -365,7 +371,7 @@ EOS_STRUCT(EOS_Ecom_CheckoutEntry, (
 /**
  * The maximum number of catalog items that may be queried in a single pass
  */
-#define EOS_ECOM_QUERYOWNERSHIP_MAX_CATALOG_IDS 50
+#define EOS_ECOM_QUERYOWNERSHIP_MAX_CATALOG_IDS 400
 
 /**
  * Input parameters for the EOS_Ecom_QueryOwnership function.
@@ -404,6 +410,64 @@ EOS_STRUCT(EOS_Ecom_QueryOwnershipCallbackInfo, (
  * @param Data A EOS_Ecom_QueryOwnershipCallbackInfo containing the output information and result
  */
 EOS_DECLARE_CALLBACK(EOS_Ecom_OnQueryOwnershipCallback, const EOS_Ecom_QueryOwnershipCallbackInfo* Data);
+
+/** The most recent version of the EOS_Ecom_QueryOwnershipBySandboxIds API. */
+#define EOS_ECOM_QUERYOWNERSHIPBYSANDBOXIDSOPTIONS_API_LATEST 1
+
+/**
+ * The maximum number of Sandbox Ids that may be queried in a single pass.
+ */
+#define EOS_ECOM_QUERYOWNERSHIP_MAX_SANDBOX_IDS 10
+
+ /**
+  * Input parameters for the EOS_Ecom_QueryOwnershipBySandboxIds function.
+  */
+EOS_STRUCT(EOS_Ecom_QueryOwnershipBySandboxIdsOptions, (
+	/** API Version: Set this to EOS_ECOM_QUERYOWNERSHIPBYSANDBOXIDSOPTIONS_API_LATEST. */
+	int32_t ApiVersion;
+	/** The Epic Account ID of the local user whose ownership to query. */
+	EOS_EpicAccountId LocalUserId;
+	/** The array of Sandbox IDs to check for ownership. */
+	EOS_Ecom_SandboxId* SandboxIds;
+	/** The number of Sandbox IDs in the query. */
+	uint32_t SandboxIdsCount;
+));
+
+/**
+ * Contains all owned catalog items for a sandbox ID. This structure is
+ * returned as part of the EOS_Ecom_QueryOwnershipBySandboxIdsCallbackInfo structure.
+ * Note: The SandboxID and CatalogItemId strings will not remain valid after EOS_Ecom_OnQueryOwnershipBySandboxIdsCallback, so a copy should be as needed.
+ */
+EOS_STRUCT(EOS_Ecom_SandboxIdItemOwnership, (
+	/** SandboxId */
+	EOS_Ecom_SandboxId SandboxId;
+	/** List of all owned catalog items for this SandboxId */
+	const EOS_Ecom_CatalogItemId* OwnedCatalogItemIds;
+	/** Number of owned catalog items for this SandboxId */
+	uint32_t OwnedCatalogItemIdsCount;
+));
+
+/**
+ * Output parameters for the EOS_Ecom_QueryOwnershipBySandboxIds Function.
+ */
+EOS_STRUCT(EOS_Ecom_QueryOwnershipBySandboxIdsCallbackInfo, (
+	/** The EOS_EResult code for the operation. EOS_Success indicates that the operation succeeded; other codes indicate errors. */
+	EOS_EResult ResultCode;
+	/** Context that was passed into EOS_Ecom_QueryOwnership */
+	void* ClientData;
+	/** The Epic Account ID of the local user whose ownership was queried */
+	EOS_EpicAccountId LocalUserId;
+	/** List of SandboxIds and their corresponding owned catalog item Ids. If there are no ownership items, the OwnedCatalogItemIdsCount is 0 and OwnedCatalogItemIds is null. */
+	const EOS_Ecom_SandboxIdItemOwnership* SandboxIdItemOwnerships;
+	/** Number of ownership results are included in this callback */
+	uint32_t SandboxIdItemOwnershipsCount;
+));
+
+/**
+ * Function prototype definition for callbacks passed to EOS_Ecom_QueryOwnershipBySandboxIds
+ * @param Data A EOS_Ecom_QueryOwnershipBySandboxIdsCallbackInfo containing the output information and result
+ */
+EOS_DECLARE_CALLBACK(EOS_Ecom_OnQueryOwnershipBySandboxIdsCallback, const EOS_Ecom_QueryOwnershipBySandboxIdsCallbackInfo* Data);
 
 /** The most recent version of the EOS_Ecom_QueryOwnershipToken API. */
 #define EOS_ECOM_QUERYOWNERSHIPTOKEN_API_LATEST 2
@@ -453,9 +517,9 @@ EOS_DECLARE_CALLBACK(EOS_Ecom_OnQueryOwnershipTokenCallback, const EOS_Ecom_Quer
 #define EOS_ECOM_QUERYENTITLEMENTS_API_LATEST 2
 
 /**
- * The maximum number of entitlements that may be queried in a single pass
+ * The maximum number of entitlements that may be queried in a single QueryEntitlements API call.
  */
-#define EOS_ECOM_QUERYENTITLEMENTS_MAX_ENTITLEMENT_IDS 32
+#define EOS_ECOM_QUERYENTITLEMENTS_MAX_ENTITLEMENT_IDS 256
 
 /**
  * Input parameters for the EOS_Ecom_QueryEntitlements function.
@@ -1012,7 +1076,7 @@ EOS_STRUCT(EOS_Ecom_Transaction_CopyEntitlementByIndexOptions, (
 ));
 
 /**
- * Release the memory associated with an EOS_Ecom_HTransaction.  Is is expected to be called after
+ * Release the memory associated with an EOS_Ecom_HTransaction.  Is expected to be called after
  * being received from a EOS_Ecom_CheckoutCallbackInfo.
  *
  * @param Transaction A handle to a transaction.

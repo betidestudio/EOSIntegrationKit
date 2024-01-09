@@ -126,10 +126,8 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 						LocalArraySettings.Add(*SettingName.ToString(), Setting.Data);
 						++It;
 					}
-					
 					bool IsServer = LocalArraySettings.Contains("IsDedicatedServer") ? true : false;
 					FSessionFindStruct LocalStruct;
-					LocalStruct.SessionName = "GameSession";
 					LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
 					LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections;
 					LocalStruct.SessionResult= SessionResult;

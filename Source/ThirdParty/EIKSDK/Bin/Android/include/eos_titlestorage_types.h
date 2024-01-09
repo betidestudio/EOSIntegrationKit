@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -26,7 +26,7 @@ EOS_STRUCT(EOS_TitleStorage_FileMetadata, (
 	const char* MD5Hash;
 	/** The file's name */
 	const char* Filename;
-	/** The size of data (payload) in file in unencrypted (original) form.  */
+	/** The size of data (payload) in file in unencrypted (original) form. */
 	uint32_t UnencryptedDataSizeBytes;
 ));
 
