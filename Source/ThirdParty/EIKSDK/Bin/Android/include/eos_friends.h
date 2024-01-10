@@ -1,10 +1,10 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_friends_types.h"
 
 /**
- * The Friends Interface is used to manage a user's friends list, by interacting with the backend services, and to retrieve the cached list of friends, blocked users and pending invitations.
+ * The Friends Interface is used to manage a user's friends list, by interacting with the backend services, and to retrieve the cached list of friends and pending invitations.
  * All Friends Interface calls take a handle of type EOS_HFriends as the first parameter.
  * This handle can be retrieved from a EOS_HPlatform handle by using the EOS_Platform_GetFriendsInterface function.
  *
@@ -12,7 +12,7 @@
  */
 
 /**
- * Starts an asynchronous task that reads the user's friends list and blocklist from the backend service, caching it for future use.
+ * Starts an asynchronous task that reads the user's friends list from the backend service, caching it for future use.
  *
  * @note When the Social Overlay is enabled then this will be called automatically.  The Social Overlay is enabled by default (see EOS_PF_DISABLE_SOCIAL_OVERLAY).
  *
@@ -103,41 +103,3 @@ EOS_DECLARE_FUNC(EOS_NotificationId) EOS_Friends_AddNotifyFriendsUpdate(EOS_HFri
  * @param NotificationId The previously bound notification ID.
  */
 EOS_DECLARE_FUNC(void) EOS_Friends_RemoveNotifyFriendsUpdate(EOS_HFriends Handle, EOS_NotificationId NotificationId);
-
-/**
- * Retrieves the number of blocked users on the blocklist that has already been retrieved by the EOS_Friends_QueryFriends API.
- *
- * @param Options structure containing the Epic Account ID of user who owns the blocklist.
- * @return the number of users on the blocklist.
- *
- * @see EOS_Friends_QueryFriends
- */
-EOS_DECLARE_FUNC(int32_t) EOS_Friends_GetBlockedUsersCount(EOS_HFriends Handle, const EOS_Friends_GetBlockedUsersCountOptions* Options);
-
-/**
- * Retrieves the Epic Account ID of an entry from the blocklist that has already been retrieved by the EOS_Friends_QueryFriends API.
- *
- * @param Options structure containing the Epic Account ID of the owner of the blocklist and the index into the list.
- * @return the Epic Account ID of the blocked user. Note that if the index provided is out of bounds, the returned Epic Account ID will be a "null" account ID.
- *
- * @see EOS_Friends_QueryFriends
- * @see EOS_Friends_GetBlockedUsersCount
- */
-EOS_DECLARE_FUNC(EOS_EpicAccountId) EOS_Friends_GetBlockedUserAtIndex(EOS_HFriends Handle, const EOS_Friends_GetBlockedUserAtIndexOptions* Options);
-
-/**
- * Listen for changes to blocklist for a particular account.
- *
- * @param Options Information about the API version which is being used.
- * @param ClientData This value is returned to the caller when BlockedUsersUpdateHandler is invoked.
- * @param BlockedUsersUpdateHandler The callback to be invoked when a blocklist changes.
- * @return A valid notification ID if successfully bound, or EOS_INVALID_NOTIFICATIONID otherwise.
- */
-EOS_DECLARE_FUNC(EOS_NotificationId) EOS_Friends_AddNotifyBlockedUsersUpdate(EOS_HFriends Handle, const EOS_Friends_AddNotifyBlockedUsersUpdateOptions* Options, void* ClientData, const EOS_Friends_OnBlockedUsersUpdateCallback BlockedUsersUpdateHandler);
-
-/**
- * Stop listening for blocklist changes on a previously bound handler.
- *
- * @param NotificationId The previously bound notification ID.
- */
-EOS_DECLARE_FUNC(void) EOS_Friends_RemoveNotifyBlockedUsersUpdate(EOS_HFriends Handle, EOS_NotificationId NotificationId);

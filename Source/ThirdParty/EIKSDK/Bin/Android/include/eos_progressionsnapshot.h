@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_progressionsnapshot_types.h"
@@ -42,7 +42,7 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_ProgressionSnapshot_AddProgression(EOS_HProgre
  * Saves the previously added Key/Value pairs of a given Snapshot to the service.
  *
  * Note: This will overwrite any prior progression data stored with the service that's associated with the user.
- */
+ **/
 EOS_DECLARE_FUNC(void) EOS_ProgressionSnapshot_SubmitSnapshot(EOS_HProgressionSnapshot Handle, const EOS_ProgressionSnapshot_SubmitSnapshotOptions* Options, void* ClientData, const EOS_ProgressionSnapshot_OnSubmitSnapshotCallback CompletionDelegate);
 
 /**

@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_auth_types.h"
@@ -32,7 +32,10 @@ EOS_DECLARE_FUNC(void) EOS_Auth_Logout(EOS_HAuth Handle, const EOS_Auth_LogoutOp
 /**
  * Link external account by continuing previous login attempt with a continuance token.
  *
- * The user will be presented with Epic Accounts onboarding flow managed by the SDK.
+ * On Desktop and Mobile platforms, the user will be presented the Epic Account Portal to resolve their identity.
+ *
+ * On Console, the user will login to their Epic Account using an external device, e.g. a mobile device or a desktop PC,
+ * by browsing to the presented authentication URL and entering the device code presented by the game on the console.
  *
  * On success, the user will be logged in at the completion of this action.
  * This will commit this external account to the Epic Account and cannot be undone in the SDK.

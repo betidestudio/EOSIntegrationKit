@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_rtc_types.h"
@@ -99,7 +99,7 @@ EOS_DECLARE_FUNC(void) EOS_RTC_RemoveNotifyDisconnected(EOS_HRTC Handle, EOS_Not
  * You can use this notification to detect internal automatic RTC blocks due to block lists.
  * When a participant joins a room and while the system resolves the block list status of said participant, the participant is set to blocked and you'll receive
  * a notification with ParticipantStatus set to EOS_RTCPS_Joined and bParticipantInBlocklist set to true.
- * Once the block list status is resolved, if the player is not in any applicable block list(s), it is then unblocked and a new notification is sent with
+ * Once the block list status is resolved, if the player is not in any applicable block list(s), it is then unblocked a new notification is sent with
  * ParticipantStatus set to EOS_RTCPS_Joined and bParticipantInBlocklist set to false.
  *
  * @param ClientData Arbitrary data that is passed back in the CompletionDelegate
@@ -139,23 +139,3 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_RTC_SetSetting(EOS_HRTC Handle, const EOS_RTC_
  * @return EOS_Success when the setting is successfully set, EOS_NotFound when the setting is unknown, EOS_InvalidParameters when the value is invalid.
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_RTC_SetRoomSetting(EOS_HRTC Handle, const EOS_RTC_SetRoomSettingOptions* Options);
-
-/**
- * Register to receive notifications to receiving periodical statistics update. If the returned NotificationId is valid, you must call
- * EOS_RTC_RemoveNotifyRoomStatisticsUpdated when you no longer wish to have your StatisticsUpdateHandler called.
- *
- * @param ClientData Arbitrary data that is passed back in the StatisticsUpdateHandler
- * @param CompletionDelegate The callback to be fired when a statistics updated.
- * @return Notification ID representing the registered callback if successful, an invalid NotificationId if not
- *
- * @see EOS_INVALID_NOTIFICATIONID
- * @see EOS_RTC_RemoveNotifyRoomStatisticsUpdated
- */
-EOS_DECLARE_FUNC(EOS_NotificationId) EOS_RTC_AddNotifyRoomStatisticsUpdated(EOS_HRTC Handle, const EOS_RTC_AddNotifyRoomStatisticsUpdatedOptions* Options, void* ClientData, const EOS_RTC_OnRoomStatisticsUpdatedCallback StatisticsUpdateHandler);
-
-/**
- * Unregister a previously bound notification handler from receiving periodical statistics update notifications
- *
- * @param NotificationId The Notification ID representing the registered callback
- */
-EOS_DECLARE_FUNC(void) EOS_RTC_RemoveNotifyRoomStatisticsUpdated(EOS_HRTC Handle, EOS_NotificationId NotificationId);

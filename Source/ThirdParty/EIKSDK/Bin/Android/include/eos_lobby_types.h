@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_common.h"
@@ -86,7 +86,7 @@ EOS_ENUM(EOS_ELobbyMemberStatus,
 	EOS_LMS_CLOSED = 5
 );
 
-#define EOS_LOBBYDETAILS_INFO_API_LATEST 3
+#define EOS_LOBBYDETAILS_INFO_API_LATEST 2
 
 EOS_STRUCT(EOS_LobbyDetails_Info, (
 	/** API Version: Set this to EOS_LOBBYDETAILS_INFO_API_LATEST. */
@@ -113,16 +113,6 @@ EOS_STRUCT(EOS_LobbyDetails_Info, (
 	EOS_Bool bAllowJoinById;
 	/** Does rejoining after being kicked require an invite */
 	EOS_Bool bRejoinAfterKickRequiresInvite;
-	/** If true, this lobby will be associated with the local user's presence information. */
-	EOS_Bool bPresenceEnabled;
-	/** 
-	 * Array of platform IDs indicating the player platforms allowed to register with the session. Platform IDs are
-	 * found in the EOS header file, e.g. EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform specific
-	 * header file. If null, the lobby will be unrestricted.
-	 */
-	const uint32_t* AllowedPlatformIds;
-	/** Number of platform IDs in the array */
-	uint32_t AllowedPlatformIdsCount;
 ));
 
 EOS_DECLARE_FUNC(void) EOS_LobbyDetails_Info_Release(EOS_LobbyDetails_Info* LobbyDetailsInfo);
@@ -159,7 +149,7 @@ EOS_STRUCT(EOS_Lobby_LocalRTCOptions, (
 ));
 
 /** The most recent version of the EOS_Lobby_CreateLobby API. */
-#define EOS_LOBBY_CREATELOBBY_API_LATEST 9
+#define EOS_LOBBY_CREATELOBBY_API_LATEST 8
 
 /**
  * Input parameters for the EOS_Lobby_CreateLobby function.
@@ -173,8 +163,7 @@ EOS_STRUCT(EOS_Lobby_CreateLobbyOptions, (
 	uint32_t MaxLobbyMembers;
 	/** The initial permission level of the lobby */
 	EOS_ELobbyPermissionLevel PermissionLevel;
-	/**
-	 * If true, this lobby will be associated with the local user's presence information. A user's presence can only be associated with one lobby at a time.
+	/** If true, this lobby will be associated with presence information. A user's presence can only be associated with one lobby at a time.
 	 * This affects the ability of the Social Overlay to show game related actions to take in the user's social graph.
 	 *
 	 * @note The Social Overlay can handle only one of the following three options at a time:
@@ -194,8 +183,8 @@ EOS_STRUCT(EOS_Lobby_CreateLobbyOptions, (
 	/** Bucket ID associated with the lobby */
 	const char* BucketId;
 	/**
-	 * Is host migration allowed (will the lobby stay open if the original host leaves?)
-	 * NOTE: EOS_Lobby_PromoteMember is still allowed regardless of this setting
+	 * Is host migration allowed (will the lobby stay open if the original host leaves?) 
+	 * NOTE: EOS_Lobby_PromoteMember is still allowed regardless of this setting 
 	 */
 	EOS_Bool bDisableHostMigration;
 	/**
@@ -228,25 +217,11 @@ EOS_STRUCT(EOS_Lobby_CreateLobbyOptions, (
 	EOS_Bool bEnableJoinById;
 	/**
 	 * Does rejoining after being kicked require an invite?
-	 * When this is set, a kicked player cannot return to the session even if the session was set with
+	 * When this is set, a kicked player cannot return to the session even if the session was set with 
 	 * EOS_LPL_PUBLICADVERTISED.  When this is set, a player with invite privileges must use EOS_Lobby_SendInvite to
 	 * allow the kicked player to return to the session.
 	 */
 	EOS_Bool bRejoinAfterKickRequiresInvite;
-	/** 
-	 * Array of platform IDs indicating the player platforms allowed to register with the session. Platform IDs are
-	 * found in the EOS header file, e.g. EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform specific
-	 * header file. If null, the lobby will be unrestricted.
-	 */
-	const uint32_t* AllowedPlatformIds;
-	/** Number of platform IDs in the array */
-	uint32_t AllowedPlatformIdsCount;
-	/** 
-	* This value indicates whether or not the lobby owner allows crossplay interactions. If false, the lobby owner
-	* will be treated as allowing crossplay. If it is set to true, AllowedPlatformIds must have a single entry that matches 
-	* the platform of the lobby owner.
-	*/
-	EOS_Bool bCrossplayOptOut;
 ));
 
 /**
@@ -302,7 +277,7 @@ EOS_DECLARE_CALLBACK(EOS_Lobby_OnDestroyLobbyCallback, const EOS_Lobby_DestroyLo
 
 
 /** The most recent version of the EOS_Lobby_JoinLobby API. */
-#define EOS_LOBBY_JOINLOBBY_API_LATEST 4
+#define EOS_LOBBY_JOINLOBBY_API_LATEST 3
 
 /**
  * Input parameters for the EOS_Lobby_JoinLobby function.
@@ -314,8 +289,7 @@ EOS_STRUCT(EOS_Lobby_JoinLobbyOptions, (
 	EOS_HLobbyDetails LobbyDetailsHandle;
 	/** The Product User ID of the local user joining the lobby */
 	EOS_ProductUserId LocalUserId;
-	/** 
-	 * If true, this lobby will be associated with the local user's presence information. A user can only associate one lobby at a time with their presence information.
+	/** If true, this lobby will be associated with the user's presence information. A user can only associate one lobby at a time with their presence information.
 	 * This affects the ability of the Social Overlay to show game related actions to take in the user's social graph.
 	 *
 	 * @note The Social Overlay can handle only one of the following three options at a time:
@@ -336,11 +310,6 @@ EOS_STRUCT(EOS_Lobby_JoinLobbyOptions, (
 	 * the specified lobby does not have an RTC Room enabled and will not cause errors.
 	 */
 	const EOS_Lobby_LocalRTCOptions* LocalRTCOptions;
-	/** 
-	* This value indicates whether or not the local user allows crossplay interactions. If it is false, the local user 
-	* will be treated as allowing crossplay.
-	*/
-	EOS_Bool bCrossplayOptOut;
 ));
 
 /**
@@ -362,7 +331,7 @@ EOS_STRUCT(EOS_Lobby_JoinLobbyCallbackInfo, (
 EOS_DECLARE_CALLBACK(EOS_Lobby_OnJoinLobbyCallback, const EOS_Lobby_JoinLobbyCallbackInfo* Data);
 
 /** The most recent version of the EOS_Lobby_JoinLobbyById API. */
-#define EOS_LOBBY_JOINLOBBYBYID_API_LATEST 2
+#define EOS_LOBBY_JOINLOBBYBYID_API_LATEST 1
 
 /**
  * Input parameters for the EOS_Lobby_JoinLobbyById function.
@@ -396,11 +365,6 @@ EOS_STRUCT(EOS_Lobby_JoinLobbyByIdOptions, (
 	 * the specified lobby does not have an RTC Room enabled and will not cause errors.
 	 */
 	const EOS_Lobby_LocalRTCOptions* LocalRTCOptions;
-	/** 
-	* This value indicates whether or not the local user allows crossplay interactions. If it is false, the local user
-	* will be treated as allowing crossplay.
-	*/
-	EOS_Bool bCrossplayOptOut;
 ));
 
 /**
@@ -1090,11 +1054,11 @@ EOS_STRUCT(EOS_Lobby_AddNotifyRTCRoomConnectionChangedOptions, (
 	int32_t ApiVersion;
 	/** The ID of the lobby to receive RTC Room connection change notifications for
 	 * This is deprecated and no longer needed. The notification is raised for any LobbyId or LocalUserId. If any filtering is required, the callback struct (EOS_Lobby_RTCRoomConnectionChangedCallbackInfo) has both a LobbyId and LocalUserId field.
-	 */
+	 **/
 	EOS_LobbyId LobbyId_DEPRECATED;
 	/** The Product User ID of the local user in the lobby
 	 * This is deprecated and no longer needed. The notification is raised for any LobbyId or LocalUserId. If any filtering is required, the callback struct (EOS_Lobby_RTCRoomConnectionChangedCallbackInfo) has both a LobbyId and LocalUserId field.
-	 */
+	 **/
 	EOS_ProductUserId LocalUserId_DEPRECATED;
 ));
 
@@ -1131,7 +1095,7 @@ EOS_DECLARE_CALLBACK(EOS_Lobby_OnRTCRoomConnectionChangedCallback, const EOS_Lob
 
 /** Search for a matching bucket ID (value is string) */
 #define EOS_LOBBY_SEARCH_BUCKET_ID "bucket"
-/** Search for lobbies that contain at least this number of members (value is int) */
+/** Search for lobbies that contain at least this number of members (value is int)  */
 #define EOS_LOBBY_SEARCH_MINCURRENTMEMBERS "mincurrentmembers"
 /** Search for a match with min free space (value is int) */
 #define EOS_LOBBY_SEARCH_MINSLOTSAVAILABLE "minslotsavailable"
@@ -1155,7 +1119,7 @@ EOS_STRUCT(EOS_Lobby_AttributeData, (
 		double AsDouble;
 		/** Stored as a boolean */
 		EOS_Bool AsBool;
-		/** Stored as a null terminated UTF8 string. Should not be nullptr */
+		/** Stored as a null terminated UTF8 string */
 		const char* AsUtf8;
 	} Value;
 
@@ -1180,40 +1144,6 @@ EOS_STRUCT(EOS_Lobby_Attribute, (
 ));
 
 EOS_DECLARE_FUNC(void) EOS_Lobby_Attribute_Release(EOS_Lobby_Attribute* LobbyAttribute);
-
-/** The most recent version of the EOS_Lobby_GetConnectString API. */
-#define EOS_LOBBY_GETCONNECTSTRING_API_LATEST 1
-
-/** The buffer size to provide to the  EOS_Lobby_GetConnectString API. */
-#define EOS_LOBBY_GETCONNECTSTRING_BUFFER_SIZE 256
-
-/**
- * Input parameters for the EOS_Lobby_GetConnectString function.
- */
-EOS_STRUCT(EOS_Lobby_GetConnectStringOptions, (
-	/** API Version: Set this to EOS_LOBBY_GETCONNECTSTRING_API_LATEST. */
-	int32_t ApiVersion;
-	/** The Product User ID of the local user requesting the connection string generated from the lobby; this user must currently own the lobby */
-	EOS_ProductUserId LocalUserId;
-	/** The ID of the lobby to generate a connection string for */
-	EOS_LobbyId LobbyId;
-));
-
-/** The most recent version of the EOS_Lobby_ParseConnectString API. */
-#define EOS_LOBBY_PARSECONNECTSTRING_API_LATEST 1
-
-/** The buffer size to provide to the EOS_Lobby_ParseConnectString API. */
-#define EOS_LOBBY_PARSECONNECTSTRING_BUFFER_SIZE 256
-
-/**
- * Input parameters for the EOS_Lobby_GetConnectString function.
- */
-EOS_STRUCT(EOS_Lobby_ParseConnectStringOptions, (
-	/** API Version: Set this to EOS_LOBBY_PARSECONNECTSTRING_API_LATEST. */
-	int32_t ApiVersion;
-	/** The connection string to parse */
-	const char* ConnectString;
-));
 
 /** The most recent version of the EOS_LobbyModification_SetBucketId API. */
 #define EOS_LOBBYMODIFICATION_SETBUCKETID_API_LATEST 1
@@ -1268,7 +1198,7 @@ EOS_STRUCT(EOS_LobbyModification_SetInvitesAllowedOptions, (
 ));
 
 /** The most recent version of the EOS_LobbyModification_AddAttribute API. */
-#define EOS_LOBBYMODIFICATION_ADDATTRIBUTE_API_LATEST 2
+#define EOS_LOBBYMODIFICATION_ADDATTRIBUTE_API_LATEST 1
 
 /**
  * Input parameters for the EOS_LobbyModification_AddAttribute function.
@@ -1297,7 +1227,7 @@ EOS_STRUCT(EOS_LobbyModification_RemoveAttributeOptions, (
 ));
 
 /** The most recent version of the EOS_LobbyModification_AddMemberAttribute API. */
-#define EOS_LOBBYMODIFICATION_ADDMEMBERATTRIBUTE_API_LATEST 2
+#define EOS_LOBBYMODIFICATION_ADDMEMBERATTRIBUTE_API_LATEST 1
 
 /**
  * Input parameters for the EOS_LobbyModification_AddMemberAttribute function.
@@ -1322,25 +1252,6 @@ EOS_STRUCT(EOS_LobbyModification_RemoveMemberAttributeOptions, (
 	int32_t ApiVersion;
 	/** Name of the key */
 	const char* Key;
-));
-
-/** The most recent version of the EOS_LobbyModification_SetAllowedPlatformIds API. */
-#define EOS_LOBBYMODIFICATION_SETALLOWEDPLATFORMIDS_API_LATEST 1
-
-/**
- * Input parameters for the EOS_LobbyModification_SetAllowedPlatformIdsOptions function.
- */
-EOS_STRUCT(EOS_LobbyModification_SetAllowedPlatformIdsOptions, (
-	/** API Version: Set this to EOS_LOBBYMODIFICATION_SETALLOWEDPLATFORMIDS_API_LATEST. */
-	int32_t ApiVersion;
-	/** 
-	 * Array of platform IDs indicating the player platforms allowed to register with the session. Platform IDs are 
-	 * found in the EOS header file, e.g. EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform specific
-	 * header file. If null, the lobby will be unrestricted.
-	 */
-	const uint32_t* AllowedPlatformIds;
-	/** Number of platform IDs in the array */
-	uint32_t AllowedPlatformIdsCount;
 ));
 
 /** The most recent version of the EOS_LobbyDetails_GetLobbyOwner API. */
@@ -1599,61 +1510,5 @@ EOS_STRUCT(EOS_LobbySearch_CopySearchResultByIndexOptions, (
 	 */
 	uint32_t LobbyIndex;
 ));
-
-/** The most recent version of the EOS_LobbyDetails_CopyMemberInfo API. */
-#define EOS_LOBBYDETAILS_COPYMEMBERINFO_API_LATEST 1
-
-/**
- * Input parameters for the EOS_LobbyDetails_CopyMemberInfo function.
- */
-EOS_STRUCT(EOS_LobbyDetails_CopyMemberInfoOptions, (
-	/** API Version: Set this to EOS_LOBBYDETAILS_COPYMEMBERINFO_API_LATEST. */
-	int32_t ApiVersion;
-	/** The Product User ID of the lobby member to copy. */
-	EOS_ProductUserId TargetUserId;
-));
-
-/** The most recent version of the EOS_LobbyDetails_MemberInfo API. */
-#define EOS_LOBBYDETAILS_MEMBERINFO_API_LATEST 1
-
-EOS_STRUCT(EOS_LobbyDetails_MemberInfo, (
-	/** API Version: Set this to EOS_LOBBYDETAILS_MEMBERINFO_API_LATEST. */
-	int32_t ApiVersion;
-	/** The Product User ID of the lobby member. */
-	EOS_ProductUserId UserId;
-	/** The platform of the lobby member. */
-	EOS_OnlinePlatformType Platform;
-	/** Does this member allow crossplay */
-	EOS_Bool bAllowsCrossplay;
-));
-
-EOS_DECLARE_FUNC(void) EOS_LobbyDetails_MemberInfo_Release(EOS_LobbyDetails_MemberInfo* LobbyDetailsMemberInfo);
-
-/** The most recent version of the EOS_Lobby_AddNotifyLeaveLobbyRequested API. */
-#define EOS_LOBBY_ADDNOTIFYLEAVELOBBYREQUESTED_API_LATEST 1
-
-EOS_STRUCT(EOS_Lobby_AddNotifyLeaveLobbyRequestedOptions, (
-	/** API Version: Set this to EOS_LOBBY_ADDNOTIFYLEAVELOBBYREQUESTED_API_LATEST. */
-	int32_t ApiVersion;
-));
-
-/**
- * Output parameters for the EOS_Lobby_OnLeaveLobbyRequestedCallback Function.
- */
-EOS_STRUCT(EOS_Lobby_LeaveLobbyRequestedCallbackInfo, (
-	/** Context that was passed into EOS_Lobby_OnLeaveLobbyRequestedCallback */
-	void* ClientData;
-	/** The Product User ID of the local user who received the leave lobby notification. */
-	EOS_ProductUserId LocalUserId;
-	/** Lobby ID associated with the leave lobby request. */
-	EOS_LobbyId LobbyId;
-));
-
-/**
- * Function prototype definition for notifications that comes from EOS_Lobby_AddNotifyLeaveLobbyRequested.
- *
- * @param Data A pointer to EOS_Lobby_LeaveLobbyRequestedCallbackInfo containing the output information.
- */
-EOS_DECLARE_CALLBACK(EOS_Lobby_OnLeaveLobbyRequestedCallback, const EOS_Lobby_LeaveLobbyRequestedCallbackInfo* Data);
 
 #pragma pack(pop)

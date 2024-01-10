@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_metrics_types.h"
@@ -8,7 +8,7 @@
  * This data includes active, online instances of the game's client and server, and past sessions played by local players.
  * All Metrics Interface calls take a handle of type EOS_HMetrics as the first parameter.
  * This handle can be retrieved from an EOS_HPlatform handle by using the EOS_Platform_GetMetricsInterface function.
- *
+ * 
  * @see EOS_Platform_GetMetricsInterface
  */
 

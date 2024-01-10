@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 // This file is not intended to be included directly. Include eos_common.h instead.
 
@@ -59,7 +59,7 @@ EOS_RESULT_VALUE(EOS_MissingParameters_DEPRECATED, 25)
 EOS_RESULT_VALUE(EOS_InvalidSandboxId, 26)
 /** Request timed out */
 EOS_RESULT_VALUE(EOS_TimedOut, 27)
-/** A query returned some but not all of the requested results. */
+/** A query returned some but not all of the requested results.  */
 EOS_RESULT_VALUE(EOS_PartialResult, 28)
 /** Client is missing the whitelisted role */
 EOS_RESULT_VALUE(EOS_Missing_Role, 29)
@@ -166,9 +166,6 @@ EOS_RESULT_VALUE(EOS_Auth_ParentalControls, 1070)
 /** Korea real ID association required but missing */
 EOS_RESULT_VALUE(EOS_Auth_NoRealId, 1080)
 
-/** Silent login failed when EOS_LF_NO_USER_INTERFACE was specified, and user interaction is needed before the user can be logged in. */
-EOS_RESULT_VALUE(EOS_Auth_UserInterfaceRequired, 1090)
-
 /** An outgoing friend invitation is awaiting acceptance; sending another invite to the same user is erroneous */
 EOS_RESULT_VALUE(EOS_Friends_InviteAwaitingAcceptance, 2000)
 /** There is no friend invitation to accept/reject */
@@ -215,8 +212,6 @@ EOS_RESULT_VALUE(EOS_Ecom_CatalogItemStale, 4002)
 EOS_RESULT_VALUE(EOS_Ecom_CatalogOfferPriceInvalid, 4003)
 /** The checkout page failed to load */
 EOS_RESULT_VALUE(EOS_Ecom_CheckoutLoadError, 4004)
-/** The player closed the purchase flow overlay after clicking the purchase button. The purchase may still go through, and the game needs to query unredeemed entitlements for a short time. */
-EOS_RESULT_VALUE(EOS_Ecom_PurchaseProcessing, 4005)
 
 /** Session is already in progress */
 EOS_RESULT_VALUE(EOS_Sessions_SessionInProgress, 5000)
@@ -279,9 +274,9 @@ EOS_RESULT_VALUE(EOS_PlayerDataStorage_DataLengthInvalid, 6007)
 EOS_RESULT_VALUE(EOS_PlayerDataStorage_StartIndexInvalid, 6008)
 /** Request is in progress */
 EOS_RESULT_VALUE(EOS_PlayerDataStorage_RequestInProgress, 6009)
-/** User is marked as throttled which means he can't perform some operations because limits are exceeded. */
+/** User is marked as throttled which means he can't perform some operations because limits are exceeded.  */
 EOS_RESULT_VALUE(EOS_PlayerDataStorage_UserThrottled, 6010)
-/** Encryption key is not set during SDK init. */
+/** Encryption key is not set during SDK init.  */
 EOS_RESULT_VALUE(EOS_PlayerDataStorage_EncryptionKeyNotSet, 6011)
 /** User data callback returned error (EOS_PlayerDataStorage_EWriteResult::EOS_WR_FailRequest or EOS_PlayerDataStorage_EReadResult::EOS_RR_FailRequest) */
 EOS_RESULT_VALUE(EOS_PlayerDataStorage_UserErrorFromDataCallback, 6012)
@@ -352,8 +347,6 @@ EOS_RESULT_VALUE(EOS_Lobby_MemberUpdateOnly, 9017)
 EOS_RESULT_VALUE(EOS_Lobby_PresenceLobbyExists, 9018)
 /** Operation requires lobby with voice enabled */
 EOS_RESULT_VALUE(EOS_Lobby_VoiceNotEnabled, 9019)
-/** The client platform does not match the allowed platform list for the lobby. */
-EOS_RESULT_VALUE(EOS_Lobby_PlatformNotAllowed, 9020)
 
 /** User callback that receives data from storage returned error. */
 EOS_RESULT_VALUE(EOS_TitleStorage_UserErrorFromDataCallback, 10000)
@@ -475,12 +468,6 @@ EOS_RESULT_VALUE(EOS_DesktopCrossplay_ServiceNotInstalled, 19001)
 EOS_RESULT_VALUE(EOS_DesktopCrossplay_ServiceStartFailed, 19002)
 /** The desktop crossplay service is no longer running for an unknown reason. */
 EOS_RESULT_VALUE(EOS_DesktopCrossplay_ServiceNotRunning, 19003)
-
-/** When sending the custom invite failed. */
-EOS_RESULT_VALUE(EOS_CustomInvites_InviteFailed, 20000)
-
-/** The best display name could not be safely determined. */
-EOS_RESULT_VALUE(EOS_UserInfo_BestDisplayNameIndeterminate, 22000)
 
 /** An unexpected error that we cannot identify has occurred. */
 EOS_RESULT_VALUE_LAST(EOS_UnexpectedError, 0x7FFFFFFF)

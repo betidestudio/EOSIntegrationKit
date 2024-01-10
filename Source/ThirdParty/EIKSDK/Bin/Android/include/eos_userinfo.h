@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_userinfo_types.h"
@@ -126,70 +126,3 @@ EOS_DECLARE_FUNC(EOS_EResult) EOS_UserInfo_CopyExternalUserInfoByAccountType(EOS
  *         EOS_NotFound if the external user info is not found
  */
 EOS_DECLARE_FUNC(EOS_EResult) EOS_UserInfo_CopyExternalUserInfoByAccountId(EOS_HUserInfo Handle, const EOS_UserInfo_CopyExternalUserInfoByAccountIdOptions* Options, EOS_UserInfo_ExternalUserInfo ** OutExternalUserInfo);
-
-/**
- * EOS_UserInfo_CopyBestDisplayName is used to immediately retrieve a copy of user's best display name based on an Epic Account ID.
- * This uses data cached by a previous call to EOS_UserInfo_QueryUserInfo, EOS_UserInfo_QueryUserInfoByDisplayName or EOS_UserInfo_QueryUserInfoByExternalAccount as well as EOS_Connect_QueryExternalAccountMappings.
- * If the call returns an EOS_Success result, the out parameter, OutBestDisplayName, must be passed to EOS_UserInfo_BestDisplayName_Release to release the memory associated with it.
- *
- * @details The current priority for picking display name is as follows:
- * 1. Target is online and friends with user, then use presence platform to determine display name
- * 2. Target is in same lobby or is the owner of a lobby search result, then use lobby platform to determine display name (this requires the target's product user id to be cached)
- * 3. Target is in same rtc room, then use rtc room platform to determine display name (this requires the target's product user id to be cached)
- * @param Options structure containing the input parameters
- * @param OutBestDisplayName out parameter used to receive the EOS_UserInfo_BestDisplayName structure.
- *
- * @return EOS_Success if the information is available and passed out in OutBestDisplayName
- *         EOS_UserInfo_BestDisplayNameIndeterminate unable to determine a cert friendly display name for user, one potential solution would be to call EOS_UserInfo_CopyBestDisplayNameWithPlatform with EOS_OPT_Epic for the platform, see doc for more details
- *         EOS_InvalidParameters if you pass a null pointer for the out parameter
- *         EOS_IncompatibleVersion if the API version passed in is incorrect
- *         EOS_NotFound if the user info or product user id is not locally cached
- *
- * @see EOS_UserInfo_QueryUserInfo
- * @see EOS_UserInfo_QueryUserInfoByDisplayName
- * @see EOS_UserInfo_QueryUserInfoByExternalAccount
- * @see EOS_Connect_QueryExternalAccountMappings
- * @see EOS_UserInfo_CopyBestDisplayNameWithPlatform
- * @see EOS_UserInfo_CopyBestDisplayNameOptions
- * @see EOS_UserInfo_BestDisplayName
- * @see EOS_UserInfo_BestDisplayName_Release
- */
-EOS_DECLARE_FUNC(EOS_EResult) EOS_UserInfo_CopyBestDisplayName(EOS_HUserInfo Handle, const EOS_UserInfo_CopyBestDisplayNameOptions* Options, EOS_UserInfo_BestDisplayName ** OutBestDisplayName);
-
-/**
- * EOS_UserInfo_CopyBestDisplayNameWithPlatform is used to immediately retrieve a copy of user's best display name based on an Epic Account ID.
- * This uses data cached by a previous call to EOS_UserInfo_QueryUserInfo, EOS_UserInfo_QueryUserInfoByDisplayName or EOS_UserInfo_QueryUserInfoByExternalAccount.
- * If the call returns an EOS_Success result, the out parameter, OutBestDisplayName, must be passed to EOS_UserInfo_BestDisplayName_Release to release the memory associated with it.
- *
- * @details The current priority for picking display name is as follows:
- * 1. If platform is non-epic, then use platform display name (if the platform is linked to the account)
- * 2. If platform is epic and user has epic display name, then use epic display name
- * 3. If platform is epic and user has no epic display name, then use linked external account display name
- * @param Options structure containing the input parameters
- * @param OutBestDisplayName out parameter used to receive the EOS_UserInfo_BestDisplayName structure.
- *
- * @return EOS_Success if the information is available and passed out in OutBestDisplayName
- *         EOS_UserInfo_BestDisplayNameIndeterminate unable to determine a cert friendly display name for user
- *         EOS_InvalidParameters if you pass a null pointer for the out parameter
- *         EOS_IncompatibleVersion if the API version passed in is incorrect
- *         EOS_NotFound if the user info is not locally cached
- *
- * @see EOS_UserInfo_QueryUserInfo
- * @see EOS_UserInfo_QueryUserInfoByDisplayName
- * @see EOS_UserInfo_QueryUserInfoByExternalAccount
- * @see EOS_UserInfo_CopyBestDisplayNameWithPlatformOptions
- * @see EOS_UserInfo_BestDisplayName
- * @see EOS_UserInfo_BestDisplayName_Release
- */
-EOS_DECLARE_FUNC(EOS_EResult) EOS_UserInfo_CopyBestDisplayNameWithPlatform(EOS_HUserInfo Handle, const EOS_UserInfo_CopyBestDisplayNameWithPlatformOptions* Options, EOS_UserInfo_BestDisplayName ** OutBestDisplayName);
-
-/**
- * EOS_UserInfo_GetLocalPlatformType is used to retrieve the online platform type of the current running instance of the game.
- *
- * @param Options structure containing the input parameters
- *
- * @return the online platform type of the current running instance of the game
- *
- * @see EOS_UserInfo_GetLocalPlatformTypeOptions
- */
-EOS_DECLARE_FUNC(EOS_OnlinePlatformType) EOS_UserInfo_GetLocalPlatformType(EOS_HUserInfo Handle, const EOS_UserInfo_GetLocalPlatformTypeOptions* Options);

@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_common.h"
@@ -18,9 +18,9 @@ EOS_STRUCT(EOS_Mod_Identifier, (
 	int32_t ApiVersion;
 	/** Product namespace id in which this mod item exists */
 	const char* NamespaceId;
-	/** Item id of the Mod */
+	/* Item id of the Mod */
 	const char* ItemId;
-	/** Artifact id of the Mod */
+	/* Artifact id of the Mod */
 	const char* ArtifactId;
 	/** Represent mod item title. */
 	const char* Title;
@@ -148,7 +148,7 @@ EOS_STRUCT(EOS_Mods_EnumerateModsOptions, (
  * Output parameters for the EOS_Mods_EnumerateMods Function. These parameters are received through the callback provided to EOS_Mods_EnumerateMods
  */
 EOS_STRUCT(EOS_Mods_EnumerateModsCallbackInfo, (
-	/** Result code for the operation. EOS_Success is returned if the enumeration was successful, otherwise one of the error codes is returned. */
+	/** Result code for the operation. EOS_Success is returned if the enumeration was successfull, otherwise one of the error codes is returned. */
 	EOS_EResult ResultCode;
 	/** The Epic Account ID of the user for which mod enumeration was requested */
 	EOS_EpicAccountId LocalUserId;

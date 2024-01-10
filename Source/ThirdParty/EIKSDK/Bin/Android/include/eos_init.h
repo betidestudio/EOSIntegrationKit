@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_types.h"
@@ -60,12 +60,6 @@ EOS_STRUCT(EOS_Initialize_ThreadAffinity, (
 /** The most recent version of the EOS_Initialize API. */
 #define EOS_INITIALIZE_API_LATEST 4
 
-/** Max length of a product name, not including the terminating null. */
-#define EOS_INITIALIZEOPTIONS_PRODUCTNAME_MAX_LENGTH 64
-
-/** Max length of a product version, not including the terminating null. */
-#define EOS_INITIALIZEOPTIONS_PRODUCTVERSION_MAX_LENGTH 64
-
 /**
  * Options for initializing the Epic Online Services SDK.
  */
@@ -81,7 +75,7 @@ EOS_STRUCT(EOS_InitializeOptions, (
 	/**
 	 * The name of the product using the Epic Online Services SDK.
 	 *
-	 * The name string is required to be non-empty and at maximum of EOS_INITIALIZEOPTIONS_PRODUCTNAME_MAX_LENGTH bytes long.
+	 * The name string is required to be non-empty and at maximum of 64 characters long.
 	 * The string buffer can consist of the following characters:
 	 * A-Z, a-z, 0-9, dot, underscore, space, exclamation mark, question mark, and sign, hyphen, parenthesis, plus, minus, colon.
 	 */
@@ -89,14 +83,12 @@ EOS_STRUCT(EOS_InitializeOptions, (
 	/**
 	 * Product version of the running application.
 	 *
-	 * The version string is required to be non-empty and at maximum of EOS_INITIALIZEOPTIONS_PRODUCTVERSION_MAX_LENGTH bytes long.
-	 * The string buffer can consist of the following characters:
-	 * A-Z, a-z, 0-9, dot, underscore, space, exclamation mark, question mark, and sign, hyphen, parenthesis, plus, minus, colon.
+	 * The name string has same requirements as the ProductName string.
 	 */
 	const char* ProductVersion;
 	/** A reserved field that should always be nulled. */
 	void* Reserved;
-	/**
+	/** 
 	 * This field is for system specific initialization if any.
 	 *
 	 * If provided then the structure will be located in <System>/eos_<system>.h.
@@ -115,7 +107,7 @@ EOS_STRUCT(EOS_InitializeOptions, (
  * This function must only be called one time and must have a corresponding EOS_Shutdown call.
  *
  * @param Options - The initialization options to use for the SDK.
- * @return An EOS_EResult is returned to indicate success or an error.
+ * @return An EOS_EResult is returned to indicate success or an error. 
  *
  * EOS_Success is returned if the SDK successfully initializes.
  * EOS_AlreadyConfigured is returned if the function has already been called.

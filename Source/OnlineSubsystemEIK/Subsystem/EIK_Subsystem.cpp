@@ -1044,6 +1044,7 @@ void UEIK_Subsystem::OnFindSessionCompleted(bool bWasSuccess) const
 						++It;
 					}
 					FSessionFindStruct LocalStruct;
+					LocalStruct.SessionName = "GameSession";
 					LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
 					LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections;
 					LocalStruct.SessionResult= SessionResult;

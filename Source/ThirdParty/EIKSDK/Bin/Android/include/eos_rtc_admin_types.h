@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -48,7 +48,7 @@ EOS_STRUCT(EOS_RTCAdmin_QueryJoinRoomTokenCompleteCallbackInfo, (
 	/** URL passed to backend to join room. */
 	const char* ClientBaseUrl;
 	/** If the query completed successfully, this contains an identifier that should be used to retrieve the tokens.
-	 * This identifier is only valid for the duration of the callback.
+	 * This identifier is only valid for the duration of the callback. 
 	 *
 	 * @see EOS_RTCAdmin_CopyUserTokenByIndex
 	 * @see EOS_RTCAdmin_CopyUserTokenByUserId

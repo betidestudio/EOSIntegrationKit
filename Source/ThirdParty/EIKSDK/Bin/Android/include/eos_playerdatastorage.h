@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 #pragma once
 
 #include "eos_playerdatastorage_types.h"
@@ -15,9 +15,6 @@
  * @param ClientData Optional pointer to help clients track this request, that is returned in the completion callback
  * @param CompletionCallback This function is called when the query operation completes
  *
- * @return EOS_Success if the query completes successfully and a file is found
- *         EOS_NotFound if no file is found
- *
  * @see EOS_PlayerDataStorage_GetFileMetadataCount
  * @see EOS_PlayerDataStorage_CopyFileMetadataAtIndex
  * @see EOS_PlayerDataStorage_CopyFileMetadataByFilename
@@ -31,8 +28,6 @@ EOS_DECLARE_FUNC(void) EOS_PlayerDataStorage_QueryFile(EOS_HPlayerDataStorage Ha
  * @param QueryFileListOptions Object containing properties related to which user is querying files
  * @param ClientData Optional pointer to help clients track this request, that is returned in the completion callback
  * @param CompletionCallback This function is called when the query operation completes
- *
- * @return EOS_Success if the query completes successfully (whether any files are found or not)
  *
  * @see EOS_PlayerDataStorage_GetFileMetadataCount
  * @see EOS_PlayerDataStorage_CopyFileMetadataAtIndex
@@ -103,9 +98,6 @@ EOS_DECLARE_FUNC(void) EOS_PlayerDataStorage_DeleteFile(EOS_HPlayerDataStorage H
  * @param ClientData Optional pointer to help clients track this request, that is returned in associated callbacks
  * @param CompletionCallback This function is called when the read operation completes
  * @return A valid Player Data Storage File Request handle if successful, or NULL otherwise. Data contained in the completion callback will have more detailed information about issues with the request in failure cases. This handle must be released when it is no longer needed
- *
- * @return EOS_Success if the file is exists and the read operation completes successfully
- *         EOS_NotFound if no file is found
  *
  * @see EOS_PlayerDataStorageFileTransferRequest_Release
  */

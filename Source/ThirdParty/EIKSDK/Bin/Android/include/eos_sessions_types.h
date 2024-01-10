@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -19,7 +19,7 @@ EXTERN_C typedef struct EOS_SessionDetailsHandle* EOS_HSessionDetails;
 EXTERN_C typedef struct EOS_SessionSearchHandle* EOS_HSessionSearch;
 
 /**
- * Release the memory associated with session modification.
+ * Release the memory associated with session modification. 
  * This must be called on data retrieved from EOS_Sessions_CreateSessionModification or EOS_Sessions_UpdateSessionModification
  *
  * @param SessionModificationHandle - The session modification handle to release
@@ -115,7 +115,7 @@ EOS_ENUM(EOS_ESessionAttributeAdvertisementType,
 #define EOS_SESSIONMODIFICATION_MAX_SESSIONIDOVERRIDE_LENGTH 64
 
 /** The most recent version of the EOS_Sessions_CreateSessionModification API. */
-#define EOS_SESSIONS_CREATESESSIONMODIFICATION_API_LATEST 5
+#define EOS_SESSIONS_CREATESESSIONMODIFICATION_API_LATEST 4 
 
 /**
  * Input parameters for the EOS_Sessions_CreateSessionModification function.
@@ -132,10 +132,9 @@ EOS_STRUCT(EOS_Sessions_CreateSessionModificationOptions, (
 	/** The Product User ID of the local user associated with the session */
 	EOS_ProductUserId LocalUserId;
 	/**
-	 * Determines whether or not this session should be the one associated with the local user's presence information.
 	 * If true, this session will be associated with presence. Only one session at a time can have this flag true.
 	 * This affects the ability of the Social Overlay to show game related actions to take in the user's social graph.
-	 *
+	 * 
 	 * @note The Social Overlay can handle only one of the following three options at a time:
 	 * * using the bPresenceEnabled flags within the Sessions interface
 	 * * using the bPresenceEnabled flags within the Lobby interface
@@ -154,18 +153,10 @@ EOS_STRUCT(EOS_Sessions_CreateSessionModificationOptions, (
 	 */
 	const char* SessionId;
 	/**
-	 * If true, sanctioned players can neither join nor register with this session and, in the case of join,
+	 * If true, sanctioned players can neither join nor register with this session and, in the case of join, 
 	 * will return EOS_EResult code EOS_Sessions_PlayerSanctioned
 	 */
 	EOS_Bool bSanctionsEnabled;
-	/** 
-	 * Array of platform IDs indicating the player platforms allowed to register with the session. Platform IDs are
-	 * found in the EOS header file, e.g. EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform specific
-	 * header file. If null, the session will be unrestricted.
-	 */
-	const uint32_t* AllowedPlatformIds;
-	/** Number of platform IDs in the array */
-	uint32_t AllowedPlatformIdsCount;
 ));
 
 /** The most recent version of the EOS_Sessions_UpdateSessionModification API. */
@@ -394,7 +385,6 @@ EOS_STRUCT(EOS_Sessions_JoinSessionOptions, (
 	/** The Product User ID of the local user who is joining the session */
 	EOS_ProductUserId LocalUserId;
 	/**
-	 * Determines whether or not this session should be the one associated with the local user's presence information.
 	 * If true, this session will be associated with presence. Only one session at a time can have this flag true.
 	 * This affects the ability of the Social Overlay to show game related actions to take in the user's social graph.
 	 *
@@ -642,24 +632,6 @@ EOS_STRUCT(EOS_SessionModification_SetInvitesAllowedOptions, (
 	EOS_Bool bInvitesAllowed;
 ));
 
-/** The most recent version of the EOS_SessionModification_SetAllowedPlatformIds API. */
-#define EOS_SESSIONMODIFICATION_SETALLOWEDPLATFORMIDS_API_LATEST 1
-
-/**
- * Input parameters for the EOS_SessionModification_SetAllowedPlatformIds function.
- */
-EOS_STRUCT(EOS_SessionModification_SetAllowedPlatformIdsOptions, (
-	/** API Version: Set this to EOS_SESSIONMODIFICATION_SETALLOWEDPLATFORMIDS_API_LATEST. */
-	int32_t ApiVersion;
-	/** 
-	 * Array of platform IDs indicating the player platforms allowed to register with the session. Platform IDs are
-	 * found in the EOS header file, e.g. EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform specific
-	 * header file. If null, the session will be unrestricted.
-	 */
-	const uint32_t* AllowedPlatformIds;
-	/** Number of platform IDs in the array */
-	uint32_t AllowedPlatformIdsCount;
-));
 
 /** Search for a matching bucket ID (value is string) */
 #define EOS_SESSIONS_SEARCH_BUCKET_ID "bucket"
@@ -692,7 +664,7 @@ EOS_STRUCT(EOS_Sessions_AttributeData, (
 		double AsDouble;
 		/** Stored as a boolean */
 		EOS_Bool AsBool;
-		/** Stored as a null terminated UTF8 string. Should not be nullptr */
+		/** Stored as a null terminated UTF8 string */
 		const char* AsUtf8;
 	} Value;
 
@@ -742,7 +714,7 @@ EOS_STRUCT(EOS_ActiveSession_GetRegisteredPlayerByIndexOptions, (
 #define EOS_SESSIONS_SESSIONATTRIBUTE_API_LATEST EOS_SESSIONDETAILS_ATTRIBUTE_API_LATEST
 
 /**
- *  An attribution value and its advertisement setting stored with a session.
+ *  An attribution value and its advertisement setting stored with a session.  
  */
 EOS_STRUCT(EOS_SessionDetails_Attribute, (
 	/** API Version: Set this to EOS_SESSIONDETAILS_ATTRIBUTE_API_LATEST. */
@@ -764,7 +736,7 @@ EOS_DECLARE_FUNC(void) EOS_SessionDetails_Attribute_Release(EOS_SessionDetails_A
 
 
 /** The most recent version of the EOS_SessionModification_AddAttribute API. */
-#define EOS_SESSIONMODIFICATION_ADDATTRIBUTE_API_LATEST 2
+#define EOS_SESSIONMODIFICATION_ADDATTRIBUTE_API_LATEST 1
 
 /**
  * Input parameters for the EOS_SessionModification_AddAttribute function.
@@ -785,7 +757,7 @@ EOS_STRUCT(EOS_SessionModification_AddAttributeOptions, (
  * Input parameters for the EOS_SessionModification_RemoveAttribute function.
  */
 EOS_STRUCT(EOS_SessionModification_RemoveAttributeOptions, (
-	/** API Version: Set this to EOS_SESSIONMODIFICATION_REMOVEATTRIBUTE_API_LATEST. */
+	/** API Version: Set this to EOS_SESSIONDETAILS_SETTINGS_API_LATEST. */
 	int32_t ApiVersion;
 	/** Session attribute to remove from the session */
 	const char* Key;
@@ -840,7 +812,7 @@ EOS_DECLARE_CALLBACK(EOS_SessionSearch_OnFindCallback, const EOS_SessionSearch_F
  * Input parameters for the EOS_SessionSearch_GetSearchResultCount function.
  */
 EOS_STRUCT(EOS_SessionSearch_GetSearchResultCountOptions, (
-	/** API Version: Set this to EOS_SESSIONSEARCH_GETSEARCHRESULTCOUNT_API_LATEST. */
+	/** API Version: Set this to EOS_SESSIONDETAILS_SETTINGS_API_LATEST. */
 	int32_t ApiVersion;
 ));
 
@@ -851,7 +823,7 @@ EOS_STRUCT(EOS_SessionSearch_GetSearchResultCountOptions, (
  * Input parameters for the EOS_SessionSearch_CopySearchResultByIndex function.
  */
 EOS_STRUCT(EOS_SessionSearch_CopySearchResultByIndexOptions, (
-	/** API Version: Set this to EOS_SESSIONSEARCH_COPYSEARCHRESULTBYINDEX_API_LATEST. */
+	/** API Version: Set this to EOS_SESSIONDETAILS_SETTINGS_API_LATEST. */
 	int32_t ApiVersion;
 	/**
 	 * The index of the session to retrieve within the completed search query
@@ -867,7 +839,7 @@ EOS_STRUCT(EOS_SessionSearch_CopySearchResultByIndexOptions, (
  * Input parameters for the EOS_SessionSearch_SetSessionId function.
  */
 EOS_STRUCT(EOS_SessionSearch_SetSessionIdOptions, (
-	/** API Version: Set this to EOS_SESSIONSEARCH_SETSESSIONID_API_LATEST. */
+	/** API Version: Set this to EOS_SESSIONDETAILS_SETTINGS_API_LATEST. */
 	int32_t ApiVersion;
 	/** Search sessions for a specific session ID, returning at most one session */
 	const char* SessionId;
@@ -880,7 +852,7 @@ EOS_STRUCT(EOS_SessionSearch_SetSessionIdOptions, (
  * Input parameters for the EOS_SessionSearch_SetTargetUserId function.
  */
 EOS_STRUCT(EOS_SessionSearch_SetTargetUserIdOptions, (
-	/** API Version: Set this to EOS_SESSIONSEARCH_SETTARGETUSERID_API_LATEST. */
+	/** API Version: Set this to EOS_SESSIONDETAILS_SETTINGS_API_LATEST. */
 	int32_t ApiVersion;
 	/** The Product User ID to find; return any sessions where the user matching this ID is currently registered */
 	EOS_ProductUserId TargetUserId;
@@ -897,7 +869,7 @@ EOS_STRUCT(EOS_SessionSearch_SetTargetUserIdOptions, (
  * (ie, Key GREATER_THAN 5, Key NOT_EQUALS 10)
  */
 EOS_STRUCT(EOS_SessionSearch_SetParameterOptions, (
-	/** API Version: Set this to EOS_SESSIONSEARCH_SETPARAMETER_API_LATEST. */
+	/** API Version: Set this to EOS_SESSIONDETAILS_SETTINGS_API_LATEST. */
 	int32_t ApiVersion;
 	/** Search parameter describing a key and a value to compare */
 	const EOS_Sessions_AttributeData* Parameter;
@@ -914,7 +886,7 @@ EOS_STRUCT(EOS_SessionSearch_SetParameterOptions, (
  * Removal requires both the key and its comparator in order to remove as the same key can be used in more than one operation
  */
 EOS_STRUCT(EOS_SessionSearch_RemoveParameterOptions, (
-	/** API Version: Set this to EOS_SESSIONSEARCH_REMOVEPARAMETER_API_LATEST. */
+	/** API Version: Set this to EOS_SESSIONDETAILS_SETTINGS_API_LATEST. */
 	int32_t ApiVersion;
 	/** Search parameter key to remove from the search */
 	const char* Key;
@@ -923,7 +895,7 @@ EOS_STRUCT(EOS_SessionSearch_RemoveParameterOptions, (
 ));
 
 /** The most recent version of the EOS_SessionDetails_Settings struct. */
-#define EOS_SESSIONDETAILS_SETTINGS_API_LATEST 4
+#define EOS_SESSIONDETAILS_SETTINGS_API_LATEST 3
 
 /** Common settings associated with a single session */
 EOS_STRUCT(EOS_SessionDetails_Settings, (
@@ -941,18 +913,10 @@ EOS_STRUCT(EOS_SessionDetails_Settings, (
 	EOS_Bool bInvitesAllowed;
 	/** Are sanctioned players allowed to join - sanctioned players will be rejected if set to true */
 	EOS_Bool bSanctionsEnabled;
-	/** 
-	 * Array of platform IDs indicating the player platforms allowed to register with the session. Platform IDs are
-	 * found in the EOS header file, e.g. EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform specific
-	 * header file. If null, the session will be unrestricted.
-	 */
-	const uint32_t* AllowedPlatformIds;
-	/** Number of platform IDs in the array */
-	uint32_t AllowedPlatformIdsCount;
 ));
 
 /** The most recent version of the EOS_SessionDetails_Info struct. */
-#define EOS_SESSIONDETAILS_INFO_API_LATEST 2
+#define EOS_SESSIONDETAILS_INFO_API_LATEST 1
 
 /** Internal details about a session, found on both active sessions and within search results */
 EOS_STRUCT(EOS_SessionDetails_Info, (
@@ -966,10 +930,6 @@ EOS_STRUCT(EOS_SessionDetails_Info, (
 	uint32_t NumOpenPublicConnections;
 	/** Reference to the additional settings associated with this session */
 	const EOS_SessionDetails_Settings* Settings;
-	/** The Product User ID of the session owner. Null if the session is not owned by a user. */
-	EOS_ProductUserId OwnerUserId;
-	/** The client id of the session owner. Null if the session is not owned by a server. The session is owned by a server if EOS_Platform_Options::bIsServer is EOS_TRUE. */
-	const char* OwnerServerClientId;
 ));
 
 EOS_DECLARE_FUNC(void) EOS_SessionDetails_Info_Release(EOS_SessionDetails_Info* SessionInfo);
@@ -1021,7 +981,7 @@ EOS_STRUCT(EOS_SessionDetails_CopySessionAttributeByIndexOptions, (
 EOS_STRUCT(EOS_SessionDetails_CopySessionAttributeByKeyOptions, (
 	/** API Version: Set this to EOS_SESSIONDETAILS_COPYSESSIONATTRIBUTEBYKEY_API_LATEST. */
 	int32_t ApiVersion;
-	/** The name of the key to get the session attribution for
+	/** The name of the key to get the session attribution for 
 	 * @see EOS_SessionModification_AddAttribute
 	 */
 	const char* AttrKey;
@@ -1140,43 +1100,6 @@ EOS_STRUCT(EOS_Sessions_SessionInviteAcceptedCallbackInfo, (
  */
 EOS_DECLARE_CALLBACK(EOS_Sessions_OnSessionInviteAcceptedCallback, const EOS_Sessions_SessionInviteAcceptedCallbackInfo* Data);
 
-/** The most recent version of the EOS_Sessions_AddNotifySessionInviteAccepted API. */
-#define EOS_SESSIONS_ADDNOTIFYSESSIONINVITEREJECTED_API_LATEST 1
-
-/**
- * Input parameters for the EOS_Sessions_AddNotifySessionInviteRejected function.
- */
-EOS_STRUCT(EOS_Sessions_AddNotifySessionInviteRejectedOptions, (
-	/** API Version: Set this to EOS_SESSIONS_ADDNOTIFYSESSIONINVITEREJECTED_API_LATEST. */
-	int32_t ApiVersion;
-));
-
-/**
- * Output parameters for the EOS_Sessions_OnSessionInviteRejectedCallback function.
- */
-EOS_STRUCT(EOS_Sessions_SessionInviteRejectedCallbackInfo, (
-	/** Context that was passed into EOS_Lobby_AddNotifySessionInviteRejected */
-	void* ClientData;
-	/** The invite ID */
-	const char* InviteId;
-	/** The Product User ID of the local user who rejected the invitation */
-	EOS_ProductUserId LocalUserId;
-	/** The Product User ID of the user who sent the invitation */
-	EOS_ProductUserId TargetUserId;
-	/** Optional session ID */
-	const char* SessionId;
-));
-
-/**
- * Function prototype definition for notifications that come from EOS_Sessions_AddNotifySessionInviteRejected
- *
- * @param Data A EOS_Sessions_SessionInviteRejectedCallbackInfo containing the output information and result
- *
- * @see EOS_Sessions_CopySessionHandleByInviteId
- * @see EOS_Sessions_JoinSession
- */
-EOS_DECLARE_CALLBACK(EOS_Sessions_OnSessionInviteRejectedCallback, const EOS_Sessions_SessionInviteRejectedCallbackInfo* Data);
-
 /** The most recent version of the EOS_Sessions_AddNotifyJoinSessionAccepted API. */
 #define EOS_SESSIONS_ADDNOTIFYJOINSESSIONACCEPTED_API_LATEST 1
 
@@ -1283,75 +1206,5 @@ EOS_STRUCT(EOS_Sessions_DumpSessionStateOptions, (
 	/** Name of the session */
 	const char* SessionName;
 ));
-
-/** The most recent version of the EOS_Sessions_AddNotifyLeaveSessionRequested API. */
-#define EOS_SESSIONS_ADDNOTIFYLEAVESESSIONREQUESTED_API_LATEST 1
-
-EOS_STRUCT(EOS_Sessions_AddNotifyLeaveSessionRequestedOptions, (
-	/** API Version: Set this to EOS_SESSIONS_ADDNOTIFYLEAVESESSIONREQUESTED_API_LATEST. */
-	int32_t ApiVersion;
-));
-
-/**
- * Output parameters for the EOS_Sessions_OnLeaveSessionRequestedCallback Function.
- */
-EOS_STRUCT(EOS_Sessions_LeaveSessionRequestedCallbackInfo, (
-	/** Context that was passed into EOS_Sessions_OnLeaveSessionRequestedCallback */
-	void* ClientData;
-	/** The Product User ID of the local user who received the leave session notification. */
-	EOS_ProductUserId LocalUserId;
-	/** Name of the session associated with the leave session request. */
-	const char* SessionName;
-));
-
-/**
- * Function prototype definition for notifications that comes from EOS_Sessions_AddNotifyLeaveSessionRequested.
- *
- * @param Data A pointer to EOS_Sessions_LeaveSessionRequestedCallbackInfo containing the output information.
- */
-EOS_DECLARE_CALLBACK(EOS_Sessions_OnLeaveSessionRequestedCallback, const EOS_Sessions_LeaveSessionRequestedCallbackInfo* Data);
-
-/** The most recent version of the EOS_Sessions_AddNotifySendSessionNativeInviteRequested API. */
-#define EOS_SESSIONS_ADDNOTIFYSENDSESSIONNATIVEINVITEREQUESTED_API_LATEST 1
-
-EOS_STRUCT(EOS_Sessions_AddNotifySendSessionNativeInviteRequestedOptions, (
-	/** API Version: Set this to EOS_SESSIONS_ADDNOTIFYSENDSESSIONNATIVEINVITEREQUESTED_API_LATEST. */
-	int32_t ApiVersion;
-));
-
-/**
- * Output parameters for the EOS_Sessions_OnSendSessionNativeInviteRequestedCallback Function.
- */
-EOS_STRUCT(EOS_Sessions_SendSessionNativeInviteRequestedCallbackInfo, (
-	/** Context that was passed into EOS_Sessions_AddNotifySendSessionNativeInviteRequested */
-	void* ClientData;
-	/**
-	 * Identifies this event which will need to be acknowledged with EOS_UI_AcknowledgeEventId().
-	 * @see EOS_UI_AcknowledgeEventId
-	 */
-	EOS_UI_EventId UiEventId;
-	/** The Product User ID of the local user who is inviting. */
-	EOS_ProductUserId LocalUserId;
-	/**
-	 * The Native Platform Account Type. If only a single integrated platform is configured then
-	 * this will always reference that platform.
-	 */
-	EOS_IntegratedPlatformType TargetNativeAccountType;
-	/** The Native Platform Account ID of the target user being invited. */
-	const char* TargetUserNativeAccountId;
-	/** Session ID that the user is being invited to */
-	const char* SessionId;
-));
-
-/**
- * Function prototype definition for notifications that comes from EOS_Sessions_AddNotifySendSessionNativeInviteRequested
- *
- * @param Data A EOS_Sessions_SendSessionNativeInviteRequestedCallbackInfo containing the output information and result
- *
- * @note After processing the callback EOS_UI_AcknowledgeEventId must be called.
- *
- * @see EOS_UI_AcknowledgeEventId
- */
-EOS_DECLARE_CALLBACK(EOS_Sessions_OnSendSessionNativeInviteRequestedCallback, const EOS_Sessions_SendSessionNativeInviteRequestedCallbackInfo* Data);
 
 #pragma pack(pop)

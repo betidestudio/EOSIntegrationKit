@@ -143,6 +143,9 @@ struct FSessionFindStruct
 	TMap<FString, FEIKAttribute> SessionSettings = TMap<FString, FEIKAttribute>();
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
+	FString SessionName = FString();
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
 	int32 CurrentNumberOfPlayers = 0;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Struct")
