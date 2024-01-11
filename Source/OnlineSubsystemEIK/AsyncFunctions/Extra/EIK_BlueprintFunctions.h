@@ -51,23 +51,23 @@ public:
 
 	// This is a C++ method definition for starting lobbies and sessions
 	UFUNCTION(BlueprintCallable, DisplayName="Start EIK Session", Category="EOS Integration Kit || Sessions")
-	static bool StartSession(FName SessionName);
+	static bool StartSession();
 
 	// This is a C++ method definition for registering players in lobbies and sessions
 	UFUNCTION(BlueprintCallable, DisplayName="Register EIK Player In Session", Category="EOS Integration Kit || Sessions")
-	static bool RegisterPlayer(FName SessionName, FEIKUniqueNetId PlayerId, bool bWasInvited = false);
+	static bool RegisterPlayer(FEIKUniqueNetId PlayerId, bool bWasInvited = false);
 
 	// This is a C++ method definition for unregistering players from lobbies and sessions
 	UFUNCTION(BlueprintCallable, DisplayName="Unregister EIK Player In Session", Category="EOS Integration Kit || Sessions")
-	static bool UnRegisterPlayer(FName SessionName, FEIKUniqueNetId PlayerId);
+	static bool UnRegisterPlayer( FEIKUniqueNetId PlayerId);
 
 	// This is a C++ method definition for ending lobbies and sessions
 	UFUNCTION(BlueprintCallable, DisplayName="End EIK Session", Category="EOS Integration Kit || Sessions")
-	static bool EndSession(FName SessionName);
+	static bool EndSession();
 
 	// This is a C++ method definition for checking if user is in a lobby or session
 	UFUNCTION(BlueprintCallable, DisplayName="Is In EIK Session", Category="EOS Integration Kit || Sessions")
-	static bool IsInSession(FName SessionName,  FEIKUniqueNetId PlayerId);
+	static bool IsInSession(FEIKUniqueNetId PlayerId);
 	
 	// This is a C++ method definition for getting the nickname of a player from an online subsystem.
 	// Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/extra-functions/getplayernickname
