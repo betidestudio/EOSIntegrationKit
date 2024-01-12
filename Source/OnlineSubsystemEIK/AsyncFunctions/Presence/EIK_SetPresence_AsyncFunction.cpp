@@ -10,13 +10,13 @@
 void UEIK_SetPresence_AsyncFunction::Activate()
 {
 	SetPresence();
-	Super::Activate(); 
+	Super::Activate();
 }
 
 
 void UEIK_SetPresence_AsyncFunction::SetPresence()
 {
-	if (IOnlineSubsystem* SubsystemRef = Online::GetSubsystem(this->GetWorld())) 
+	if (IOnlineSubsystem* SubsystemRef = Online::GetSubsystem(this->GetWorld()))
 	{
 		//Updating Presence
 		IOnlineSubsystem* Subsystem = Online::GetSubsystem(this->GetWorld());
@@ -24,8 +24,8 @@ void UEIK_SetPresence_AsyncFunction::SetPresence()
 		IOnlinePresencePtr Presence = Subsystem->GetPresenceInterface();
 		FOnlineUserPresenceStatus Status;
 
-		/*//Switch On Presence Status
-		switch (PresenceStatus) 
+		//Switch On Presence Status
+		switch (PresenceStatus)
 		{
 		case EPresenceStatus::PR_Online:
 			Status.State = EOnlinePresenceState::Online;
@@ -47,8 +47,8 @@ void UEIK_SetPresence_AsyncFunction::SetPresence()
 			UE_LOG(LogTemp, Error, TEXT("Presence Set To DoNotDisturb"));
 			break;
 		}
-		
-		FString RichPresenceStatus = RichPresense;
+
+		FString RichPresenceStatus = RichPresence;
 		Status.StatusStr = RichPresenceStatus;
 		UE_LOG(LogTemp, Warning, TEXT("Presence Updated With Status: %s"), *RichPresenceStatus);
 		Presence->SetPresence(
@@ -62,14 +62,13 @@ void UEIK_SetPresence_AsyncFunction::SetPresence()
 						UE_LOG(LogTemp, Log, TEXT("Presence Updated Successfully"));
 				}));
 		SetReadyToDestroy();
-	}*/
 	}
 }
 
-UEIK_SetPresence_AsyncFunction* UEIK_SetPresence_AsyncFunction::SetEOSPresence(FString RichPresense)
+UEIK_SetPresence_AsyncFunction* UEIK_SetPresence_AsyncFunction::SetEOSPresence(FString RichPresense, EPresenceStatus PresenceStatus)
 {
-	UEIK_SetPresence_AsyncFunction* Obj = NewObject< UEIK_SetPresence_AsyncFunction>();
-	// Ueik_SetPresenceObject->RichPresence = RichPresense;
-	// Ueik_SetPresenceObject->PresenceStatus = PresenceStatus;
-	return Obj;
+	UEIK_SetPresence_AsyncFunction* Ueik_SetPresenceObject = NewObject< UEIK_SetPresence_AsyncFunction>();
+	Ueik_SetPresenceObject->RichPresence = RichPresense;
+	Ueik_SetPresenceObject->PresenceStatus = PresenceStatus;
+	return Ueik_SetPresenceObject;
 }

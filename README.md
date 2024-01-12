@@ -34,6 +34,7 @@ Here're some of the project's best features:
 *   Player Storage
 *   Player Stats
 *   Leaderboards
+*   Presence
 *   Voice Chat \[ EOS Voice Integration Kit included with Positional Voice Chat\]
 *   Android And Quest now supported natively.
 *   Easy for beginners.
