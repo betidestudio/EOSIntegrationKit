@@ -286,7 +286,7 @@ void FUserManagerEOS::GetPlatformAuthToken(int32 LocalUserNum, const FOnGetLinke
 		return;
 	}
 
-#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 2
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 2
 	FString TokenType;
 	// TODO config map of OSS -> token type?
 	if (PlatformOSS->GetSubsystemName() == STEAM_SUBSYSTEM)
@@ -544,7 +544,7 @@ void FUserManagerEOS::CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountI
 		NotificationPair->Callback = CallbackObj;
 		CallbackObj->CallbackLambda = [LocalUserNum, this](const EOS_Connect_AuthExpirationCallbackInfo* Data)
 		{
-			//RefreshConnectLogin(LocalUserNum);	
+			RefreshConnectLogin(LocalUserNum);	
 		};
 
 		EOS_Connect_AddNotifyAuthExpirationOptions Options = { };
@@ -965,6 +965,13 @@ void FUserManagerEOS::RefreshConnectLogin(int32 LocalUserNum)
 	if (!UserNumToAccountIdMap.Contains(LocalUserNum))
 	{
 		UE_LOG_ONLINE(Error, TEXT("Can't refresh ConnectLogin(%d) since (%d) is not logged in"), LocalUserNum, LocalUserNum);
+		return;
+	}
+
+	if(LocalUserNumToLastLoginCredentials[0]->Type == TEXT("deviceid"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Refresh Connect Login for Device ID"));
+		LoginWithDeviceID(*LocalUserNumToLastLoginCredentials[0]);
 		return;
 	}
 
