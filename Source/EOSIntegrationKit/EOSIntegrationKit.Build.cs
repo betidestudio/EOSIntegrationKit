@@ -20,7 +20,8 @@ public class EOSIntegrationKit : ModuleRules
 				"Slate",
 				"SlateCore",
 				"SocketSubsystemEIK",
-				"OnlineSubsystemEIK"
+				"OnlineSubsystemEIK",
+				"Projects"
 			}
 		);
 	}

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Interfaces/IPluginManager.h"
 #include "Modules/ModuleManager.h"
 
 class FEOSIntegrationKitModule : public IModuleInterface
