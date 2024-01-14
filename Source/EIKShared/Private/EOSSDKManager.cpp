@@ -695,7 +695,7 @@ void FEIKSDKManager::Shutdown()
 			ReleaseReleasedPlatforms();
 		}
 
-#if ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 2
+#if ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION >= 2
 		FCoreDelegates::TSOnConfigSectionsChanged().RemoveAll(this);
 #elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 1
 		FCoreDelegates::OnConfigSectionsChanged.RemoveAll(this);

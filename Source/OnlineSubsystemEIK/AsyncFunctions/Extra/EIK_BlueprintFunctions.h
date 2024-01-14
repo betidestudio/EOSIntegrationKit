@@ -142,7 +142,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
 	static bool Initialize_EIK_For_Friends(APlayerController* PlayerController);
 
-	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
+	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
 	static FString GetCurrentPort(AGameModeBase* CurrentGameMode);
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
