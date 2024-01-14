@@ -565,6 +565,43 @@ void FUserManagerEOS::EIK_Auto_Login()
 {
 }
 
+void FUserManagerEOS::OpenIDLogin(const FOnlineAccountCredentials& AccountCredentials)
+{
+	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
+	EOS_Connect_Credentials UserCredentials;
+	UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_OPENID_ACCESS_TOKEN;
+	UserCredentials.Token = TCHAR_TO_UTF8(*AccountCredentials.Token);
+	UserCredentials.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
+	
+	EOS_Connect_UserLoginInfo LoginInfo;
+	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
+	LoginInfo.DisplayName = TCHAR_TO_UTF8(*AccountCredentials.Id);
+
+	EOS_Connect_LoginOptions LoginOptions;
+	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;
+	LoginOptions.UserLoginInfo = &LoginInfo;
+	LoginOptions.Credentials = &UserCredentials;
+
+	int32 LocalUserNum = 0;
+	CallbackObj->CallbackLambda = [LocalUserNum, AccountCredentials, UserCredentials, this](const EOS_Connect_LoginCallbackInfo* Data)
+	{
+		if (Data->ResultCode == EOS_EResult::EOS_Success)
+		{
+			//TriggerOnLoginCompleteDelegates(LocalUserNum, true, *NetIdEos.ToSharedRef(), "");
+			CompleteDeviceIDLogin(LocalUserNum, nullptr, Data->LocalUserId);
+		}
+		else
+		{
+			UE_LOG(LogEOSSDK, Warning, TEXT("EOS Login using OpenID Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
+			EOS_EResult ResultCode = Data->ResultCode;
+			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
+			FString ResultCodeString = FString(ResultCodeStr);
+			TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
+		}
+	};
+	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, CallbackObj, CallbackObj->GetCallbackPtr());
+}
+
 bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials)
 {
 	LocalUserNumToLastLoginCredentials.Emplace(LocalUserNum, MakeShared<FOnlineAccountCredentials>(AccountCredentials));
@@ -609,6 +646,11 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	if(AccountCredentials.Type == TEXT("steam"))
 	{
 		return ConnectLoginNoEAS(LocalUserNum);
+	}
+	if(AccountCredentials.Type == TEXT("openid"))
+	{
+		OpenIDLogin(AccountCredentials);
+		return true;
 	}
 	EOS_Auth_LoginOptions LoginOptions = { };
 	LoginOptions.ApiVersion = EOS_AUTH_LOGIN_API_LATEST;

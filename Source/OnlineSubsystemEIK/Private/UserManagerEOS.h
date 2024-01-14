@@ -271,6 +271,7 @@ public:
 	void DeleteDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountId AccountId, EOS_ProductUserId UserId);
 	void EIK_Auto_Login();
+	void OpenIDLogin(const FOnlineAccountCredentials& AccountCredentials);
 	
 
 // IOnlineIdentity Interface

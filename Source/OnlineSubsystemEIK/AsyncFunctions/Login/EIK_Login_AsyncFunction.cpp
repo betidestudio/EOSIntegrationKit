@@ -78,6 +78,11 @@ void UEIK_Login_AsyncFunction::Login()
 				AccountDetails.Token = Input2;
 				AccountDetails.Type = "developer";
 				break;
+			case ELoginTypes::OpenID:
+				AccountDetails.Id = Input1;
+				AccountDetails.Token = Input2;
+				AccountDetails.Type = "openid";
+				break;
 			default:
 				if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
 				{
