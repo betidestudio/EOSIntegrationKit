@@ -592,7 +592,7 @@ void FUserManagerEOS::OpenIDLogin(const FOnlineAccountCredentials& AccountCreden
 		}
 		else
 		{
-			UE_LOG(LogEOSSDK, Warning, TEXT("EOS Login using OpenID Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
+			UE_LOG(LogTemp, Warning, TEXT("EOS Login using OpenID Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
 			EOS_EResult ResultCode = Data->ResultCode;
 			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
 			FString ResultCodeString = FString(ResultCodeStr);
