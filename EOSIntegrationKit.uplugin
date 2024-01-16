@@ -65,7 +65,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
-				"Android"
+				"Android",
+				"Win64"
 			]
 		}
 	],
