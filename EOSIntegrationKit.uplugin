@@ -68,6 +68,16 @@
 				"Android",
 				"Win64"
 			]
+		},
+		{
+			"Name": "OnlineSubsystemApple",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Mac",
+				"IOS",
+				"TVOS"
+			]
 		}
 	],
 	"Plugins": [
