@@ -58,5 +58,7 @@ public:
 	void Login();
 
 	void LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId, const FString& Error);
+
+	void LoginWithApple();
 	
 };

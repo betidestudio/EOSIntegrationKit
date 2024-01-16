@@ -83,6 +83,9 @@ void UEIK_Login_AsyncFunction::Login()
 				AccountDetails.Token = Input2;
 				AccountDetails.Type = "openid";
 				break;
+			case ELoginTypes::Apple:
+				LoginWithApple();
+				return;
 			default:
 				if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
 				{
@@ -144,5 +147,49 @@ void UEIK_Login_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bWasSucces
 		OnFail.Broadcast("", Error);
 		SetReadyToDestroy();
 		bDelegateCalled = true;
+	}
+}
+
+void UEIK_Login_AsyncFunction::LoginWithApple()
+{
+	if(const IOnlineSubsystem *AppleSubsystemRef = Online::GetSubsystem(GetWorld(),APPLE_SUBSYSTEM))
+	{
+		if(const IOnlineExternalUIPtr AppleExternalUIPointerRef = AppleSubsystemRef->GetExternalUIInterface())
+		{
+			FOnLoginUIClosedDelegate OnLoginUIClosedDelegate = FOnLoginUIClosedDelegate::CreateLambda([this, AppleSubsystemRef](const FUniqueNetId& UserId, const int ControllerIndex, const FOnlineError& Error)
+			{
+				if(Error.WasSuccessful())
+				{
+					if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(GetWorld()))
+					{
+						if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+						{
+							FOnlineAccountCredentials AccountDetails;
+							AccountDetails.Id = UserId.ToString();
+							AccountDetails.Type = "apple";
+							AccountDetails.Token = AppleSubsystemRef->GetIdentityInterface()->GetAuthToken(0);
+							IdentityPointerRef->OnLoginCompleteDelegates->AddUObject(this,&UEIK_Login_AsyncFunction::LoginCallback);
+							IdentityPointerRef->Login(0,AccountDetails);
+						}
+					}
+				}
+				else
+				{
+					OnFail.Broadcast("", Error.GetErrorCode());
+					SetReadyToDestroy();
+					bDelegateCalled = true;
+				}
+			});
+			AppleExternalUIPointerRef->ShowLoginUI(0, false, false, OnLoginUIClosedDelegate);
+		}
+		else
+		{
+			if(bDelegateCalled == false)
+			{
+				OnFail.Broadcast("", "Failed to get External UI Pointer Ref");
+				SetReadyToDestroy();
+				bDelegateCalled = true;
+			}
+		}
 	}
 }

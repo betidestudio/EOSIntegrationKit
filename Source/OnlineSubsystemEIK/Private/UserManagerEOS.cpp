@@ -647,6 +647,10 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	{
 		return ConnectLoginNoEAS(LocalUserNum);
 	}
+	if(AccountCredentials.Type == TEXT("apple"))
+	{
+		
+	}
 	if(AccountCredentials.Type == TEXT("openid"))
 	{
 		OpenIDLogin(AccountCredentials);
