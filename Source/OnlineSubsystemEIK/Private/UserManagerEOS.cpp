@@ -602,6 +602,86 @@ void FUserManagerEOS::OpenIDLogin(const FOnlineAccountCredentials& AccountCreden
 	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, CallbackObj, CallbackObj->GetCallbackPtr());
 }
 
+void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials& AccountCredentials)
+{
+	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
+	EOS_Connect_Credentials UserCredentials;
+	if(AccountCredentials.Type == "apple")
+	{
+		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_APPLE_ID_TOKEN;
+		UserCredentials.Token = TCHAR_TO_ANSI(*AccountCredentials.Token);
+	}
+	else if(AccountCredentials.Type == "steam")
+	{
+		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_STEAM_APP_TICKET;
+	}
+	else if(AccountCredentials.Type == "google")
+	{
+		UserCredentials.Token = TCHAR_TO_ANSI(*AccountCredentials.Token);
+		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_GOOGLE_ID_TOKEN;
+	}
+	else if(AccountCredentials.Type == "openid")
+	{
+		UserCredentials.Token = TCHAR_TO_ANSI(*AccountCredentials.Token);
+		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_OPENID_ACCESS_TOKEN;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EOS Login using Interface connect Failed due to %hs"), EOS_EResult_ToString(EOS_EResult::EOS_InvalidParameters));
+		EOS_EResult ResultCode = EOS_EResult::EOS_InvalidParameters;
+		const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
+		FString ResultCodeString = FString(ResultCodeStr);
+		TriggerOnLoginCompleteDelegates(0, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
+		return;
+	}
+	UserCredentials.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
+
+	EOS_Connect_UserLoginInfo LoginInfo;
+	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
+	LoginInfo.DisplayName = TCHAR_TO_ANSI(*AccountCredentials.Id);
+	
+	EOS_Connect_LoginOptions LoginOptions;
+	LoginOptions.Credentials = &UserCredentials;
+	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;
+	LoginOptions.UserLoginInfo = &LoginInfo;
+
+	int32 LocalUserNum = 0;
+	CallbackObj->CallbackLambda = [LocalUserNum,AccountCredentials, UserCredentials, this](const EOS_Connect_LoginCallbackInfo* Data)
+	{
+		if(Data->ResultCode == EOS_EResult::EOS_Success)
+		{
+			//TriggerOnLoginCompleteDelegates(LocalUserNum, true, *NetIdEos.ToSharedRef(), "");
+			CompleteDeviceIDLogin(LocalUserNum,nullptr,Data->LocalUserId);
+		}
+		else if(Data->ResultCode == EOS_EResult::EOS_NotFound)
+		{
+			if(AccountCredentials.Type == "deviceid")
+			{
+				CreateDeviceID(AccountCredentials);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("EOS Login using Interface connect Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
+				EOS_EResult ResultCode = Data->ResultCode;
+				const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
+				FString ResultCodeString = FString(ResultCodeStr);
+				TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("EOS Login using Interface connect Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
+			EOS_EResult ResultCode = Data->ResultCode;
+			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
+			FString ResultCodeString = FString(ResultCodeStr);
+			TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
+
+		}
+	};
+	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, CallbackObj, CallbackObj->GetCallbackPtr());
+
+}
+
 bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials)
 {
 	LocalUserNumToLastLoginCredentials.Emplace(LocalUserNum, MakeShared<FOnlineAccountCredentials>(AccountCredentials));
@@ -649,7 +729,8 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	}
 	if(AccountCredentials.Type == TEXT("apple"))
 	{
-		
+		StartConnectInterfaceLogin(AccountCredentials);
+		return true;
 	}
 	if(AccountCredentials.Type == TEXT("openid"))
 	{

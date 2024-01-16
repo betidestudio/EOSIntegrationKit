@@ -150,36 +150,39 @@ void UEIK_Login_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bWasSucces
 	}
 }
 
+void UEIK_Login_AsyncFunction::LoginWithAppleCallback(TSharedPtr<const FUniqueNetId> UniqueNetId, int I,
+	const FOnlineError& OnlineError)
+{
+	if(OnlineError.WasSuccessful())
+	{
+		if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(GetWorld()))
+		{
+			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+			{
+				FOnlineAccountCredentials AccountDetails;
+				AccountDetails.Id = UniqueNetId->ToString();
+				AccountDetails.Type = "apple";
+				AccountDetails.Token = AppleSubsystem->GetIdentityInterface()->GetAuthToken(0);
+				IdentityPointerRef->OnLoginCompleteDelegates->AddUObject(this,&UEIK_Login_AsyncFunction::LoginCallback);
+				IdentityPointerRef->Login(0,AccountDetails);
+			}
+		}
+	}
+	else
+	{
+		OnFail.Broadcast("", OnlineError.GetErrorCode());
+		SetReadyToDestroy();
+		bDelegateCalled = true;
+	}
+}
+
 void UEIK_Login_AsyncFunction::LoginWithApple()
 {
 	if(const IOnlineSubsystem *AppleSubsystemRef = Online::GetSubsystem(GetWorld(),APPLE_SUBSYSTEM))
 	{
 		if(const IOnlineExternalUIPtr AppleExternalUIPointerRef = AppleSubsystemRef->GetExternalUIInterface())
 		{
-			FOnLoginUIClosedDelegate OnLoginUIClosedDelegate = FOnLoginUIClosedDelegate::CreateLambda([this, AppleSubsystemRef](const FUniqueNetId& UserId, const int ControllerIndex, const FOnlineError& Error)
-			{
-				if(Error.WasSuccessful())
-				{
-					if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(GetWorld()))
-					{
-						if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
-						{
-							FOnlineAccountCredentials AccountDetails;
-							AccountDetails.Id = UserId.ToString();
-							AccountDetails.Type = "apple";
-							AccountDetails.Token = AppleSubsystemRef->GetIdentityInterface()->GetAuthToken(0);
-							IdentityPointerRef->OnLoginCompleteDelegates->AddUObject(this,&UEIK_Login_AsyncFunction::LoginCallback);
-							IdentityPointerRef->Login(0,AccountDetails);
-						}
-					}
-				}
-				else
-				{
-					OnFail.Broadcast("", Error.GetErrorCode());
-					SetReadyToDestroy();
-					bDelegateCalled = true;
-				}
-			});
+			FOnLoginUIClosedDelegate OnLoginUIClosedDelegate = FOnLoginUIClosedDelegate::CreateUObject(this,&UEIK_Login_AsyncFunction::LoginWithAppleCallback);
 			AppleExternalUIPointerRef->ShowLoginUI(0, false, false, OnLoginUIClosedDelegate);
 		}
 		else

@@ -272,7 +272,7 @@ public:
 	void CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountId AccountId, EOS_ProductUserId UserId);
 	void EIK_Auto_Login();
 	void OpenIDLogin(const FOnlineAccountCredentials& AccountCredentials);
-	
+	void StartConnectInterfaceLogin(const FOnlineAccountCredentials& AccountCredentials);
 
 // IOnlineIdentity Interface
 	virtual bool Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials) override;

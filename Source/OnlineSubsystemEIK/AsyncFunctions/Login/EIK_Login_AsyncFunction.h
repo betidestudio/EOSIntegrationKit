@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OnlineError.h"
+#include "OnlineSubsystem.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Runtime/CoreOnline/Public/Online/CoreOnline.h"
 #include "EIK_Login_AsyncFunction.generated.h"
@@ -40,6 +42,7 @@ public:
 	ELoginTypes LoginMethod;
 	FString Input1;
 	FString Input2;
+	IOnlineSubsystem* AppleSubsystem;
 
 	bool bDelegateCalled = false;
 
@@ -59,6 +62,7 @@ public:
 
 	void LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId, const FString& Error);
 
+	void LoginWithAppleCallback(TSharedPtr<const FUniqueNetId> UniqueNetId, int I, const FOnlineError& OnlineError);
 	void LoginWithApple();
 	
 };
