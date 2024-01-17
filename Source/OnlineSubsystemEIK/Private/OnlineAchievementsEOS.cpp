@@ -1,4 +1,4 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "OnlineAchievementsEOS.h"
 #include "OnlineSubsystem.h"
