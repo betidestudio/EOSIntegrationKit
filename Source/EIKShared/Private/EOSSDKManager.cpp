@@ -261,7 +261,7 @@ EOS_EResult FEIKSDKManager::Initialize()
 
 		EOS_EResult EosResult = EOSInitialize(InitializeOptions);
 
-		if (EosResult == EOS_EResult::EOS_Success)
+		if (EosResult == EOS_EResult::EOS_Success || EosResult == EOS_EResult::EOS_AlreadyConfigured)
 		{
 			bInitialized = true;
 #if ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 2 || ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 3
