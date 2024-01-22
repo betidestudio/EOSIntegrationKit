@@ -141,6 +141,7 @@ public:
 	EOS_HAntiCheatClient AntiCheatClientHandle;
 	EOS_HAntiCheatServer AntiCheatServerHandle;
 	EOS_HSanctions SanctionsHandle;
+	EOS_HReports ReportsHandle;
 
 	/** Manager that handles all user interfaces */
 	FUserManagerEOSPtr UserManager;
