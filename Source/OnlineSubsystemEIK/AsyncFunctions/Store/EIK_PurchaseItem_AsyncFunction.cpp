@@ -1,4 +1,4 @@
-﻿//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 
 #include "EIK_PurchaseItem_AsyncFunction.h"

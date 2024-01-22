@@ -1,7 +1,7 @@
-//Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EOSVoiceChatUser.h"
-
+#include "UObject/UObjectIterator.h"
 #include "EIKVoiceChat/Subsystem/EIK_Voice_Subsystem.h"
 
 #if WITH_EOS_RTC
