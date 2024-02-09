@@ -51,17 +51,20 @@ void UEIK_SetPresence_AsyncFunction::SetPresence()
 		FString RichPresenceStatus = RichPresence;
 		Status.StatusStr = RichPresenceStatus;
 		UE_LOG(LogTemp, Warning, TEXT("Presence Updated With Status: %s"), *RichPresenceStatus);
-		Presence->SetPresence(
-			*Identity->GetUniquePlayerId(0).Get(),
-			Status,
-			IOnlinePresence::FOnPresenceTaskCompleteDelegate::CreateLambda([](
-				const class FUniqueNetId& UserId,
-				const bool bWasSuccessful)
-				{
-					if (bWasSuccessful) // Check bWasSuccessful.
-						UE_LOG(LogTemp, Log, TEXT("Presence Updated Successfully"));
-				}));
+		Presence->SetPresence(*Identity->GetUniquePlayerId(0).Get(), Status, IOnlinePresence::FOnPresenceTaskCompleteDelegate::CreateUObject(this, &UEIK_SetPresence_AsyncFunction::OnSetPresenceCompleted));
+	}
+}
+
+void UEIK_SetPresence_AsyncFunction::OnSetPresenceCompleted(const class FUniqueNetId& UserId, const bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		OnSuccess.Broadcast(RichPresence, PresenceStatus);
 		SetReadyToDestroy();
+	}
+	else
+	{
+		OnFaliure.Broadcast("", PresenceStatus);
 	}
 }
 

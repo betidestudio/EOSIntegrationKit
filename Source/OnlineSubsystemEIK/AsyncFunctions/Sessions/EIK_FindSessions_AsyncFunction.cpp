@@ -102,49 +102,52 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 		bDelegateCalled = true;
 		SetReadyToDestroy();
 	}
-	if (const IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	else
 	{
-		TArray<FSessionFindStruct> SessionResult_Array;
-		IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
-		if (Sessions.IsValid())
+		if (const IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
 		{
-			if (SessionSearch->SearchResults.Num() > 0)
+			TArray<FSessionFindStruct> SessionResult_Array;
+			IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
+			if (Sessions.IsValid())
 			{
-				for (int32 SearchIdx = 0; SearchIdx < SessionSearch->SearchResults.Num(); SearchIdx++)
+				if (SessionSearch->SearchResults.Num() > 0)
 				{
-					FBlueprintSessionResult SessionResult;
-					SessionResult.OnlineResult = SessionSearch->SearchResults[SearchIdx];
-					FOnlineSessionSettings LocalSessionSettings  = SessionResult.OnlineResult.Session.SessionSettings;
-					TMap<FName, FString> AllSettingsWithData;
-					TMap<FName, FOnlineSessionSetting>::TIterator It(LocalSessionSettings.Settings);
-
-					TMap<FString, FEIKAttribute> LocalArraySettings;
-					while (It)
+					for (int32 SearchIdx = 0; SearchIdx < SessionSearch->SearchResults.Num(); SearchIdx++)
 					{
-						const FName& SettingName = It.Key();
-						const FOnlineSessionSetting& Setting = It.Value();
-						LocalArraySettings.Add(*SettingName.ToString(), Setting.Data);
-						++It;
+						FBlueprintSessionResult SessionResult;
+						SessionResult.OnlineResult = SessionSearch->SearchResults[SearchIdx];
+						FOnlineSessionSettings LocalSessionSettings = SessionResult.OnlineResult.Session.SessionSettings;
+						TMap<FName, FString> AllSettingsWithData;
+						TMap<FName, FOnlineSessionSetting>::TIterator It(LocalSessionSettings.Settings);
+
+						TMap<FString, FEIKAttribute> LocalArraySettings;
+						while (It)
+						{
+							const FName& SettingName = It.Key();
+							const FOnlineSessionSetting& Setting = It.Value();
+							LocalArraySettings.Add(*SettingName.ToString(), Setting.Data);
+							++It;
+						}
+
+						bool IsServer = LocalArraySettings.Contains("IsDedicatedServer") ? true : false;
+						FSessionFindStruct LocalStruct;
+						LocalStruct.SessionName = "GameSession";
+						LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
+						LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections;
+						LocalStruct.SessionResult = SessionResult;
+						LocalStruct.SessionSettings = LocalArraySettings;
+						LocalStruct.bIsDedicatedServer = IsServer;
+						SessionResult_Array.Add(LocalStruct);
 					}
-					
-					bool IsServer = LocalArraySettings.Contains("IsDedicatedServer") ? true : false;
-					FSessionFindStruct LocalStruct;
-					LocalStruct.SessionName = "GameSession";
-					LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
-					LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections;
-					LocalStruct.SessionResult= SessionResult;
-					LocalStruct.SessionSettings = LocalArraySettings;
-					LocalStruct.bIsDedicatedServer = IsServer;
-					SessionResult_Array.Add(LocalStruct);
 				}
 			}
+			if (bDelegateCalled)
+			{
+				return;
+			}
+			bDelegateCalled = true;
+			OnSuccess.Broadcast(SessionResult_Array);
+			SetReadyToDestroy();
 		}
-		if(bDelegateCalled)
-		{
-			return;
-		}
-		bDelegateCalled = true;
-		OnSuccess.Broadcast(SessionResult_Array);
-		SetReadyToDestroy();
 	}
 }

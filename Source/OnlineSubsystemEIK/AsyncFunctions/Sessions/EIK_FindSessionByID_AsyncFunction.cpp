@@ -39,7 +39,7 @@ void UEIK_FindSessionByID_AsyncFunction::FindSession()
 			{
 				return;
 			}
-			OnFail.Broadcast(FBlueprintSessionResult());
+			OnFail.Broadcast(FSessionFindStruct());
 			SetReadyToDestroy();
 		}
 	}
@@ -49,28 +49,72 @@ void UEIK_FindSessionByID_AsyncFunction::FindSession()
 		{
 			return;
 		}
-		OnFail.Broadcast(FBlueprintSessionResult());
+		OnFail.Broadcast(FSessionFindStruct());
 		SetReadyToDestroy();
 	}
 }
 
 
-void UEIK_FindSessionByID_AsyncFunction::OnFindSessionCompleted(int I, bool bArg,
+void UEIK_FindSessionByID_AsyncFunction::OnFindSessionCompleted(int I, bool bWasSuccessful,
 	const FOnlineSessionSearchResult& OnlineSessionSearchResult)
 {
-	if(!bArg)
+	if (bWasSuccessful)
 	{
-		if(bDelegateCalled)
+		if (const IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+		{
+			IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface();
+			if (Sessions.IsValid())
+			{
+				FBlueprintSessionResult SessionResult;
+				SessionResult.OnlineResult = OnlineSessionSearchResult;
+				FOnlineSessionSettings LocalSessionSettings = SessionResult.OnlineResult.Session.SessionSettings;
+
+				TMap<FName, FOnlineSessionSetting>::TIterator It(LocalSessionSettings.Settings);
+
+				TMap<FString, FEIKAttribute> LocalSettings;
+				while (It)
+				{
+					const FName& SettingName = It.Key();
+					const FOnlineSessionSetting& Setting = It.Value();
+					LocalSettings.Add(*SettingName.ToString(), Setting.Data);
+					++It;
+				}
+
+				bool IsServer = LocalSessionSettings.bIsDedicated;
+				FSessionFindStruct LocalStruct;
+				LocalStruct.SessionName = "GameSession";
+				LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
+				LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections;
+				LocalStruct.SessionResult = SessionResult;
+				LocalStruct.SessionSettings = LocalSettings;
+				LocalStruct.bIsDedicatedServer = IsServer;
+
+
+				OnSuccess.Broadcast(LocalStruct);
+				bDelegateCalled = true;
+				SetReadyToDestroy();
+			}
+		}
+		else
+		{
+			if (bDelegateCalled)
+			{
+				return;
+			}
+			OnFail.Broadcast(FSessionFindStruct());
+			bDelegateCalled = true;
+			SetReadyToDestroy();
+		}
+		
+	}
+	else
+	{
+		if (bDelegateCalled)
 		{
 			return;
 		}
-		OnFail.Broadcast(FBlueprintSessionResult());
+		OnFail.Broadcast(FSessionFindStruct());
 		bDelegateCalled = true;
 		SetReadyToDestroy();
-	}
-	FBlueprintSessionResult SessionResult;
-	SessionResult.OnlineResult = OnlineSessionSearchResult;
-	OnSuccess.Broadcast(SessionResult);
-	bDelegateCalled = true;
-	SetReadyToDestroy();
+	}	
 }

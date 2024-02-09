@@ -102,9 +102,6 @@ void UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted(FName VSessionNa
 				bDelegateCalled = true;
 				SetReadyToDestroy();
 			}
-			OnSuccess.Broadcast("");
-			bDelegateCalled = true;
-			SetReadyToDestroy();
 		}
 	}
 	else
