@@ -18,6 +18,7 @@
 #include "Online/OnlineBase.h"
 #include "Online/OnlineSessionNames.h"
 #include "Kismet/GameplayStatics.h"
+#include "EIKSettings.h"
 
 
 #if WITH_EOS_SDK
@@ -998,8 +999,12 @@ void FOnlineSessionEOS::OnLeaveLobbyRequested(const EOS_ProductUserId& LocalUser
 
 					if (World)
 					{
-						UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::OnLeaveLobbyRequested] EOS_Lobby_LeaveLobby returned with EOS result code EOS_Success, initializing travel"));
-						UGameplayStatics::OpenLevel(World, "MainMenuLevel", true, ""); //Will try to open level "MainMenuLevel", will open defult game level if it dosen't exist
+						if (UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
+						{
+							FName LevelName = FName(*EIKSettings->ReturnLevelName);
+							UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::OnLeaveLobbyRequested] EOS_Lobby_LeaveLobby returned with EOS result code EOS_Success, initializing travel to (%s)"), *LevelName.ToString());
+							UGameplayStatics::OpenLevel(World, LevelName, true, ""); //Will try to open level selected in settings, will open defult game level if it dosen't exist or is empty.
+						}
 					}
 					else
 					{

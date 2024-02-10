@@ -69,6 +69,7 @@ public:
 /** Native version of the UObject based config data */
 struct FEOSSettings
 {
+	FString ReturnLevelName;
 	FString CacheDir;
 	FString DefaultArtifactName;
 	int32 TickBudgetInMilliseconds;
@@ -123,6 +124,9 @@ public:
 	/** This will show the advanced logs for the EOS SDK and EOS Integration Kit functions*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
 	bool bShowAdvancedLogs;
+	/** Select which level which leave party button in social overlay will return to. Leave empty to return to defult game map. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EIK Level Settings")
+	FString ReturnLevelName;
 
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
