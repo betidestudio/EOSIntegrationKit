@@ -318,6 +318,11 @@ bool FOnlineSubsystemEOS::Init()
 	{
 		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to get Sanctions Handle"));
 	}
+	ReportsHandle = EOS_Platform_GetReportsInterface(*EOSPlatformHandle);
+	if (ReportsHandle == nullptr)
+	{
+		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to get Reports Handle"));
+	}
 	AntiCheatServerHandle = EOS_Platform_GetAntiCheatServerInterface(*EOSPlatformHandle);
 	if (AntiCheatServerHandle == nullptr)
 	{

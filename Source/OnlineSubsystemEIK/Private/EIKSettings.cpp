@@ -148,6 +148,7 @@ const FEOSSettings& UEIKSettings::ManualGetSettings()
 	{
 		CachedSettings.Emplace();
 
+		GConfig->GetString(INI_SECTION, TEXT("ReturnLevelName"), CachedSettings->ReturnLevelName, GEngineIni);
 		GConfig->GetString(INI_SECTION, TEXT("CacheDir"), CachedSettings->CacheDir, GEngineIni);
 		GConfig->GetString(INI_SECTION, TEXT("DefaultArtifactName"), CachedSettings->DefaultArtifactName, GEngineIni);
 		GConfig->GetInt(INI_SECTION, TEXT("TickBudgetInMilliseconds"), CachedSettings->TickBudgetInMilliseconds, GEngineIni);
@@ -173,6 +174,7 @@ FEOSSettings UEIKSettings::ToNative() const
 {
 	FEOSSettings Native;
 
+	Native.ReturnLevelName = ReturnLevelName;
 	Native.CacheDir = CacheDir;
 	Native.DefaultArtifactName = DefaultArtifactName;
 	Native.TickBudgetInMilliseconds = TickBudgetInMilliseconds;

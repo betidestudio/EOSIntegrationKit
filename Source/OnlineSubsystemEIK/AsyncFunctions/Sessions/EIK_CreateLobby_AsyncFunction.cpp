@@ -89,9 +89,6 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName VSessionName, 
 				bDelegateCalled = true;
 				SetReadyToDestroy();
 			}
-			OnSuccess.Broadcast(VSessionName.ToString());
-			bDelegateCalled = true;
-			SetReadyToDestroy();
 		}
 	}
 	else

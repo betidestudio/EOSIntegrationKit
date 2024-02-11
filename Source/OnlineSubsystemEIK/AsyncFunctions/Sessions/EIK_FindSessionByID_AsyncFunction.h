@@ -8,7 +8,7 @@
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 #include "EIK_FindSessionByID_AsyncFunction.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFindSessionByID_Delegate, const FBlueprintSessionResult&, FoundResult);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFindSessionByID_Delegate, const FSessionFindStruct&, FoundResult);
 
 /**
  * 
