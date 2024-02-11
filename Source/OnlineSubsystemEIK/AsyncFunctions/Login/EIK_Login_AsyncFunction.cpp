@@ -11,12 +11,11 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 
 
-UEIK_Login_AsyncFunction* UEIK_Login_AsyncFunction::LoginUsingEIK(ELoginTypes LoginMethod, FString Input1,
-                                                                  FString Input2)
+UEIK_Login_AsyncFunction* UEIK_Login_AsyncFunction::LoginUsingEIK(ELoginTypes LoginMethod, FString DisplayName, FString Token)
 {
 	UEIK_Login_AsyncFunction* UEIK_LoginObject= NewObject<UEIK_Login_AsyncFunction>();
-	UEIK_LoginObject->Input1 = Input1;
-	UEIK_LoginObject->Input2 = Input2;
+	UEIK_LoginObject->Input1 = DisplayName;
+	UEIK_LoginObject->Input2 = Token;
 	UEIK_LoginObject->LoginMethod = LoginMethod;
 	return UEIK_LoginObject;
 }
@@ -86,6 +85,11 @@ void UEIK_Login_AsyncFunction::Login()
 			case ELoginTypes::Apple:
 				LoginWithApple();
 				return;
+			case ELoginTypes::Google:
+				AccountDetails.Id = Input1;
+				AccountDetails.Token = Input2;
+				AccountDetails.Type = "google";
+				break;
 			default:
 				if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
 				{
@@ -95,7 +99,6 @@ void UEIK_Login_AsyncFunction::Login()
 					}
 				}
 			}
-
 			IdentityPointerRef->OnLoginCompleteDelegates->AddUObject(this,&UEIK_Login_AsyncFunction::LoginCallback);
 			IdentityPointerRef->Login(0,AccountDetails);
 		}
@@ -159,6 +162,7 @@ void UEIK_Login_AsyncFunction::LoginWithAppleCallback(TSharedPtr<const FUniqueNe
 		{
 			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
+				UE_LOG(LogTemp, Warning, TEXT("EIK: Apple Login Successful - %s"), *UniqueNetId->ToString());
 				FOnlineAccountCredentials AccountDetails;
 				AccountDetails.Id = UniqueNetId->ToString();
 				AccountDetails.Type = "apple";

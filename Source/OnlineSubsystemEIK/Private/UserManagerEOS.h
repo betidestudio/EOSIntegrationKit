@@ -268,6 +268,7 @@ public:
 	//Custom Function
 	void LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void CreateDeviceID(const FOnlineAccountCredentials& AccountCredentials);
+	void CreateConnectID(EOS_ContinuanceToken ContinuanceToken, const FOnlineAccountCredentials& AccountCredentials);
 	void DeleteDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountId AccountId, EOS_ProductUserId UserId);
 	void EIK_Auto_Login();

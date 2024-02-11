@@ -44,7 +44,7 @@ void UGoogleLogin_SLK::GoogleLoginLocal()
 }
 
 #if PLATFORM_ANDROID
-/*JNI_METHOD void Java_com_example_googleonetap_UnrealInterface_OnGoogleCallback(JNIEnv* env, jclass clazz, jint status, jstring email, jstring username, jstring idToken, jstring error)
+JNI_METHOD void Java_com_example_googleonetap_UnrealInterface_OnGoogleCallback(JNIEnv* env, jclass clazz, jint status, jstring email, jstring username, jstring idToken, jstring error)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnGoogleCallback"));
 	int32 lstatus = static_cast<int32>(status);
@@ -68,5 +68,5 @@ void UGoogleLogin_SLK::GoogleLoginLocal()
 
 			}, TStatId(), nullptr, ENamedThreads::GameThread);
 	}
-}*/
+}
 #endif

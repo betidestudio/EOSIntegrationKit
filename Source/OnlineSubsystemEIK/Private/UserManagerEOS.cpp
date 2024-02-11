@@ -11,6 +11,7 @@
 #include "Runtime/Launch/Resources/Version.h"
 #include "IPAddress.h"
 #include "SocketSubsystem.h"
+#include "eos_connect_types.h"
 #include "OnlineError.h"
 #include "Engine/GameInstance.h"
 #include "UnrealEngine.h"
@@ -327,6 +328,7 @@ FString FUserManagerEOS::GetPlatformDisplayName(int32 LocalUserNum) const
 typedef TEOSCallback<EOS_Auth_OnLoginCallback, EOS_Auth_LoginCallbackInfo, FUserManagerEOS> FLoginCallback;
 typedef TEOSCallback<EOS_Connect_OnLoginCallback, EOS_Connect_LoginCallbackInfo, FUserManagerEOS> FConnectLoginCallback;
 typedef TEOSCallback<EOS_Connect_OnCreateDeviceIdCallback, EOS_Connect_CreateDeviceIdCallbackInfo, FUserManagerEOS> FCreateDeviceIDCallback;
+typedef TEOSCallback<EOS_Connect_OnCreateUserCallback, EOS_Connect_CreateUserCallbackInfo, FUserManagerEOS> FCreateUserCallback;
 typedef TEOSCallback<EOS_Connect_OnDeleteDeviceIdCallback, EOS_Connect_DeleteDeviceIdCallbackInfo, FUserManagerEOS> FConnectDeleteDeviceIdCallback;
 typedef TEOSCallback<EOS_Auth_OnDeletePersistentAuthCallback, EOS_Auth_DeletePersistentAuthCallbackInfo, FUserManagerEOS> FDeletePersistentAuthCallback;
 
@@ -389,6 +391,7 @@ struct FAuthCredentials :
 			UE_LOG_ONLINE(Error, TEXT("FAuthCredentials object cannot be constructed with invalid FExternalAuthToken parameter"));
 		}
 	}
+	
 
 	void Init(EOS_EExternalCredentialType InExternalType, const FString& InTokenString)
 	{
@@ -488,10 +491,34 @@ void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCre
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("EOS Create Device ID Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode))
+			TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), FString());
+			UE_LOG(LogOnline, Warning, TEXT("EOS Create Device ID Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode))
 		}
 	};
 	EOS_Connect_CreateDeviceId(EOSSubsystem->ConnectHandle, &DeviceIdOptions,(void*)CallbackObj, CallbackObj->GetCallbackPtr() );
+}
+
+void FUserManagerEOS::CreateConnectID(EOS_ContinuanceToken ContinuanceToken, const FOnlineAccountCredentials& AccountCredentials)
+{
+	UE_LOG(LogTemp, Warning, TEXT("EOS Creating user for google login"));
+	EOS_Connect_CreateUserOptions CreateUserOptions = {};
+	CreateUserOptions.ApiVersion = EOS_CONNECT_CREATEUSER_API_LATEST;
+	CreateUserOptions.ContinuanceToken = ContinuanceToken;
+	FCreateUserCallback* CallbackObj = new FCreateUserCallback(AsWeak());
+	CallbackObj->CallbackLambda = [this,AccountCredentials](const EOS_Connect_CreateUserCallbackInfo* Data)
+	{
+		if(Data->ResultCode == EOS_EResult::EOS_Success)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("EOS Create User Success"));
+			StartConnectInterfaceLogin(AccountCredentials);
+		}
+		else
+		{
+			TriggerOnLoginCompleteDelegates(0, false, *FUniqueNetIdEOS::EmptyId(), FString());
+			UE_LOG(LogTemp, Warning, TEXT("EOS Create User Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
+		}
+	};
+	EOS_Connect_CreateUser(EOSSubsystem->ConnectHandle, &CreateUserOptions, CallbackObj, CallbackObj->GetCallbackPtr());
 }
 
 void FUserManagerEOS::DeleteDeviceID(const FOnlineAccountCredentials& AccountCredentials)
@@ -609,21 +636,30 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 	if(AccountCredentials.Type == "apple")
 	{
 		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_APPLE_ID_TOKEN;
-		UserCredentials.Token = TCHAR_TO_ANSI(*AccountCredentials.Token);
+		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
+		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
+		UserCredentials.Token = ClientId;
 	}
 	else if(AccountCredentials.Type == "steam")
 	{
 		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_STEAM_APP_TICKET;
+		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
+		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
+		UserCredentials.Token = ClientId;
 	}
 	else if(AccountCredentials.Type == "google")
 	{
-		UserCredentials.Token = TCHAR_TO_ANSI(*AccountCredentials.Token);
 		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_GOOGLE_ID_TOKEN;
+		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
+		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
+		UserCredentials.Token = ClientId;
 	}
 	else if(AccountCredentials.Type == "openid")
 	{
-		UserCredentials.Token = TCHAR_TO_ANSI(*AccountCredentials.Token);
 		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_OPENID_ACCESS_TOKEN;
+		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
+		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
+		UserCredentials.Token = ClientId;
 	}
 	else
 	{
@@ -638,8 +674,16 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 
 	EOS_Connect_UserLoginInfo LoginInfo;
 	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
-	LoginInfo.DisplayName = TCHAR_TO_ANSI(*AccountCredentials.Id);
-	
+	if(AccountCredentials.Id.IsEmpty())
+	{
+		LoginInfo.DisplayName = "DefaultName";
+	}
+	else
+	{
+		const char* CharDisplayName = new char[EOS_MAX_TOKEN_SIZE];
+		FCStringAnsi::Strncpy(const_cast<char*>(CharDisplayName), TCHAR_TO_ANSI(*AccountCredentials.Id), EOS_MAX_TOKEN_SIZE);
+		LoginInfo.DisplayName = CharDisplayName;
+	}
 	EOS_Connect_LoginOptions LoginOptions;
 	LoginOptions.Credentials = &UserCredentials;
 	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;
@@ -650,7 +694,6 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 	{
 		if(Data->ResultCode == EOS_EResult::EOS_Success)
 		{
-			//TriggerOnLoginCompleteDelegates(LocalUserNum, true, *NetIdEos.ToSharedRef(), "");
 			CompleteDeviceIDLogin(LocalUserNum,nullptr,Data->LocalUserId);
 		}
 		else if(Data->ResultCode == EOS_EResult::EOS_NotFound)
@@ -661,16 +704,18 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("EOS Login using Interface connect Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
 				EOS_EResult ResultCode = Data->ResultCode;
 				const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
 				FString ResultCodeString = FString(ResultCodeStr);
 				TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
 			}
 		}
+		else if(Data->ResultCode == EOS_EResult::EOS_InvalidUser)
+		{
+			CreateConnectID(Data->ContinuanceToken,AccountCredentials);
+		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("EOS Login using Interface connect Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
 			EOS_EResult ResultCode = Data->ResultCode;
 			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
 			FString ResultCodeString = FString(ResultCodeStr);
@@ -717,10 +762,9 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 		LoginViaExternalAuth(LocalUserNum);
 		return true;
 	}
-	
-	if(AccountCredentials.Type == TEXT("deviceid"))
+	if(AccountCredentials.Type == TEXT("deviceid") || AccountCredentials.Type == TEXT("openid") || AccountCredentials.Type == TEXT("apple") || AccountCredentials.Type == TEXT("steam") || AccountCredentials.Type == TEXT("google"))
 	{
-		LoginWithDeviceID(AccountCredentials);
+		StartConnectInterfaceLogin(AccountCredentials);
 		return true;
 	}
 	if(AccountCredentials.Type == TEXT("steam"))

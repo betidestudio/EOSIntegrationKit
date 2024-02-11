@@ -51,10 +51,10 @@ public:
 	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/authentication/
 	For Input Parameters, please refer to the documentation link above.
 	
-	Following Methods are coming with upcoming build - Google, Apple, Discord, Oculus, OpenID
+	Following Methods are coming with upcoming build - Apple, Discord, Oculus, OpenID
 	*/
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Login")
-	static UEIK_Login_AsyncFunction* LoginUsingEIK(ELoginTypes LoginMethod, FString Input1, FString Input2);
+	static UEIK_Login_AsyncFunction* LoginUsingEIK(ELoginTypes LoginMethod, FString DisplayName, FString Token);
 	
 	virtual void Activate() override;
 
