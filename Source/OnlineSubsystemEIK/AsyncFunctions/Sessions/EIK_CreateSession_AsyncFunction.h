@@ -24,8 +24,7 @@ struct FDedicatedServerSettings
 	bool bIsDedicatedServer = false;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
-	int32 PortInfo;
-	
+	int32 PortInfo = 7777;
 };
 
 USTRUCT(BlueprintType)

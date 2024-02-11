@@ -634,7 +634,6 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	LobbyMemberUpdateReceivedCallbackObj->CallbackLambda = [this](const EOS_Lobby_LobbyMemberUpdateReceivedCallbackInfo* Data)
 	{
 		OnLobbyMemberUpdateReceived(Data->LobbyId, Data->TargetUserId);
-		UE_LOG(LogTemp, Warning, TEXT("OnLobbyMemberUpdateReceived"));
 	};
 
 	LobbyMemberUpdateReceivedId = EOS_Lobby_AddNotifyLobbyMemberUpdateReceived(LobbyHandle, &AddNotifyLobbyMemberUpdateReceivedOptions, LobbyMemberUpdateReceivedCallbackObj, LobbyMemberUpdateReceivedCallbackObj->GetCallbackPtr());
@@ -648,9 +647,6 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	LobbyMemberStatusReceivedCallbackObj->CallbackLambda = [this](const EOS_Lobby_LobbyMemberStatusReceivedCallbackInfo* Data)
 	{
 		OnMemberStatusReceived(Data->LobbyId, Data->TargetUserId, Data->CurrentStatus);
-		UE_LOG(LogTemp, Warning, TEXT("OnMemberStatusReceived"));
-		UE_LOG(LogTemp, Warning, TEXT("CurrentStatus: %d"), Data->CurrentStatus);
-		UE_LOG(LogTemp, Warning, TEXT("TargetUserId: %s"), *LexToString(Data->TargetUserId));
 	};
 
 	LobbyMemberStatusReceivedId = EOS_Lobby_AddNotifyLobbyMemberStatusReceived(LobbyHandle, &AddNotifyLobbyMemberStatusReceivedOptions, LobbyMemberStatusReceivedCallbackObj, LobbyMemberStatusReceivedCallbackObj->GetCallbackPtr());
@@ -666,7 +662,6 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	LobbyInviteAcceptedCallbackObj->CallbackLambda = [this](const EOS_Lobby_LobbyInviteAcceptedCallbackInfo* Data)
 	{
 		OnLobbyInviteAccepted(Data->InviteId, Data->LocalUserId, Data->TargetUserId);
-		UE_LOG(LogTemp, Warning, TEXT("OnLobbyInviteAccepted"));
 	};
 
 	LobbyInviteAcceptedId = EOS_Lobby_AddNotifyLobbyInviteAccepted(LobbyHandle, &AddNotifyLobbyInviteAcceptedOptions, LobbyInviteAcceptedCallbackObj, LobbyInviteAcceptedCallbackObj->GetCallbackPtr());
@@ -680,7 +675,6 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	JoinLobbyAcceptedCallbackObj->CallbackLambda = [this](const EOS_Lobby_JoinLobbyAcceptedCallbackInfo* Data)
 	{
 		OnJoinLobbyAccepted(Data->LocalUserId, Data->UiEventId);
-		UE_LOG(LogTemp, Warning, TEXT("OnJoinLobbyAccepted"));
 	};
 
 	JoinLobbyAcceptedId = EOS_Lobby_AddNotifyJoinLobbyAccepted(LobbyHandle, &AddNotifyJoinLobbyAcceptedOptions, JoinLobbyAcceptedCallbackObj, JoinLobbyAcceptedCallbackObj->GetCallbackPtr());
@@ -839,7 +833,7 @@ void FOnlineSessionEOS::OnMemberStatusReceived(const EOS_LobbyId& LobbyId, const
 								}
 								else
 								{
-									UE_LOG(LogTemp, Warning, TEXT("HostMigrationCallback not bound."));
+									UE_LOG(LogOnline, Warning, TEXT("HostMigrationCallback not bound."));
 								}
 							}
 							else
@@ -863,12 +857,12 @@ void FOnlineSessionEOS::OnMemberStatusReceived(const EOS_LobbyId& LobbyId, const
 									}
 									else
 									{
-										UE_LOG(LogTemp, Warning, TEXT("JoinAddress is empty for Host Migration."));
+										UE_LOG(LogOnline, Warning, TEXT("JoinAddress is empty for Host Migration."));
 									}
 								}
 								else
 								{
-									UE_LOG(LogTemp, Warning, TEXT("HostMigrationCallback not bound."));
+									UE_LOG(LogOnline, Warning, TEXT("HostMigrationCallback not bound."));
 								}
 							}
 							// If we are not the new owner, the new owner will update the session and we'll receive the notification, updating ours as well
