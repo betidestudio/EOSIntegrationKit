@@ -632,17 +632,22 @@ PACKAGE_SCOPE:
 	 */
 	void InitLAN(FOnlineSubsystemEOS* Subsystem);
 
+
+
+public:
+
 	FString EOSAddress;
-	/** The ip & port that the host is listening on (valid for LAN/GameServer) */
-	TSharedPtr<class FInternetAddr> HostAddr;
+
 	/** Unique Id for this session */
 	FUniqueNetIdStringRef SessionId;
 	/** EOS session handle. Note: this needs to be released by the SDK */
 	EOS_HSessionDetails SessionHandle;
 	/** Whether we should delete this handle or not */
 	bool bIsFromClone;
-
-public:
+	
+	/** The ip & port that the host is listening on (valid for LAN/GameServer) */
+	TSharedPtr<class FInternetAddr> HostAddr;
+	
 	virtual ~FOnlineSessionInfoEOS();
 	bool operator==(const FOnlineSessionInfoEOS& Other) const
 	{

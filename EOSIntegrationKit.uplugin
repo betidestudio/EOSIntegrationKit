@@ -21,7 +21,9 @@
 			"PlatformAllowList": [
 				"Win64",
 				"Android",
-				"Mac"
+				"Mac",
+				"IOS",
+				"Linux"
 			]
 		},
 		{
@@ -30,7 +32,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Android"
+				"Android",
+				"Mac",
+				"IOS",
+				"Linux"
 			]
 		},
 		{
@@ -39,7 +44,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Android"
+				"Android",
+				"Mac",
+				"IOS",
+				"Linux"
 			]
 		},
 		{
@@ -48,7 +56,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Android"
+				"Android",
+				"Mac",
+				"IOS",
+				"Linux"
 			]
 		},
 		{
@@ -57,7 +68,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Win64",
-				"Android"
+				"Android",
+				"Mac",
+				"IOS",
+				"Linux"
 			]
 		},
 		{
@@ -66,7 +80,10 @@
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
 				"Android",
-				"Win64"
+				"Win64",
+				"Mac",
+				"IOS",
+				"Linux"
 			]
 		}
 	],

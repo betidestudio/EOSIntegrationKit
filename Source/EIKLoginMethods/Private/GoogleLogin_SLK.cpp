@@ -7,6 +7,7 @@
 #include "Android/AndroidJNI.h" 
 #include "Android/Utils/AndroidJNICallUtils.h"
 #include "Android/Utils/AndroidJNIConvertor.h"
+#include "Runtime/Core/Public/Async/TaskGraphInterfaces.h"
 #endif
 TWeakObjectPtr<UGoogleLogin_SLK> UGoogleLogin_SLK::staticInstance = nullptr;
 static const ANSICHAR* UnrealInterface = "com/example/googleonetap/UnrealInterface";
