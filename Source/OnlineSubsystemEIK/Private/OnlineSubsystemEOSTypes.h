@@ -618,10 +618,10 @@ PACKAGE_SCOPE:
 
 	FOnlineSessionInfoEOS(const FOnlineSessionInfoEOS& Src)
 		: FOnlineSessionInfo(Src)
-		, HostAddr(Src.HostAddr)
 		, SessionId(Src.SessionId)
 		, SessionHandle(Src.SessionHandle)
 		, bIsFromClone(true)
+		, HostAddr(Src.HostAddr)
 	{
 	}
 

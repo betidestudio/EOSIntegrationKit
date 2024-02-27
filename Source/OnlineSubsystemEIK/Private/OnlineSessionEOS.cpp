@@ -352,10 +352,10 @@ struct FLobbyAttributeOptions :
 };
 
 FOnlineSessionInfoEOS::FOnlineSessionInfoEOS()
-	: HostAddr(nullptr)
-	, SessionId(FUniqueNetIdString::EmptyId())
+	: SessionId(FUniqueNetIdString::EmptyId())
 	, SessionHandle(nullptr)
 	, bIsFromClone(false)
+	, HostAddr(nullptr)
 {
 }
 
