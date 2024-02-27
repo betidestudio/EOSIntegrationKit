@@ -143,24 +143,6 @@ public class EIKSDK : ModuleRules
 			string LIBSourcePath = Path.Combine(ModuleDirectory, "Bin", LIBFileName);
 			string LIBTargetPath = "$(BinaryOutputDir)/" + LIBFileName;
 
-			if (File.Exists(DLLSourcePath))
-			{
-				Console.WriteLine("EOS Integration Kit: DLL file exists at the specified source path.");
-			}
-			else
-			{
-				Console.WriteLine("EOS Integration Kit: DLL file does not exist at the specified source path.");
-			}
-
-			if (File.Exists(LIBSourcePath))
-			{
-				Console.WriteLine("EOS Integration Kit: LIB file exists at the specified source path.");
-			}
-			else
-			{
-				Console.WriteLine("EOS Integration Kit: LIB file does not exist at the specified source path.");
-			}
-
 			// Add the import library
 			PublicAdditionalLibraries.Add(LIBSourcePath);
 
