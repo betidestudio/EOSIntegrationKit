@@ -422,6 +422,7 @@ struct FAuthCredentials :
 
 void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials)
 {
+	UE_LOG(LogTemp, Warning, TEXT("EOS Login using Device ID 2345"));
 	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
 	FString DisplayName = AccountCredentials.Id;
 	EOS_Connect_Credentials UserCredentials;
@@ -432,11 +433,9 @@ void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& Account
 	if (DisplayName.IsEmpty() || DisplayName.Equals(""))
 	{
 		DisplayName = "DefaultName";
-	}
-	
+	}	
 	EOS_Connect_UserLoginInfo LoginInfo;
 	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
-
 	FString DisplayNameStr = DisplayName;
 	LoginInfo.DisplayName = "DisplayNameChar";
 	EOS_Connect_LoginOptions LoginOptions;
@@ -445,16 +444,19 @@ void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& Account
 	LoginOptions.Credentials = &UserCredentials;
 
 	int32 LocalUserNum = 0;
-	CallbackObj->CallbackLambda = [LocalUserNum,AccountCredentials, UserCredentials, this](const EOS_Connect_LoginCallbackInfo* Data)
+	CallbackObj->CallbackLambda = [LocalUserNum,AccountCredentials, UserCredentials, this, CallbackObj](const EOS_Connect_LoginCallbackInfo* Data)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("EOS Login using Device ID Callback"));
 		if(Data->ResultCode == EOS_EResult::EOS_Success)
 		{
 			//TriggerOnLoginCompleteDelegates(LocalUserNum, true, *NetIdEos.ToSharedRef(), "");
 			CompleteDeviceIDLogin(LocalUserNum,nullptr,Data->LocalUserId);
+			CallbackObj->CallbackLambda.Reset();
 		}
 		else if(Data->ResultCode == EOS_EResult::EOS_NotFound)
 		{
 			CreateDeviceID(AccountCredentials);
+			CallbackObj->CallbackLambda.Reset();
 		}
 		else
 		{
@@ -463,7 +465,6 @@ void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& Account
 			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
 			FString ResultCodeString = FString(ResultCodeStr);
 			TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
-
 		}
 	};
 	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, CallbackObj, CallbackObj->GetCallbackPtr());
@@ -479,7 +480,7 @@ void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCre
 		DisplayName = "DefaultName";
 	}
 	FString DisplayNameStr = DisplayName;
-	DeviceIdOptions.DeviceModel = "ExampleDeviceModel";
+	DeviceIdOptions.DeviceModel = TCHAR_TO_ANSI(*DisplayNameStr);
 	
 	int32 LocalUserNum = 0;
 	FCreateDeviceIDCallback* CallbackObj = new FCreateDeviceIDCallback(AsWeak());
@@ -487,7 +488,7 @@ void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCre
 	{
 		if(Data->ResultCode == EOS_EResult::EOS_Success || Data->ResultCode == EOS_EResult::EOS_DuplicateNotAllowed )
 		{
-			LoginWithDeviceID(AccountCredentials);
+			StartConnectInterfaceLogin(AccountCredentials);
 		}
 		else
 		{
@@ -660,6 +661,11 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
 		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
 		UserCredentials.Token = ClientId;
+	}
+	else if(AccountCredentials.Type == "deviceid")
+	{
+		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_DEVICEID_ACCESS_TOKEN;
+		UserCredentials.Token = nullptr;
 	}
 	else
 	{
@@ -1347,37 +1353,42 @@ bool FUserManagerEOS::Logout(int32 LocalUserNum)
 		TriggerOnLogoutCompleteDelegates(LocalUserNum, false);
 		return false;
 	}
-
-	FLogoutCallback* CallbackObj = new FLogoutCallback(AsWeak());
-	CallbackObj->CallbackLambda = [LocalUserNum, this](const EOS_Auth_LogoutCallbackInfo* Data)
+	if(UserId.Get()->GetEpicAccountId())
 	{
-		FDeletePersistentAuthCallback* DeleteAuthCallbackObj = new FDeletePersistentAuthCallback(AsWeak());
-		DeleteAuthCallbackObj->CallbackLambda = [this, LocalUserNum, LogoutResultCode = Data->ResultCode](const EOS_Auth_DeletePersistentAuthCallbackInfo* Data)
+		FLogoutCallback* CallbackObj = new FLogoutCallback(AsWeak());
+		CallbackObj->CallbackLambda = [LocalUserNum, this](const EOS_Auth_LogoutCallbackInfo* Data)
 		{
-			if (LogoutResultCode == EOS_EResult::EOS_Success)
+			FDeletePersistentAuthCallback* DeleteAuthCallbackObj = new FDeletePersistentAuthCallback(AsWeak());
+			DeleteAuthCallbackObj->CallbackLambda = [this, LocalUserNum, LogoutResultCode = Data->ResultCode](const EOS_Auth_DeletePersistentAuthCallbackInfo* Data)
 			{
-				RemoveLocalUser(LocalUserNum);
+				if (LogoutResultCode == EOS_EResult::EOS_Success)
+				{
+					RemoveLocalUser(LocalUserNum);
 
-				TriggerOnLogoutCompleteDelegates(LocalUserNum, true);
-			}
-			else
-			{
-				TriggerOnLogoutCompleteDelegates(LocalUserNum, false);
-			}
+					TriggerOnLogoutCompleteDelegates(LocalUserNum, true);
+				}
+				else
+				{
+					TriggerOnLogoutCompleteDelegates(LocalUserNum, false);
+				}
+			};
+
+			EOS_Auth_DeletePersistentAuthOptions DeletePersistentAuthOptions;
+			DeletePersistentAuthOptions.ApiVersion = EOS_AUTH_DELETEPERSISTENTAUTH_API_LATEST;
+			DeletePersistentAuthOptions.RefreshToken = nullptr;
+			EOS_Auth_DeletePersistentAuth(EOSSubsystem->AuthHandle, &DeletePersistentAuthOptions, (void*)DeleteAuthCallbackObj, DeleteAuthCallbackObj->GetCallbackPtr());
 		};
+		EOS_Auth_LogoutOptions LogoutOptions = { };
+		LogoutOptions.ApiVersion = EOS_AUTH_LOGOUT_API_LATEST;
+		LogoutOptions.LocalUserId = UserId->GetEpicAccountId();
 
-		EOS_Auth_DeletePersistentAuthOptions DeletePersistentAuthOptions;
-		DeletePersistentAuthOptions.ApiVersion = EOS_AUTH_DELETEPERSISTENTAUTH_API_LATEST;
-		DeletePersistentAuthOptions.RefreshToken = nullptr;
-		EOS_Auth_DeletePersistentAuth(EOSSubsystem->AuthHandle, &DeletePersistentAuthOptions, (void*)DeleteAuthCallbackObj, DeleteAuthCallbackObj->GetCallbackPtr());
-	};
-
-	EOS_Auth_LogoutOptions LogoutOptions = { };
-	LogoutOptions.ApiVersion = EOS_AUTH_LOGOUT_API_LATEST;
-	LogoutOptions.LocalUserId = UserId->GetEpicAccountId();
-
-	EOS_Auth_Logout(EOSSubsystem->AuthHandle, &LogoutOptions, CallbackObj, CallbackObj->GetCallbackPtr());
-
+		EOS_Auth_Logout(EOSSubsystem->AuthHandle, &LogoutOptions, CallbackObj, CallbackObj->GetCallbackPtr());
+	}
+	else
+	{
+		RemoveLocalUser(LocalUserNum);
+		TriggerOnLogoutCompleteDelegates(LocalUserNum, true);
+	}
 	LocalUserNumToLastLoginCredentials.Remove(LocalUserNum);
 
 	return true;
