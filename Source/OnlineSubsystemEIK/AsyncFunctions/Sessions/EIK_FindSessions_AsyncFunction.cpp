@@ -77,7 +77,7 @@ void UEIK_FindSessions_AsyncFunction::FindSession()
 			}
 			OnFail.Broadcast(TArray<FSessionFindStruct>());
 			SetReadyToDestroy();
-MarkAsGarbage();
+			MarkAsGarbage();
 		}
 	}
 	else
@@ -103,7 +103,7 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 		OnFail.Broadcast(TArray<FSessionFindStruct>());
 		bDelegateCalled = true;
 		SetReadyToDestroy();
-MarkAsGarbage();
+		MarkAsGarbage();
 	}
 	else
 	{
@@ -151,7 +151,7 @@ MarkAsGarbage();
 			bDelegateCalled = true;
 			OnSuccess.Broadcast(SessionResult_Array);
 			SetReadyToDestroy();
-MarkAsGarbage();
+			MarkAsGarbage();
 		}
 	}
 }
