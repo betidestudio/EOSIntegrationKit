@@ -41,6 +41,7 @@ void UEIK_FindSessionByID_AsyncFunction::FindSession()
 			}
 			OnFail.Broadcast(FSessionFindStruct());
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 	else
@@ -51,6 +52,7 @@ void UEIK_FindSessionByID_AsyncFunction::FindSession()
 		}
 		OnFail.Broadcast(FSessionFindStruct());
 		SetReadyToDestroy();
+MarkAsGarbage();
 	}
 }
 
@@ -93,6 +95,7 @@ void UEIK_FindSessionByID_AsyncFunction::OnFindSessionCompleted(int I, bool bWas
 				OnSuccess.Broadcast(LocalStruct);
 				bDelegateCalled = true;
 				SetReadyToDestroy();
+MarkAsGarbage();
 			}
 		}
 		else
@@ -104,6 +107,7 @@ void UEIK_FindSessionByID_AsyncFunction::OnFindSessionCompleted(int I, bool bWas
 			OnFail.Broadcast(FSessionFindStruct());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 		
 	}
@@ -116,5 +120,6 @@ void UEIK_FindSessionByID_AsyncFunction::OnFindSessionCompleted(int I, bool bWas
 		OnFail.Broadcast(FSessionFindStruct());
 		bDelegateCalled = true;
 		SetReadyToDestroy();
+MarkAsGarbage();
 	}	
 }

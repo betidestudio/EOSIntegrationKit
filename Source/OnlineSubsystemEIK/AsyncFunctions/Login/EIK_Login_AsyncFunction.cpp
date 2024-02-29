@@ -108,6 +108,7 @@ void UEIK_Login_AsyncFunction::Login()
 			{
 				OnFail.Broadcast("", "Failed to get Identity Pointer Ref");
 				SetReadyToDestroy();
+MarkAsGarbage();
 				bDelegateCalled = true;
 			}
 		}
@@ -118,6 +119,7 @@ void UEIK_Login_AsyncFunction::Login()
 		{
 			OnFail.Broadcast("", "Failed to get Subsystem");
 			SetReadyToDestroy();
+MarkAsGarbage();
 			bDelegateCalled = true;
 		}
 	}
@@ -126,6 +128,8 @@ void UEIK_Login_AsyncFunction::Login()
 void UEIK_Login_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId,
 	const FString& Error)
 {
+	//Print Display Name of this class
+	UE_LOG(LogTemp, Warning, TEXT("EIK: Login Callback - %s"), *GetClass()->GetDisplayNameText().ToString());
 	if(bDelegateCalled == true)
 	{
 		return;
@@ -136,12 +140,14 @@ void UEIK_Login_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bWasSucces
 		{
 			OnSuccess.Broadcast(UserId.ToString(), "");
 			SetReadyToDestroy();
+			MarkAsGarbage();
 			bDelegateCalled = true;
 		}
 		else
 		{
 			OnFail.Broadcast("", "UserID is not valid");
 			SetReadyToDestroy();
+			MarkAsGarbage();
 			bDelegateCalled = true;
 		}
 	}
@@ -149,6 +155,7 @@ void UEIK_Login_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bWasSucces
 	{
 		OnFail.Broadcast("", Error);
 		SetReadyToDestroy();
+		MarkAsGarbage();
 		bDelegateCalled = true;
 	}
 }
@@ -176,6 +183,7 @@ void UEIK_Login_AsyncFunction::LoginWithAppleCallback(TSharedPtr<const FUniqueNe
 	{
 		OnFail.Broadcast("", OnlineError.GetErrorCode());
 		SetReadyToDestroy();
+MarkAsGarbage();
 		bDelegateCalled = true;
 	}
 }
@@ -195,6 +203,7 @@ void UEIK_Login_AsyncFunction::LoginWithApple()
 			{
 				OnFail.Broadcast("", "Failed to get External UI Pointer Ref");
 				SetReadyToDestroy();
+MarkAsGarbage();
 				bDelegateCalled = true;
 			}
 		}

@@ -38,6 +38,7 @@ void UEIK_JoinSession_AsyncFunction::JoinSession()
 			OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 	else
@@ -49,6 +50,7 @@ void UEIK_JoinSession_AsyncFunction::JoinSession()
 		OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 		bDelegateCalled = true;
 		SetReadyToDestroy();
+MarkAsGarbage();
 	}
 }
 void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
@@ -87,6 +89,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 						OnSuccess.Broadcast(EEIKJoinResult::Success, JoinAddress);
 						bDelegateCalled = true;
 						SetReadyToDestroy();
+MarkAsGarbage();
 						return;
 					}
 					else
@@ -95,6 +98,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 						OnFail.Broadcast(EEIKJoinResult::CouldNotRetrieveAddress, FString());
 						bDelegateCalled = true;
 						SetReadyToDestroy();
+MarkAsGarbage();
 						return;
 					}
 				}
@@ -105,6 +109,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 			OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+MarkAsGarbage();
 			return;
 		}
 	}
@@ -128,6 +133,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 				OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 		}
 		SetReadyToDestroy();
+MarkAsGarbage();
 		bDelegateCalled = true;
 	}
 }

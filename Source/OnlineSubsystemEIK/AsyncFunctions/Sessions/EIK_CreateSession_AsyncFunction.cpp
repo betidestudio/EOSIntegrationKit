@@ -68,6 +68,7 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 			{
 				OnFail.Broadcast("");
 				SetReadyToDestroy();
+MarkAsGarbage();
 				bDelegateCalled = true;
 			}
 		}
@@ -79,6 +80,7 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 			OnFail.Broadcast("");
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 }
@@ -95,12 +97,14 @@ void UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted(FName VSessionNa
 				OnSuccess.Broadcast(CurrentSession->SessionInfo.Get()->GetSessionId().ToString());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
+MarkAsGarbage();
 			}
 			else
 			{
 				OnSuccess.Broadcast("");
 				bDelegateCalled = true;
 				SetReadyToDestroy();
+MarkAsGarbage();
 			}
 		}
 	}
@@ -111,6 +115,7 @@ void UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted(FName VSessionNa
 			OnFail.Broadcast("");
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 }

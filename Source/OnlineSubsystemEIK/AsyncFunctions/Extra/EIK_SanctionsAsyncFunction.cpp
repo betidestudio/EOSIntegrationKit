@@ -100,6 +100,7 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 			}
 			Success.Broadcast(SanctionsArray);
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 		else
 		{
@@ -116,6 +117,7 @@ void UEIK_SanctionsAsyncFunction::FireFailure()
 {
 	Failure.Broadcast(TArray<FSanctionsStruct>());
 	SetReadyToDestroy();
+MarkAsGarbage();
 }
 
 void UEIK_SanctionsAsyncFunction::Activate()

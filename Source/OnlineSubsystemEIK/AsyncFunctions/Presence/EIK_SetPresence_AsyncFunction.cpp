@@ -61,6 +61,7 @@ void UEIK_SetPresence_AsyncFunction::OnSetPresenceCompleted(const class FUniqueN
 	{
 		OnSuccess.Broadcast(RichPresence, PresenceStatus);
 		SetReadyToDestroy();
+MarkAsGarbage();
 	}
 	else
 	{

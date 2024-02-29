@@ -127,6 +127,7 @@ void UEIK_SendReport_AsyncFunction::ResultFaliure()
 {
 	Failure.Broadcast();
 	SetReadyToDestroy();
+MarkAsGarbage();
 }
 
 // Function to handle success cases
@@ -134,6 +135,7 @@ void UEIK_SendReport_AsyncFunction::ResultSuccess()
 {
 	Success.Broadcast();
 	SetReadyToDestroy();
+MarkAsGarbage();
 }
 
 // Function to activate the asynchronous function

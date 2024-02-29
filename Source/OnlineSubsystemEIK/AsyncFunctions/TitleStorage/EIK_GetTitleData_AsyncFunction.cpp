@@ -55,6 +55,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 					bDelegateCalled = true;
 					OnFail.Broadcast(false, TArray<uint8>());
 					SetReadyToDestroy();
+MarkAsGarbage();
 				}
 			}
 		}
@@ -65,6 +66,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 				bDelegateCalled = true;
 				OnFail.Broadcast(false, TArray<uint8>());
 				SetReadyToDestroy();
+MarkAsGarbage();
 			}
 		}
 	}
@@ -75,6 +77,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 			bDelegateCalled = true;
 			OnFail.Broadcast(false, TArray<uint8>());
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 }
@@ -99,6 +102,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 							bDelegateCalled = true;
 							OnSuccess.Broadcast(true, FileContents);
 							SetReadyToDestroy();
+MarkAsGarbage();
 						}
 					}
 					else
@@ -108,6 +112,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 							bDelegateCalled = true;
 							OnFail.Broadcast(false, TArray<uint8>());
 							SetReadyToDestroy();
+MarkAsGarbage();
 						}
 					}
 				}
@@ -118,6 +123,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 						bDelegateCalled = true;
 						OnFail.Broadcast(false, TArray<uint8>());
 						SetReadyToDestroy();
+MarkAsGarbage();
 					}
 				}
 			}
@@ -128,6 +134,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 					bDelegateCalled = true;
 					OnFail.Broadcast(false, TArray<uint8>());
 					SetReadyToDestroy();
+MarkAsGarbage();
 				}
 			}
 		}
@@ -138,6 +145,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 				bDelegateCalled = true;
 				OnFail.Broadcast(false, TArray<uint8>());
 				SetReadyToDestroy();
+MarkAsGarbage();
 			}
 		}
 	}
@@ -148,6 +156,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 			bDelegateCalled = true;
 			OnFail.Broadcast(false, TArray<uint8>());
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 }

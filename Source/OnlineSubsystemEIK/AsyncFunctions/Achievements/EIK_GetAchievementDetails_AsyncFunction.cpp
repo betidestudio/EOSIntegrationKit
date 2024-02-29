@@ -37,6 +37,7 @@ void UEIK_GetAchievementDetails_AsyncFunction::GetAchievementDescription()
 					OnFail.Broadcast(FEIK_AchievementDescription());
 					bDelegateCalled = true;
 					SetReadyToDestroy();
+MarkAsGarbage();
 				}
 			}
 		}
@@ -47,6 +48,7 @@ void UEIK_GetAchievementDetails_AsyncFunction::GetAchievementDescription()
 				OnFail.Broadcast(FEIK_AchievementDescription());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
+MarkAsGarbage();
 			}
 		}
 	}
@@ -57,6 +59,7 @@ void UEIK_GetAchievementDetails_AsyncFunction::GetAchievementDescription()
 			OnFail.Broadcast(FEIK_AchievementDescription());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 }
@@ -80,6 +83,7 @@ void UEIK_GetAchievementDetails_AsyncFunction::OnAchievementDescriptionCompleted
 				LocalAchievementDescription.UnlockTime = CachedAchievements.UnlockTime;
 				OnSuccess.Broadcast(LocalAchievementDescription);
 				SetReadyToDestroy();
+MarkAsGarbage();
 				return;
 			}
 		}
@@ -89,5 +93,6 @@ void UEIK_GetAchievementDetails_AsyncFunction::OnAchievementDescriptionCompleted
 		OnFail.Broadcast(FEIK_AchievementDescription());
 		bDelegateCalled = true;
 		SetReadyToDestroy();
+MarkAsGarbage();
 	}
 }

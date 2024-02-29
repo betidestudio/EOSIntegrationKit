@@ -28,6 +28,7 @@ void UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete(FName Name, bool 
 		OnFailure.Broadcast();
 	}
 	SetReadyToDestroy();
+MarkAsGarbage();
 }
 
 void UEIK_UpdateSession_AsyncFunction::Activate()
@@ -62,11 +63,13 @@ void UEIK_UpdateSession_AsyncFunction::Activate()
 		{
 			OnFailure.Broadcast();
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 	else
 	{
 		OnFailure.Broadcast();
 		SetReadyToDestroy();
+MarkAsGarbage();
 	}
 }

@@ -31,12 +31,14 @@ void UEIK_Logout_AsyncFunction::LogoutPlayer()
 		{
 			OnFail.Broadcast();
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 	else
 	{
 		OnFail.Broadcast();
 		SetReadyToDestroy();
+MarkAsGarbage();
 	}
 }
 
@@ -46,12 +48,14 @@ void UEIK_Logout_AsyncFunction::LogoutCallback(int32 LocalUserNum, bool bWasSucc
 	{
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
+MarkAsGarbage();
 		return;
 	}
 	else
 	{
 		OnFail.Broadcast();
 		SetReadyToDestroy();
+MarkAsGarbage();
 		return;
 	}
 }

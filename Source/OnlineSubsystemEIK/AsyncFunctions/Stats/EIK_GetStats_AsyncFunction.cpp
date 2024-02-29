@@ -35,6 +35,7 @@ void UEIK_GetStats_AsyncFunction::GetStats()
 						OnFail.Broadcast(TArray<FEIK_Stats>());
 						bDelegateCalled = true;
 						SetReadyToDestroy();
+MarkAsGarbage();
 					}
 				}
 				Usersvar.Add(IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef());
@@ -47,6 +48,7 @@ void UEIK_GetStats_AsyncFunction::GetStats()
 					OnFail.Broadcast(TArray<FEIK_Stats>());
 					bDelegateCalled = true;
 					SetReadyToDestroy();
+MarkAsGarbage();
 				}
 			}
 		}
@@ -57,6 +59,7 @@ void UEIK_GetStats_AsyncFunction::GetStats()
 				OnFail.Broadcast(TArray<FEIK_Stats>());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
+MarkAsGarbage();
 			}
 		}
 	}
@@ -67,6 +70,7 @@ void UEIK_GetStats_AsyncFunction::GetStats()
 			OnFail.Broadcast(TArray<FEIK_Stats>());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 }
@@ -95,6 +99,7 @@ void UEIK_GetStats_AsyncFunction::OnGetStatsCompleted(const FOnlineError& Result
 			OnSuccess.Broadcast(LocalStatsArray);
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 	else
@@ -104,6 +109,7 @@ void UEIK_GetStats_AsyncFunction::OnGetStatsCompleted(const FOnlineError& Result
 			OnFail.Broadcast(TArray<FEIK_Stats>());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 }

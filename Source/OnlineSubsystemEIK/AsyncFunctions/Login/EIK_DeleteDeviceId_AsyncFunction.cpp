@@ -27,6 +27,7 @@ void UEIK_DeleteDeviceId_AsyncFunction::OnDeleteDeviceIdComplete(const EOS_Conne
 		This->OnFailure.Broadcast();	
 	}
 	This->SetReadyToDestroy();
+	This->MarkAsGarbage();
 }
 
 void UEIK_DeleteDeviceId_AsyncFunction::Activate()
@@ -43,11 +44,13 @@ void UEIK_DeleteDeviceId_AsyncFunction::Activate()
 		{
 			OnFailure.Broadcast();
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 	else
 	{
 		OnFailure.Broadcast();
 		SetReadyToDestroy();
+MarkAsGarbage();
 	}
 }

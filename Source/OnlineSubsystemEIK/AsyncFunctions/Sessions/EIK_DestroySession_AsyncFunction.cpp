@@ -40,6 +40,7 @@ void UEIK_DestroySession_AsyncFunction::DestroySession()
 			}
 			OnFail.Broadcast();
 			SetReadyToDestroy();
+MarkAsGarbage();
 			bDelegateCalled = true;
 		}
 	}
@@ -51,6 +52,7 @@ void UEIK_DestroySession_AsyncFunction::DestroySession()
 		}
 		OnFail.Broadcast();
 		SetReadyToDestroy();
+MarkAsGarbage();
 		bDelegateCalled = true;
 	}
 }
@@ -71,4 +73,5 @@ void UEIK_DestroySession_AsyncFunction::OnDestroySessionCompleted(FName SessionN
 		OnFail.Broadcast();
 	}
 	SetReadyToDestroy();
+MarkAsGarbage();
 }

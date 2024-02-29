@@ -43,6 +43,7 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 						bDelegateCalled = true;
 						OnFail.Broadcast();
 						SetReadyToDestroy();
+MarkAsGarbage();
 					}
 				}
 			}
@@ -53,6 +54,7 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 					bDelegateCalled = true;
 					OnFail.Broadcast();
 					SetReadyToDestroy();
+MarkAsGarbage();
 				}
 			}
 		}
@@ -63,6 +65,7 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 				bDelegateCalled = true;
 				OnFail.Broadcast();
 				SetReadyToDestroy();
+MarkAsGarbage();
 			}
 		}
 	}
@@ -73,6 +76,7 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 			bDelegateCalled = true;
 			OnFail.Broadcast();
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 }
@@ -87,6 +91,7 @@ void UEIK_SetPlayerData_AsyncFunction::OnWriteFileComplete(bool bSuccess, const 
 			bDelegateCalled = true;
 			OnSuccess.Broadcast();
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 	else
@@ -96,6 +101,7 @@ void UEIK_SetPlayerData_AsyncFunction::OnWriteFileComplete(bool bSuccess, const 
 			bDelegateCalled = true;
 			OnFail.Broadcast();
 			SetReadyToDestroy();
+MarkAsGarbage();
 		}
 	}
 }
