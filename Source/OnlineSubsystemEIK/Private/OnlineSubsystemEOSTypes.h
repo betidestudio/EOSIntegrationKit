@@ -611,8 +611,9 @@ protected:
 	{
 		return *this;
 	}
+	
+public:
 
-PACKAGE_SCOPE:
 	/** Constructor */
 	FOnlineSessionInfoEOS();
 
@@ -631,10 +632,6 @@ PACKAGE_SCOPE:
 	 * Initialize LAN session
 	 */
 	void InitLAN(FOnlineSubsystemEOS* Subsystem);
-
-
-
-public:
 
 	FString EOSAddress;
 

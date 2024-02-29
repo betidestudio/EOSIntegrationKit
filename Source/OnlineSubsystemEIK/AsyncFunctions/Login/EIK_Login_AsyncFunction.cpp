@@ -128,8 +128,6 @@ MarkAsGarbage();
 void UEIK_Login_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId,
 	const FString& Error)
 {
-	//Print Display Name of this class
-	UE_LOG(LogTemp, Warning, TEXT("EIK: Login Callback - %s"), *GetClass()->GetDisplayNameText().ToString());
 	if(bDelegateCalled == true)
 	{
 		return;

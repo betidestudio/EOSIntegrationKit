@@ -7,6 +7,7 @@
 #include "GenericPlatform/GenericPlatformMisc.h"
 #include "Misc/MessageDialog.h"
 #include "Engine/DataAsset.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "EIKSettings.generated.h"
 
 /** Native version of the UObject based config data */

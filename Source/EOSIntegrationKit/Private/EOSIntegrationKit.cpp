@@ -3,12 +3,14 @@
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"
 #include "Misc/MessageDialog.h"
+#include "Runtime/Core/Public/GenericPlatform/GenericPlatformMisc.h"
+#include "Runtime/Launch/Resources/Version.h"
 #define LOCTEXT_NAMESPACE "FEOSIntegrationKitModule"
 
 void FEOSIntegrationKitModule::StartupModule()
 {
     ConfigureOnlineSubsystemEIK();
-#if WITH_EDITOR
+#if WITH_EDITOR && ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
     if(IPluginManager::Get().FindPlugin("OnlineSubsystemEOS") != nullptr && IPluginManager::Get().FindPlugin("OnlineSubsystemEOS")->IsEnabled())
     {
         const FText Message = LOCTEXT("EOSIntegrationKitError","EOS Integration Kit Error");
