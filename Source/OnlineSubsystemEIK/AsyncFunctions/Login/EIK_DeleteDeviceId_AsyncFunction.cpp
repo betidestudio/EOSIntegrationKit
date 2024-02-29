@@ -44,13 +44,13 @@ void UEIK_DeleteDeviceId_AsyncFunction::Activate()
 		{
 			OnFailure.Broadcast();
 			SetReadyToDestroy();
-MarkAsGarbage();
+			MarkAsGarbage();
 		}
 	}
 	else
 	{
 		OnFailure.Broadcast();
 		SetReadyToDestroy();
-MarkAsGarbage();
+		MarkAsGarbage();
 	}
 }
