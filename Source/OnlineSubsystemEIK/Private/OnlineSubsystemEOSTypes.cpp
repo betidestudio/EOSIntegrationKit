@@ -45,16 +45,11 @@ bool FUniqueNetIdEOS::IsValid() const
 	{
 		return true;
 	}
-	else if(EOS_EpicAccountId_IsValid(EpicAccountId))
+	if(EOS_EpicAccountId_IsValid(EpicAccountId))
 	{
 		return true;
 	}
-	else
-	{
-		return false;
-	}
-	//return EOS_ProductUserId_IsValid(ProductUserId);
-	//return EOS_EpicAccountId_IsValid(EpicAccountId) || EOS_ProductUserId_IsValid(ProductUserId);
+	return false;
 }
 
 uint32 FUniqueNetIdEOS::GetTypeHash() const
@@ -81,15 +76,9 @@ FString FUniqueNetIdEOS::ToDebugString() const
 		{
 			return OSS_UNIQUEID_REDACT(*this, ProductUserIdStr);
 		}
-		else
-		{
-			return OSS_UNIQUEID_REDACT(*this, EpicAccountIdStr) + EOS_ID_SEPARATOR + OSS_UNIQUEID_REDACT(*this, ProductUserIdStr);
-		}
+		return OSS_UNIQUEID_REDACT(*this, EpicAccountIdStr) + EOS_ID_SEPARATOR + OSS_UNIQUEID_REDACT(*this, ProductUserIdStr);
 	}
-	else
-	{
-		return TEXT("INVALID");
-	}
+	return TEXT("INVALID");
 }
 
 FUniqueNetIdEOS::FUniqueNetIdEOS(const uint8* Bytes, int32 Size)
