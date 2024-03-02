@@ -480,7 +480,7 @@ void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCre
 		DisplayName = "DefaultName";
 	}
 	FString DisplayNameStr = DisplayName;
-	DeviceIdOptions.DeviceModel = TCHAR_TO_ANSI(*DisplayNameStr);
+	DeviceIdOptions.DeviceModel = "DefaultModel";
 	
 	int32 LocalUserNum = 0;
 	FCreateDeviceIDCallback* CallbackObj = new FCreateDeviceIDCallback(AsWeak());
@@ -501,7 +501,6 @@ void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCre
 
 void FUserManagerEOS::CreateConnectID(EOS_ContinuanceToken ContinuanceToken, const FOnlineAccountCredentials& AccountCredentials)
 {
-	UE_LOG(LogTemp, Warning, TEXT("EOS Creating user for google login"));
 	EOS_Connect_CreateUserOptions CreateUserOptions = {};
 	CreateUserOptions.ApiVersion = EOS_CONNECT_CREATEUSER_API_LATEST;
 	CreateUserOptions.ContinuanceToken = ContinuanceToken;
