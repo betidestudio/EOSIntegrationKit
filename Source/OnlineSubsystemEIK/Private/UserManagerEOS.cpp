@@ -689,11 +689,11 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 		FCStringAnsi::Strncpy(const_cast<char*>(CharDisplayName), TCHAR_TO_ANSI(*AccountCredentials.Id), EOS_MAX_TOKEN_SIZE);
 		LoginInfo.DisplayName = CharDisplayName;
 	}
+	LoginInfo.NsaIdToken = nullptr;
 	EOS_Connect_LoginOptions LoginOptions;
 	LoginOptions.Credentials = &UserCredentials;
 	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;
 	LoginOptions.UserLoginInfo = &LoginInfo;
-
 	int32 LocalUserNum = 0;
 	CallbackObj->CallbackLambda = [LocalUserNum,AccountCredentials, UserCredentials, this](const EOS_Connect_LoginCallbackInfo* Data)
 	{
@@ -729,7 +729,6 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 		}
 	};
 	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, CallbackObj, CallbackObj->GetCallbackPtr());
-
 }
 
 bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials)
