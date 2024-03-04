@@ -666,6 +666,13 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_DEVICEID_ACCESS_TOKEN;
 		UserCredentials.Token = nullptr;
 	}
+	else if(AccountCredentials.Type == "oculus")
+	{
+		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_OCULUS_USERID_NONCE;
+		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
+		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
+		UserCredentials.Token = ClientId;
+	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EOS Login using Interface connect Failed due to %hs"), EOS_EResult_ToString(EOS_EResult::EOS_InvalidParameters));
@@ -690,6 +697,7 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 		LoginInfo.DisplayName = CharDisplayName;
 	}
 	LoginInfo.NsaIdToken = nullptr;
+	
 	EOS_Connect_LoginOptions LoginOptions;
 	LoginOptions.Credentials = &UserCredentials;
 	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;
@@ -766,7 +774,7 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 		LoginViaExternalAuth(LocalUserNum);
 		return true;
 	}
-	if(AccountCredentials.Type == TEXT("deviceid") || AccountCredentials.Type == TEXT("openid") || AccountCredentials.Type == TEXT("apple") || AccountCredentials.Type == TEXT("steam") || AccountCredentials.Type == TEXT("google"))
+	if(AccountCredentials.Type == TEXT("deviceid") || AccountCredentials.Type == TEXT("openid") || AccountCredentials.Type == TEXT("oculus") || AccountCredentials.Type == TEXT("steam") || AccountCredentials.Type == TEXT("google") )
 	{
 		StartConnectInterfaceLogin(AccountCredentials);
 		return true;
