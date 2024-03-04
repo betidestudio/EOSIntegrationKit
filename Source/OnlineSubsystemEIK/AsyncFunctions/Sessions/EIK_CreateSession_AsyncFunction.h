@@ -33,6 +33,9 @@ struct FCreateSessionExtraSettings
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bIsLanMatch = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
 	int32 NumberOfPrivateConnections = 0;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")

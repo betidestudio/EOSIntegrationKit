@@ -6,13 +6,14 @@
 #include "Online/OnlineSessionNames.h"
 
 UEIK_FindSessions_AsyncFunction* UEIK_FindSessions_AsyncFunction::FindEIKSessions(
-	TMap<FName, FEIKAttribute> SessionSettings, EMatchType MatchType, int32 MaxResults, ERegionInfo RegionToSearch)
+	TMap<FName, FEIKAttribute> SessionSettings, EMatchType MatchType, int32 MaxResults, ERegionInfo RegionToSearch, bool bLanSearch)
 
 {
 	UEIK_FindSessions_AsyncFunction* Ueik_FindSessionObject= NewObject<UEIK_FindSessions_AsyncFunction>();
 	Ueik_FindSessionObject->E_MatchType = MatchType;
 	Ueik_FindSessionObject->E_RegionToSearch = RegionToSearch;
 	Ueik_FindSessionObject->SessionSettings = SessionSettings;
+	Ueik_FindSessionObject->B_bLanSearch = bLanSearch;
 	Ueik_FindSessionObject->I_MaxResults = MaxResults;
 	return Ueik_FindSessionObject;
 }
@@ -31,7 +32,7 @@ void UEIK_FindSessions_AsyncFunction::FindSession()
 		{
 			SessionSearch = MakeShareable(new FOnlineSessionSearch());
 			SessionSearch->QuerySettings.SearchParams.Empty();
-			SessionSearch->bIsLanQuery = false;
+			SessionSearch->bIsLanQuery = B_bLanSearch;
 			if(E_MatchType == EMatchType::MT_MatchMakingSession)
 			{
 				if(E_RegionToSearch!=ERegionInfo::RE_NoSelection)

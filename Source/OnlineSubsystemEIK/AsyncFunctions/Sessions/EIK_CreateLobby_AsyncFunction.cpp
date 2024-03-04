@@ -20,7 +20,7 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 			FOnlineSessionSettings SessionCreationInfo;
 			SessionCreationInfo.bIsDedicated = false;
 			SessionCreationInfo.bAllowInvites = Var_CreateLobbySettings.bAllowInvites;
-			SessionCreationInfo.bIsLANMatch = false;
+			SessionCreationInfo.bIsLANMatch = Var_CreateLobbySettings.bIsLanMatch;
 			SessionCreationInfo.NumPublicConnections = NumberOfPublicConnections;
 			SessionCreationInfo.NumPrivateConnections = Var_CreateLobbySettings.NumberOfPrivateConnections;
 			SessionCreationInfo.bUseLobbiesIfAvailable = true;

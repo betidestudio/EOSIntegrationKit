@@ -19,6 +19,9 @@ struct FCreateLobbySettings
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bIsLanMatch = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
 	bool bAllowInvites = true;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")

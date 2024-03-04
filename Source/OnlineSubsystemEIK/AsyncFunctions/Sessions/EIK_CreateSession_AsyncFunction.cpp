@@ -32,7 +32,7 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 				SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = false;
 				SessionCreationInfo.bAllowInvites = false;
 			}
-			SessionCreationInfo.bIsLANMatch = false;
+			SessionCreationInfo.bIsLANMatch = ExtraSettings.bIsLanMatch;
 			SessionCreationInfo.NumPublicConnections = NumberOfPublicConnections;
 			SessionCreationInfo.NumPrivateConnections = ExtraSettings.NumberOfPrivateConnections;
 			SessionCreationInfo.bUseLobbiesIfAvailable = false;
