@@ -451,7 +451,12 @@ FOnlineSessionEOS::~FOnlineSessionEOS()
 	delete LobbyMemberStatusReceivedCallback;
 	delete LobbyInviteAcceptedCallback;
 	delete JoinLobbyAcceptedCallback;
-	delete LeaveLobbyRequestCallback;
+#if PLATFORM_WINDOWS
+	if(LeaveLobbyRequestCallback)
+	{
+		delete LeaveLobbyRequestCallback;
+	}
+#endif
 }
 
 void FOnlineSessionEOS::Init(const FString& InBucketId)
