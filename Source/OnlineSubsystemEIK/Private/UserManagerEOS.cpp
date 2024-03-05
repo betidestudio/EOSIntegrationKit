@@ -696,7 +696,9 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 		FCStringAnsi::Strncpy(const_cast<char*>(CharDisplayName), TCHAR_TO_ANSI(*AccountCredentials.Id), EOS_MAX_TOKEN_SIZE);
 		LoginInfo.DisplayName = CharDisplayName;
 	}
+#if PLATFORM_WINDOWS || PLATFORM_LINUX || PLATFORM_MAC
 	LoginInfo.NsaIdToken = nullptr;
+#endif
 	
 	EOS_Connect_LoginOptions LoginOptions;
 	LoginOptions.Credentials = &UserCredentials;
