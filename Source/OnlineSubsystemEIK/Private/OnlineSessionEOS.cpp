@@ -444,7 +444,7 @@ FOnlineSessionEOS::~FOnlineSessionEOS()
 	EOS_Lobby_RemoveNotifyLobbyInviteAccepted(LobbyHandle, LobbyInviteAcceptedId);
 	EOS_Lobby_RemoveNotifyJoinLobbyAccepted(LobbyHandle, JoinLobbyAcceptedId);
 #if PLATFORM_WINDOWS
-	EOS_Lobby_RemoveNotifyLeaveLobbyRequested(LobbyHandle, LeaveLobbyRequestId);
+			EOS_Lobby_RemoveNotifyLeaveLobbyRequested(LobbyHandle, LeaveLobbyRequestId);
 #endif
 	delete LobbyUpdateReceivedCallback;
 	delete LobbyMemberUpdateReceivedCallback;
@@ -452,10 +452,10 @@ FOnlineSessionEOS::~FOnlineSessionEOS()
 	delete LobbyInviteAcceptedCallback;
 	delete JoinLobbyAcceptedCallback;
 #if PLATFORM_WINDOWS
-	if(LeaveLobbyRequestCallback)
-	{
-		delete LeaveLobbyRequestCallback;
-	}
+			if (LeaveLobbyRequestCallback)
+			{
+				delete LeaveLobbyRequestCallback;
+			}
 #endif
 }
 
@@ -694,18 +694,18 @@ void FOnlineSessionEOS::RegisterLobbyNotifications()
 	
 	// Leave lobby request
 #if PLATFORM_WINDOWS
-	EOS_Lobby_AddNotifyLeaveLobbyRequestedOptions AddNotifyLeaveLobbyRequestedOptions = { 0 };
-	AddNotifyLeaveLobbyRequestedOptions.ApiVersion = EOS_LOBBY_ADDNOTIFYLEAVELOBBYREQUESTED_API_LATEST;
+			EOS_Lobby_AddNotifyLeaveLobbyRequestedOptions AddNotifyLeaveLobbyRequestedOptions = { 0 };
+			AddNotifyLeaveLobbyRequestedOptions.ApiVersion = EOS_LOBBY_ADDNOTIFYLEAVELOBBYREQUESTED_API_LATEST;
 
-	FLeaveLobbyRequestCallback* LeaveLobbyRequestCallbackObj = new FLeaveLobbyRequestCallback(FOnlineSessionEOSWeakPtr(AsShared()));
-	LeaveLobbyRequestCallback = LeaveLobbyRequestCallbackObj;
-	LeaveLobbyRequestCallbackObj->CallbackLambda = [this](const EOS_Lobby_LeaveLobbyRequestedCallbackInfo* Data)
-		{
-			EOS_ProductUserId LocalUserId = Data->LocalUserId;
-			OnLeaveLobbyRequested(LocalUserId, Data);
-			UE_LOG(LogTemp, Warning, TEXT("OnJoinLobbyAccepted"));
-		};
-	LeaveLobbyRequestId = EOS_Lobby_AddNotifyLeaveLobbyRequested(LobbyHandle, &AddNotifyLeaveLobbyRequestedOptions, LeaveLobbyRequestCallbackObj, LeaveLobbyRequestCallbackObj->GetCallbackPtr());
+			FLeaveLobbyRequestCallback* LeaveLobbyRequestCallbackObj = new FLeaveLobbyRequestCallback(FOnlineSessionEOSWeakPtr(AsShared()));
+			LeaveLobbyRequestCallback = LeaveLobbyRequestCallbackObj;
+			LeaveLobbyRequestCallbackObj->CallbackLambda = [this](const EOS_Lobby_LeaveLobbyRequestedCallbackInfo* Data)
+				{
+					EOS_ProductUserId LocalUserId = Data->LocalUserId;
+					OnLeaveLobbyRequested(LocalUserId, Data);
+					UE_LOG(LogTemp, Warning, TEXT("OnJoinLobbyAccepted"));
+				};
+			LeaveLobbyRequestId = EOS_Lobby_AddNotifyLeaveLobbyRequested(LobbyHandle, &AddNotifyLeaveLobbyRequestedOptions, LeaveLobbyRequestCallbackObj, LeaveLobbyRequestCallbackObj->GetCallbackPtr());
 #endif
 }
 
@@ -988,39 +988,45 @@ void FOnlineSessionEOS::OnJoinLobbyAccepted(const EOS_ProductUserId& LocalUserId
 #if PLATFORM_WINDOWS
 void FOnlineSessionEOS::OnLeaveLobbyRequested(const EOS_ProductUserId& LocalUserId, const EOS_Lobby_LeaveLobbyRequestedCallbackInfo* Data)
 {
-	if (GEngine)
+	if (UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
 	{
-		EOS_Lobby_LeaveLobbyOptions LeaveLobbyOptionsObj;
-		LeaveLobbyOptionsObj.ApiVersion = EOS_LOBBY_LEAVELOBBY_API_LATEST;
-
-		LeaveLobbyOptionsObj.LobbyId = Data->LobbyId;
-		LeaveLobbyOptionsObj.LocalUserId = LocalUserId;
-		EOS_Lobby_LeaveLobby(LobbyHandle, &LeaveLobbyOptionsObj, this, [](const EOS_Lobby_LeaveLobbyCallbackInfo* CallbackInfo)
+		if (EIKSettings->bEnableOverlay)
+		{
+			if (GEngine)
 			{
-				if (CallbackInfo->ResultCode == EOS_EResult::EOS_Success)
-				{
-					UWorld* World = GEngine->GetWorldContexts()[0].World();
+				EOS_Lobby_LeaveLobbyOptions LeaveLobbyOptionsObj;
+				LeaveLobbyOptionsObj.ApiVersion = EOS_LOBBY_LEAVELOBBY_API_LATEST;
 
-					if (World)
+				LeaveLobbyOptionsObj.LobbyId = Data->LobbyId;
+				LeaveLobbyOptionsObj.LocalUserId = LocalUserId;
+				EOS_Lobby_LeaveLobby(LobbyHandle, &LeaveLobbyOptionsObj, this, [](const EOS_Lobby_LeaveLobbyCallbackInfo* CallbackInfo)
 					{
-						if (UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
+						if (CallbackInfo->ResultCode == EOS_EResult::EOS_Success)
 						{
-							FName LevelName = FName(*EIKSettings->ReturnLevelName);
-							UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::OnLeaveLobbyRequested] EOS_Lobby_LeaveLobby returned with EOS result code EOS_Success, initializing travel to (%s)"), *LevelName.ToString());
-							UGameplayStatics::OpenLevel(World, LevelName, true, ""); //Will try to open level selected in settings, will open defult game level if it dosen't exist or is empty.
+							UWorld* World = GEngine->GetWorldContexts()[0].World();
+
+							if (World)
+							{
+								if (UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
+								{
+									FName LevelName = FName(*EIKSettings->ReturnLevelName);
+									UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::OnLeaveLobbyRequested] EOS_Lobby_LeaveLobby returned with EOS result code EOS_Success, initializing travel to (%s)"), *LevelName.ToString());
+									UGameplayStatics::OpenLevel(World, LevelName, true, ""); //Will try to open level selected in settings, will open defult game level if it dosen't exist or is empty.
+								}
+							}
+							else
+							{
+								UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::OnLeaveLobbyRequested] World is null"));
+							}
 						}
-					}
-					else
-					{
-						UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::OnLeaveLobbyRequested] World is null"));
-					}
-				}
-				else
-				{
-					EOS_EResult Result = CallbackInfo->ResultCode;
-					UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::OnLeaveLobbyRequested] EOS_Lobby_LeaveLobby returned with EOS result code (%s)"), ANSI_TO_TCHAR(EOS_EResult_ToString(Result)));
-				}
-			});
+						else
+						{
+							EOS_EResult Result = CallbackInfo->ResultCode;
+							UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::OnLeaveLobbyRequested] EOS_Lobby_LeaveLobby returned with EOS result code (%s)"), ANSI_TO_TCHAR(EOS_EResult_ToString(Result)));
+						}
+					});
+			}
+		}
 	}
 }
 #endif
