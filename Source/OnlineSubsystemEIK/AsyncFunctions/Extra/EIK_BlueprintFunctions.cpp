@@ -9,6 +9,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Interfaces/IPluginManager.h"
 #include "Misc/Base64.h"
 #include "OnlineSubsystemEIK/AsyncFunctions/Login/EIK_Login_AsyncFunction.h"
 
@@ -386,6 +387,16 @@ FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueID(const APlayerController
 FString UEIK_BlueprintFunctions::GetEOSSDKVersion()
 {
 	return EOS_GetVersion();
+}
+
+FString UEIK_BlueprintFunctions::GetEIKPluginVersion()
+{
+	const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("EOSIntegrationKit"));
+	if(Plugin.IsValid())
+	{
+		return Plugin->GetDescriptor().VersionName;
+	}
+	return FString(TEXT("Plugin not found"));
 }
 
 bool UEIK_BlueprintFunctions::IsValidSession(FSessionFindStruct Session)
