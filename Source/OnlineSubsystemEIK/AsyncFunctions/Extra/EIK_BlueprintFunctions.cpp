@@ -9,6 +9,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Interfaces/IPluginManager.h"
 #include "Misc/Base64.h"
 #include "OnlineSubsystemEIK/AsyncFunctions/Login/EIK_Login_AsyncFunction.h"
 
@@ -318,15 +319,30 @@ ELoginTypes UEIK_BlueprintFunctions::GetActivePlatformSubsystem()
 
 FString UEIK_BlueprintFunctions::ByteArrayToString(const TArray<uint8>& DataToConvert)
 {
-	FString Result = FBase64::Encode(DataToConvert.GetData(), DataToConvert.Num());
-	return Result;
+	FString ResultString;
+
+	// Iterate through each element of the array
+	for (uint8 Element : DataToConvert)
+	{
+		// Append the character represented by the uint8 value to the result string
+		ResultString.AppendChar((TCHAR)Element);
+	}
+	return ResultString;
 }
 
 TArray<uint8> UEIK_BlueprintFunctions::StringToByteArray(const FString& DataToConvert)
 {
-	TArray<uint8> Result;
-	FBase64::Decode(DataToConvert, Result);
-	return Result;
+
+	TArray<uint8> ResultArray;
+
+	// Iterate through each character of the string
+	for (int32 Index = 0; Index < DataToConvert.Len(); Index++)
+	{
+		// Get the ASCII value of the character and add it to the array
+		uint8 CharAsUint8 = (uint8)DataToConvert[Index];
+		ResultArray.Add(CharAsUint8);
+	}
+	return ResultArray;
 }
 
 FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueID(const APlayerController* PlayerController, bool& bIsValid)
@@ -371,6 +387,16 @@ FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueID(const APlayerController
 FString UEIK_BlueprintFunctions::GetEOSSDKVersion()
 {
 	return EOS_GetVersion();
+}
+
+FString UEIK_BlueprintFunctions::GetEIKPluginVersion()
+{
+	const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("EOSIntegrationKit"));
+	if(Plugin.IsValid())
+	{
+		return Plugin->GetDescriptor().VersionName;
+	}
+	return FString(TEXT("Plugin not found"));
 }
 
 bool UEIK_BlueprintFunctions::IsValidSession(FSessionFindStruct Session)

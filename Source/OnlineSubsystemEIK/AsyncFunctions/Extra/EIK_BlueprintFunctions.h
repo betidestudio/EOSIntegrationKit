@@ -136,6 +136,10 @@ public:
 	UFUNCTION(BlueprintPure, DisplayName="EOS SDK Version", Category="EOS Integration Kit || Extra")
 	static FString GetEOSSDKVersion();
 
+	//Get Plugin Version
+	UFUNCTION(BlueprintPure, DisplayName="EIK Plugin Version", Category="EOS Integration Kit || Extra")
+	static FString GetEIKPluginVersion();
+
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
 	static bool IsValidSession(FSessionFindStruct Session);
 
