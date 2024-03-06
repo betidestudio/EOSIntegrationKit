@@ -69,4 +69,4 @@ This project is licensed under the MIT License
 <h2>💖Like our work?</h2>
 
 Consider supporting us at [Patreon](https://www.patreon.com/betide)
-Hire us at [support@betide.studio](mailto:support@betide.studio) or [Fiverr](https://www.fiverr.com/betidestudio)
+Hire us at [support@betide.studio](mailto:support@betide.studio)
