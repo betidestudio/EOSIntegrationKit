@@ -3241,7 +3241,6 @@ typedef TEOSCallback<EOS_Sessions_OnUnregisterPlayersCallback, EOS_Sessions_Unre
 bool FOnlineSessionEOS::UnregisterPlayers(FName SessionName, const TArray< FUniqueNetIdRef >& Players)
 {
 	bool bSuccess = true;
-
 	FNamedOnlineSession* Session = GetNamedSession(SessionName);
 	if (Session)
 	{
@@ -3251,23 +3250,13 @@ bool FOnlineSessionEOS::UnregisterPlayers(FName SessionName, const TArray< FUniq
 		{
 			const FUniqueNetIdRef& PlayerId = Players[PlayerIdx];
 			const FUniqueNetIdEOS& PlayerEOSId = FUniqueNetIdEOS::Cast(*PlayerId);
-
 			FUniqueNetIdMatcher PlayerMatch(*PlayerId);
 			int32 RegistrantIndex = Session->RegisteredPlayers.IndexOfByPredicate(PlayerMatch);
-			if (RegistrantIndex != INDEX_NONE)
+			if (bUnregisterEOS)
 			{
-				Session->RegisteredPlayers.RemoveAtSwap(RegistrantIndex);
-				if (bUnregisterEOS)
-				{
-					EOSIds.Add(PlayerEOSId.GetProductUserId());
-				}
-
-				RemoveOnlineSessionMember(SessionName, PlayerId);
+				EOSIds.Add(PlayerEOSId.GetProductUserId());
 			}
-			else
-			{
-				UE_LOG_ONLINE_SESSION(Warning, TEXT("Player %s is not part of session (%s)"), *PlayerId->ToDebugString(), *SessionName.ToString());
-			}
+			RemoveOnlineSessionMember(SessionName, PlayerId);
 		}
 		if (bUnregisterEOS && EOSIds.Num() > 0)
 		{
@@ -3298,7 +3287,6 @@ bool FOnlineSessionEOS::UnregisterPlayers(FName SessionName, const TArray< FUniq
 		{
 			TriggerOnUnregisterPlayersCompleteDelegates(SessionName, Players, bSuccess);
 		});
-
 	return true;
 }
 
