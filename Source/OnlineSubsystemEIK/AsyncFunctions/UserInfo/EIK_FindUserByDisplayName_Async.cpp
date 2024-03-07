@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "EIK_FindUserByDisplayName_Async.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemEOS.h"
 #include "Engine/GameInstance.h"
-#include "EIK_FindUserByDisplayName_Async.h"
 
 UEIK_FindUserByDisplayName_Async* UEIK_FindUserByDisplayName_Async::FindEIkUserByDisplayName(FString TargetDisplayName, FString LocalEpicID)
 {

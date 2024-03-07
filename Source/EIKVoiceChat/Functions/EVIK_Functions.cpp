@@ -619,7 +619,11 @@ bool UEVIK_Functions::TransmitToSelectedRoom(const UObject* WorldContextObject, 
 				if (LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
 				{
 					const TSet<FString> Var_RoomName = {RoomName};
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >=3
 					LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->TransmitToSpecificChannels(Var_RoomName);
+#else
+					LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->TransmitToSpecificChannel(RoomName);
+#endif
 					return true;
 				}
 			}

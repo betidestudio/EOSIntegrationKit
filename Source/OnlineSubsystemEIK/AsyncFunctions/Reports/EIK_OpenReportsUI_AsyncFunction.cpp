@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "EIK_OpenReportsUI_AsyncFunction.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemEOS.h"
-#include "EIK_OpenReportsUI_AsyncFunction.h"
 
 UEIK_OpenReportsUI_AsyncFunction* UEIK_OpenReportsUI_AsyncFunction::ShowEIKPlayerReportUIAsyncFunction(FString LocalReporterPUID, FString TargetPlayerPUID)
 {
