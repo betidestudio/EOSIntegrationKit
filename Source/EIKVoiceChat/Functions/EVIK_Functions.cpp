@@ -527,8 +527,7 @@ bool UEVIK_Functions::SetPlayerVolume(const UObject* WorldContextObject, const F
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
-			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
-			if (LocalVoiceSubsystem)
+			if (UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>())
 			{
 				if (LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
 				{
@@ -619,7 +618,8 @@ bool UEVIK_Functions::TransmitToSelectedRoom(const UObject* WorldContextObject, 
 			{
 				if (LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
 				{
-					//LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->TransmitToSpecificChannel(RoomName);
+					const TSet<FString> Var_RoomName = {RoomName};
+					LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->TransmitToSpecificChannels(Var_RoomName);
 					return true;
 				}
 			}

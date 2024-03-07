@@ -12,14 +12,19 @@ bool UEIK_Voice_Subsystem::EVIK_Local_Initialize()
 	{
 		return EVIK_VoiceChat->Initialize();
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 IVoiceChat* UEIK_Voice_Subsystem::EVIK_Local_GetVoiceChat()
 {
+	if (!EVIK_VoiceChat)
+	{
+		EVIK_VoiceChat = IVoiceChat::Get();
+		if(EVIK_VoiceChat)
+		{
+			EVIK_VoiceChat->Initialize();
+		}
+	}
 	return EVIK_VoiceChat;
 }
 
@@ -59,7 +64,6 @@ void UEIK_Voice_Subsystem::ForceUpdateOutputVolume(bool bUseThisVolume, bool bUs
 
 void UEIK_Voice_Subsystem::PlayerListUpdated()
 {
-	UE_LOG(LogTemp, Warning, TEXT("PlayerListUpdated"));
 	if(UpdatePositionalVoiceChatTimerHandle.IsValid())
 	{
 		UpdatePositionalVoiceChatTimerHandle.Invalidate();
