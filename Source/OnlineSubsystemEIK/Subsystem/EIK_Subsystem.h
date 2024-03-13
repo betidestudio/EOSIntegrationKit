@@ -320,7 +320,7 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetFile_Callback, bool, bWasSuccess, USav
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_ConnectEOSAndPlayFab_Callback, bool, bWasSuccess, const FString&, Error);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_TitleFileList_Callback, bool, bWasSuccess, const FString&, Error);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FBP_HostMigration_Callback, bool, bLocalHost, const FString&, PromotedMember, const FString&, JoinAddress);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBP_InviteDelegate, const FEIKUniqueNetId&, LocalUserId, const FEIKUniqueNetId&, InvitedUserId);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_Subsystem : public UGameInstanceSubsystem
@@ -448,6 +448,15 @@ public:
 	//This is a C++ method definition for getting the auth token of a player from an online subsystem.
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Friend")
 	bool ShowFriendUserInterface();
+
+	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Friend")
+	FBP_InviteDelegate OnInviteRecieved;
+
+	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Friend")
+	FBP_InviteDelegate OnInviteAccepted;
+	
+	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Friend")
+	FBP_InviteDelegate OnInviteRejected;
 
 	//Stat Functions
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Statistics")

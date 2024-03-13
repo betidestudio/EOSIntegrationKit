@@ -50,7 +50,31 @@ bool UEIK_Subsystem::InitializeEIK()
 		{
 			// Bind the OnSessionUserInviteAccepted event to a delegate
 			OnSessionUserInviteAcceptedDelegate.BindUObject(this, &UEIK_Subsystem::OnSessionUserInviteAccepted);
-
+			FriendsPtr->OnInviteReceivedDelegates.AddLambda([this](const FUniqueNetId& LocalUserId, const FUniqueNetId& FriendId)
+			{
+				FEIKUniqueNetId LocalUNetID;
+				LocalUNetID.SetUniqueNetId(LocalUserId.AsShared());
+				FEIKUniqueNetId FriendUNetID;
+				FriendUNetID.SetUniqueNetId(FriendId.AsShared());
+				OnInviteRecieved.Broadcast(LocalUNetID,FriendUNetID);
+			});
+			FriendsPtr->OnInviteAcceptedDelegates.AddLambda([this](const FUniqueNetId& LocalUserId, const FUniqueNetId& FriendId)
+			{
+				FEIKUniqueNetId LocalUNetID;
+				LocalUNetID.SetUniqueNetId(LocalUserId.AsShared());
+				FEIKUniqueNetId FriendUNetID;
+				FriendUNetID.SetUniqueNetId(FriendId.AsShared());
+				OnInviteAccepted.Broadcast(LocalUNetID,FriendUNetID);
+			});
+			FriendsPtr->OnInviteReceivedDelegates.AddLambda([this](const FUniqueNetId& LocalUserId, const FUniqueNetId& FriendId)
+			{
+				FEIKUniqueNetId LocalUNetID;
+				LocalUNetID.SetUniqueNetId(LocalUserId.AsShared());
+				FEIKUniqueNetId FriendUNetID;
+				FriendUNetID.SetUniqueNetId(FriendId.AsShared());
+				OnInviteRejected.Broadcast(LocalUNetID,FriendUNetID);
+			});
+			
 			// Add the delegate to the online subsystem
 			IOnlineSessionPtr SessionInt = Online::GetSessionInterface(GetWorld());
 			if (SessionInt.IsValid())

@@ -15,7 +15,6 @@ public class GoogleOneTapLibrary : ModuleRules
             PublicDependencyModuleNames.AddRange(new string[] { "Launch" });
 
             string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
-            Console.WriteLine("PluginPath: " + PluginPath);
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "GoogleOneTap_UPL.xml"));
         }
 	}
