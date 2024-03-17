@@ -6,7 +6,7 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_OwnedItems_AsyncFunction.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGetOwnedItems_Delegate, const TArray<FString>&, OwnedItemNames);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetOwnedItems_Delegate, const TArray<FString>&, OwnedItemNames, const FString&, ErrorString);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_OwnedItems_AsyncFunction : public UBlueprintAsyncActionBase

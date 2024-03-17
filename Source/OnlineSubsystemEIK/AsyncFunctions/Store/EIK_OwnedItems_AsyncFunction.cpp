@@ -22,13 +22,9 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 			{
 				if (const IOnlinePurchasePtr Purchase = SubsystemRef->GetPurchaseInterface())
 				{
-					const FUniqueNetIdPtr UserIdPtr{ IdentityPointerRef->GetUniquePlayerId(0) };
-					if (UserIdPtr)
+					if (const FUniqueNetIdPtr UserIdPtr{ IdentityPointerRef->GetUniquePlayerId(0) })
 					{
-						Purchase->QueryReceipts(*UserIdPtr.Get(), false,
-							FOnQueryReceiptsComplete::CreateLambda(
-								[this, SubsystemRef, IdentityPointerRef, Purchase
-								](const FOnlineError& Error)
+						Purchase->QueryReceipts(*UserIdPtr.Get(), false,FOnQueryReceiptsComplete::CreateLambda([this, SubsystemRef, IdentityPointerRef, Purchase](const FOnlineError& Error)
 								{
 									if (Error.WasSuccessful())
 									{
@@ -36,8 +32,7 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 										{
 											TArray<FString> ItemNames;
 											TArray<FPurchaseReceipt> Receipts;
-											Purchase->GetReceipts(
-												*IdentityPointerRef->GetUniquePlayerId(0).Get(), Receipts);
+											Purchase->GetReceipts(*IdentityPointerRef->GetUniquePlayerId(0).Get(), Receipts);
 											for (int i = 0; i < Receipts.Num(); i++)
 											{
 												ItemNames.Add(Receipts[i].ReceiptOffers[0].LineItems[0].ItemName);
@@ -45,7 +40,9 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 											if (!bDelegateCalled)
 											{
 												bDelegateCalled = true;
-												OnSuccess.Broadcast(ItemNames);
+												OnSuccess.Broadcast(ItemNames, "");
+												SetReadyToDestroy();
+											MarkAsGarbage();
 											}
 										}
 										else
@@ -53,15 +50,33 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 											if (!bDelegateCalled)
 											{
 												bDelegateCalled = true;
-												OnFail.Broadcast(TArray<FString>());
+												OnFail.Broadcast(TArray<FString>(), "Invalid Purchase Interface");
+												SetReadyToDestroy();
+											MarkAsGarbage();
 											}
+										}
+									}
+									else
+									{
+										if (!bDelegateCalled)
+										{
+											bDelegateCalled = true;
+											OnFail.Broadcast(TArray<FString>(), Error.GetErrorMessage().ToString());
+											SetReadyToDestroy();
+											MarkAsGarbage();
 										}
 									}
 								}));
 					}
 					else
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Invalid User ID"));
+						if (!bDelegateCalled)
+						{
+							bDelegateCalled = true;
+							OnFail.Broadcast(TArray<FString>(), "Invalid User ID");
+							SetReadyToDestroy();
+							MarkAsGarbage();
+						}
 					}
 				}
 				else
@@ -69,7 +84,9 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 					if(!bDelegateCalled)
 					{
 						bDelegateCalled = true;
-						OnFail.Broadcast(TArray<FString>());
+						OnFail.Broadcast(TArray<FString>(), "Invalid Purchase Interface");
+						SetReadyToDestroy();
+						MarkAsGarbage();
 					}
 				}
 			}
@@ -78,7 +95,9 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 				if(!bDelegateCalled)
 				{
 					bDelegateCalled = true;
-					OnFail.Broadcast(TArray<FString>());
+					OnFail.Broadcast(TArray<FString>(), "Invalid Identity Interface");
+					SetReadyToDestroy();
+					MarkAsGarbage();
 				}
 			}
 		}
@@ -87,7 +106,9 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 			if(!bDelegateCalled)
 			{
 				bDelegateCalled = true;
-				OnFail.Broadcast(TArray<FString>());
+				OnFail.Broadcast(TArray<FString>(), "Invalid Store Interface");
+				SetReadyToDestroy();
+				MarkAsGarbage();
 			}
 		}
 	}
@@ -96,7 +117,9 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 		if(!bDelegateCalled)
 		{
 			bDelegateCalled = true;
-			OnFail.Broadcast(TArray<FString>());
+			OnFail.Broadcast(TArray<FString>(), "Invalid Subsystem");
+			SetReadyToDestroy();
+			MarkAsGarbage();
 		}
 	}
 }
