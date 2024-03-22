@@ -1,9 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EIKSettings.h"
-#include "OnlineSubsystemEOS.h"
-#include "OnlineSubsystemEIKModule.h"
-#include "OnlineSubsystemEOSPrivate.h"
 
 #include "Algo/Transform.h"
 #include "Misc/CommandLine.h"
@@ -298,7 +295,7 @@ bool UEIKSettings::AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSA
 			return true;
 		}
 	}
-	UE_LOG_ONLINE(Error, TEXT("UEIKSettings::AutoGetSettingsForArtifact() failed due to missing config object specified. Check your project settings"));
+	UE_LOG(LogTemp, Error, TEXT("UEIKSettings::AutoGetSettingsForArtifact() failed due to missing config object specified. Check your project settings"));
 	return false;
 }
 

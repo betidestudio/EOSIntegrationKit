@@ -35,7 +35,8 @@ public class OnlineSubsystemEIK : ModuleRules
 				"Projects",
 				"Slate",
 				"SlateCore",
-				"HTTP",
+				"HTTP", 
+				"EOSIntegrationKit",
 			}
 		);
 
