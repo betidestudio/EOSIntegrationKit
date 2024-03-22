@@ -95,6 +95,7 @@ MarkAsGarbage();
 
 void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Find Session Completed"));
 	if(!bWasSuccess)
 	{
 		if(bDelegateCalled)
