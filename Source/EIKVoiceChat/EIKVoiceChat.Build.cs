@@ -37,7 +37,8 @@ namespace UnrealBuildTool.Rules
                     "EIKSDK",
 					"Engine",
                     "StructUtils",
-                    "HTTP",
+                    "HTTP", 
+                    "EOSIntegrationKit",
                 }
 			);
 

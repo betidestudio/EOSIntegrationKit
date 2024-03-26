@@ -2,6 +2,8 @@
 
 
 #include "EVIK_Functions.h"
+
+#include "EIKSettings.h"
 #include "Engine/Engine.h"
 #include "Interfaces/IHttpResponse.h"
 
@@ -218,23 +220,40 @@ FString UEVIK_Functions::LoggedInUser(const UObject* WorldContextObject)
 void UEVIK_Functions::EOSRoomToken(FString VoiceRoomName, FString PlayerName, FString ClientIP, const FEIKRoomTokenResultDelegate& Result)
 {
     FString ProductId, SandboxId, DeploymentId, ClientId, ClientSecret, EncryptionKey;
-    bool bEnabled;
-    if (!GConfig->GetBool(TEXT("EOSVoiceChat"), TEXT("bEnabled"), bEnabled, GEngineIni) || !bEnabled)
-    {
-    	Result.ExecuteIfBound(false, "Error");
-        return;
-    }
+	const UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>();
+	if(!EIKSettings || EIKSettings->VoiceArtifactName.IsEmpty())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Missing values in EIK Settings"));
+		Result.ExecuteIfBound(false, "Error");
+		return;
+	}
 
     bool bSuccess = true;
-    bSuccess &= GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ProductId"), ProductId, GEngineIni);
-    bSuccess &= GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("SandboxId"), SandboxId, GEngineIni);
-    bSuccess &= GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("DeploymentId"), DeploymentId, GEngineIni);
-    bSuccess &= GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientId"), ClientId, GEngineIni);
-    bSuccess &= GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientSecret"), ClientSecret, GEngineIni);
+    if (EIKSettings && EIKSettings->VoiceArtifactName.Len() > 0)
+	{
+		FEOSArtifactSettings ArtifactSettingsForVoice;
+    	EIKSettings->GetSettingsForArtifact(EIKSettings->VoiceArtifactName, ArtifactSettingsForVoice);
+    	ProductId = ArtifactSettingsForVoice.ProductId;
+    	SandboxId = ArtifactSettingsForVoice.SandboxId;
+    	DeploymentId = ArtifactSettingsForVoice.DeploymentId;
+    	ClientId = ArtifactSettingsForVoice.ClientId;
+    	ClientSecret = ArtifactSettingsForVoice.ClientSecret;
+    	EncryptionKey = ArtifactSettingsForVoice.EncryptionKey;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Missing values in EIK Settings"));
+		Result.ExecuteIfBound(false, "Error");
+		return;
+	}
+	if(ProductId.IsEmpty() || SandboxId.IsEmpty() || DeploymentId.IsEmpty() || ClientId.IsEmpty() || ClientSecret.IsEmpty() || EncryptionKey.IsEmpty())
+	{
+		bSuccess = false;
+	}
 
     if (!bSuccess)
     {
-        UE_LOG(LogTemp, Error, TEXT("Missing values in DefaultEngine.ini"));
+        UE_LOG(LogTemp, Error, TEXT("Missing values for Artifact Settings"));
     	Result.ExecuteIfBound(false, "Error");
         return;
     }

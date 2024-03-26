@@ -2,6 +2,8 @@
 
 #include "EOSVoiceChat.h" 
 
+#include "EIKSettings.h"
+
 #if WITH_EOS_RTC
 
 #include "Async/Async.h"
@@ -95,8 +97,12 @@ void FEOSVoiceChat::Initialize(const FOnVoiceChatInitializeCompleteDelegate& Ini
 	{
 	case EInitializationState::Uninitialized:
 	{
+		const UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>();
 		bool bEnabled = true;
-		GConfig->GetBool(TEXT("EOSVoiceChat"), TEXT("bEnabled"), bEnabled, GEngineIni);
+		if(!EIKSettings || EIKSettings->VoiceArtifactName.IsEmpty())
+		{
+			bEnabled = false;
+		}
 		if (bEnabled)
 		{
 			InitSession.State = EInitializationState::Initializing;
@@ -114,16 +120,29 @@ void FEOSVoiceChat::Initialize(const FOnVoiceChatInitializeCompleteDelegate& Ini
 					FString ConfigEncryptionKey;
 					FString ConfigOverrideCountryCode;
 					FString ConfigOverrideLocaleCode;
-
-					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ProductId"), ConfigProductId, GEngineIni);
-					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("SandboxId"), ConfigSandboxId, GEngineIni);
-					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("DeploymentId"), ConfigDeploymentId, GEngineIni);
-					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientId"), ConfigClientId, GEngineIni);
-					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientSecret"), ConfigClientSecret, GEngineIni);
-					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientEncryptionKey"), ConfigEncryptionKey, GEngineIni);
-					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("OverrideCountryCode"), ConfigOverrideCountryCode, GEngineIni);
-					GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("OverrideLocaleCode"), ConfigOverrideLocaleCode, GEngineIni);
-
+					
+					FEOSArtifactSettings VoiceArtifactSettings;
+					EIKSettings->GetSettingsForArtifact(EIKSettings->VoiceArtifactName, VoiceArtifactSettings);
+					ConfigProductId = VoiceArtifactSettings.ProductId;
+					ConfigSandboxId = VoiceArtifactSettings.SandboxId;
+					ConfigDeploymentId = VoiceArtifactSettings.DeploymentId;
+					ConfigClientId = VoiceArtifactSettings.ClientId;
+					ConfigClientSecret = VoiceArtifactSettings.ClientSecret;
+					ConfigEncryptionKey = VoiceArtifactSettings.EncryptionKey;
+					
+					if(ConfigProductId.IsEmpty() || ConfigSandboxId.IsEmpty() || ConfigDeploymentId.IsEmpty() || ConfigClientId.IsEmpty() || ConfigClientSecret.IsEmpty() || ConfigEncryptionKey.IsEmpty())
+					{
+						UE_LOG(LogEOSVoiceChat, Warning, TEXT("FEOSVoiceChat::Initialize ProductID, SandboxID, DeploymentID, ClientID, ClientSecret, EncryptionKey are empty. Using EOSVoiceChat section in Engine.ini"));
+						GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ProductId"), ConfigProductId, GEngineIni);
+						GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("SandboxId"), ConfigSandboxId, GEngineIni);
+						GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("DeploymentId"), ConfigDeploymentId, GEngineIni);
+						GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientId"), ConfigClientId, GEngineIni);
+						GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientSecret"), ConfigClientSecret, GEngineIni);
+						GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("ClientEncryptionKey"), ConfigEncryptionKey, GEngineIni);
+						GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("OverrideCountryCode"), ConfigOverrideCountryCode, GEngineIni);
+						GConfig->GetString(TEXT("EOSVoiceChat"), TEXT("OverrideLocaleCode"), ConfigOverrideLocaleCode, GEngineIni);
+						
+					}
 					const FTCHARToUTF8 Utf8ProductId(*ConfigProductId);
 					const FTCHARToUTF8 Utf8SandboxId(*ConfigSandboxId);
 					const FTCHARToUTF8 Utf8DeploymentId(*ConfigDeploymentId);
