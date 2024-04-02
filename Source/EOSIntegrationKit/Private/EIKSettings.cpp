@@ -15,7 +15,7 @@
 
 #define LOCTEXT_NAMESPACE "EOS"
 
-#define INI_SECTION TEXT("/Script/OnlineSubsystemEIK.EIKSettings")
+#define INI_SECTION TEXT("/Script/EOSIntegrationKit.EIKSettings")
 
 inline bool IsAnsi(const FString& Source)
 {
