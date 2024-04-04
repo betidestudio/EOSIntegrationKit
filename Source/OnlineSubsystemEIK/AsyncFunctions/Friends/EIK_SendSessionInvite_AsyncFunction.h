@@ -15,11 +15,13 @@ class ONLINESUBSYSTEMEIK_API UEIK_SendSessionInvite_AsyncFunction : public UBlue
 
 public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Friends", DisplayName = "Send Session Invite")
-	static UEIK_SendSessionInvite_AsyncFunction* SendSessionInvite(FEIKUniqueNetId FriendId);
+	static UEIK_SendSessionInvite_AsyncFunction* SendSessionInvite(
+		FName SessionName = "GameSession",
+		FEIKUniqueNetId FriendId = FEIKUniqueNetId());
 
 private:
 	FEIKUniqueNetId Var_FriendId;
-	FString Var_SessionName;
+	FName Var_SessionName;
 	virtual void Activate() override;
 
 	UPROPERTY(BlueprintAssignable)

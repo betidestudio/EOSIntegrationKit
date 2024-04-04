@@ -18,7 +18,11 @@ class ONLINESUBSYSTEMEIK_API UEIK_UpdateSession_AsyncFunction : public UBlueprin
 public:
 
 	UFUNCTION(BlueprintCallable, DisplayName="Update EIK Session",meta = (BlueprintInternalUseOnly = "true",  WorldContext = "WorldContextObject"), Category="EOS Integration Kit || Sessions")
-	static UEIK_UpdateSession_AsyncFunction* UpdateEIKSessions(UObject* WorldContextObject, TMap<FString, FString> SessionSettings, bool bShouldAdvertise = true, bool bAllowJoinInProgress = true, bool bAllowInvites = true, bool bUsesPresence = false, int32 NumberOfPublicConnections = 10,int32 NumberOfPrivateConnections = 10,bool bRefreshOnlineData = true);
+	static UEIK_UpdateSession_AsyncFunction* UpdateEIKSessions(UObject* WorldContextObject,
+		TMap<FString, FString> SessionSettings,
+		FName SessionName = "GameSession",
+		bool bShouldAdvertise = true, bool bAllowJoinInProgress = true, bool bAllowInvites = true, bool bUsesPresence = false, int32 NumberOfPublicConnections = 10,int32 NumberOfPrivateConnections = 10,bool bRefreshOnlineData = true);
+	UPROPERTY()
 	UObject* Var_WorldContextObject;
 	TMap<FString, FString> Var_SessionSettings;
 	bool Var_bShouldAdvertise;
@@ -30,6 +34,7 @@ public:
 	int32 Var_NumberOfPublicConnections;
 	int32 Var_NumberOfPrivateConnections;
 	bool Var_bRefreshOnlineData;
+	FName Var_SessionName;
 
 	void OnUpdateSessionComplete(FName Name, bool bArg);
 	virtual void Activate() override;

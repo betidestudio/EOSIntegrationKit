@@ -3,7 +3,10 @@
 #include "EIK_UpdateSession_AsyncFunction.h"
 
 
-UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSessions(UObject* WorldContextObject,TMap<FString, FString> SessionSettings, bool bShouldAdvertise, bool bAllowJoinInProgress, bool bAllowInvites, bool bUsesPresence, int32 NumberOfPublicConnections,int32 NumberOfPrivateConnections,bool bRefreshOnlineData)
+UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSessions(UObject* WorldContextObject,
+	TMap<FString, FString> SessionSettings,
+	FName SessionName,
+	bool bShouldAdvertise, bool bAllowJoinInProgress, bool bAllowInvites, bool bUsesPresence, int32 NumberOfPublicConnections,int32 NumberOfPrivateConnections,bool bRefreshOnlineData)
 {
 	UEIK_UpdateSession_AsyncFunction* UpdateSession = NewObject<UEIK_UpdateSession_AsyncFunction>();
 	UpdateSession->Var_WorldContextObject = WorldContextObject;
@@ -11,6 +14,7 @@ UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSes
 	UpdateSession->Var_bShouldAdvertise = bShouldAdvertise;
 	UpdateSession->Var_bAllowJoinInProgress = bAllowJoinInProgress;
 	UpdateSession->Var_bAllowInvites = bAllowInvites;
+	UpdateSession->Var_SessionName = SessionName;
 	UpdateSession->Var_bUsesPresence = bUsesPresence;
 	UpdateSession->Var_NumberOfPublicConnections = NumberOfPublicConnections;
 	UpdateSession->Var_NumberOfPrivateConnections = NumberOfPrivateConnections;
@@ -28,7 +32,7 @@ void UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete(FName Name, bool 
 		OnFailure.Broadcast();
 	}
 	SetReadyToDestroy();
-MarkAsGarbage();
+	MarkAsGarbage();
 }
 
 void UEIK_UpdateSession_AsyncFunction::Activate()
@@ -57,19 +61,19 @@ void UEIK_UpdateSession_AsyncFunction::Activate()
 				SessionSettings.Settings.Add( FName(*Settings_SingleValue.Key), Setting);
 			}
 			SessionPtrRef->OnUpdateSessionCompleteDelegates.AddUObject(this, &UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete);
-			SessionPtrRef->UpdateSession(NAME_GameSession, SessionSettings, Var_bRefreshOnlineData);
+			SessionPtrRef->UpdateSession(Var_SessionName, SessionSettings, Var_bRefreshOnlineData);
  		}
 		else
 		{
 			OnFailure.Broadcast();
 			SetReadyToDestroy();
-MarkAsGarbage();
+			MarkAsGarbage();
 		}
 	}
 	else
 	{
 		OnFailure.Broadcast();
 		SetReadyToDestroy();
-MarkAsGarbage();
+		MarkAsGarbage();
 	}
 }

@@ -69,6 +69,7 @@ public:
 	TMap<FString, FEIKAttribute> SessionSettings;
 	FCreateLobbySettings Var_CreateLobbySettings;
 	bool bDelegateCalled = false;
+	FName VSessionName;
 	
 	UPROPERTY(BlueprintAssignable, DisplayName="Success")
 	FCreateLobby_Delegate OnSuccess;
@@ -79,7 +80,7 @@ public:
 
 	void CreateLobby();
 
-	void OnCreateLobbyCompleted(FName VSessionName, bool bWasSuccessful);
+	void OnCreateLobbyCompleted(FName SessionName, bool bWasSuccessful);
 
 	/*
 	This function is used to create a lobby with the given settings and returns a result delegate which can be used to determine if the lobby was created successfully or not.
@@ -88,6 +89,10 @@ public:
 	@param ExtraSettings - A struct containing extra settings to be used when creating the lobby which is completely optional.
 	Documentation link: https://eik.betide.studio/multiplayer/sessions/lobbies/
 	*/
-	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Lobby",meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
-	static UEIK_CreateLobby_AsyncFunction* CreateEIKLobby(TMap<FString, FEIKAttribute> SessionSettings, int32 NumberOfPublicConnections = 0, FCreateLobbySettings ExtraSettings = FCreateLobbySettings());
+	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Lobby",meta = (BlueprintInternalUseOnly = "true",AutoCreateRefTerm=SessionSettings), Category="EOS Integration Kit || Sessions")
+	static UEIK_CreateLobby_AsyncFunction* CreateEIKLobby(
+		TMap<FString, FEIKAttribute> SessionSettings,
+		FName SessionName = "GameSession",
+		int32 NumberOfPublicConnections = 0,
+		FCreateLobbySettings ExtraSettings = FCreateLobbySettings());
 };

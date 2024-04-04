@@ -4,10 +4,11 @@
 #include "EIK_SendSessionInvite_AsyncFunction.h"
 #include "OnlineSubsystemUtils.h"
 
-UEIK_SendSessionInvite_AsyncFunction* UEIK_SendSessionInvite_AsyncFunction::SendSessionInvite(FEIKUniqueNetId FriendId)
+UEIK_SendSessionInvite_AsyncFunction* UEIK_SendSessionInvite_AsyncFunction::SendSessionInvite(FName SessionName,FEIKUniqueNetId FriendId)
 {
 	UEIK_SendSessionInvite_AsyncFunction* BlueprintNode = NewObject<UEIK_SendSessionInvite_AsyncFunction>();
 	BlueprintNode->Var_FriendId = FriendId;
+	BlueprintNode->Var_SessionName = SessionName;
 	return BlueprintNode;
 }
 
@@ -18,7 +19,7 @@ void UEIK_SendSessionInvite_AsyncFunction::Activate()
 	{
 		if(const IOnlineSessionPtr SessionInterface = SubsystemRef->GetSessionInterface())
 		{
-			if(SessionInterface->SendSessionInviteToFriend(0,NAME_GameSession,*Var_FriendId.GetUniqueNetId()))
+			if(SessionInterface->SendSessionInviteToFriend(0,Var_SessionName,*Var_FriendId.GetUniqueNetId()))
 			{
 				SetReadyToDestroy();
 				MarkAsGarbage();

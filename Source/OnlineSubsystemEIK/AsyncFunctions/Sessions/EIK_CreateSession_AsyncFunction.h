@@ -67,6 +67,7 @@ public:
 	TMap<FString, FEIKAttribute> SessionSettings;
 	FDedicatedServerSettings DedicatedServerSettings;
 	FCreateSessionExtraSettings ExtraSettings;
+	FName VSessionName;
 
 	bool bDelegateCalled = false;
 	UPROPERTY(BlueprintAssignable)
@@ -78,7 +79,7 @@ public:
 
 	void CreateSession();
 
-	void OnCreateSessionCompleted(FName VSessionName, bool bWasSuccessful);
+	void OnCreateSessionCompleted(FName SessionName, bool bWasSuccessful);
 
 	/*
 	This C++ method creates a session in EOS using the selected method and sets up a callback function to handle the response.
@@ -88,6 +89,7 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Session", meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
 	static UEIK_CreateSession_AsyncFunction* CreateEIKSession(
         TMap<FString, FEIKAttribute> SessionSettings,
+        FName SessionName = "GameSession",
 		int32 NumberOfPublicConnections = 15,
 		FDedicatedServerSettings DedicatedServerSettings = FDedicatedServerSettings(), 
 		FCreateSessionExtraSettings ExtraSettings = FCreateSessionExtraSettings() 
