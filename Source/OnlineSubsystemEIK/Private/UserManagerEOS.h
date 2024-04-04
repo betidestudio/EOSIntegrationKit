@@ -294,6 +294,7 @@ public:
 	virtual void RevokeAuthToken(const FUniqueNetId& LocalUserId, const FOnRevokeAuthTokenCompleteDelegate& Delegate) override;
 	virtual FPlatformUserId GetPlatformUserIdFromUniqueNetId(const FUniqueNetId& UniqueNetId) const override;
 	virtual void GetLinkedAccountAuthToken(int32 LocalUserNum, const FOnGetLinkedAccountAuthTokenCompleteDelegate& Delegate) const override;
+	virtual int32 GetLocalUserNumFromPlatformUserId(FPlatformUserId PlatformUserId) const override;
 // ~IOnlineIdentity Interface
 	ELoginStatus::Type GetLoginStatus(const FUniqueNetIdEOS& UserId) const;
 

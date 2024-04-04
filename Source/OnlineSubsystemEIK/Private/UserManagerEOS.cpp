@@ -1953,6 +1953,11 @@ void FUserManagerEOS::GetLinkedAccountAuthToken(int32 LocalUserNum, const FOnGet
 	Delegate.ExecuteIfBound(LocalUserNum, ExternalToken.IsValid(), ExternalToken);
 }
 
+int32 FUserManagerEOS::GetLocalUserNumFromPlatformUserId(FPlatformUserId PlatformUserId) const
+{
+	return 0;
+}
+
 void FUserManagerEOS::GetUserPrivilege(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, const FOnGetUserPrivilegeCompleteDelegate& Delegate)
 {
 	Delegate.ExecuteIfBound(UserId, Privilege, (uint32)EPrivilegeResults::NoFailures);
