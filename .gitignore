@@ -69,7 +69,9 @@ Saved/*
 # Compiled source files for the engine to use
 Intermediate/*
 Plugins/*/Intermediate/*
-Source/ThirdParty/*
+Source/ThirdParty/EIKSDK/SDK/*
+Source/ThirdParty/EIKSDK/Samples/*
+Source/ThirdParty/EIKSDK/ThirdPartyNotices/*
 
 
 # Cache files for the editor to use

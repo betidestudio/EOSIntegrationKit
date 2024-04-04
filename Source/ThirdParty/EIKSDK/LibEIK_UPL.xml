@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <init>
+        <log text="Fixing EIK Info.plist"/>
+    </init>
+    <iosPListUpdates>
+        <addElements tag="dict" once="true">
+            <key>NSMicrophoneUsageDescription</key>
+            <string>EOS SDK Microphone Usage</string>
+        </addElements>
+
+        <!-- Add CFBundleURLSchemes EOS Schema  -->
+        
+        <setStringFromProperty result="ClientId" ini="Engine" section="/Script/OnlineSubsystemEIK.EIKSettings" property="ClientId" default=""/>
+        
+        <log text="IOS Using ClientId: $S(ClientId)"/>
+        
+        <loopElements tag="dict">
+            <setBool result="bReqKey" value="false"/>
+            
+            <loopElements tag="$">
+                <setStringFromTag result="TagName" tag="$"/>
+                <setStringFromTagText result="TagValue" tag="$"/>
+                
+                <!--
+                <log text="Loop: $S(TagName) Value: $S(TagValue)"/>
+                -->
+
+                <setBoolIsEqual result="bIsKey" arg1="$S(TagName)" arg2="key"/>
+                <if condition="bIsKey">
+                    <true>
+                        <setBoolIsEqual result="bReqKey" arg1="$S(TagValue)" arg2="CFBundleURLSchemes"/>
+                    </true>
+                </if>
+                
+                <setBoolIsEqual result="bIsArray" arg1="$S(TagName)" arg2="array"/>
+                <if condition="bIsArray">
+                    <true>
+                        <if condition="bReqKey">
+                            <true>
+                                <setElement result="NewEntry" xml="&lt;string&gt;eos.$S(ClientId)&lt;/string&gt;"/>
+                                <addElement tag="$" name="NewEntry"/>
+                            </true>
+                        </if>
+                    </true>
+                </if>
+            </loopElements>
+        </loopElements>
+    </iosPListUpdates>
+</root>
