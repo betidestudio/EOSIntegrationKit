@@ -2,7 +2,7 @@
 
 #include "AndroidEOSSDKManager.h"
 
-#include "ThirdParty/EIKSDK/Bin/Android/include/Android/eos_android.h"
+#include "Android/eos_android.h"
 #include "HAL/FileManager.h"
 
 #if WITH_EOS_SDK
