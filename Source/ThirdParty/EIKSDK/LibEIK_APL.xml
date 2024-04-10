@@ -11,8 +11,8 @@
 			<setBool result="bSupported" value="true"/>
 		</isArch>
     
-    <setStringFromProperty result="ClientId" ini="Engine" section="/Script/OnlineSubsystemEIK.EIKSettings" property="ClientId" default="xyza7891naMfZYKiUr8eb7A0rLHpsnDa"/>
-    
+    <setStringFromProperty result="ClientId" ini="Engine" section="/Script/EOSIntegrationKit.EIKSettings" property="ClientId" default="xyza7891naMfZYKiUr8eb7A0rLHpsnDa"/>
+    <log text="Android Using ClientId: $S(ClientId)"/>
 	</init>
 
 	<resourceCopies>
@@ -106,10 +106,10 @@
                 exclude  'build-data.properties'
               }
               dependencies {
-                  implementation 'com.android.support:appcompat-v7:28.0.0'
-                  implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-                  implementation 'androidx.security:security-crypto:1.0.0-rc03'
-                  implementation 'androidx.browser:browser:1.3.0'
+              implementation 'androidx.appcompat:appcompat:1.5.1'
+              implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+              implementation 'androidx.security:security-crypto:1.0.0'
+              implementation 'androidx.browser:browser:1.4.0'
 
               }
               }
@@ -180,7 +180,7 @@
   
   <gameActivityOnCreateAdditions>
         <insert>
-            EOSSDK.init(getApplicationContext());
+            EOSSDK.init(this);
         </insert>
     </gameActivityOnCreateAdditions>
 

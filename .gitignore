@@ -72,6 +72,10 @@ Plugins/*/Intermediate/*
 Source/ThirdParty/EIKSDK/SDK/*
 Source/ThirdParty/EIKSDK/Samples/*
 Source/ThirdParty/EIKSDK/ThirdPartyNotices/*
+Source/ThirdParty/EIKSDK/Bin/*
+Source/ThirdParty/EIKSDK/Include/*
+Source/ThirdParty/EIKSDK/Lib/*
+Source/ThirdParty/EIKSDK/Tools/*
 
 
 # Cache files for the editor to use

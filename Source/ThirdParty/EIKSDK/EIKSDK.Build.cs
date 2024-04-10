@@ -18,20 +18,20 @@ public class EIKSDK : ModuleRules
 		{
 			if (Target.Platform == UnrealTargetPlatform.Android)
 			{
-				return Path.Combine(SDKBaseDir, "SDK", "Bin", "Android");
+				return Path.Combine(SDKBaseDir, "Bin", "Android");
 			}
 			else if (Target.Platform == UnrealTargetPlatform.IOS)
 			{
-				return Path.Combine(SDKBaseDir, "SDK", "Bin", "IOS");
+				return Path.Combine(SDKBaseDir, "Bin", "IOS");
 			}
 
-			return Path.Combine(SDKBaseDir, "SDK", "Bin");
+			return Path.Combine(SDKBaseDir, "Bin");
 		}
 	}
 
 	public virtual string SDKLibsDir
 	{
-		get { return Path.Combine(SDKBaseDir, "SDK", "Lib"); }
+		get { return Path.Combine(SDKBaseDir, "Lib"); }
 	}
 
 	public virtual string SDKIncludesDir
@@ -40,15 +40,15 @@ public class EIKSDK : ModuleRules
 		{
 			if (Target.Platform == UnrealTargetPlatform.Android)
 			{
-				return Path.Combine(SDKBaseDir, "SDK", "Include");
+				return Path.Combine(SDKBinariesDir, "include");
 			}
 			else if (Target.Platform == UnrealTargetPlatform.IOS)
 			{
-				return Path.Combine(SDKBaseDir, "SDK", "Bin", "IOS", "EOSSDK.framework", "Headers");
+				return Path.Combine(SDKBinariesDir, "EOSSDK.framework", "Headers");
 			}
 
 
-			return Path.Combine(SDKBaseDir, "SDK", "Include");
+			return Path.Combine(SDKBaseDir, "Include");
 		}
 	}
 
@@ -136,12 +136,30 @@ public class EIKSDK : ModuleRules
 		{
 			string PluginDir = Path.GetFullPath(Path.Combine(ModuleDirectory, "..", ".."));
 			string DLLFileName = "EOSSDK-Win64-Shipping.dll";
-			string DLLSourcePath = Path.Combine(PluginDir, "ThirdParty", "EIKSDK", "SDK", "Bin", DLLFileName);
+			string DLLSourcePath = Path.Combine(PluginDir, "ThirdParty", "EIKSDK", "Bin", DLLFileName);
 			string DLLTargetPath = "$(BinaryOutputDir)/" + DLLFileName;
 
 			string LIBFileName = "EOSSDK-Win64-Shipping.lib";
-			string LIBSourcePath = Path.Combine(PluginDir, "ThirdParty", "EIKSDK", "SDK", "Lib", LIBFileName);
+			string LIBSourcePath = Path.Combine(ModuleDirectory, "Bin", LIBFileName);
 			string LIBTargetPath = "$(BinaryOutputDir)/" + LIBFileName;
+
+			if (File.Exists(DLLSourcePath))
+			{
+				Console.WriteLine("EOS Integration Kit: DLL file exists at the specified source path.");
+			}
+			else
+			{
+				Console.WriteLine("EOS Integration Kit: DLL file does not exist at the specified source path.");
+			}
+
+			if (File.Exists(LIBSourcePath))
+			{
+				Console.WriteLine("EOS Integration Kit: LIB file exists at the specified source path.");
+			}
+			else
+			{
+				Console.WriteLine("EOS Integration Kit: LIB file does not exist at the specified source path.");
+			}
 
 			// Add the import library
 			PublicAdditionalLibraries.Add(LIBSourcePath);
