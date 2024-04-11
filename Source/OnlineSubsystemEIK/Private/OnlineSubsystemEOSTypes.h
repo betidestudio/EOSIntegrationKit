@@ -396,7 +396,7 @@ namespace OSSInternalCallback
 {
 	/** Create a callback for a non-SDK function that is tied to the lifetime of an arbitrary shared pointer. */
 	template <typename DelegateType, typename OwnerType, typename... CallbackArgs>
-	UE_NODISCARD DelegateType Create(const TSharedPtr<OwnerType, ESPMode::ThreadSafe>& InOwner,
+	_NODISCARD DelegateType Create(const TSharedPtr<OwnerType, ESPMode::ThreadSafe>& InOwner,
 		const TFunction<void(CallbackArgs...)>& InUserCallback)
 	{
 		const DelegateType& CheckOwnerThenExecute = DelegateType::CreateLambda(

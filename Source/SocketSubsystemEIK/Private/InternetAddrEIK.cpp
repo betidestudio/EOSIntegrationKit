@@ -171,7 +171,6 @@ uint32 FInternetAddrEOS::GetTypeHash() const
 #elif ENGINE_MAJOR_VERSION ==5 && ENGINE_MINOR_VERSION == 1
 	return HashCombine(HashCombine(HashCombine(::GetTypeHash((void*)LocalUserId), ::GetTypeHash((void*)RemoteUserId)), ::GetTypeHash(FAnsiStringView(SocketName, EOS_SOCKET_NAME_SIZE))), Channel);
 #endif
-	return 0;
 }
 
 bool FInternetAddrEOS::IsValid() const
