@@ -4,9 +4,9 @@
 
 
 UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSessions(UObject* WorldContextObject,
-	TMap<FString, FEIKAttribute> SessionSettings,
-	FName SessionName,
-	bool bShouldAdvertise, bool bAllowJoinInProgress, bool bAllowInvites, bool bUsesPresence, int32 NumberOfPublicConnections,int32 NumberOfPrivateConnections,bool bRefreshOnlineData)
+	TMap<FString, FEIKAttribute> SessionSettings, FName SessionName, bool bShouldAdvertise, bool bAllowJoinInProgress,
+	bool bAllowInvites, bool bUsesPresence, bool bIsLANMatch, bool bIsDedicatedServer, bool bIsUseLobbiesIfAvailable,
+	bool bIsUseLobbiesVoiceChatIfAvailable, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections)
 {
 	UEIK_UpdateSession_AsyncFunction* UpdateSession = NewObject<UEIK_UpdateSession_AsyncFunction>();
 	UpdateSession->Var_WorldContextObject = WorldContextObject;
@@ -18,12 +18,17 @@ UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSes
 	UpdateSession->Var_bUsesPresence = bUsesPresence;
 	UpdateSession->Var_NumberOfPublicConnections = NumberOfPublicConnections;
 	UpdateSession->Var_NumberOfPrivateConnections = NumberOfPrivateConnections;
+	UpdateSession->Var_bIsLANMatch = bIsLANMatch;
+	UpdateSession->Var_bIsDedicatedServer = bIsDedicatedServer;
+	UpdateSession->Var_bIsUseLobbiesIfAvailable = bIsUseLobbiesIfAvailable;
+	UpdateSession->Var_bIsUseLobbiesVoiceChatIfAvailable = bIsUseLobbiesVoiceChatIfAvailable;
 	return UpdateSession;
 }
 
+
 void UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete(FName Name, bool bArg)
 {
-	if(bArg)
+	if (bArg)
 	{
 		OnSuccess.Broadcast();
 	}
@@ -38,9 +43,9 @@ void UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete(FName Name, bool 
 void UEIK_UpdateSession_AsyncFunction::Activate()
 {
 	Super::Activate();
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld()))
+	if (const IOnlineSubsystem* SubsystemRef = Online::GetSubsystem(this->GetWorld()))
 	{
-		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+		if (const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
 			FOnlineSessionSettings SessionSettings;
 			SessionSettings.bAllowJoinInProgress = Var_bAllowJoinInProgress;
@@ -49,6 +54,10 @@ void UEIK_UpdateSession_AsyncFunction::Activate()
 			SessionSettings.bUsesPresence = Var_bUsesPresence;
 			SessionSettings.NumPublicConnections = Var_NumberOfPublicConnections;
 			SessionSettings.NumPrivateConnections = Var_NumberOfPrivateConnections;
+			SessionSettings.bIsLANMatch = Var_bIsLANMatch;
+			SessionSettings.bIsDedicated = Var_bIsDedicatedServer;
+			SessionSettings.bUseLobbiesIfAvailable = Var_bIsUseLobbiesIfAvailable;
+			SessionSettings.bUseLobbiesVoiceChatIfAvailable = Var_bIsUseLobbiesVoiceChatIfAvailable;
 			for (auto& Settings_SingleValue : Var_SessionSettings)
 			{
 				if (Settings_SingleValue.Key.Len() == 0)
@@ -60,9 +69,10 @@ void UEIK_UpdateSession_AsyncFunction::Activate()
 				Setting.Data = Settings_SingleValue.Value.GetVariantData();
 				SessionSettings.Settings.Add(FName(*Settings_SingleValue.Key), Setting);
 			}
-			SessionPtrRef->OnUpdateSessionCompleteDelegates.AddUObject(this, &UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete);
-			SessionPtrRef->UpdateSession(Var_SessionName, SessionSettings, Var_bRefreshOnlineData);
- 		}
+			SessionPtrRef->OnUpdateSessionCompleteDelegates.AddUObject(
+				this, &UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete);
+			SessionPtrRef->UpdateSession(Var_SessionName, SessionSettings, true);
+		}
 		else
 		{
 			OnFailure.Broadcast();
