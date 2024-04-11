@@ -15,7 +15,9 @@
 #include "EIK_BlueprintFunctions.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnResponseFromSanctions, bool, bWasSuccess);
+
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnResponseFromEpicForAccessToken, bool, bWasSuccess, const FString&, AccessToken);
+
 UENUM(BlueprintType)
 enum class EEOSSanctionType : uint8
 {
@@ -24,6 +26,7 @@ enum class EEOSSanctionType : uint8
 	UnfairPunishment,
 	AppealForForgiveness,
 };
+
 UENUM(BlueprintType)
 enum class EEIK_LoginStatus : uint8
 {
@@ -34,6 +37,142 @@ enum class EEIK_LoginStatus : uint8
 	/** Player has been validated by the platform specific authentication service */
 	LoggedIn,
 };
+
+UENUM(BlueprintType)
+enum ESessionCurrentState
+{
+	/** An online session has not been created yet */
+	NoSession,
+	/** An online session is in the process of being created */
+	Creating,
+	/** Session has been created but the session hasn't started (pre match lobby) */
+	Pending,
+	/** Session has been asked to start (may take time due to communication with backend) */
+	Starting,
+	/** The current session has started. Sessions with join in progress disabled are no longer joinable */
+	InProgress,
+	/** The session is still valid, but the session is no longer being played (post match lobby) */
+	Ending,
+	/** The session is closed and any stats committed */
+	Ended,
+	/** The session is being destroyed */
+	Destroying
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_CurrentSessionInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bHostingSession;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bPublicJoinable;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bFriendJoinable;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bInviteOnly;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bAllowInvites;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	TArray<FEIKUniqueNetId> RegisteredPlayers;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	FEIKUniqueNetId SessionOwner;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	TEnumAsByte<ESessionCurrentState> SessionState;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	TMap<FString, FEIKAttribute> SessionSettings;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	int32 NumOpenPublicConnections;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	int32 NumOpenPrivateConnections;
+	
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	FString SessionIdString;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	FString CompleteDebugString;
+	
+	FEIK_CurrentSessionInfo(): bAllowInvites(false), SessionState(), NumOpenPublicConnections(0),
+	                           NumOpenPrivateConnections(0)
+	{
+		bHostingSession = false;
+		bPublicJoinable = false;
+		bFriendJoinable = false;
+		bInviteOnly = false;
+	}
+
+	FEIK_CurrentSessionInfo(FNamedOnlineSession Session)
+	{
+		CompleteDebugString = Session.SessionInfo->ToDebugString();
+		NumOpenPublicConnections = Session.NumOpenPublicConnections;
+		NumOpenPrivateConnections = Session.NumOpenPrivateConnections;
+		SessionIdString = Session.GetSessionIdStr();
+		
+		FOnlineSessionSettings LocalSessionSettings = Session.SessionSettings;
+		TMap<FName, FOnlineSessionSetting>::TIterator It(LocalSessionSettings.Settings);
+		
+		TMap<FString, FEIKAttribute> LocalArraySettings;
+		while (It)
+		{
+			const FName& SettingName = It.Key();
+			const FOnlineSessionSetting& Setting = It.Value();
+			LocalArraySettings.Add(*SettingName.ToString(), Setting.Data);
+			++It;
+		}
+		SessionSettings = LocalArraySettings;
+		bHostingSession = Session.bHosting;
+		Session.GetJoinability(bPublicJoinable, bFriendJoinable, bInviteOnly, bAllowInvites);
+		FEIKUniqueNetId Temp;
+		Temp.SetUniqueNetId(Session.OwningUserId);
+		SessionOwner = Temp;
+		for (auto& Player : Session.RegisteredPlayers)
+		{
+			FEIKUniqueNetId Temp1;
+			Temp1.SetUniqueNetId(Player);
+			RegisteredPlayers.Add(Temp1);
+		}
+		
+		switch (Session.SessionState)
+		{
+		case EOnlineSessionState::NoSession:
+			SessionState = ESessionCurrentState::NoSession;
+			break;
+		case EOnlineSessionState::Creating:
+			SessionState = ESessionCurrentState::Creating;
+			break;
+		case EOnlineSessionState::Pending:
+			SessionState = ESessionCurrentState::Pending;
+			break;
+		case EOnlineSessionState::Starting:
+			SessionState = ESessionCurrentState::Starting;
+			break;
+		case EOnlineSessionState::InProgress:
+			SessionState = ESessionCurrentState::InProgress;
+			break;
+		case EOnlineSessionState::Ending:
+			SessionState = ESessionCurrentState::Ending;
+			break;
+		case EOnlineSessionState::Ended:
+			SessionState = ESessionCurrentState::Ended;
+			break;
+		case EOnlineSessionState::Destroying:
+			SessionState = ESessionCurrentState::Destroying;
+			break;
+		}
+	}
+};
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_BlueprintFunctions : public UBlueprintFunctionLibrary
 {
@@ -42,6 +181,9 @@ class ONLINESUBSYSTEMEIK_API UEIK_BlueprintFunctions : public UBlueprintFunction
 public:
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
 	static FString GetEpicAccountId(UObject* Context);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
+	static FEIK_CurrentSessionInfo GetCurrentSessionInfo(UObject* Context, FName SessionName = "GameSession");
 
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
 	static FString GetProductUserID(UObject* Context);
@@ -54,12 +196,15 @@ public:
 	static bool StartSession(FName SessionName = "GameSession");
 
 	// This is a C++ method definition for registering players in lobbies and sessions
-	UFUNCTION(BlueprintCallable, DisplayName="Register EIK Player In Session", Category="EOS Integration Kit || Sessions")
-	static bool RegisterPlayer(FName SessionName = "GameSession",FEIKUniqueNetId PlayerId = FEIKUniqueNetId(), bool bWasInvited = false);
+	UFUNCTION(BlueprintCallable, DisplayName="Register EIK Player In Session",
+		Category="EOS Integration Kit || Sessions")
+	static bool RegisterPlayer(FName SessionName = "GameSession", FEIKUniqueNetId PlayerId = FEIKUniqueNetId(),
+	                           bool bWasInvited = false);
 
 	// This is a C++ method definition for unregistering players from lobbies and sessions
-	UFUNCTION(BlueprintCallable, DisplayName="Unregister EIK Player In Session", Category="EOS Integration Kit || Sessions")
-	static bool UnRegisterPlayer(FName SessionName = "GameSession",FEIKUniqueNetId PlayerId = FEIKUniqueNetId());
+	UFUNCTION(BlueprintCallable, DisplayName="Unregister EIK Player In Session",
+		Category="EOS Integration Kit || Sessions")
+	static bool UnRegisterPlayer(FName SessionName = "GameSession", FEIKUniqueNetId PlayerId = FEIKUniqueNetId());
 
 	// This is a C++ method definition for ending lobbies and sessions
 	UFUNCTION(BlueprintCallable, DisplayName="End EIK Session", Category="EOS Integration Kit || Sessions")
@@ -67,8 +212,8 @@ public:
 
 	// This is a C++ method definition for checking if user is in a lobby or session
 	UFUNCTION(BlueprintCallable, DisplayName="Is In EIK Session", Category="EOS Integration Kit || Sessions")
-	static bool IsInSession(FName SessionName = "GameSession",FEIKUniqueNetId PlayerId = FEIKUniqueNetId());
-	
+	static bool IsInSession(FName SessionName = "GameSession", FEIKUniqueNetId PlayerId = FEIKUniqueNetId());
+
 	// This is a C++ method definition for getting the nickname of a player from an online subsystem.
 	// Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/extra-functions/getplayernickname
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
@@ -109,7 +254,7 @@ public:
 	// This is useful for converting a string back to its original binary data representation.
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra || Conversions")
 	static TArray<uint8> StringToByteArray(const FString& DataToConvert);
-	
+
 	// Convert a TArray<uint8> to a SaveGame object.
 	// The TArray<uint8> is deserialized to construct the SaveGame object.
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra || Conversions")
@@ -150,7 +295,8 @@ public:
 	static FString GetCurrentPort(AGameModeBase* CurrentGameMode);
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
-	static void MakeSanctionAppeal(FString AccessToken, EEOSSanctionType Reason, const FOnResponseFromSanctions& OnResponseFromSanctions);
+	static void MakeSanctionAppeal(FString AccessToken, EEOSSanctionType Reason,
+	                               const FOnResponseFromSanctions& OnResponseFromSanctions);
 
 	UFUNCTION(BlueprintCallable, DisplayName="Request EOS Access Token", Category="EOS Integration Kit || Extra")
 	static void RequestEOSAccessToken(const FOnResponseFromEpicForAccessToken& Response);

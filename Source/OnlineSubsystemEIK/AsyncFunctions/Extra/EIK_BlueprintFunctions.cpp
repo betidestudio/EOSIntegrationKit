@@ -61,6 +61,28 @@ FString UEIK_BlueprintFunctions::GetEpicAccountId(UObject* Context)
 	}
 }
 
+FEIK_CurrentSessionInfo UEIK_BlueprintFunctions::GetCurrentSessionInfo(UObject* Context,FName SessionName)
+{
+	if(Context)
+	{
+		if(!Context->GetWorld())
+		{
+			return FEIK_CurrentSessionInfo();
+		}
+		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+		{
+			if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+			{
+				FEIK_CurrentSessionInfo SessionInfo(*SessionPtrRef->GetNamedSession(SessionName));
+				return SessionInfo;
+			}
+			return FEIK_CurrentSessionInfo();
+		}
+		return FEIK_CurrentSessionInfo();
+	}
+	return FEIK_CurrentSessionInfo();
+}
+
 FString UEIK_BlueprintFunctions::GetProductUserID(UObject* Context)
 {
 	if(Context)
