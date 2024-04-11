@@ -310,6 +310,8 @@ void UEIKSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 
 	UE_LOG(LogTemp, Warning, TEXT("PostEditChangeProperty: %s"), *PropertyChangedEvent.Property->GetName());
 
+	
+
 if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 {
     FString authType;
@@ -393,6 +395,10 @@ if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 		{
 			if (!Artifact.ClientId.IsEmpty())
 			{
+				if(Artifact.ArtifactName == AndroidArtifactName || Artifact.ArtifactName == IOSArtifactName)
+				{
+					
+				}
 				if (!Artifact.ClientId.StartsWith(TEXT("xyz")))
 				{
 					FMessageDialog::Open(EAppMsgType::Ok,

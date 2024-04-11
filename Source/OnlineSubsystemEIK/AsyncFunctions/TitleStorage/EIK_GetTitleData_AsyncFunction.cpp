@@ -23,22 +23,22 @@ void UEIK_GetTitleData_AsyncFunction::Activate()
 
 void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 {
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	if (const IOnlineSubsystem* SubsystemRef = IOnlineSubsystem::Get())
 	{
-		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+		if (const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
-			if(const IOnlineTitleFilePtr TitleFilePointerRef = SubsystemRef->GetTitleFileInterface())
+			if (const IOnlineTitleFilePtr TitleFilePointerRef = SubsystemRef->GetTitleFileInterface())
 			{
-				if(!IdentityPointerRef->GetUniquePlayerId(0))
+				if (!IdentityPointerRef->GetUniquePlayerId(0))
 				{
-					if(const UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
+					if (const UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
 					{
 						if (EIKSettings->bShowAdvancedLogs)
 						{
-							UE_LOG(LogTemp, Error, TEXT("EIK Log: GetTitleData: IdentityPointerRef->GetUniquePlayerId(0) is nullptr"));
+							UE_LOG(LogTemp, Error,TEXT("EIK Log: GetTitleData: IdentityPointerRef->GetUniquePlayerId(0) is nullptr"));
 						}
 					}
-					if(!bDelegateCalled)
+					if (!bDelegateCalled)
 					{
 						bDelegateCalled = true;
 						OnFail.Broadcast(false, TArray<uint8>());
@@ -53,7 +53,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 			}
 			else
 			{
-				if(!bDelegateCalled)
+				if (!bDelegateCalled)
 				{
 					bDelegateCalled = true;
 					OnFail.Broadcast(false, TArray<uint8>());
@@ -64,102 +64,102 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 		}
 		else
 		{
-			if(!bDelegateCalled)
+			if (!bDelegateCalled)
 			{
 				bDelegateCalled = true;
 				OnFail.Broadcast(false, TArray<uint8>());
 				SetReadyToDestroy();
-MarkAsGarbage();
+				MarkAsGarbage();
 			}
 		}
 	}
 	else
 	{
-		if(!bDelegateCalled)
+		if (!bDelegateCalled)
 		{
 			bDelegateCalled = true;
 			OnFail.Broadcast(false, TArray<uint8>());
 			SetReadyToDestroy();
-MarkAsGarbage();
+			MarkAsGarbage();
 		}
 	}
 }
 
 void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FString& V_FileName)
 {
-	if(bSuccess)
+	if (bSuccess)
 	{
-		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+		if (const IOnlineSubsystem* SubsystemRef = IOnlineSubsystem::Get())
 		{
-			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
+			if (const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
-				if(const IOnlineTitleFilePtr TitleFilePointerRef = SubsystemRef->GetTitleFileInterface())
+				if (const IOnlineTitleFilePtr TitleFilePointerRef = SubsystemRef->GetTitleFileInterface())
 				{
 					TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
 					TArray<uint8> FileContents;
 					TitleFilePointerRef->GetFileContents(V_FileName, FileContents);
-					if(!FileContents.IsEmpty())
+					if (!FileContents.IsEmpty())
 					{
-						if(!bDelegateCalled)
+						if (!bDelegateCalled)
 						{
 							bDelegateCalled = true;
 							OnSuccess.Broadcast(true, FileContents);
 							SetReadyToDestroy();
-MarkAsGarbage();
+							MarkAsGarbage();
 						}
 					}
 					else
 					{
-						if(!bDelegateCalled)
+						if (!bDelegateCalled)
 						{
 							bDelegateCalled = true;
 							OnFail.Broadcast(false, TArray<uint8>());
 							SetReadyToDestroy();
-MarkAsGarbage();
+							MarkAsGarbage();
 						}
 					}
 				}
 				else
 				{
-					if(!bDelegateCalled)
+					if (!bDelegateCalled)
 					{
 						bDelegateCalled = true;
 						OnFail.Broadcast(false, TArray<uint8>());
 						SetReadyToDestroy();
-MarkAsGarbage();
+						MarkAsGarbage();
 					}
 				}
 			}
 			else
 			{
-				if(!bDelegateCalled)
+				if (!bDelegateCalled)
 				{
 					bDelegateCalled = true;
 					OnFail.Broadcast(false, TArray<uint8>());
 					SetReadyToDestroy();
-MarkAsGarbage();
+					MarkAsGarbage();
 				}
 			}
 		}
 		else
 		{
-			if(!bDelegateCalled)
+			if (!bDelegateCalled)
 			{
 				bDelegateCalled = true;
 				OnFail.Broadcast(false, TArray<uint8>());
 				SetReadyToDestroy();
-MarkAsGarbage();
+				MarkAsGarbage();
 			}
 		}
 	}
 	else
 	{
-		if(!bDelegateCalled)
+		if (!bDelegateCalled)
 		{
 			bDelegateCalled = true;
 			OnFail.Broadcast(false, TArray<uint8>());
 			SetReadyToDestroy();
-MarkAsGarbage();
+			MarkAsGarbage();
 		}
 	}
 }
