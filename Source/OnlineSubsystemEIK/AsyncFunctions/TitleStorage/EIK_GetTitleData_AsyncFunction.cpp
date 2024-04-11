@@ -42,6 +42,9 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 					{
 						bDelegateCalled = true;
 						OnFail.Broadcast(false, TArray<uint8>());
+						SetReadyToDestroy();
+						MarkAsGarbage();
+						return;
 					}
 				}
 				TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
@@ -55,7 +58,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 					bDelegateCalled = true;
 					OnFail.Broadcast(false, TArray<uint8>());
 					SetReadyToDestroy();
-MarkAsGarbage();
+					MarkAsGarbage();
 				}
 			}
 		}
