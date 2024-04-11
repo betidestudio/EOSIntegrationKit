@@ -186,6 +186,8 @@ public:
 	static FEIK_CurrentSessionInfo GetCurrentSessionInfo(UObject* Context, FName SessionName = "GameSession");
 
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
+	static TArray<FName> GetAllCurrentSessionNames(UObject* Context);
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
 	static FString GetProductUserID(UObject* Context);
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Friends")

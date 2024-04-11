@@ -4,6 +4,8 @@
 
 #include "EIKSettings.h"
 #include "HttpModule.h"
+#include "OnlineSessionEOS.h"
+#include "OnlineSubsystemEOS.h"
 #include "Engine/GameInstance.h"
 #include "Containers/Array.h"
 #include "GameFramework/GameModeBase.h"
@@ -81,6 +83,30 @@ FEIK_CurrentSessionInfo UEIK_BlueprintFunctions::GetCurrentSessionInfo(UObject* 
 		return FEIK_CurrentSessionInfo();
 	}
 	return FEIK_CurrentSessionInfo();
+}
+
+TArray<FName> UEIK_BlueprintFunctions::GetAllCurrentSessionNames(UObject* Context)
+{
+	if(Context)
+	{
+		if(!Context->GetWorld())
+		{
+			return TArray<FName>();
+		}
+		if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+		{
+			if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+			{
+				TArray<FName> SessionNames;
+				for(auto SessionV : EOSRef->SessionInterfacePtr->Sessions)
+				{
+					SessionNames.Add(SessionV.SessionName);
+				}
+				return SessionNames;
+			}
+		}
+	}
+	return TArray<FName>();
 }
 
 FString UEIK_BlueprintFunctions::GetProductUserID(UObject* Context)
