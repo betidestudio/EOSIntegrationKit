@@ -4,7 +4,7 @@
 
 
 UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSessions(UObject* WorldContextObject,
-	TMap<FString, FString> SessionSettings,
+	TMap<FString, FEIKAttribute> SessionSettings,
 	FName SessionName,
 	bool bShouldAdvertise, bool bAllowJoinInProgress, bool bAllowInvites, bool bUsesPresence, int32 NumberOfPublicConnections,int32 NumberOfPrivateConnections,bool bRefreshOnlineData)
 {
@@ -57,8 +57,8 @@ void UEIK_UpdateSession_AsyncFunction::Activate()
 				}
 				FOnlineSessionSetting Setting;
 				Setting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
-				Setting.Data.SetValue(Settings_SingleValue.Value);
-				SessionSettings.Settings.Add( FName(*Settings_SingleValue.Key), Setting);
+				Setting.Data = Settings_SingleValue.Value.GetVariantData();
+				SessionSettings.Settings.Add(FName(*Settings_SingleValue.Key), Setting);
 			}
 			SessionPtrRef->OnUpdateSessionCompleteDelegates.AddUObject(this, &UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete);
 			SessionPtrRef->UpdateSession(Var_SessionName, SessionSettings, Var_bRefreshOnlineData);
