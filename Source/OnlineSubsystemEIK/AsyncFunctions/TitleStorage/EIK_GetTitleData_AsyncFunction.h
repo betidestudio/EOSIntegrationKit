@@ -6,7 +6,7 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_GetTitleData_AsyncFunction.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetTitleDataResult, bool, bWasSuccess, const TArray<uint8>&,Data);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FGetTitleDataResult, bool, bWasSuccess, int64, ProgressPercentage,const TArray<uint8>&,Data);
 
 /**
  * 
@@ -19,6 +19,9 @@ class ONLINESUBSYSTEMEIK_API UEIK_GetTitleData_AsyncFunction : public UBlueprint
 public:
 	UPROPERTY(BlueprintAssignable)
 	FGetTitleDataResult OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FGetTitleDataResult OnProgress;
 	
 	UPROPERTY(BlueprintAssignable)
 	FGetTitleDataResult OnFail;
@@ -37,6 +40,7 @@ public:
 
 	virtual void Activate() override;
 
+	void OnGetFileProgress(const FString& FileName1, uint64 BytesRead);
 	void GetTitleData();
 
 	void OnGetFileComplete(bool bSuccess,  const FString& V_FileName);
