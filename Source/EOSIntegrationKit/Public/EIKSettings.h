@@ -70,6 +70,7 @@ public:
 /** Native version of the UObject based config data */
 struct FEOSSettings
 {
+	FString ApiKey;
 	FString ReturnLevelName;
 	FString CacheDir;
 	FString DefaultArtifactName;
@@ -125,10 +126,14 @@ public:
 	/** This will show the advanced logs for the EOS SDK and EOS Integration Kit functions*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
 	bool bShowAdvancedLogs;
+
 	/** Select which level which leave party button in social overlay will return to. Leave empty to return to defult game map. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EIK Level Settings")
 	FString ReturnLevelName;
 
+	/*Your api key found in Game Services -> Player Ticketing -> [Show Api Key]*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Support Tickets")
+	FString ApiKey;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
 	FString ClientId;

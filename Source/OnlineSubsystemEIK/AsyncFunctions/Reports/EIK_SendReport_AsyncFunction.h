@@ -64,6 +64,7 @@ public:
 	//Functions
 	UFUNCTION(BlueprintCallable, DisplayName = "Send EIK Player Report", meta = (BlueprintInternalUseOnly = "true"), Category = "EOS Integration Kit || Reports")
 	static UEIK_SendReport_AsyncFunction* SendEIKPlayerReportAsyncFunction(FString LocalReporterPUID, FString TargetPlayerPUID, E_PlayerReportCategory ReportCategory, FString Message);
+
 	void SendReportFunc();
 
 	static void EOS_CALL SendReportFuncCallback(const EOS_Reports_SendPlayerBehaviorReportCompleteCallbackInfo* Data);
