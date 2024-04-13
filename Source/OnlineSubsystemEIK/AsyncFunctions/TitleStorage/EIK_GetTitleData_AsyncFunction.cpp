@@ -21,6 +21,11 @@ void UEIK_GetTitleData_AsyncFunction::Activate()
 	Super::Activate();
 }
 
+void UEIK_GetTitleData_AsyncFunction::OnGetFileProgress(const FString& FileName1, uint64 BytesRead)
+{
+	OnProgress.Broadcast(true, BytesRead, TArray<uint8>());
+}
+
 void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 {
 	if (const IOnlineSubsystem* SubsystemRef = IOnlineSubsystem::Get())
@@ -41,7 +46,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 					if (!bDelegateCalled)
 					{
 						bDelegateCalled = true;
-						OnFail.Broadcast(false, TArray<uint8>());
+						OnFail.Broadcast(false,0, TArray<uint8>());
 						SetReadyToDestroy();
 						MarkAsGarbage();
 						return;
@@ -49,6 +54,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 				}
 				TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
 				TitleFilePointerRef->OnReadFileCompleteDelegates.AddUObject(this, &UEIK_GetTitleData_AsyncFunction::OnGetFileComplete);
+				TitleFilePointerRef->OnReadFileProgressDelegates.AddUObject(this, &UEIK_GetTitleData_AsyncFunction::OnGetFileProgress);
 				TitleFilePointerRef->ReadFile(FileName);
 			}
 			else
@@ -56,7 +62,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 				if (!bDelegateCalled)
 				{
 					bDelegateCalled = true;
-					OnFail.Broadcast(false, TArray<uint8>());
+					OnFail.Broadcast(false, 0,TArray<uint8>());
 					SetReadyToDestroy();
 					MarkAsGarbage();
 				}
@@ -67,7 +73,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 			if (!bDelegateCalled)
 			{
 				bDelegateCalled = true;
-				OnFail.Broadcast(false, TArray<uint8>());
+				OnFail.Broadcast(false, 0, TArray<uint8>());
 				SetReadyToDestroy();
 				MarkAsGarbage();
 			}
@@ -78,7 +84,7 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 		if (!bDelegateCalled)
 		{
 			bDelegateCalled = true;
-			OnFail.Broadcast(false, TArray<uint8>());
+			OnFail.Broadcast(false, 0,TArray<uint8>());
 			SetReadyToDestroy();
 			MarkAsGarbage();
 		}
@@ -103,7 +109,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 						if (!bDelegateCalled)
 						{
 							bDelegateCalled = true;
-							OnSuccess.Broadcast(true, FileContents);
+							OnSuccess.Broadcast(true,0, FileContents);
 							SetReadyToDestroy();
 							MarkAsGarbage();
 						}
@@ -113,7 +119,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 						if (!bDelegateCalled)
 						{
 							bDelegateCalled = true;
-							OnFail.Broadcast(false, TArray<uint8>());
+							OnFail.Broadcast(false, 0,TArray<uint8>());
 							SetReadyToDestroy();
 							MarkAsGarbage();
 						}
@@ -124,7 +130,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 					if (!bDelegateCalled)
 					{
 						bDelegateCalled = true;
-						OnFail.Broadcast(false, TArray<uint8>());
+						OnFail.Broadcast(false, 0,TArray<uint8>());
 						SetReadyToDestroy();
 						MarkAsGarbage();
 					}
@@ -135,7 +141,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 				if (!bDelegateCalled)
 				{
 					bDelegateCalled = true;
-					OnFail.Broadcast(false, TArray<uint8>());
+					OnFail.Broadcast(false,0, TArray<uint8>());
 					SetReadyToDestroy();
 					MarkAsGarbage();
 				}
@@ -146,7 +152,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 			if (!bDelegateCalled)
 			{
 				bDelegateCalled = true;
-				OnFail.Broadcast(false, TArray<uint8>());
+				OnFail.Broadcast(false, 0,TArray<uint8>());
 				SetReadyToDestroy();
 				MarkAsGarbage();
 			}
@@ -157,7 +163,7 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 		if (!bDelegateCalled)
 		{
 			bDelegateCalled = true;
-			OnFail.Broadcast(false, TArray<uint8>());
+			OnFail.Broadcast(false,0, TArray<uint8>());
 			SetReadyToDestroy();
 			MarkAsGarbage();
 		}

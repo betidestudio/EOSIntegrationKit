@@ -288,8 +288,12 @@ bool FOnlineTitleFileEOS::ReadFile(const FString& FileName)
 
 	CallbackObj->SetNested2CallbackLambda([this](const EOS_TitleStorage_FileTransferProgressCallbackInfo* Data)
 	{
-		UE_LOG_ONLINE_TITLEFILE(VeryVerbose, TEXT("File transfer progress (%s) %d bytes"), ANSI_TO_TCHAR(Data->Filename), Data->BytesTransferred);
-		TriggerOnReadFileProgressDelegates(FString(ANSI_TO_TCHAR(Data->Filename)), Data->BytesTransferred);
+		float Megabytesdone = Data->BytesTransferred / (1024.0f * 1024.0f);
+		float MegabytesTotal = Data->TotalFileSizeBytes / (1024.0f * 1024.0f);
+		float FPercentagedone = (Megabytesdone / MegabytesTotal);
+		uint64 percentagedone = (uint64)(FPercentagedone * 100.0f);
+		UE_LOG_ONLINE_TITLEFILE(VeryVerbose, TEXT("File transfer progress (%s) %llu bytes"), ANSI_TO_TCHAR(Data->Filename), percentagedone);
+		TriggerOnReadFileProgressDelegates(FString(ANSI_TO_TCHAR(Data->Filename)), percentagedone);
 	});
 
 	CallbackObj->CallbackLambda = [this](const EOS_TitleStorage_ReadFileCallbackInfo* Data)
