@@ -305,7 +305,7 @@ public:
 	                      const FOnGetUserPrivilegeCompleteDelegate& Delegate,
 	                      EShowPrivilegeResolveUI ShowResolveUI) override
 	{
-		Delegate.ExecuteIfBound(LocalUserId, Privilege, EPrivilegeResults::NoChange);
+		//Delegate.ExecuteIfBound(LocalUserId, Privilege, EPrivilegeResults::NoFailures);
 	}
 #endif
 // IOnlineExternalUI Interface
