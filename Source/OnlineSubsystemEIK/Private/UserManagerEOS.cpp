@@ -8,7 +8,6 @@
 #include "Misc/CommandLine.h"
 #include "Misc/Guid.h"
 #include "Misc/OutputDeviceRedirector.h"
-#include "Runtime/Launch/Resources/Version.h"
 #include "IPAddress.h"
 #include "SocketSubsystem.h"
 #include "eos_connect_types.h"

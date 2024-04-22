@@ -3,6 +3,7 @@
 #pragma once
 
 #include "OnlineSubsystemEOSTypes.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "Interfaces/OnlineExternalUIInterface.h"
 #include "Interfaces/OnlineFriendsInterface.h"
 #include "Interfaces/OnlinePresenceInterface.h"
