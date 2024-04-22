@@ -1934,6 +1934,14 @@ FString FUserManagerEOS::GetAuthToken(int32 LocalUserNum) const
 	}
 	return FString();
 }
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 4
+#else
+void FUserManagerEOS::GetUserPrivilege(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege,
+	const FOnGetUserPrivilegeCompleteDelegate& Delegate)
+{
+	Delegate.ExecuteIfBound(UserId, Privilege, static_cast<unsigned>(EPrivilegeResults::NoFailures));
+}
+#endif
 
 void FUserManagerEOS::RevokeAuthToken(const FUniqueNetId& LocalUserId, const FOnRevokeAuthTokenCompleteDelegate& Delegate)
 {
