@@ -1160,7 +1160,7 @@ void FUserManagerEOS::RefreshConnectLogin(int32 LocalUserNum)
 	}
 
 	const FEOSSettings Settings = UEIKSettings::GetSettings();
-	if (Settings.bUseEAS)
+	if (true)
 	{
 		EOS_EpicAccountId AccountId = UserNumToAccountIdMap[LocalUserNum];
 		EOS_Auth_Token* AuthToken = nullptr;
