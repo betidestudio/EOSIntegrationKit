@@ -1957,11 +1957,6 @@ int32 FUserManagerEOS::GetLocalUserNumFromPlatformUserId(FPlatformUserId Platfor
 	return 0;
 }
 
-void FUserManagerEOS::GetUserPrivilege(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, const FOnGetUserPrivilegeCompleteDelegate& Delegate)
-{
-	Delegate.ExecuteIfBound(UserId, Privilege, (uint32)EPrivilegeResults::NoFailures);
-}
-
 FString FUserManagerEOS::GetAuthType() const
 {
 	return TEXT("epic");

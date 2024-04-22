@@ -3,6 +3,7 @@
 
 #include "EIK_GetStats_AsyncFunction.h"
 
+#include "OnlineError.h"
 #include "OnlineStatsEOS.h"
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 
