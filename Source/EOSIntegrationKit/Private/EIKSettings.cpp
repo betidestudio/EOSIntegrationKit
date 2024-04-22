@@ -145,6 +145,7 @@ const FEOSSettings& UEIKSettings::ManualGetSettings()
 	{
 		CachedSettings.Emplace();
 
+		GConfig->GetString(INI_SECTION, TEXT("ApiKey"), CachedSettings->ApiKey, GEngineIni);
 		GConfig->GetString(INI_SECTION, TEXT("ReturnLevelName"), CachedSettings->ReturnLevelName, GEngineIni);
 		GConfig->GetString(INI_SECTION, TEXT("CacheDir"), CachedSettings->CacheDir, GEngineIni);
 		GConfig->GetString(INI_SECTION, TEXT("DefaultArtifactName"), CachedSettings->DefaultArtifactName, GEngineIni);
@@ -171,6 +172,7 @@ FEOSSettings UEIKSettings::ToNative() const
 {
 	FEOSSettings Native;
 
+	Native.ApiKey = ApiKey;
 	Native.ReturnLevelName = ReturnLevelName;
 	Native.CacheDir = CacheDir;
 	Native.DefaultArtifactName = DefaultArtifactName;
