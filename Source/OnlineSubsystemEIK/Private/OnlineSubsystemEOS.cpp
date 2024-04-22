@@ -484,7 +484,7 @@ bool FOnlineSubsystemEOS::Shutdown()
 	for (TPair<FUniqueNetIdRef, FOnlineSubsystemEOSVoiceChatUserWrapperRef>& Pair : LocalVoiceChatUsers)
 	{
 		FOnlineSubsystemEOSVoiceChatUserWrapperRef& VoiceChatUserWrapper = Pair.Value;
-		VoiceChatInterface->ReleaseUser(&VoiceChatUserWrapper->VoiceChatUser);
+		//VoiceChatInterface->ReleaseUser(&VoiceChatUserWrapper->VoiceChatUser);
 	}
 	LocalVoiceChatUsers.Reset();
 	VoiceChatInterface = nullptr;
