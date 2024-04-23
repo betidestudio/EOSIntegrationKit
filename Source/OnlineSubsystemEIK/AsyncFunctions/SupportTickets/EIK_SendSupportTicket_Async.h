@@ -4,8 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "Json.h"
-#include "JsonUtilities.h"
+
 #include "Runtime/Online/HTTP/Public/Http.h"
 #include "EIKSettings.h"
 #include "EIK_SendSupportTicket_Async.generated.h"
@@ -59,40 +58,40 @@ struct FSupportTicketResponseData
 {
     GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString prod_name;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString prod_slug;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString guid;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString sender_name;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString sender_email;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString subject;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString message;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString error_code;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString system_os;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString system_antimalware;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString system_other;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
     FString timestamp;
 };
 
