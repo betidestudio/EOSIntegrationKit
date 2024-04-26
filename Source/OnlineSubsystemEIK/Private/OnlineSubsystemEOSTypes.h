@@ -398,7 +398,7 @@ namespace OSSInternalCallback
 	/** Create a callback for a non-SDK function that is tied to the lifetime of an arbitrary shared pointer. */
 	template <typename DelegateType, typename OwnerType, typename... CallbackArgs>
 #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >3
-	_NODISCARD DelegateType Create(const TSharedPtr<OwnerType, ESPMode::ThreadSafe>& InOwner,
+	[[nodiscard]] DelegateType Create(const TSharedPtr<OwnerType, ESPMode::ThreadSafe>& InOwner,
 #else
 	UE_NODISCARD DelegateType Create(const TSharedPtr<OwnerType, ESPMode::ThreadSafe>& InOwner,
 #endif
