@@ -687,7 +687,14 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
 	if(AccountCredentials.Id.IsEmpty())
 	{
-		LoginInfo.DisplayName = "DefaultName";
+		if(AccountCredentials.Type != "openid")
+		{
+			LoginInfo.DisplayName = "DefaultName";
+		}
+		else
+		{
+			LoginInfo.DisplayName = nullptr;
+		}
 	}
 	else
 	{
@@ -1155,7 +1162,7 @@ void FUserManagerEOS::RefreshConnectLogin(int32 LocalUserNum)
 	if(LocalUserNumToLastLoginCredentials[0]->Type == TEXT("deviceid"))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Refresh Connect Login for Device ID"));
-		LoginWithDeviceID(*LocalUserNumToLastLoginCredentials[0]);
+		StartConnectInterfaceLogin(*LocalUserNumToLastLoginCredentials[0]);
 		return;
 	}
 
