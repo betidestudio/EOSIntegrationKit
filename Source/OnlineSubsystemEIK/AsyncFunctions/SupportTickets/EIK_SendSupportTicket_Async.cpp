@@ -4,7 +4,10 @@
 
 
 #include "EIKSettings.h"
+#include "Dom/JsonObject.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonWriter.h"
 
 
 void UEIK_SendSupportTicket_Async::Activate()

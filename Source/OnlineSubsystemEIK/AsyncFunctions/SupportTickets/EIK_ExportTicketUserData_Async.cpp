@@ -7,6 +7,8 @@
 #include "EIKSettings.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
 #include "EIK_SendSupportTicket_Async.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 
 void UEIK_ExportTicketUserData_Async::Activate()
 {
