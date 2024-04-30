@@ -1471,7 +1471,7 @@ void FEOSVoiceChatUser::BindChannelCallbacks(FChannelSession& ChannelSession)
 		static_assert(EOS_RTCAUDIO_ADDNOTIFYAUDIOBEFORERENDER_API_LATEST == 1, "EOS_RTC_AddNotifyAudioBeforeRenderOptions updated, check new fields");
 		AudioBeforeRenderOptions.LocalUserId = LoginSession.LocalUserProductUserId;
 		AudioBeforeRenderOptions.RoomName = Utf8RoomName.Get();
-		AudioBeforeRenderOptions.bUnmixedAudio = false;
+		AudioBeforeRenderOptions.bUnmixedAudio = true;
 		ChannelSession.OnAudioBeforeRenderNotificationId = EOS_RTCAudio_AddNotifyAudioBeforeRender(EOS_RTC_GetAudioInterface(GetRtcInterface()), &AudioBeforeRenderOptions, this, &FEOSVoiceChatUser::OnChannelAudioBeforeRenderStatic);
 		if (ChannelSession.OnAudioBeforeRenderNotificationId == EOS_INVALID_NOTIFICATIONID)
 		{
