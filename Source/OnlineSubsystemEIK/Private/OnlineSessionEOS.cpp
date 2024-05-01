@@ -3949,9 +3949,12 @@ void FOnlineSessionEOS::SetLobbyAttributes(EOS_HLobbyModification LobbyModificat
 	const FLobbyAttributeOptions SearchLobbiesAttribute(TCHAR_TO_UTF8(*SearchLobbies), true);
 	AddLobbyAttribute(LobbyModificationHandle, &SearchLobbiesAttribute);
 
-	// We set the session's owner id and name
-	const FLobbyAttributeOptions OwnerId("OwningUserId", TCHAR_TO_UTF8(*Session->OwningUserId->ToString()));
-	AddLobbyAttribute(LobbyModificationHandle, &OwnerId);
+	if(Session->OwningUserId.IsValid())
+	{
+		// We set the session's owner id and name
+		const FLobbyAttributeOptions OwnerId("OwningUserId", TCHAR_TO_UTF8(*Session->OwningUserId->ToString()));
+		AddLobbyAttribute(LobbyModificationHandle, &OwnerId);
+	}
 
 	if(TCHAR_TO_UTF8(*Session->OwningUserName) != nullptr && Session->OwningUserName != "")
 	{
