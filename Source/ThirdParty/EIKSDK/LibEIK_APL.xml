@@ -17,11 +17,11 @@
 
 	<resourceCopies>
 		<isArch arch="armeabi-v7a">
-    		<log text="Copying libEOSSDK.so"/>
+    		<log text="Copying libEOSSDK.so for armeabi-v7a"/>
 			<copyFile src="$S(PluginDir)/Bin/Android/armeabi-v7a/libEOSSDK.so" dst="$S(BuildDir)/libs/armeabi-v7a/libEOSSDK.so" />
 		</isArch>
 		<isArch arch="arm64-v8a">
-    		<log text="Copying libEOSSDK.so"/>
+    		<log text="Copying libEOSSDK.so for arm64-v8a"/>
       <copyFile src="$S(PluginDir)/Bin/Android/arm64-v8a/libEOSSDK.so" dst="$S(BuildDir)/libs/arm64-v8a/libEOSSDK.so" />
 		</isArch>
     <log text="Copying eos-sdk.aar"/>
@@ -38,6 +38,8 @@
           flatDir {
         </insert>
         <insertValue value="dirs '$S(PluginDir)/Bin'"/>
+        <insertNewline/>
+        <insertValue value="dirs '$S(PluginDir)/Bin/Android/static-stdc++/aar/'"/>
         <insertNewline/>
         <insertValue value="dirs '$S(AbsPluginDir)/Lib'"/>
         <insertNewline/>
