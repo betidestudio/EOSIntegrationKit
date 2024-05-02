@@ -3129,53 +3129,62 @@ bool FOnlineSessionEOS::RegisterPlayers(FName SessionName, const TArray< FUnique
 	FNamedOnlineSession* Session = GetNamedSession(SessionName);
 	if (Session)
 	{
-		TArray<EOS_ProductUserId> EOSIds;
-		EOSIds.Empty();
-		bSuccess = true;
-		bool bRegisterEOS = !Session->SessionSettings.bUseLobbiesIfAvailable;
-		const FUniqueNetIdRef& PlayerId = Players[0];
-		const FUniqueNetIdEOS& PlayerEOSId = FUniqueNetIdEOS::Cast(*PlayerId);
-		EOSIds.Add(PlayerEOSId.GetProductUserId());
-		if (bRegisterEOS && EOSIds.Num() > 0)
+		if(bIsDedicatedServer || Session->bHosting)
 		{
+			TArray<EOS_ProductUserId> EOSIds;
 			EOSIds.Empty();
+			bSuccess = true;
+			bool bRegisterEOS = !Session->SessionSettings.bUseLobbiesIfAvailable;
+			const FUniqueNetIdRef& PlayerId = Players[0];
+			const FUniqueNetIdEOS& PlayerEOSId = FUniqueNetIdEOS::Cast(*PlayerId);
 			EOSIds.Add(PlayerEOSId.GetProductUserId());
-			EOS_Sessions_RegisterPlayersOptions Options = { };
-			Options.ApiVersion = EOS_SESSIONS_REGISTERPLAYERS_API_LATEST;
-			EOS_ProductUserId SinglePlayerId = PlayerEOSId.GetProductUserId();
-			Options.PlayersToRegister = &SinglePlayerId; 
-			Options.PlayersToRegisterCount = EOSIds.Num();
-			const FTCHARToUTF8 Utf8SessionName(*SessionName.ToString());
-			Options.SessionName = Utf8SessionName.Get();
-
-			FRegisterPlayersCallback* CallbackObj = new FRegisterPlayersCallback(FOnlineSessionEOSWeakPtr(AsShared()));
-			CallbackObj->CallbackLambda = [this, SessionName, RegisteredPlayers = TArray<FUniqueNetIdRef>(Players)](const EOS_Sessions_RegisterPlayersCallbackInfo* Data)
+			if (bRegisterEOS && EOSIds.Num() > 0)
 			{
-				bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success || Data->ResultCode == EOS_EResult::EOS_NoChange;
-				TriggerOnRegisterPlayersCompleteDelegates(SessionName, RegisteredPlayers, bWasSuccessful);
-			};
-			EOS_Sessions_RegisterPlayers(EOSSubsystem->SessionsHandle, &Options, CallbackObj, CallbackObj->GetCallbackPtr());
-			for(int32 i=0; i<EOSIds.Num(); i++)
-			{
-				char PuidBuffer[256];
-				int32 BufferLen = 256;
-				EOS_ProductUserId_ToString(SinglePlayerId, PuidBuffer, &BufferLen );
+				EOSIds.Empty();
+				EOSIds.Add(PlayerEOSId.GetProductUserId());
+				EOS_Sessions_RegisterPlayersOptions Options;
+				Options.ApiVersion = EOS_SESSIONS_REGISTERPLAYERS_API_LATEST;
+				EOS_ProductUserId SinglePlayerId;
+				SinglePlayerId = PlayerEOSId.GetProductUserId();
+				if(!PlayerEOSId.ToString().Contains(EOS_ID_SEPARATOR))
+				{
+					SinglePlayerId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*PlayerEOSId.ToString()));
+				}
+				Options.PlayersToRegister = &SinglePlayerId; 
+				Options.PlayersToRegisterCount = EOSIds.Num();
+				const FTCHARToUTF8 Utf8SessionName(*SessionName.ToString());
+				Options.SessionName = Utf8SessionName.Get();
+				FRegisterPlayersCallback* CallbackObj = new FRegisterPlayersCallback(FOnlineSessionEOSWeakPtr(AsShared()));
+				CallbackObj->CallbackLambda = [this, SessionName, RegisteredPlayers = TArray<FUniqueNetIdRef>(Players)](const EOS_Sessions_RegisterPlayersCallbackInfo* Data)
+				{
+					bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success || Data->ResultCode == EOS_EResult::EOS_NoChange;
+					TriggerOnRegisterPlayersCompleteDelegates(SessionName, RegisteredPlayers, bWasSuccessful);
+				};
+				EOS_Sessions_RegisterPlayers(EOSSubsystem->SessionsHandle, &Options, CallbackObj, CallbackObj->GetCallbackPtr());
+				for(int32 i=0; i<EOSIds.Num(); i++)
+				{
+					char PuidBuffer[256];
+					int32 BufferLen = 256;
+					EOS_ProductUserId_ToString(SinglePlayerId, PuidBuffer, &BufferLen );
+				}
+				return true;
 			}
-			return true;
 		}
-	}
-	else
-	{
-		UE_LOG_ONLINE_SESSION(Warning, TEXT("RegisterPlayers: No game present to join for session (%s)"), *SessionName.ToString());
-	}
+		else
+		{
+			UE_LOG_ONLINE_SESSION(Warning, TEXT("RegisterPlayers: Not the owner of the session (%s)"), *SessionName.ToString());
+		}
 
-	EOSSubsystem->ExecuteNextTick([this, SessionName, RegisteredPlayers = TArray<FUniqueNetIdRef>(Players), bSuccess]()
-	{
-		TriggerOnRegisterPlayersCompleteDelegates(SessionName, RegisteredPlayers, bSuccess);
-		UE_LOG_ONLINE_SESSION(Log, TEXT("RegisterPlayers: Triggering completion delegates"));
-	});
+		EOSSubsystem->ExecuteNextTick([this, SessionName, RegisteredPlayers = TArray<FUniqueNetIdRef>(Players), bSuccess]()
+		{
+			TriggerOnRegisterPlayersCompleteDelegates(SessionName, RegisteredPlayers, bSuccess);
+			UE_LOG_ONLINE_SESSION(Warning, TEXT("RegisterPlayers: Triggering completion delegates for session (%s) with success (%d)"), *SessionName.ToString(), bSuccess);
+		});
 
-	return true;
+		return true;
+	}
+	UE_LOG_ONLINE_SESSION(Warning, TEXT("RegisterPlayers: No game present to join for session (%s)"), *SessionName.ToString());
+	return false;
 }
 
 /*bool FOnlineSessionEOS::RegisterPlayers(FName SessionName, const TArray< FUniqueNetIdRef >& Players, bool bWasInvited)
