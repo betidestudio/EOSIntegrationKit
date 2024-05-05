@@ -183,6 +183,20 @@ bool UEIK_BlueprintFunctions::ShowFriendsList()
 	}
 }
 
+FEIKUniqueNetId UEIK_BlueprintFunctions::MakeEIKUniqueNetId(FString EpicAccountId, FString ProductUserId)
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	{
+		if (IOnlineIdentityPtr IdentityInterface = OnlineSub->GetIdentityInterface())
+		{
+			FEIKUniqueNetId UserId;
+			UserId.SetUniqueNetId(IdentityInterface->CreateUniquePlayerId(EpicAccountId + TEXT("|") + ProductUserId));
+			return UserId;
+		}
+	}
+	return FEIKUniqueNetId();
+}
+
 bool UEIK_BlueprintFunctions::StartSession(FName SessionName)
 {
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())

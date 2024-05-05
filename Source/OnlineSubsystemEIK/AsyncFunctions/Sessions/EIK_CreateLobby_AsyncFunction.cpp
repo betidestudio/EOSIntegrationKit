@@ -54,7 +54,7 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 				UE_LOG(LogOnline, Warning, TEXT("EIK: SessionPtrRef is null"));
 				OnFail.Broadcast("");
 				SetReadyToDestroy();
-MarkAsGarbage();
+				MarkAsGarbage();
 				bDelegateCalled = true;
 			}
 		}
@@ -66,7 +66,7 @@ MarkAsGarbage();
 			UE_LOG(LogOnline, Warning, TEXT("EIK: SubsystemRef is null"));
 			OnFail.Broadcast("");
 			SetReadyToDestroy();
-MarkAsGarbage();
+			MarkAsGarbage();
 			bDelegateCalled = true;
 		}
 	}
@@ -84,7 +84,7 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName SessionName, b
 				OnSuccess.Broadcast(CurrentSession->SessionInfo.Get()->GetSessionId().ToString());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
-MarkAsGarbage();
+				MarkAsGarbage();
 			}
 			else
 			{
