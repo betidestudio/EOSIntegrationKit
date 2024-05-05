@@ -99,15 +99,7 @@ void UEIK_FindUserByDisplayName_Async::FindUserByDisplayNameCallback(const EOS_U
 
                                 if (EOS_EpicAccountId_ToString(UserInfo->UserId, Buffer, &BufferLength) == EOS_EResult::EOS_Success)
                                 {
-                                    if (OnlineSub)
-                                    {
-                                        IOnlineIdentityPtr IdentityInterface = OnlineSub->GetIdentityInterface();
-                                        FEIKUniqueNetId UserId;
-                                        UserId.SetUniqueNetId(IdentityInterface->CreateUniquePlayerId(UTF8_TO_TCHAR(Buffer)));
-
-                                        UserInfoStruct.EpicAccountId = UserId;
-                                    }
-                                    UserInfoStruct.UserId = FString(UTF8_TO_TCHAR(Buffer));
+                                    UserInfoStruct.EpicAccountID = FString(UTF8_TO_TCHAR(Buffer));
                                     FindEIkUserByDisplayName->ResultSuccess(UserInfoStruct);
                                 }
                                 else
@@ -158,7 +150,7 @@ void UEIK_FindUserByDisplayName_Async::ResultFaliure()
 // Function to handle success cases
 void UEIK_FindUserByDisplayName_Async::ResultSuccess(const FEIKUserInfo UserInfoStruct)
 {
-    if (EOS_EpicAccountId_IsValid(EOS_EpicAccountId_FromString(TCHAR_TO_UTF8(*UserInfoStruct.UserId))))
+    if (EOS_EpicAccountId_IsValid(EOS_EpicAccountId_FromString(TCHAR_TO_UTF8(*UserInfoStruct.EpicAccountID))))
     {
         Success.Broadcast(UserInfoStruct);
         SetReadyToDestroy();
