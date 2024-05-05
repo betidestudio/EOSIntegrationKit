@@ -32,7 +32,7 @@ class ONLINESUBSYSTEMEIK_API UEIK_GetPUIDFromEpicId_AsyncFunc : public UBlueprin
 public:
 
 	UFUNCTION(BlueprintCallable, DisplayName = "Get Product User Id From Epic Id", meta = (BlueprintInternalUseOnly = "true"), Category = "EOS Integration Kit || UserInfo")
-	static UEIK_GetPUIDFromEpicId_AsyncFunc* EIKGetPUIDFromEpicId(TArray<FString> TargetUserIds, FString LocalProductUserId);
+	static UEIK_GetPUIDFromEpicId_AsyncFunc* EIKGetPUIDFromEpicId(TArray<FString> TargetEpicAccountIds, FString LocalProductUserId);
 
 	TArray<FString> Var_TargetUserIds;
 

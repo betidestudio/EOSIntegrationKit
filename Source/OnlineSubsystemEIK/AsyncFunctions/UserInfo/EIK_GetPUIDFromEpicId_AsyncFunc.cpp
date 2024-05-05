@@ -8,11 +8,11 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemEOS.h"
 
-UEIK_GetPUIDFromEpicId_AsyncFunc* UEIK_GetPUIDFromEpicId_AsyncFunc::EIKGetPUIDFromEpicId(TArray<FString> TargetUserIds, FString LocalProductUserId)
+UEIK_GetPUIDFromEpicId_AsyncFunc* UEIK_GetPUIDFromEpicId_AsyncFunc::EIKGetPUIDFromEpicId(TArray<FString> TargetEpicAccountIds, FString LocalProductUserId)
 {
 	UEIK_GetPUIDFromEpicId_AsyncFunc* EIK_GetPUIDFromEpicId_Obj = NewObject<UEIK_GetPUIDFromEpicId_AsyncFunc>();
 
-	EIK_GetPUIDFromEpicId_Obj->Var_TargetUserIds = TargetUserIds;
+	EIK_GetPUIDFromEpicId_Obj->Var_TargetUserIds = TargetEpicAccountIds;
 	EIK_GetPUIDFromEpicId_Obj->Var_LocalProductUserId = LocalProductUserId;
 
 	return EIK_GetPUIDFromEpicId_Obj;
