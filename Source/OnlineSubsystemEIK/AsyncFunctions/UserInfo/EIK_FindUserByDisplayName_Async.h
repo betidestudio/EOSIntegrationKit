@@ -28,9 +28,6 @@ struct FEIKUserInfo
     /** The Epic Account ID in string format of the found user */
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit|UserInfo")
     FString UserId;
-    /** The EIKUniqueNetId containing the Epic Account ID of the found user */
-    UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit|UserInfo")
-    FEIKUniqueNetId EpicAccountId = FEIKUniqueNetId();
     /** The name of the found users country. This may be null */
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit|UserInfo")
     FString Country;
