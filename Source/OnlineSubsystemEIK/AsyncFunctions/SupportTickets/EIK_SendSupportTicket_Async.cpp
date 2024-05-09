@@ -111,22 +111,22 @@ void UEIK_SendSupportTicket_Async::OnResponseReceived(FHttpRequestPtr Request, F
         if (FJsonSerializer::Deserialize(Reader, JsonObject))
         {
             // Get the 'data' object
-            TSharedPtr<FJsonObject> DataObject = JsonObject->GetObjectField("data");
+            TSharedPtr<FJsonObject> DataObject = JsonObject->GetObjectField(TEXT("data"));
 
-            // Populate the struct
+             // Populate the struct
             FSupportTicketResponseData ResponseData;
-            ResponseData.prod_name = DataObject->GetStringField("prod_name");
-            ResponseData.prod_slug = DataObject->GetStringField("prod_slug");
-            ResponseData.guid = DataObject->GetStringField("guid");
-            ResponseData.sender_name = DataObject->GetStringField("sender_name");
-            ResponseData.sender_email = DataObject->GetStringField("sender_email");
-            ResponseData.subject = DataObject->GetStringField("subject");
-            ResponseData.message = DataObject->GetStringField("message");
-            ResponseData.error_code = DataObject->GetStringField("error_code");
-            ResponseData.system_os = DataObject->GetStringField("system_os");
-            ResponseData.system_antimalware = DataObject->GetStringField("system_antimalware");
-            ResponseData.system_other = DataObject->GetStringField("system_other");
-            ResponseData.timestamp = DataObject->GetStringField("timestamp");
+            ResponseData.prod_name = DataObject->GetStringField(TEXT("prod_name"));
+            ResponseData.prod_slug = DataObject->GetStringField(TEXT("prod_slug"));
+            ResponseData.guid = DataObject->GetStringField(TEXT("guid"));
+            ResponseData.sender_name = DataObject->GetStringField(TEXT("sender_name"));
+            ResponseData.sender_email = DataObject->GetStringField(TEXT("sender_email"));
+            ResponseData.subject = DataObject->GetStringField(TEXT("subject"));
+            ResponseData.message = DataObject->GetStringField(TEXT("message"));
+            ResponseData.error_code = DataObject->GetStringField(TEXT("error_code"));
+            ResponseData.system_os = DataObject->GetStringField(TEXT("system_os"));
+            ResponseData.system_antimalware = DataObject->GetStringField(TEXT("system_antimalware"));
+            ResponseData.system_other = DataObject->GetStringField(TEXT("system_other"));
+            ResponseData.timestamp = DataObject->GetStringField(TEXT("timestamp"));
 
             // Broadcast the success delegate
             Success.Broadcast(Response->GetContentAsString(), ResponseData, Response->GetResponseCode());
