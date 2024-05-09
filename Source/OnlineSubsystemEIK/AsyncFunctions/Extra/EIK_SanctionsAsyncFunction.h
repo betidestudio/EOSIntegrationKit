@@ -12,18 +12,15 @@ struct FSanctionsStruct
 {
 	GENERATED_BODY()
 public:
-	/** API Version: This will be set to EOS_SANCTIONS_PLAYERSANCTION_API_LATEST. */
+	/** The timestamp when the sanction was placed */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	int32 ApiVersion = EOS_SANCTIONS_PLAYERSANCTION_API_LATEST;
-	/** The POSIX timestamp when the sanction was placed */
-	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	int64 TimePlaced = 0;
+	FDateTime TimePlaced;
 	/** The action associated with this sanction */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
 	FString Action = "";
 	/** The POSIX timestamp when the sanction will expire. If the sanction is permanent, this will be 0. */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	int64 TimeExpires = 0;
+	FDateTime TimeExpires = 0;
 	/** A unique identifier for this specific sanction */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
 	FString ReferenceId = "";
