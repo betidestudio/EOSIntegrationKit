@@ -44,7 +44,7 @@ public:
 
 	void QueryExternalAccountMappingsSuccess();
 
-	void QueryExternalAccountMappingsFailure(const EOS_EResult Error);
+	void QueryExternalAccountMappingsFailure();
 
 	virtual void Activate() override; 
 

@@ -82,7 +82,7 @@ void UEIK_GetPUIDFromEpicId_AsyncFunc::OnQueryExternalAccountMappingsComplete(co
 	{
 		if (UEIK_GetPUIDFromEpicId_AsyncFunc* GetPUIDFromEpicId = static_cast<UEIK_GetPUIDFromEpicId_AsyncFunc*>(Data->ClientData))
 		{
-			GetPUIDFromEpicId->QueryExternalAccountMappingsFailure(Data->ResultCode);
+			GetPUIDFromEpicId->QueryExternalAccountMappingsFailure();
 		}
 	}
 }
@@ -136,7 +136,7 @@ void UEIK_GetPUIDFromEpicId_AsyncFunc::QueryExternalAccountMappingsSuccess()
 	}
 }
 
-void UEIK_GetPUIDFromEpicId_AsyncFunc::QueryExternalAccountMappingsFailure(const EOS_EResult Error)
+void UEIK_GetPUIDFromEpicId_AsyncFunc::QueryExternalAccountMappingsFailure()
 {
 	TArray<FProductUserIdAndEpicId> EmptyProductUserIdAndEpicId;
 
