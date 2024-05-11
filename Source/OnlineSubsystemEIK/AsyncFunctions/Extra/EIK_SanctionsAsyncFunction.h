@@ -38,7 +38,7 @@ class ONLINESUBSYSTEMEIK_API UEIK_SanctionsAsyncFunction : public UBlueprintAsyn
 	GENERATED_BODY()
 
 public:
-		/*
+	/*
 	This C++ method gets the logged in user's achievements from the EOS backend.
 	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/authentication/
 	*/

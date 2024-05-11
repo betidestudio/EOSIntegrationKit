@@ -68,6 +68,13 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 			SanctionsCountOptions.ApiVersion = EOS_SANCTIONS_GETPLAYERSANCTIONCOUNT_API_LATEST;
 			SanctionsCountOptions.TargetUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*Var_TargetProductUserID));
 			uint32_t SanctionsCount = EOS_Sanctions_GetPlayerSanctionCount(EOSRef->SanctionsHandle,&SanctionsCountOptions);
+			if(SanctionsCount <= 0)
+			{
+				Success.Broadcast(SanctionsArray);
+				SetReadyToDestroy();
+				MarkAsGarbage();
+				return;
+			}
 			EOS_Sanctions_CopyPlayerSanctionByIndexOptions SanctionsCopyOptions;
 			EOS_Sanctions_PlayerSanction ** OutSanction = new EOS_Sanctions_PlayerSanction*[SanctionsCount];
 			SanctionsCopyOptions.ApiVersion = EOS_SANCTIONS_COPYPLAYERSANCTIONBYINDEX_API_LATEST;
@@ -90,7 +97,8 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 				}
 				for(int32 i=0; i < (int32)SanctionsCount;i++)
 				{
-					EOS_Sanctions_PlayerSanction_Release(OutSanction[i]);
+					if(OutSanction[i])
+						EOS_Sanctions_PlayerSanction_Release(OutSanction[i]);
 				}
 			}
 			else
@@ -100,7 +108,7 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 			}
 			Success.Broadcast(SanctionsArray);
 			SetReadyToDestroy();
-MarkAsGarbage();
+			MarkAsGarbage();
 		}
 		else
 		{
@@ -117,7 +125,7 @@ void UEIK_SanctionsAsyncFunction::FireFailure()
 {
 	Failure.Broadcast(TArray<FSanctionsStruct>());
 	SetReadyToDestroy();
-MarkAsGarbage();
+	MarkAsGarbage();
 }
 
 void UEIK_SanctionsAsyncFunction::Activate()
