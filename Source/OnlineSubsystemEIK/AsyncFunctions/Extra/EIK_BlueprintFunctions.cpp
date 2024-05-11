@@ -185,10 +185,20 @@ bool UEIK_BlueprintFunctions::ShowFriendsList()
 
 FEIKUniqueNetId UEIK_BlueprintFunctions::MakeEIKUniqueNetId(FString EpicAccountId, FString ProductUserId)
 {
+	if(ProductUserId.IsEmpty())
+	{
+		return FEIKUniqueNetId();
+	}
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
 	{
 		if (IOnlineIdentityPtr IdentityInterface = OnlineSub->GetIdentityInterface())
 		{
+			if(EpicAccountId.IsEmpty() && !ProductUserId.IsEmpty())
+			{
+				FEIKUniqueNetId UserId;
+				UserId.SetUniqueNetId(IdentityInterface->CreateUniquePlayerId(ProductUserId));
+				return UserId;
+			}
 			FEIKUniqueNetId UserId;
 			UserId.SetUniqueNetId(IdentityInterface->CreateUniquePlayerId(EpicAccountId + TEXT("|") + ProductUserId));
 			return UserId;
