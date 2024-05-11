@@ -409,6 +409,7 @@ public:
 	void LoginStatusChanged(const EOS_Auth_LoginStatusChangedCallbackInfo* Data);
 
 	int32 GetDefaultLocalUser() const { return DefaultLocalUser; }
+	void GetPlatformAuthToken(int32 LocalUserNum, const FOnGetLinkedAccountAuthTokenCompleteDelegate& Delegate) const;
 
 private:
 	void RemoveLocalUser(int32 LocalUserNum);
@@ -428,7 +429,6 @@ private:
 	void UpdateFriendPresence(const FString& FriendId, FOnlineUserPresenceRef Presence);
 
 	IOnlineSubsystem* GetPlatformOSS() const;
-	void GetPlatformAuthToken(int32 LocalUserNum, const FOnGetLinkedAccountAuthTokenCompleteDelegate& Delegate) const;
 	FString GetPlatformDisplayName(int32 LocalUserNum) const;
 
 	/** Cached pointer to owning subsystem */

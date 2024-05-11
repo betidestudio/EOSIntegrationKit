@@ -641,7 +641,7 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 	}
 	else if(AccountCredentials.Type == "steam")
 	{
-		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_STEAM_APP_TICKET;
+		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_STEAM_SESSION_TICKET;
 		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
 		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
 		UserCredentials.Token = ClientId;
@@ -687,7 +687,7 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
 	if(AccountCredentials.Id.IsEmpty())
 	{
-		if(AccountCredentials.Type != "openid")
+		if(AccountCredentials.Type != "openid" && AccountCredentials.Type != "steam")
 		{
 			LoginInfo.DisplayName = "DefaultName";
 		}
