@@ -206,6 +206,36 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings")
 	TArray<FEArtifactSettings> Artifacts;
 
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
+	FString AndroidProductId;
+
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
+	FString AndroidClientSecret;
+
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
+	FString AndroidDeploymentId;
+
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
+	FString AndroidSandboxId;
+
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
+	FString AndroidClientId;
+
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
+	FString IOSProductId;
+
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
+	FString IOSClientSecret;
+
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
+	FString IOSDeploymentId;
+
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
+	FString IOSSandboxId;
+
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
+	FString IOSClientId;	
+
 	/** Set to true to have Epic Accounts used (friends list will be unified with the default platform) */
 	UPROPERTY()
 	bool bUseEAS = false;

@@ -310,10 +310,29 @@ void UEIKSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("PostEditChangeProperty: %s"), *PropertyChangedEvent.Property->GetName());
-
+	{
+		FEOSArtifactSettings OutSettings;
+		if(!AndroidArtifactName.IsEmpty() && GetSettingsForArtifact(AndroidArtifactName, OutSettings))
+		{
+			AndroidClientId = OutSettings.ClientId;
+			AndroidClientSecret = OutSettings.ClientSecret;
+			AndroidProductId = OutSettings.ProductId;
+			AndroidSandboxId = OutSettings.SandboxId;
+			AndroidDeploymentId = OutSettings.DeploymentId;
+		}
+	}
+	{
+		FEOSArtifactSettings OutSettings;
+		if(!IOSArtifactName.IsEmpty() && GetSettingsForArtifact(IOSArtifactName, OutSettings))
+		{
+			IOSClientId = OutSettings.ClientId;
+			IOSClientSecret = OutSettings.ClientSecret;
+			IOSProductId = OutSettings.ProductId;
+			IOSSandboxId = OutSettings.SandboxId;
+			IOSDeploymentId = OutSettings.DeploymentId;
+		}
+	}
 	
-
 if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 {
     FString authType;
