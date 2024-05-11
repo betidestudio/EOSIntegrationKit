@@ -77,7 +77,7 @@ void UEIK_ExportTicketUserData_Async::OnResponseReceived(FHttpRequestPtr Request
 
         if (FJsonSerializer::Deserialize(Reader, JsonObject))
         {
-            TArray<TSharedPtr<FJsonValue>> DataArray = JsonObject->GetArrayField("data");
+            TArray<TSharedPtr<FJsonValue>> DataArray = JsonObject->GetArrayField(TEXT("data"));
 
             TArray<FConversationData> Conversations;
 
@@ -88,25 +88,25 @@ void UEIK_ExportTicketUserData_Async::OnResponseReceived(FHttpRequestPtr Request
                 FConversationData ConversationData;
 
                 // Fill the ConversationData structure with the parsed data
-                ConversationData.Guid = DataObject->GetStringField("guid");
-                ConversationData.Subject = DataObject->GetStringField("subject");
-                ConversationData.Message = DataObject->GetStringField("message");
-                ConversationData.SenderName = DataObject->GetStringField("sender_name");
-                ConversationData.SenderEmail = DataObject->GetStringField("sender_email");
-                ConversationData.Timestamp = DataObject->GetStringField("timestamp");
+                ConversationData.Guid = DataObject->GetStringField(TEXT("guid"));
+                ConversationData.Subject = DataObject->GetStringField(TEXT("subject"));
+                ConversationData.Message = DataObject->GetStringField(TEXT("message"));
+                ConversationData.SenderName = DataObject->GetStringField(TEXT("sender_name"));
+                ConversationData.SenderEmail = DataObject->GetStringField(TEXT("sender_email"));
+                ConversationData.Timestamp = DataObject->GetStringField(TEXT("timestamp"));
 
                 // Parse the "messages" array
-                TArray<TSharedPtr<FJsonValue>> MessagesArray = DataObject->GetArrayField("messages");
+                TArray<TSharedPtr<FJsonValue>> MessagesArray = DataObject->GetArrayField(TEXT("messages"));
                 for (int32 j = 0; j < MessagesArray.Num(); j++)
                 {
                     TSharedPtr<FJsonObject> MessageObject = MessagesArray[j]->AsObject();
 
                     FMessageData Message;
-                    Message.TicketId = MessageObject->GetIntegerField("ticket_id");
-                    Message.Message = MessageObject->GetStringField("message");
-                    Message.SenderName = MessageObject->GetStringField("sender_name");
-                    Message.SenderEmail = MessageObject->GetStringField("sender_email");
-                    Message.Timestamp = MessageObject->GetStringField("timestamp");
+                    Message.TicketId = MessageObject->GetIntegerField(TEXT("ticket_id"));
+                    Message.Message = MessageObject->GetStringField(TEXT("message"));
+                    Message.SenderName = MessageObject->GetStringField(TEXT("sender_name"));
+                    Message.SenderEmail = MessageObject->GetStringField(TEXT("sender_email"));
+                    Message.Timestamp = MessageObject->GetStringField(TEXT("timestamp"));
 
                     ConversationData.Messages.Add(Message);
                 }
