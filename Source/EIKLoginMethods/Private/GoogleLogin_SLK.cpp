@@ -36,12 +36,13 @@ void UGoogleLogin_SLK::BeginDestroy()
 
 void UGoogleLogin_SLK::GoogleLoginLocal()
 {
-	UE_LOG(LogTemp, Warning, TEXT("InitialiseSubsystem"));
 #if PLATFORM_ANDROID
 	//AndroidJNICallUtils::CallStaticVoidMethod(UnrealInterface, "InitInterface", "(Landroid/app/Activity;Ljava/lang/String;)V", FJavaWrapper::GameActivityThis, AndroidJNIConvertor::GetJavaString(ClientID));
 	AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity,"AndroidThunkJava_GoogleSubsystem_Init", "(Ljava/lang/String;)V", AndroidJNIConvertor::GetJavaString(Var_ClientID));
 	AndroidJNICallUtils::CallStaticVoidMethod(UnrealInterface, "SignIn", "()V");
-	#endif
+	return;
+#endif
+	UGoogleLogin_SLK::staticInstance.Get()->Failure.Broadcast("", "Google Login Failed to initialise");
 }
 
 #if PLATFORM_ANDROID
