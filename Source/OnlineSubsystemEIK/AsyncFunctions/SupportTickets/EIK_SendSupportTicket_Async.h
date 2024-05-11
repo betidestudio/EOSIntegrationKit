@@ -25,7 +25,7 @@ struct FSupportTicketData
     GENERATED_BODY()
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Subject of the support ticket. This is a required field."))
-    ESupportTicketSubject Subject;
+    ESupportTicketSubject Subject = ESupportTicketSubject::ST_open_question;
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Message or description for the support ticket. This is a required field."))
     FString Message;

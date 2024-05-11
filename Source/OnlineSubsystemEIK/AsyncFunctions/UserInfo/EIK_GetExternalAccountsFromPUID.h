@@ -34,7 +34,7 @@ struct FExternalAccountIdAndType
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || UserInfo")
-	ExternalAccountTypes ExternalAccountType;
+	ExternalAccountTypes ExternalAccountType = ExternalAccountTypes::EOS_EAT_EPIC;
 
 	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || UserInfo")
 	FString AccountId = "";
