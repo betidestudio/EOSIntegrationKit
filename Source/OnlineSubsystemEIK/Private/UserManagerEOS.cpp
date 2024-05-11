@@ -2437,15 +2437,18 @@ bool FUserManagerEOS::SendInvite(int32 LocalUserNum, const FUniqueNetId& FriendI
 	FSendInviteCallback* CallbackObj = new FSendInviteCallback(AsWeak());
 	CallbackObj->CallbackLambda = [LocalUserNum, ListName, this, Delegate](const EOS_Friends_SendInviteCallbackInfo* Data)
 	{
-		const FString& NetId = AccountIdToStringMap[Data->TargetUserId];
-
-		FString ErrorString;
-		bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success;
-		if (!bWasSuccessful)
+		if (Data->ResultCode == EOS_EResult::EOS_Success)
 		{
-			ErrorString = FString::Printf(TEXT("Failed to send invite for user (%d) to player (%s) with result code (%s)"), LocalUserNum, *NetId, ANSI_TO_TCHAR(EOS_EResult_ToString(Data->ResultCode)));
+			const FString& NetId = AccountIdToStringMap[Data->TargetUserId];
+
+			FString ErrorString;
+			bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success;
+			if (!bWasSuccessful)
+			{
+				ErrorString = FString::Printf(TEXT("Failed to send invite for user (%d) to player (%s) with result code (%s)"), LocalUserNum, *NetId, ANSI_TO_TCHAR(EOS_EResult_ToString(Data->ResultCode)));
+			}
+			Delegate.ExecuteIfBound(LocalUserNum, bWasSuccessful, *FUniqueNetIdEOSRegistry::FindOrAdd(NetId), ListName, ErrorString);
 		}
-		Delegate.ExecuteIfBound(LocalUserNum, bWasSuccessful, *FUniqueNetIdEOSRegistry::FindOrAdd(NetId), ListName, ErrorString);
 	};
 
 	EOS_Friends_SendInviteOptions Options = { };

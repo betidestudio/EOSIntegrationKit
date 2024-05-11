@@ -87,11 +87,10 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 					if (OutSanction[i])
 					{
 						FSanctionsStruct SanctionStruct;
-						SanctionStruct.ApiVersion = OutSanction[i]->ApiVersion;
 						SanctionStruct.Action = FString(OutSanction[i]->Action);
 						SanctionStruct.ReferenceId = FString(OutSanction[i]->ReferenceId);
-						SanctionStruct.TimeExpires = OutSanction[i]->TimeExpires;
-						SanctionStruct.TimePlaced = OutSanction[i]->TimePlaced;
+						SanctionStruct.TimeExpires = FDateTime::FromUnixTimestamp(OutSanction[i]->TimeExpires);
+						SanctionStruct.TimePlaced = FDateTime::FromUnixTimestamp(OutSanction[i]->TimePlaced);
 						SanctionsArray.Add(SanctionStruct);
 					}
 				}

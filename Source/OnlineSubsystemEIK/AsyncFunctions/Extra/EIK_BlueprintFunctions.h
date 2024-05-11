@@ -193,6 +193,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Friends")
 	static bool ShowFriendsList();
 
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || UserInfo")
+	static FEIKUniqueNetId MakeEIKUniqueNetId(FString EpicAccountId, FString ProductUserId);
+
 	// This is a C++ method definition for starting lobbies and sessions
 	UFUNCTION(BlueprintCallable, DisplayName="Start EIK Session", Category="EOS Integration Kit || Sessions")
 	static bool StartSession(FName SessionName = "GameSession");

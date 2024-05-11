@@ -1,9 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EIK_FindUserByDisplayName_Async.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemEOS.h"
 #include "Engine/GameInstance.h"
+#include "OnlineSubsystemUtils.h"
+#include "OnlineSubsystem.h"
 
 UEIK_FindUserByDisplayName_Async* UEIK_FindUserByDisplayName_Async::FindEIkUserByDisplayName(FString TargetDisplayName, FString LocalEpicID)
 {
@@ -93,9 +95,11 @@ void UEIK_FindUserByDisplayName_Async::FindUserByDisplayNameCallback(const EOS_U
                                 char Buffer[EOS_EPICACCOUNTID_MAX_LENGTH + 1];
                                 int32_t BufferLength = EOS_EPICACCOUNTID_MAX_LENGTH + 1;
 
+
+
                                 if (EOS_EpicAccountId_ToString(UserInfo->UserId, Buffer, &BufferLength) == EOS_EResult::EOS_Success)
                                 {
-                                    UserInfoStruct.UserId = FString(UTF8_TO_TCHAR(Buffer));
+                                    UserInfoStruct.EpicAccountID = FString(UTF8_TO_TCHAR(Buffer));
                                     FindEIkUserByDisplayName->ResultSuccess(UserInfoStruct);
                                 }
                                 else
@@ -146,7 +150,7 @@ void UEIK_FindUserByDisplayName_Async::ResultFaliure()
 // Function to handle success cases
 void UEIK_FindUserByDisplayName_Async::ResultSuccess(const FEIKUserInfo UserInfoStruct)
 {
-    if (EOS_EpicAccountId_IsValid(EOS_EpicAccountId_FromString(TCHAR_TO_UTF8(*UserInfoStruct.UserId))))
+    if (EOS_EpicAccountId_IsValid(EOS_EpicAccountId_FromString(TCHAR_TO_UTF8(*UserInfoStruct.EpicAccountID))))
     {
         Success.Broadcast(UserInfoStruct);
         SetReadyToDestroy();

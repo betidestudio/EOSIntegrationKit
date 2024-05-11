@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -25,10 +25,10 @@ struct FEIKUserInfo
 {
     GENERATED_BODY()
 
-    /** The Epic Account ID of the user */
+    /** The Epic Account ID in string format of the found user */
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit|UserInfo")
-    FString UserId;
-    /** The name of the owner's country. This may be null */
+    FString EpicAccountID;
+    /** The name of the found users country. This may be null */
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit|UserInfo")
     FString Country;
     /** The display name (un-sanitized). This may be null */
