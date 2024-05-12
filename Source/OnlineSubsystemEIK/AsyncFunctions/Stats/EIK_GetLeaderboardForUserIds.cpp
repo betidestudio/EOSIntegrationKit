@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EIK_GetLeaderboardForUserIds.h"
 
@@ -86,8 +86,6 @@ void UEIK_GetLeaderboardForUserIds::GetLeaderboardForUserIds()
                 QueryOptions.UserIds = TempProductUserIdsArray.GetData();
                 QueryOptions.UserIdsCount = TempProductUserIdsArray.Num();
 
-                UE_LOG(LogTemp, Error, TEXT("num user id at start %d"), TempProductUserIdsArray.Num());
-
                 EOS_Leaderboards_QueryLeaderboardUserScores(EOSRef->LeaderboardsHandle, &QueryOptions, this, &UEIK_GetLeaderboardForUserIds::GetLeaderboardForUserIdsCallback);
 
             }
@@ -117,7 +115,6 @@ void UEIK_GetLeaderboardForUserIds::GetLeaderboardForUserIdsCallback(const EOS_L
             if (Data->ResultCode == EOS_EResult::EOS_Success)
             {
                 GetLeaderboardForUserIdsFunc->ResultSuccess();
-                UE_LOG(LogTemp, Error, TEXT("SUccess"));
 
             }
             else
@@ -154,12 +151,8 @@ void UEIK_GetLeaderboardForUserIds::ResultSuccess()
 
                 uint32_t LeaderboardRecordCount = EOS_Leaderboards_GetLeaderboardUserScoreCount(EOSRef->LeaderboardsHandle, &GetLeaderboardRecordCountOptions);
 
-                UE_LOG(LogTemp, Error, TEXT("int %u"), LeaderboardRecordCount);
-
-
                 for (uint32_t Index = 0; Index < LeaderboardRecordCount; ++Index)
                 {
-                    UE_LOG(LogTemp, Error, TEXT("looping"));
 
                     EOS_Leaderboards_CopyLeaderboardUserScoreByIndexOptions CopyLeaderboardRecordByIndexOptions = {};
 

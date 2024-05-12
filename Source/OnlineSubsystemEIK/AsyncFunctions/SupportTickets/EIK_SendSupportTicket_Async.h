@@ -28,28 +28,28 @@ struct FSupportTicketData
     ESupportTicketSubject Subject = ESupportTicketSubject::ST_open_question;
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Message or description for the support ticket. This is a required field."))
-    FString Message;
+    FString Message = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Email address of the sender. This is a required field."))
-    FString SenderEmail;
+    FString SenderEmail = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Name of the sender."))
-    FString SenderName;
+    FString SenderName = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Unique identifier for the end-user."))
-    FString Guid;
+    FString Guid = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Error code for technical support emails."))
-    FString ErrorCode;
+    FString ErrorCode = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Operating system of the end-user."))
-    FString SystemOS;
+    FString SystemOS = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Anti-malware system of the end-user."))
-    FString SystemAntiMalware;
+    FString SystemAntiMalware = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets", meta = (ToolTip = "Other information about the end-user's system."))
-    FString SystemOther;
+    FString SystemOther = "";
 
 };
 
@@ -59,40 +59,40 @@ struct FSupportTicketResponseData
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString prod_name;
+    FString prod_name = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString prod_slug;
+    FString prod_slug = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString guid;
+    FString guid = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString sender_name;
+    FString sender_name = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString sender_email;
+    FString sender_email = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString subject;
+    FString subject = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString message;
+    FString message = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString error_code;
+    FString error_code = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString system_os;
+    FString system_os = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString system_antimalware;
+    FString system_antimalware = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString system_other;
+    FString system_other = "";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EOS Integration Kit || Support Tickets")
-    FString timestamp;
+    FString timestamp = "";
 };
 
 
