@@ -18,9 +18,9 @@ public:
 	/** The action associated with this sanction */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
 	FString Action = "";
-	/** The POSIX timestamp when the sanction will expire. If the sanction is permanent, this will be 0. */
+	/** The timestamp when the sanction will expire. If the sanction is permanent, this will be 0. */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	FDateTime TimeExpires = 0;
+	FDateTime TimeExpires;
 	/** A unique identifier for this specific sanction */
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
 	FString ReferenceId = "";

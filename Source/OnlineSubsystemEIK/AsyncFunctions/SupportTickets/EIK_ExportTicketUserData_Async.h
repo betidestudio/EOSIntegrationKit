@@ -17,19 +17,19 @@ struct FMessageData
     GENERATED_BODY()
 
     UPROPERTY(BlueprintReadWrite, Category = "Message Data")
-    int32 TicketId;
+    int32 TicketId = 0;
 
     UPROPERTY(BlueprintReadWrite, Category = "Message Data")
-    FString Message;
+    FString Message = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "Message Data")
-    FString SenderName;
+    FString SenderName = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "Message Data")
-    FString SenderEmail;
+    FString SenderEmail = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "Message Data")
-    FString Timestamp;
+    FString Timestamp = "";
 };
 
 USTRUCT(BlueprintType)
@@ -38,22 +38,22 @@ struct FConversationData
     GENERATED_BODY()
 
     UPROPERTY(BlueprintReadWrite, Category = "Conversation Data")
-    FString Guid;
+    FString Guid = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "Conversation Data")
-    FString Subject;
+    FString Subject = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "Conversation Data")
-    FString Message;
+    FString Message = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "Conversation Data")
-    FString SenderName;
+    FString SenderName = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "Conversation Data")
-    FString SenderEmail;
+    FString SenderEmail = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "Conversation Data")
-    FString Timestamp;
+    FString Timestamp = "";
 
     UPROPERTY(BlueprintReadWrite, Category = "Conversation Data")
     TArray<FMessageData> Messages;
