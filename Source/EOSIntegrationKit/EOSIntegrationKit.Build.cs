@@ -25,7 +25,7 @@ public class EOSIntegrationKit : ModuleRules
 				"Projects",
 				"OnlineSubsystem",
 				"Slate",
-				"SlateCore",
+				"SlateCore", 
 			}
 		);
 		

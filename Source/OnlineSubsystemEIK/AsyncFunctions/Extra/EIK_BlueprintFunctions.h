@@ -10,6 +10,8 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "eos_lobby_types.h"
+#include "eos_lobby.h"
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "EIK_BlueprintFunctions.generated.h"
@@ -196,6 +198,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || UserInfo")
 	static FEIKUniqueNetId MakeEIKUniqueNetId(FString EpicAccountId, FString ProductUserId);
 
+	UFUNCTION(BlueprintCallable, DisplayName="Accept EIK Session Invite", Category="EOS Integration Kit || Sessions")
+	static bool AcceptSessionInvite(FString InviteId, FString LocalUserId, FString InviterUserId);
+
+	UFUNCTION(BlueprintCallable, DisplayName="Reject EIK Session Invite", Category="EOS Integration Kit || Sessions")
+	static bool RejectSessionInvite(FString InviteId, FString LocalUserId);
+	
 	// This is a C++ method definition for starting lobbies and sessions
 	UFUNCTION(BlueprintCallable, DisplayName="Start EIK Session", Category="EOS Integration Kit || Sessions")
 	static bool StartSession(FName SessionName = "GameSession");

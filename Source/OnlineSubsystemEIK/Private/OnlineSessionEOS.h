@@ -203,10 +203,13 @@ public:
 
 	void Init(const FString& InBucketId);
 
+	EOS_HLobby LobbyHandle;
+	void OnLobbyInviteAccepted(const char* InviteId, const EOS_ProductUserId& LocalUserId, const EOS_ProductUserId& TargetUserId);
+
 private:
 	// EOS Lobbies
 
-	EOS_HLobby LobbyHandle;
+
 	TArray<TSharedRef<FLobbyDetailsEOS>> PendingLobbySearchResults;
 	TMap<FString, TSharedRef<FLobbyDetailsEOS>> LobbySearchResultsCache;
 
@@ -245,7 +248,6 @@ private:
 	void OnLobbyUpdateReceived(const EOS_LobbyId& LobbyId);
 	void OnLobbyMemberUpdateReceived(const EOS_LobbyId& LobbyId, const EOS_ProductUserId& TargetUserId);
 	void OnMemberStatusReceived(const EOS_LobbyId& LobbyId, const EOS_ProductUserId& TargetUserId, EOS_ELobbyMemberStatus CurrentStatus);
-	void OnLobbyInviteAccepted(const char* InviteId, const EOS_ProductUserId& LocalUserId, const EOS_ProductUserId& TargetUserId);
 	void OnJoinLobbyAccepted(const EOS_ProductUserId& LocalUserId, const EOS_UI_EventId& UiEventId);
 #if PLATFORM_WINDOWS
 	void OnLeaveLobbyRequested(const EOS_ProductUserId& LocalUserId, const EOS_Lobby_LeaveLobbyRequestedCallbackInfo* Data);

@@ -11,11 +11,37 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/SaveGame.h"
+#include "eos_sessions.h"
 #include "Interfaces/OnlineLeaderboardInterface.h"
 #ifdef PLAYFAB_PLUGIN_INSTALLED
 #include "Core/PlayFabClientAPI.h"
 #endif
 
+
+
+UEIK_Subsystem::UEIK_Subsystem()
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Sessions_AddNotifySessionInviteReceivedOptions Options = {};
+			Options.ApiVersion = EOS_SESSIONS_ADDNOTIFYSESSIONINVITERECEIVED_API_LATEST;
+			EOS_Sessions_AddNotifySessionInviteReceived(EOSRef->SessionsHandle, &Options, this, OnSessionInviteReceivedCallback);
+		}
+	}
+}
+
+void UEIK_Subsystem::OnSessionInviteReceivedCallback(const EOS_Sessions_SessionInviteReceivedCallbackInfo* Data)
+{
+	if(UEIK_Subsystem* EIKSubsystem = static_cast<UEIK_Subsystem*>(Data->ClientData))
+	{
+		FString SessionInfo = FString(UTF8_TO_TCHAR(Data->InviteId));
+		FString LocalUserID = FString(UTF8_TO_TCHAR(Data->LocalUserId));
+		FString TargetUserID = FString(UTF8_TO_TCHAR(Data->TargetUserId));
+		EIKSubsystem->OnSessionInviteReceived.Broadcast(SessionInfo, LocalUserID, TargetUserID);
+	}
+}
 
 void UEIK_Subsystem::Login(int32 LocalUserNum, FString ID, FString Token , FString Type, const FBP_Login_Callback& Result)
 {
