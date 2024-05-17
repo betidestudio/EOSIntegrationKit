@@ -11,6 +11,7 @@
 
 #if WITH_EDITOR
 	#include "Misc/MessageDialog.h"
+	#include "UnrealEdMisc.h"
 #endif
 
 #define LOCTEXT_NAMESPACE "EOS"

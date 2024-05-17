@@ -22,6 +22,7 @@
 #if WITH_EDITOR
 	#include "ISettingsModule.h"
 	#include "ISettingsSection.h"
+	#include "ToolMenus.h"
 #endif
 
 #define LOCTEXT_NAMESPACE "EIK"
