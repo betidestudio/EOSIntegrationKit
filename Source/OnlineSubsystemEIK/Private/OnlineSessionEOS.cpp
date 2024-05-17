@@ -464,6 +464,10 @@ void FOnlineSessionEOS::Init(const FString& InBucketId)
 	FCStringAnsi::Strncpy(BucketIdAnsi, TCHAR_TO_UTF8(*InBucketId), EOS_OSS_STRING_BUFFER_LENGTH);
 
 	// Register for session invite notifications
+	FSessionInviteReceivedCallback* SessionInviteReceivedCallbackObj = new FSessionInviteReceivedCallback(FOnlineSessionEOSWeakPtr(AsShared()));
+	SessionInviteReceivedCallbackObj->CallbackLambda = [this](const EOS_Sessions_SessionInviteReceivedCallbackInfo* Data)
+	{
+	};
 	FSessionInviteAcceptedCallback* SessionInviteAcceptedCallbackObj = new FSessionInviteAcceptedCallback(FOnlineSessionEOSWeakPtr(AsShared()));
 	SessionInviteAcceptedCallback = SessionInviteAcceptedCallbackObj;
 	SessionInviteAcceptedCallbackObj->CallbackLambda = [this](const EOS_Sessions_SessionInviteAcceptedCallbackInfo* Data)
@@ -4210,22 +4214,33 @@ uint32 FOnlineSessionEOS::FindLobbySession(int32 SearchingPlayerNum, const TShar
 	EOS_EResult SearchResult = EOS_Lobby_CreateLobbySearch(LobbyHandle, &CreateLobbySearchOptions, &LobbySearchHandle);
 	if (SearchResult == EOS_EResult::EOS_Success)
 	{
-		// We add the search parameters
-		for (FSearchParams::TConstIterator It(SearchSettings->QuerySettings.SearchParams); It; ++It)
+		FString SessionSearchByUser;
+		if(!SearchSettings->QuerySettings.Get("SessionSearchByUser", SessionSearchByUser))
 		{
-			const FName Key = It.Key();
-			const FOnlineSessionSearchParam& SearchParam = It.Value();
-
-			if (!IsSessionSettingTypeSupported(SearchParam.Data.GetType()))
+			// We add the search parameters
+			for (FSearchParams::TConstIterator It(SearchSettings->QuerySettings.SearchParams); It; ++It)
 			{
-				continue;
+				const FName Key = It.Key();
+				const FOnlineSessionSearchParam& SearchParam = It.Value();
+				if (!IsSessionSettingTypeSupported(SearchParam.Data.GetType()))
+				{
+					continue;
+				}
+				
+				UE_LOG_ONLINE_SESSION(VeryVerbose, TEXT("[FOnlineSessionEOS::FindLobbySession] Adding lobby search param named (%s), (%s)"), *Key.ToString(), *SearchParam.ToString());
+
+				FString ParamName(Key.ToString());
+				FLobbyAttributeOptions Attribute(TCHAR_TO_UTF8(*ParamName), SearchParam.Data);
+				AddLobbySearchAttribute(LobbySearchHandle, &Attribute, ToEOSSearchOp(SearchParam.ComparisonOp));
 			}
-
-			UE_LOG_ONLINE_SESSION(VeryVerbose, TEXT("[FOnlineSessionEOS::FindLobbySession] Adding lobby search param named (%s), (%s)"), *Key.ToString(), *SearchParam.ToString());
-
-			FString ParamName(Key.ToString());
-			FLobbyAttributeOptions Attribute(TCHAR_TO_UTF8(*ParamName), SearchParam.Data);
-			AddLobbySearchAttribute(LobbySearchHandle, &Attribute, ToEOSSearchOp(SearchParam.ComparisonOp));
+		}
+		else
+		{
+			EOS_LobbySearch_SetTargetUserIdOptions SetTargetUserIdOptions;
+			SetTargetUserIdOptions.ApiVersion = EOS_LOBBYSEARCH_SETTARGETUSERID_API_LATEST;
+			EOS_ProductUserId TargetUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*SessionSearchByUser));
+			SetTargetUserIdOptions.TargetUserId = TargetUserId;
+			EOS_LobbySearch_SetTargetUserId(LobbySearchHandle, &SetTargetUserIdOptions);
 		}
 
 		StartLobbySearch(SearchingPlayerNum, LobbySearchHandle, SearchSettings, FOnSingleSessionResultCompleteDelegate::CreateLambda([this](int32 LocalUserNum, bool bWasSuccessful, const FOnlineSessionSearchResult& EOSResult)
