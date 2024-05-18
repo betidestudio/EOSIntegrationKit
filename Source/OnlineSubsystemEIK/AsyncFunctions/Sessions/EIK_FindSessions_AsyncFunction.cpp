@@ -26,7 +26,12 @@ void UEIK_FindSessions_AsyncFunction::Activate()
 
 void UEIK_FindSessions_AsyncFunction::FindSession()
 {
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	FName SubsystemToUse = "EIK";
+	if(B_bLanSearch)
+	{
+		SubsystemToUse = NULL_SUBSYSTEM;
+	}
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get(SubsystemToUse))
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
@@ -95,7 +100,6 @@ MarkAsGarbage();
 
 void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Find Session Completed"));
 	if(!bWasSuccess)
 	{
 		if(bDelegateCalled)
@@ -136,7 +140,7 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 
 						bool IsServer = LocalArraySettings.Contains("IsDedicatedServer") ? true : false;
 						FSessionFindStruct LocalStruct;
-						LocalStruct.SessionName = "GameSession";
+						//LocalStruct.SessionName = SessionResult.OnlineResult.Session.SessionSettings.
 						LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
 						LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections;
 						LocalStruct.SessionResult = SessionResult;

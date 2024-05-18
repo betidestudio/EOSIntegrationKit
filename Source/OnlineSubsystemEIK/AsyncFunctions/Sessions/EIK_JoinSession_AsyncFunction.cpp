@@ -5,12 +5,13 @@
 #include "OnlineSubsystemUtils.h"
 #include "Kismet/GameplayStatics.h"
 
-UEIK_JoinSession_AsyncFunction* UEIK_JoinSession_AsyncFunction::JoinEIKSessions(UObject* WorldContextObject, FName SessionName, FSessionFindStruct SessionToJoin)
+UEIK_JoinSession_AsyncFunction* UEIK_JoinSession_AsyncFunction::JoinEIKSessions(UObject* WorldContextObject, FName SessionName, FSessionFindStruct SessionToJoin,bool bLanSession)
 {
 	UEIK_JoinSession_AsyncFunction* Ueik_JoinSessionObject = NewObject<UEIK_JoinSession_AsyncFunction>();
 	Ueik_JoinSessionObject->Var_SessionToJoin = SessionToJoin;
 	Ueik_JoinSessionObject->Var_SessionName = SessionName;
 	Ueik_JoinSessionObject->Var_WorldContextObject = WorldContextObject;
+	Ueik_JoinSessionObject->bVar_bLanSession = bLanSession;
 	return Ueik_JoinSessionObject;
 }
 
@@ -22,7 +23,12 @@ void UEIK_JoinSession_AsyncFunction::Activate()
 
 void UEIK_JoinSession_AsyncFunction::JoinSession()
 {
-	const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld());
+	FName SubsystemToUse = "EIK";
+	if(bVar_bLanSession)
+	{
+		SubsystemToUse = NULL_SUBSYSTEM;
+	}
+	const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(), SubsystemToUse);
 	if(SubsystemRef)
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
