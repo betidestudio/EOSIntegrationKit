@@ -41,13 +41,7 @@ Here're some of the project's best features:
 
 <h2>🛠️ Installation Steps:</h2>
 
-<p>1. For most of us we just want the stable build. So go to releases page.</p>
-
-<p>2. Download the version that you want to use like 5.3 version.</p>
-
-<p>3. Put it in the Plugins folder of your project</p>
-
-<p>4. Build and you should be good to go!</p>
+Please check the docs for updated Installation Steps
 
 <h2>🍰 Contribution Guidelines:</h2>
 

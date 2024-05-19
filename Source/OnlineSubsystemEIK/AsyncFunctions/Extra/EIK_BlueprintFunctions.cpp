@@ -207,6 +207,41 @@ FEIKUniqueNetId UEIK_BlueprintFunctions::MakeEIKUniqueNetId(FString EpicAccountI
 	return FEIKUniqueNetId();
 }
 
+bool UEIK_BlueprintFunctions::AcceptSessionInvite(FString InviteId, FString LocalUserId, FString InviterUserId)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_ProductUserId LocalProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*LocalUserId));
+			EOS_ProductUserId InviterProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*InviterUserId));
+			const char* InviteIdChar = TCHAR_TO_ANSI(*InviteId);
+			EOSRef->SessionInterfacePtr->OnLobbyInviteAccepted(InviteIdChar, LocalProductUserId, InviterProductUserId);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::RejectSessionInvite(FString InviteId, FString LocalUserId)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_ProductUserId LocalProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*LocalUserId));
+			const char* InviteIdChar = TCHAR_TO_ANSI(*InviteId);
+			EOS_Lobby_RejectInviteOptions RejectOptions;
+			RejectOptions.ApiVersion = EOS_LOBBY_REJECTINVITE_API_LATEST;
+			RejectOptions.LocalUserId = LocalProductUserId;
+			RejectOptions.InviteId = InviteIdChar;
+			EOS_Lobby_RejectInvite(EOSRef->SessionInterfacePtr->LobbyHandle, &RejectOptions, nullptr, nullptr);
+			return true;
+		}
+	}
+	return false;
+}
+
 bool UEIK_BlueprintFunctions::StartSession(FName SessionName)
 {
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())

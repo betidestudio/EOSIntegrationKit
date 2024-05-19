@@ -8,6 +8,10 @@
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 
+#if WITH_EDITOR
+	#include "Editor.h"
+#endif
+
 void UEIK_EngineSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 #if WITH_EDITOR

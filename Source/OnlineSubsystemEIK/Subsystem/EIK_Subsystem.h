@@ -320,15 +320,18 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_GetFile_Callback, bool, bWasSuccess, USav
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_ConnectEOSAndPlayFab_Callback, bool, bWasSuccess, const FString&, Error);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_TitleFileList_Callback, bool, bWasSuccess, const FString&, Error);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FBP_HostMigration_Callback, bool, bLocalHost, const FString&, PromotedMember, const FString&, JoinAddress);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBP_InviteDelegate, const FEIKUniqueNetId&, LocalUserId, const FEIKUniqueNetId&, InvitedUserId);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBP_FriendInviteRecievedDelegate, const FEIKUniqueNetId&, LocalUserId, const FEIKUniqueNetId&, InvitedUserId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FBP_SessionInviteRecievedDelegate, const FString&, SessionInfo, const FString&, LocalProductId, const FString&, InvitedProductId);
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_Subsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 	
 public:
-	
+	UEIK_Subsystem();
+
+	static void EOS_CALL OnSessionInviteReceivedCallback(const EOS_Sessions_SessionInviteReceivedCallbackInfo* Data);
+
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Login")
 	bool InitializeEIK();
 
@@ -450,13 +453,16 @@ public:
 	bool ShowFriendUserInterface();
 
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Friend")
-	FBP_InviteDelegate OnInviteRecieved;
+	FBP_FriendInviteRecievedDelegate OnInviteRecieved;
 
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Friend")
-	FBP_InviteDelegate OnInviteAccepted;
+	FBP_FriendInviteRecievedDelegate OnInviteAccepted;
 	
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Friend")
-	FBP_InviteDelegate OnInviteRejected;
+	FBP_FriendInviteRecievedDelegate OnInviteRejected;
+
+	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Session")
+	FBP_SessionInviteRecievedDelegate OnSessionInviteReceived;
 
 	//Stat Functions
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Statistics")
