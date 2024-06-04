@@ -30,12 +30,12 @@ struct FEIK_ContinuanceToken
 		const char* StringToken = TCHAR_TO_ANSI(*ContinuanceToken);
 		// Allocate memory for the EOS_ContinuanceToken
 		size_t tokenSize = std::strlen(StringToken) + 1;
-		EOS_ContinuanceToken ContinuanceToken = (EOS_ContinuanceToken)malloc(tokenSize);
-		if (ContinuanceToken)
+		EOS_ContinuanceToken ContinuanceTokenSec = (EOS_ContinuanceToken)malloc(tokenSize);
+		if (ContinuanceTokenSec)
 		{
-			std::strcpy((char*)ContinuanceToken, StringToken);
+			std::strcpy((char*)ContinuanceTokenSec, StringToken);
 		}
-		return ContinuanceToken;
+		return ContinuanceTokenSec;
 	}
 };
 
@@ -281,7 +281,7 @@ enum EEIK_Result
 };
 
 UCLASS()
-class EOSINTEGRATIONKIT_API UEIK_SharedFunctionFile : public UObject
+class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
 {
 	GENERATED_BODY()
 };
