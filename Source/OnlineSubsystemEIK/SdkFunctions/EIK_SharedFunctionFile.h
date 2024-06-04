@@ -8,6 +8,43 @@
 #include "EIK_SharedFunctionFile.generated.h"
 
 USTRUCT(BlueprintType)
+struct FEIK_ProductUserId
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS|Connect")
+	FString ProductUserId;
+
+	FEIK_ProductUserId()
+	{
+		ProductUserId = "";
+	}
+
+	FEIK_ProductUserId(EOS_ProductUserId InProductUserId)
+	{
+		char ProductIdAnsi[EOS_PRODUCTUSERID_MAX_LENGTH+1];
+		int32 ProductIdLen;
+		EOS_ProductUserId_ToString(InProductUserId, ProductIdAnsi, &ProductIdLen);
+		ProductUserId = FString(UTF8_TO_TCHAR(ProductIdAnsi));
+	}
+
+	EOS_ProductUserId ProductUserId_FromString()
+	{
+		const char* ProductIdAnsi = TCHAR_TO_ANSI(*ProductUserId);
+		EOS_ProductUserId ProductUserIdSec = EOS_ProductUserId_FromString(ProductIdAnsi);
+		return ProductUserIdSec;
+	}
+};
+
+UENUM(BlueprintType)
+enum EIK_ELoginStatus
+{
+	EIK_LS_NotLoggedIn = 0 UMETA(DisplayName = "Not Logged In"),
+	EIK_LS_UsingLocalProfile = 1 UMETA(DisplayName = "Using Local Profile"),
+	EIK_LS_LoggedIn = 2 UMETA(DisplayName = "Logged In")
+};
+
+USTRUCT(BlueprintType)
 struct FEIK_ContinuanceToken
 {
 	GENERATED_BODY()
