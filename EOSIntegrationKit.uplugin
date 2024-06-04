@@ -85,6 +85,11 @@
 				"IOS",
 				"Linux"
 			]
+		},
+		{
+			"Name": "EIKEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
