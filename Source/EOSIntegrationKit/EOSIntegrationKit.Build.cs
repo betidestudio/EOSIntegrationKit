@@ -26,9 +26,11 @@ public class EOSIntegrationKit : ModuleRules
 				"OnlineSubsystem",
 				"Slate",
 				"SlateCore", 
+				//TODO Remove this when the work is done
+				"EIKSDK", 
+				"OnlineSubsystemEIK", 
 			}
 		);
-		
 		if (Target.bBuildEditor)
 		{
 			PrivateDependencyModuleNames.AddRange(
