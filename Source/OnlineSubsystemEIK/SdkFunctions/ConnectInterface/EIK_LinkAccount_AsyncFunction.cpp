@@ -16,7 +16,7 @@ UEIK_LinkAccount_AsyncFunction* UEIK_LinkAccount_AsyncFunction::LinkAccount(cons
 void UEIK_LinkAccount_AsyncFunction::OnLinkAccountCallback(const EOS_Connect_LinkAccountCallbackInfo* Data)
 {
 	TEnumAsByte<EEIK_Result> Result = static_cast<EEIK_Result>(Data->ResultCode);
-	UEIK_LinkAccount_AsyncFunction* LinkAccountFunction = static_cast<UEIK_LinkAccount_AsyncFunction*>(Data->ClientData)
+	UEIK_LinkAccount_AsyncFunction* LinkAccountFunction = static_cast<UEIK_LinkAccount_AsyncFunction*>(Data->ClientData);
 	if(LinkAccountFunction)
 	{
 		LinkAccountFunction->OnCallback.Broadcast(Result);

@@ -13,7 +13,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLinkAccountCallback, TEnumAsByte<EEIK_Result>, Result);
 UCLASS()
-class EOSINTEGRATIONKIT_API UEIK_LinkAccount_AsyncFunction : public UBlueprintAsyncActionBase
+class ONLINESUBSYSTEMEIK_API UEIK_LinkAccount_AsyncFunction : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
 
@@ -28,6 +28,6 @@ public:
 private:
 	FString Var_LocalProductUserId;
 	FEIK_ContinuanceToken Var_ContinuanceToken;
-	static void OnLinkAccountCallback(const EOS_Connect_LinkAccountCallbackInfo* Data);
+	static void EOS_CALL OnLinkAccountCallback(const EOS_Connect_LinkAccountCallbackInfo* Data);
 	virtual void Activate() override;
 };
