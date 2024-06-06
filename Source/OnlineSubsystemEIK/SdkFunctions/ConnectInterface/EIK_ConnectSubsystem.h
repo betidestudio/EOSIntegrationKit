@@ -31,7 +31,7 @@ public:
 
 	//Fetches an ID token for a Product User ID.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_CopyIdToken")
-	void EIK_Connect_CopyIdToken(FEIK_ProductUserId LocalUserId, TEnumAsByte<EEIK_Result>& Result, FString& OutIdToken);
+	TEnumAsByte<EEIK_Result> EIK_Connect_CopyIdToken(FEIK_ProductUserId LocalUserId, FEIK_Connect_IdToken& OutIdToken);
 
 
 };

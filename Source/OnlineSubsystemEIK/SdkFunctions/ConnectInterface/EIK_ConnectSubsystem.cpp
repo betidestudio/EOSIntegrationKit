@@ -55,8 +55,8 @@ FEIK_NotificationId UEIK_ConnectSubsystem::EIK_Connect_AddNotifyLoginStatusChang
 	return FEIK_NotificationId();
 }
 
-void UEIK_ConnectSubsystem::EIK_Connect_CopyIdToken(FEIK_ProductUserId LocalUserId, TEnumAsByte<EEIK_Result>& Result,
-	FString& OutIdToken)
+TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyIdToken(FEIK_ProductUserId LocalUserId,
+	FEIK_Connect_IdToken& OutIdToken)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -67,13 +67,13 @@ void UEIK_ConnectSubsystem::EIK_Connect_CopyIdToken(FEIK_ProductUserId LocalUser
 			CopyIdTokenOptions.ApiVersion = EOS_CONNECT_COPYIDTOKEN_API_LATEST;
 			CopyIdTokenOptions.LocalUserId = LocalUserId.ProductUserId_FromString();
 			auto ResultVal = EOS_Connect_CopyIdToken(EOSRef->ConnectHandle, &CopyIdTokenOptions, &IdToken);
-			Result = static_cast<EEIK_Result>(ResultVal);
 			if(IdToken)
 			{
-				OutIdToken = IdToken->JsonWebToken;
+				OutIdToken = *IdToken;
 			}
-			return;
+			return static_cast<EEIK_Result>(ResultVal);
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("Failed to copy id token either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return EEIK_Result::EOS_NotFound;
 }

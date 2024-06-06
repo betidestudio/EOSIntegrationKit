@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "eos_common.h"
+#include "eos_connect_types.h"
 #include "UObject/Object.h"
 #include "EIK_SharedFunctionFile.generated.h"
 
@@ -339,6 +340,41 @@ struct FEIK_NotificationId
 	{
 		return NotificationId;
 	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_Connect_IdToken
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FEIK_ProductUserId UserId;
+
+	UPROPERTY()
+	FString Token;
+
+	FEIK_Connect_IdToken()
+	{
+		UserId = FEIK_ProductUserId();
+		Token = "";
+	}
+
+	FEIK_Connect_IdToken(EOS_Connect_IdToken InIdToken)
+	{
+		UserId = InIdToken.ProductUserId;
+		Token = UTF8_TO_TCHAR(InIdToken.JsonWebToken);
+	}
+
+	EOS_Connect_IdToken EOS_Connect_IdToken_FromStruct()
+	{
+		EOS_Connect_IdToken IdToken;
+		IdToken.ApiVersion = EOS_CONNECT_IDTOKEN_API_LATEST;
+		IdToken.ProductUserId = UserId.ProductUserId_FromString();
+		IdToken.JsonWebToken = TCHAR_TO_ANSI(*Token);
+		return IdToken;
+	}
+	
 };
 
 
