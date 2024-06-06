@@ -53,27 +53,25 @@ struct FEIK_ContinuanceToken
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS|Connect")
 	FString ContinuanceToken;
 
-	FEIK_ContinuanceToken()
+	EOS_ContinuanceToken ContinuanceTokenBasic;
+
+	FEIK_ContinuanceToken(): ContinuanceTokenBasic(nullptr)
 	{
 		ContinuanceToken = "";
 	}
 
 	FEIK_ContinuanceToken(EOS_ContinuanceToken InContinuanceToken)
 	{
-		ContinuanceToken = FString(UTF8_TO_TCHAR(InContinuanceToken));
+		char* OutBuffer = new char[EOS_PRODUCTUSERID_MAX_LENGTH + 1];
+		int32 OutBufferLen;
+		EOS_ContinuanceToken_ToString(InContinuanceToken, OutBuffer, &OutBufferLen);
+		ContinuanceToken = FString(UTF8_TO_TCHAR(OutBuffer));
+		ContinuanceTokenBasic = InContinuanceToken;
 	}
 	
-	EOS_ContinuanceToken EOS_ContinuanceToken_FromString()
+	EOS_ContinuanceToken EOS_ContinuanceToken_FromStruct()
 	{
-		const char* StringToken = TCHAR_TO_ANSI(*ContinuanceToken);
-		// Allocate memory for the EOS_ContinuanceToken
-		size_t tokenSize = std::strlen(StringToken) + 1;
-		EOS_ContinuanceToken ContinuanceTokenSec = (EOS_ContinuanceToken)malloc(tokenSize);
-		if (ContinuanceTokenSec)
-		{
-			std::strcpy((char*)ContinuanceTokenSec, StringToken);
-		}
-		return ContinuanceTokenSec;
+		return ContinuanceTokenBasic;
 	}
 };
 
@@ -455,6 +453,9 @@ struct FEIK_Connect_ExternalAccountInfo
 	}
 	
 };
+
+
+
 
 
 UCLASS()
