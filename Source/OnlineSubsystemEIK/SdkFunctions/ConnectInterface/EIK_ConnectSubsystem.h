@@ -56,7 +56,7 @@ public:
 
 	//Fetch a Product User ID that maps to an external account ID cached from a previous query.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetExternalAccountMapping")
-	FEIK_ProductUserId EIK_Connect_GetExternalAccountMapping(FEIK_ProductUserId LocalUserId, EEIK_EExternalAccountType AccountIdType, FString TargetExternalUserId);
+	FEIK_ProductUserId EIK_Connect_GetExternalAccountMapping(FEIK_ProductUserId LocalUserId, TEnumAsByte<EEIK_EExternalAccountType> AccountIdType, FString TargetExternalUserId);
 
 	//Fetch a Product User ID that is logged in. This Product User ID is in the Epic Online Services namespace.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetLoggedInUserByIndex")
@@ -73,4 +73,13 @@ public:
 	//Fetch the number of linked external accounts for a Product User ID.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetProductUserExternalAccountCount")
 	int32 EIK_Connect_GetProductUserExternalAccountCount(FEIK_ProductUserId LocalUserId);
+
+	//Fetch an external account ID, in string form, that maps to a given Product User ID.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetProductUserIdMapping")
+	TEnumAsByte<EEIK_Result> EIK_Connect_GetProductUserIdMapping(FEIK_ProductUserId LocalUserId, TEnumAsByte<EEIK_EExternalAccountType> AccountIdType, FEIK_ProductUserId TargetUserId, FString& OutBuffer);
+
+	//Release the memory associated with an EOS_Connect_IdToken structure. This must be called on data retrieved from EOS_Connect_CopyIdToken.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_IdToken_Release")
+	void EIK_Connect_IdToken_Release(FEIK_Connect_IdToken IdToken);
+
 };

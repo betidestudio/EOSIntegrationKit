@@ -181,7 +181,7 @@ void UEIK_ConnectSubsystem::EIK_Connect_ExternalAccountInfo_Release(
 	EOS_Connect_ExternalAccountInfo_Release(&ReleaseExternalAccountInfo);
 }
 
-FEIK_ProductUserId UEIK_ConnectSubsystem::EIK_Connect_GetExternalAccountMapping(FEIK_ProductUserId LocalUserId,	EEIK_EExternalAccountType AccountIdType, FString TargetExternalUserId)
+FEIK_ProductUserId UEIK_ConnectSubsystem::EIK_Connect_GetExternalAccountMapping(FEIK_ProductUserId LocalUserId,	TEnumAsByte<EEIK_EExternalAccountType> AccountIdType, FString TargetExternalUserId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -190,7 +190,7 @@ FEIK_ProductUserId UEIK_ConnectSubsystem::EIK_Connect_GetExternalAccountMapping(
 			EOS_Connect_GetExternalAccountMappingsOptions GetExternalAccountMappingsOptions = { };
 			GetExternalAccountMappingsOptions.ApiVersion = EOS_CONNECT_GETEXTERNALACCOUNTMAPPING_API_LATEST;
 			GetExternalAccountMappingsOptions.LocalUserId = LocalUserId.ProductUserId_FromString();
-			GetExternalAccountMappingsOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountIdType);
+			GetExternalAccountMappingsOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountIdType.GetValue());
 			if(!TargetExternalUserId.IsEmpty())
 			{
 				GetExternalAccountMappingsOptions.TargetExternalUserId = TCHAR_TO_ANSI(*TargetExternalUserId);
@@ -255,4 +255,33 @@ int32 UEIK_ConnectSubsystem::EIK_Connect_GetProductUserExternalAccountCount(FEIK
 	}
 	UE_LOG(LogEIK, Error, TEXT("Failed to get product user external account count either OnlineSubsystem is not valid or EOSRef is not valid."));
 	return -1;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_GetProductUserIdMapping(FEIK_ProductUserId LocalUserId,
+	TEnumAsByte<EEIK_EExternalAccountType> AccountIdType, FEIK_ProductUserId TargetUserId, FString& OutBuffer)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Connect_GetProductUserIdMappingOptions GetProductUserIdMappingOptions = { };
+			GetProductUserIdMappingOptions.ApiVersion = EOS_CONNECT_GETPRODUCTUSERIDMAPPING_API_LATEST;
+			GetProductUserIdMappingOptions.LocalUserId = LocalUserId.ProductUserId_FromString();
+			GetProductUserIdMappingOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountIdType.GetValue());
+			GetProductUserIdMappingOptions.TargetProductUserId = TargetUserId.ProductUserId_FromString();
+			char Buffer[EOS_CONNECT_EXTERNAL_ACCOUNT_ID_MAX_LENGTH + 1];
+			int32 BufferSize = EOS_CONNECT_EXTERNAL_ACCOUNT_ID_MAX_LENGTH + 1;
+			auto ResultVal = EOS_Connect_GetProductUserIdMapping(EOSRef->ConnectHandle, &GetProductUserIdMappingOptions, Buffer, &BufferSize);
+			OutBuffer = Buffer;
+			return static_cast<EEIK_Result>(ResultVal);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get product user id mapping either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return EEIK_Result::EOS_NotFound;
+}
+
+void UEIK_ConnectSubsystem::EIK_Connect_IdToken_Release(FEIK_Connect_IdToken IdToken)
+{
+	EOS_Connect_IdToken ReleaseIdToken = IdToken.EOS_Connect_IdToken_FromStruct();
+	EOS_Connect_IdToken_Release(&ReleaseIdToken);
 }
