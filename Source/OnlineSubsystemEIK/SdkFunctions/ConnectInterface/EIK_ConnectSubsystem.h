@@ -33,5 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_CopyIdToken")
 	TEnumAsByte<EEIK_Result> EIK_Connect_CopyIdToken(FEIK_ProductUserId LocalUserId, FEIK_Connect_IdToken& OutIdToken);
 
+	//Fetch information about an external account linked to a Product User ID. On a successful call, the caller must release the returned structure using the EOS_Connect_ExternalAccountInfo_Release API.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_CopyProductUserExternalAccountByAccountId")
+	TEnumAsByte<EEIK_Result> EIK_Connect_CopyProductUserExternalAccountByAccountId(FEIK_ProductUserId LocalUserId, FString AccountId, FEIK_Connect_ExternalAccountInfo& OutExternalAccountInfo);
+
 
 };

@@ -348,10 +348,10 @@ struct FEIK_Connect_IdToken
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Connect Interface")
 	FEIK_ProductUserId UserId;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Connect Interface")
 	FString Token;
 
 	FEIK_Connect_IdToken()
@@ -373,6 +373,85 @@ struct FEIK_Connect_IdToken
 		IdToken.ProductUserId = UserId.ProductUserId_FromString();
 		IdToken.JsonWebToken = TCHAR_TO_ANSI(*Token);
 		return IdToken;
+	}
+	
+}; 
+
+UENUM(BlueprintType)
+enum EEIK_EExternalAccountType
+{
+	/** External account is associated with Epic Games */
+	EIK_EAT_EPIC = 0 UMETA(DisplayName = "Epic Games"),
+	/** External account is associated with Steam */
+	EIK_EAT_STEAM = 1 UMETA(DisplayName = "Steam"),
+	/** External account is associated with PlayStation(TM)Network */
+	EIK_EAT_PSN = 2 UMETA(DisplayName = "PlayStation Network"),
+	/** External account is associated with Xbox Live */
+	EIK_EAT_XBL = 3 UMETA(DisplayName = "Xbox Live"),
+	/** External account is associated with Discord */
+	EIK_EAT_DISCORD = 4	UMETA(DisplayName = "Discord"),
+	/** External account is associated with GOG */
+	EIK_EAT_GOG = 5 UMETA(DisplayName = "GOG"),
+	/**
+	 * External account is associated with Nintendo
+	 *
+	 * With both EOS Connect and EOS UserInfo APIs, the associated account type is Nintendo Service Account ID.
+	 * Local user authentication is possible using Nintendo Account ID, while the account type does not get exposed to the SDK in queries related to linked accounts information.
+	 */
+	EIK_EAT_NINTENDO = 6 UMETA(DisplayName = "Nintendo"),
+	/** External account is associated with Uplay */
+	EIK_EAT_UPLAY = 7 UMETA(DisplayName = "Uplay"),
+	/** External account is associated with an OpenID Provider */
+	EIK_EAT_OPENID = 8 UMETA(DisplayName = "OpenID"),
+	/** External account is associated with Apple */
+	EIK_EAT_APPLE = 9 UMETA(DisplayName = "Apple"),
+	/** External account is associated with Google */
+	EIK_EAT_GOOGLE = 10 UMETA(DisplayName = "Google"),
+	/** External account is associated with Oculus */
+	EIK_EAT_OCULUS = 11 UMETA(DisplayName = "Oculus"),
+	/** External account is associated with itch.io */
+	EIK_EAT_ITCHIO = 12 UMETA(DisplayName = "itch.io"),
+	/** External account is associated with Amazon */
+	EIK_EAT_AMAZON = 13 UMETA(DisplayName = "Amazon"),
+	/** External account is associated with Viveport */
+	EIK_EAT_VIVEPORT = 14 UMETA(DisplayName = "Viveport"),
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Connect_ExternalAccountInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Connect Interface")
+	FEIK_ProductUserId UserId;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Connect Interface")
+	FString AccountId;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Connect Interface")
+	FString DisplayName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Connect Interface")
+	int64 LastLoginTime;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Connect Interface")
+	TEnumAsByte<EEIK_EExternalAccountType> AccountType;
+	
+	FEIK_Connect_ExternalAccountInfo()
+	{
+		UserId = FEIK_ProductUserId();
+		AccountId = "";
+		DisplayName = "";
+		LastLoginTime = 0;
+		AccountType = EIK_EAT_EPIC;
+	}
+	FEIK_Connect_ExternalAccountInfo(EOS_Connect_ExternalAccountInfo InExternalAccountInfo)
+	{
+		UserId = InExternalAccountInfo.ProductUserId;
+		AccountId = FString(UTF8_TO_TCHAR(InExternalAccountInfo.AccountId));
+		DisplayName = FString(UTF8_TO_TCHAR(InExternalAccountInfo.DisplayName));
+		LastLoginTime = InExternalAccountInfo.LastLoginTime;
+		AccountType = static_cast<EEIK_EExternalAccountType>(InExternalAccountInfo.AccountIdType);
 	}
 	
 };
