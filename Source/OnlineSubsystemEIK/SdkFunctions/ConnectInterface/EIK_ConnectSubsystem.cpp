@@ -240,3 +240,19 @@ TEnumAsByte<EEIK_LoginStatus> UEIK_ConnectSubsystem::EIK_Connect_GetLoginStatus(
 	UE_LOG(LogEIK, Error, TEXT("Failed to get login status either OnlineSubsystem is not valid or EOSRef is not valid."));
 	return EEIK_LoginStatus::NotLoggedIn;
 }
+
+int32 UEIK_ConnectSubsystem::EIK_Connect_GetProductUserExternalAccountCount(FEIK_ProductUserId LocalUserId)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Connect_GetProductUserExternalAccountCountOptions GetProductUserExternalAccountCountOptions = { };
+			GetProductUserExternalAccountCountOptions.ApiVersion = EOS_CONNECT_GETPRODUCTUSEREXTERNALACCOUNTCOUNT_API_LATEST;
+			GetProductUserExternalAccountCountOptions.TargetUserId = LocalUserId.ProductUserId_FromString();
+			return EOS_Connect_GetProductUserExternalAccountCount(EOSRef->ConnectHandle, &GetProductUserExternalAccountCountOptions);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get product user external account count either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return -1;
+}

@@ -69,4 +69,8 @@ public:
 	//Fetches the login status for an Product User ID. This Product User ID is considered logged in as long as the underlying access token has not expired.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetLoginStatus")
 	TEnumAsByte<EEIK_LoginStatus> EIK_Connect_GetLoginStatus(FEIK_ProductUserId LocalUserId);
+
+	//Fetch the number of linked external accounts for a Product User ID.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetProductUserExternalAccountCount")
+	int32 EIK_Connect_GetProductUserExternalAccountCount(FEIK_ProductUserId LocalUserId);
 };
