@@ -9,7 +9,7 @@
 //LogEIK
 DEFINE_LOG_CATEGORY(LogEIK);
 
-void UEIK_ConnectSubsystem::EIK_Connect_AddNotifyAuthExpiration(const FOnAuthExpirationCallback& Callback)
+FEIK_NotificationId UEIK_ConnectSubsystem::EIK_Connect_AddNotifyAuthExpiration(const FOnAuthExpirationCallback& Callback)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -17,7 +17,7 @@ void UEIK_ConnectSubsystem::EIK_Connect_AddNotifyAuthExpiration(const FOnAuthExp
 		{
 			EOS_Connect_AddNotifyAuthExpirationOptions AddNotifyAuthExpirationOptions = { };
 			AddNotifyAuthExpirationOptions.ApiVersion = EOS_CONNECT_ADDNOTIFYAUTHEXPIRATION_API_LATEST;
-			EOS_Connect_AddNotifyAuthExpiration(EOSRef->ConnectHandle, &AddNotifyAuthExpirationOptions, this, [] (const EOS_Connect_AuthExpirationCallbackInfo* Data)
+			auto Return = EOS_Connect_AddNotifyAuthExpiration(EOSRef->ConnectHandle, &AddNotifyAuthExpirationOptions, this, [] (const EOS_Connect_AuthExpirationCallbackInfo* Data)
 			{
 				UEIK_ConnectSubsystem* ConnectSubsystem = static_cast<UEIK_ConnectSubsystem*>(Data->ClientData);
 				if(ConnectSubsystem)
@@ -25,13 +25,14 @@ void UEIK_ConnectSubsystem::EIK_Connect_AddNotifyAuthExpiration(const FOnAuthExp
 					ConnectSubsystem->OnAuthExpiration.ExecuteIfBound(Data->LocalUserId);
 				}
 			});
-			return;
+			return Return;
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("Failed to add notify auth expiration either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return FEIK_NotificationId();
 }
 
-void UEIK_ConnectSubsystem::EIK_Connect_AddNotifyLoginStatusChanged(const FOnLoginStatusChangedCallback& Callback)
+FEIK_NotificationId UEIK_ConnectSubsystem::EIK_Connect_AddNotifyLoginStatusChanged(const FOnLoginStatusChangedCallback& Callback)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -39,7 +40,7 @@ void UEIK_ConnectSubsystem::EIK_Connect_AddNotifyLoginStatusChanged(const FOnLog
 		{
 			EOS_Connect_AddNotifyLoginStatusChangedOptions AddNotifyLoginStatusChangedOptions = { };
 			AddNotifyLoginStatusChangedOptions.ApiVersion = EOS_CONNECT_ADDNOTIFYLOGINSTATUSCHANGED_API_LATEST;
-			EOS_Connect_AddNotifyLoginStatusChanged(EOSRef->ConnectHandle, &AddNotifyLoginStatusChangedOptions, this, [] (const EOS_Connect_LoginStatusChangedCallbackInfo* Data)
+			auto Return = EOS_Connect_AddNotifyLoginStatusChanged(EOSRef->ConnectHandle, &AddNotifyLoginStatusChangedOptions, this, [] (const EOS_Connect_LoginStatusChangedCallbackInfo* Data)
 			{
 				UEIK_ConnectSubsystem* ConnectSubsystem = static_cast<UEIK_ConnectSubsystem*>(Data->ClientData);
 				if(ConnectSubsystem)
@@ -47,10 +48,11 @@ void UEIK_ConnectSubsystem::EIK_Connect_AddNotifyLoginStatusChanged(const FOnLog
 					ConnectSubsystem->OnLoginStatusChanged.ExecuteIfBound(Data->LocalUserId, static_cast<EIK_ELoginStatus>(Data->CurrentStatus));
 				}
 			});
-			return;
+			return Return;
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("Failed to add notify login status changed either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return FEIK_NotificationId();
 }
 
 void UEIK_ConnectSubsystem::EIK_Connect_CopyIdToken(FEIK_ProductUserId LocalUserId, TEnumAsByte<EEIK_Result>& Result,

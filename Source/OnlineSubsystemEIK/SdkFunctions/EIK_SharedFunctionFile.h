@@ -317,6 +317,31 @@ enum EEIK_Result
 
 };
 
+USTRUCT(BlueprintType)
+struct FEIK_NotificationId
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int64 NotificationId;
+
+	FEIK_NotificationId()
+	{
+		NotificationId = 0;
+	}
+
+	FEIK_NotificationId(EOS_NotificationId InNotificationId)
+	{
+		NotificationId = InNotificationId;
+	}
+
+	EOS_NotificationId EOS_NotificationId_FromInt64()
+	{
+		return NotificationId;
+	}
+};
+
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
 {

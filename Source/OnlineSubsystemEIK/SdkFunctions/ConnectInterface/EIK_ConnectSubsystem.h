@@ -23,13 +23,15 @@ public:
 
 	//Register to receive upcoming authentication expiration notifications. Notification is approximately 10 minutes prior to expiration. Call EOS_Connect_Login again with valid third party credentials to refresh access.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_AddNotifyAuthExpiration")
-	void EIK_Connect_AddNotifyAuthExpiration(const FOnAuthExpirationCallback& Callback);
+	FEIK_NotificationId EIK_Connect_AddNotifyAuthExpiration(const FOnAuthExpirationCallback& Callback);
 
 	//Register to receive user login status updates.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_AddNotifyLoginStatusChanged")
-	void EIK_Connect_AddNotifyLoginStatusChanged(const FOnLoginStatusChangedCallback& Callback);
+	FEIK_NotificationId EIK_Connect_AddNotifyLoginStatusChanged(const FOnLoginStatusChangedCallback& Callback);
 
 	//Fetches an ID token for a Product User ID.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_CopyIdToken")
 	void EIK_Connect_CopyIdToken(FEIK_ProductUserId LocalUserId, TEnumAsByte<EEIK_Result>& Result, FString& OutIdToken);
+
+
 };
