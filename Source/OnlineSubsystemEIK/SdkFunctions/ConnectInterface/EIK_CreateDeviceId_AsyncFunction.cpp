@@ -5,6 +5,7 @@
 
 #include "EIK_ConnectSubsystem.h"
 #include "OnlineSubsystemEOS.h"
+#include "Async/Async.h"
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 
 UEIK_CreateDeviceId_AsyncFunction* UEIK_CreateDeviceId_AsyncFunction::CreateDeviceId(FString DeviceModel)
@@ -47,7 +48,10 @@ void UEIK_CreateDeviceId_AsyncFunction::OnCreateDeviceIdCallback(const EOS_Conne
 	UEIK_CreateDeviceId_AsyncFunction* Node = static_cast<UEIK_CreateDeviceId_AsyncFunction*>(Data->ClientData);
 	if(Node)
 	{
-		Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
+		AsyncTask(ENamedThreads::GameThread, [Node, Data]()
+		{
+			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
+		});
 		Node->SetReadyToDestroy();
 		Node->MarkAsGarbage();
 	}

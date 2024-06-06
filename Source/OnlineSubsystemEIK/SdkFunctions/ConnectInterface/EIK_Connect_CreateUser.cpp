@@ -5,6 +5,7 @@
 
 #include "EIK_ConnectSubsystem.h"
 #include "OnlineSubsystemEOS.h"
+#include "Async/Async.h"
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 
 
@@ -40,7 +41,10 @@ void UEIK_Connect_CreateUser::OnCreateUserCallback(const EOS_Connect_CreateUserC
 	UEIK_Connect_CreateUser* Node = static_cast<UEIK_Connect_CreateUser*>(Data->ClientData);
 	if(Node)
 	{
-		Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
+		AsyncTask(ENamedThreads::GameThread, [Node, Data]()
+		{
+			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
+		});
 		Node->SetReadyToDestroy();
 		Node->MarkAsGarbage();
 	}

@@ -3,9 +3,11 @@
 
 #include "EIK_LinkAccount_AsyncFunction.h"
 
+#include "Async/Async.h"
+
 
 UEIK_LinkAccount_AsyncFunction* UEIK_LinkAccount_AsyncFunction::LinkAccount(const FString& LocalProductUserId,
-	const FEIK_ContinuanceToken& ContinuanceToken)
+                                                                            const FEIK_ContinuanceToken& ContinuanceToken)
 {
 	UEIK_LinkAccount_AsyncFunction* BlueprintNode = NewObject<UEIK_LinkAccount_AsyncFunction>();
 	BlueprintNode->Var_LocalProductUserId = LocalProductUserId;
@@ -19,7 +21,10 @@ void UEIK_LinkAccount_AsyncFunction::OnLinkAccountCallback(const EOS_Connect_Lin
 	UEIK_LinkAccount_AsyncFunction* LinkAccountFunction = static_cast<UEIK_LinkAccount_AsyncFunction*>(Data->ClientData);
 	if(LinkAccountFunction)
 	{
-		LinkAccountFunction->OnCallback.Broadcast(Result);
+		AsyncTask(ENamedThreads::GameThread, [LinkAccountFunction, Data]()
+		{
+			LinkAccountFunction->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
+		});
 		LinkAccountFunction->SetReadyToDestroy();
 		LinkAccountFunction->MarkAsGarbage();
 	}
