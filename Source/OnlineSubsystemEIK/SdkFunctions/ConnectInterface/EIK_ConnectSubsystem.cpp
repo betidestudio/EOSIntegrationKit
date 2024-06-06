@@ -173,3 +173,31 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserInfo(
 	UE_LOG(LogEIK, Error, TEXT("Failed to copy product user info either OnlineSubsystem is not valid or EOSRef is not valid."));
 	return EEIK_Result::EOS_NotFound;
 }
+
+void UEIK_ConnectSubsystem::EIK_Connect_ExternalAccountInfo_Release(
+	FEIK_Connect_ExternalAccountInfo ExternalAccountInfo)
+{
+	EOS_Connect_ExternalAccountInfo ReleaseExternalAccountInfo = ExternalAccountInfo.EOS_Connect_ExternalAccountInfo_FromStruct();
+	EOS_Connect_ExternalAccountInfo_Release(&ReleaseExternalAccountInfo);
+}
+
+FEIK_ProductUserId UEIK_ConnectSubsystem::EIK_Connect_GetExternalAccountMapping(FEIK_ProductUserId LocalUserId,	EEIK_EExternalAccountType AccountIdType, FString TargetExternalUserId)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Connect_GetExternalAccountMappingsOptions GetExternalAccountMappingsOptions = { };
+			GetExternalAccountMappingsOptions.ApiVersion = EOS_CONNECT_GETEXTERNALACCOUNTMAPPING_API_LATEST;
+			GetExternalAccountMappingsOptions.LocalUserId = LocalUserId.ProductUserId_FromString();
+			GetExternalAccountMappingsOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountIdType);
+			if(!TargetExternalUserId.IsEmpty())
+			{
+				GetExternalAccountMappingsOptions.TargetExternalUserId = TCHAR_TO_ANSI(*TargetExternalUserId);
+			}
+			return EOS_Connect_GetExternalAccountMapping(EOSRef->ConnectHandle, &GetExternalAccountMappingsOptions);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get external account mapping either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return FEIK_ProductUserId();
+}

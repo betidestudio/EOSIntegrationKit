@@ -451,6 +451,17 @@ struct FEIK_Connect_ExternalAccountInfo
 		LastLoginTime = InExternalAccountInfo.LastLoginTime;
 		AccountType = static_cast<EEIK_EExternalAccountType>(InExternalAccountInfo.AccountIdType);
 	}
+	EOS_Connect_ExternalAccountInfo EOS_Connect_ExternalAccountInfo_FromStruct()
+	{
+		EOS_Connect_ExternalAccountInfo ExternalAccountInfo;
+		ExternalAccountInfo.ApiVersion = EOS_CONNECT_EXTERNALACCOUNTINFO_API_LATEST;
+		ExternalAccountInfo.ProductUserId = UserId.ProductUserId_FromString();
+		ExternalAccountInfo.AccountId = TCHAR_TO_ANSI(*AccountId);
+		ExternalAccountInfo.DisplayName = TCHAR_TO_ANSI(*DisplayName);
+		ExternalAccountInfo.LastLoginTime = LastLoginTime;
+		ExternalAccountInfo.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountType.GetValue());
+		return ExternalAccountInfo;
+	}
 	
 };
 

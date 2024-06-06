@@ -48,4 +48,12 @@ public:
 	//Fetch information about a Product User, using the external account that they most recently logged in with as the reference. On a successful call, the caller must release the returned structure using the EOS_Connect_ExternalAccountInfo_Release API.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_CopyProductUserInfo")
 	TEnumAsByte<EEIK_Result> EIK_Connect_CopyProductUserInfo(FEIK_ProductUserId LocalUserId, FEIK_Connect_ExternalAccountInfo& OutProductUserInfo);
+
+	//Release the memory associated with an external account info. This must be called on data retrieved from EOS_Connect_CopyProductUserExternalAccountByIndex, EOS_Connect_CopyProductUserExternalAccountByAccountType, EOS_Connect_CopyProductUserExternalAccountByAccountId or EOS_Connect_CopyProductUserInfo.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_ExternalAccountInfo_Release")
+	void EIK_Connect_ExternalAccountInfo_Release(FEIK_Connect_ExternalAccountInfo ExternalAccountInfo);
+
+	//Fetch a Product User ID that maps to an external account ID cached from a previous query.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetExternalAccountMapping")
+	FEIK_ProductUserId EIK_Connect_GetExternalAccountMapping(FEIK_ProductUserId LocalUserId, EEIK_EExternalAccountType AccountIdType, FString TargetExternalUserId);
 };
