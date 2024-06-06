@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OnlineSubsystemEIK/AsyncFunctions/Extra/EIK_BlueprintFunctions.h"
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "EIK_ConnectSubsystem.generated.h"
@@ -60,4 +61,12 @@ public:
 	//Fetch a Product User ID that is logged in. This Product User ID is in the Epic Online Services namespace.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetLoggedInUserByIndex")
 	FEIK_ProductUserId EIK_Connect_GetLoggedInUserByIndex(int32 Index);
+
+	//Fetch the number of product users that are logged in.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetLoggedInUsersCount")
+	int32 EIK_Connect_GetLoggedInUsersCount();
+
+	//Fetches the login status for an Product User ID. This Product User ID is considered logged in as long as the underlying access token has not expired.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetLoginStatus")
+	TEnumAsByte<EEIK_LoginStatus> EIK_Connect_GetLoginStatus(FEIK_ProductUserId LocalUserId);
 };

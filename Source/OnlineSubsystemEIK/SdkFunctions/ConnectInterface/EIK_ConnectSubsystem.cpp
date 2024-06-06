@@ -214,3 +214,29 @@ FEIK_ProductUserId UEIK_ConnectSubsystem::EIK_Connect_GetLoggedInUserByIndex(int
 	UE_LOG(LogEIK, Error, TEXT("Failed to get logged in user by index either OnlineSubsystem is not valid or EOSRef is not valid."));
 	return FEIK_ProductUserId();
 }
+
+int32 UEIK_ConnectSubsystem::EIK_Connect_GetLoggedInUsersCount()
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			return EOS_Connect_GetLoggedInUsersCount(EOSRef->ConnectHandle);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get logged in users count either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return 0;
+}
+
+TEnumAsByte<EEIK_LoginStatus> UEIK_ConnectSubsystem::EIK_Connect_GetLoginStatus(FEIK_ProductUserId LocalUserId)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			return static_cast<EEIK_LoginStatus>(EOS_Connect_GetLoginStatus(EOSRef->ConnectHandle, LocalUserId.ProductUserId_FromString()));
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get login status either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return EEIK_LoginStatus::NotLoggedIn;
+}
