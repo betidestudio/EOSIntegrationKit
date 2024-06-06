@@ -373,8 +373,225 @@ struct FEIK_Connect_IdToken
 		return IdToken;
 	}
 	
-}; 
+};
 
+UENUM(BlueprintType)
+enum EEIK_EExternalCredentialType
+{
+	/**
+	 * Epic Account Services Token
+	 *
+	 * Using ID Token is preferred, retrieved with EOS_Auth_CopyIdToken that returns EOS_Auth_IdToken::JsonWebToken.
+	 * Using Auth Token is supported for backwards compatibility, retrieved with EOS_Auth_CopyUserAuthToken that returns EOS_Auth_Token::AccessToken.
+	 *
+	 * Supported with EOS_Connect_Login.
+	 *
+	 * @see EOS_Auth_CopyIdToken
+	 * @see EOS_Auth_CopyUserAuthToken
+	 */
+	EIK_ECT_EPIC = 0 UMETA(DisplayName = "Epic Games"),
+	/**
+	 * Steam Encrypted App Ticket
+	 * Note that EOS_ECT_STEAM_APP_TICKET is deprecated for use with EOS_Auth_Login. Use EOS_ECT_STEAM_SESSION_TICKET instead.
+	 *
+	 * Generated using the ISteamUser::RequestEncryptedAppTicket API of Steamworks SDK.
+	 * For ticket generation parameters, use pDataToInclude(NULL) and cbDataToInclude(0).
+	 *
+	 * The retrieved App Ticket byte buffer needs to be converted into a hex-encoded UTF-8 string (e.g. "FA87097A..") before passing it to the EOS_Connect_Login API.
+	 * EOS_ByteArray_ToString can be used for this conversion.
+	 *
+	 * Supported with EOS_Connect_Login.
+	 *
+	 * @see EOS_ECT_STEAM_SESSION_TICKET
+	 */
+	EIK_ECT_STEAM_APP_TICKET = 1,
+	/**
+	 * PlayStation(TM)Network ID Token
+	 *
+	 * Retrieved from the PlayStation(R) SDK. Please see first-party documentation for additional information.
+	 *
+	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
+	 */
+	EIK_ECT_PSN_ID_TOKEN = 2,
+	/**
+	 * Xbox Live XSTS Token
+	 *
+	 * Retrieved from the GDK and XDK. Please see first-party documentation for additional information.
+	 *
+	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
+	 */
+	EIK_ECT_XBL_XSTS_TOKEN = 3,
+	/**
+	 * Discord Access Token
+	 *
+	 * Retrieved using the ApplicationManager::GetOAuth2Token API of Discord SDK.
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_DISCORD_ACCESS_TOKEN = 4,
+	/**
+	 * GOG Galaxy Encrypted App Ticket
+	 *
+	 * Generated using the IUser::RequestEncryptedAppTicket API of GOG Galaxy SDK.
+	 * For ticket generation parameters, use data(NULL) and dataSize(0).
+	 *
+	 * The retrieved App Ticket byte buffer needs to be converted into a hex-encoded UTF-8 string (e.g. "FA87097A..") before passing it to the EOS_Connect_Login API.
+	 * For C/C++ API integration, use the EOS_ByteArray_ToString API for the conversion.
+	 * For C# integration, you can use <see cref="Helper.ToHexString" /> for the conversion.
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_GOG_SESSION_TICKET = 5,
+	/**
+	 * Nintendo Account ID Token
+	 *
+	 * Identifies a Nintendo user account and is acquired through web flow authentication where the local user logs in using their email address/sign-in ID and password.
+	 * This is the common Nintendo account that users login with outside the Nintendo Switch device.
+	 *
+	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
+	 */
+	EIK_ECT_NINTENDO_ID_TOKEN = 6,
+	/**
+	 * Nintendo Service Account ID Token (NSA ID)
+	 *
+	 * The NSA ID identifies uniquely the local Nintendo Switch device. The authentication token is acquired locally without explicit user credentials.
+	 * As such, it is the primary authentication method for seamless login on Nintendo Switch.
+	 *
+	 * The NSA ID is not exposed directly to the user and does not provide any means for login outside the local device.
+	 * Because of this, Nintendo Switch users will need to link their Nintendo Account or another external user account
+	 * to their Product User ID in order to share their game progression across other platforms. Otherwise, the user will
+	 * not be able to login to their existing Product User ID on another platform due to missing login credentials to use.
+	 * It is recommended that the game explicitly communicates this restriction to the user so that they will know to add
+	 * the first linked external account on the Nintendo Switch device and then proceed with login on another platform.
+	 *
+	 * In addition to sharing cross-platform game progression, linking the Nintendo Account or another external account
+	 * will allow preserving the game progression permanently. Otherwise, the game progression will be tied only to the
+	 * local device. In case the user loses access to their local device, they will not be able to recover the game
+	 * progression if it is only associated with this account type.
+	 *
+	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
+	 */
+	EIK_ECT_NINTENDO_NSA_ID_TOKEN = 7,
+	/**
+	 * Uplay Access Token
+	 */
+	EIK_ECT_UPLAY_ACCESS_TOKEN = 8,
+	/**
+	 * OpenID Provider Access Token
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_OPENID_ACCESS_TOKEN = 9,
+	/**
+	 * Device ID access token that identifies the current locally logged in user profile on the local device.
+	 * The local user profile here refers to the operating system user login, for example the user's Windows Account
+	 * or on a mobile device the default active user profile.
+	 *
+	 * This credential type is used to automatically login the local user using the EOS Connect Device ID feature.
+	 *
+	 * The intended use of the Device ID feature is to allow automatically logging in the user on a mobile device
+	 * and to allow playing the game without requiring the user to necessarily login using a real user account at all.
+	 * This makes a seamless first-time experience possible and allows linking the local device with a real external
+	 * user account at a later time, sharing the same EOS_ProductUserId that is being used with the Device ID feature.
+	 *
+	 * Supported with EOS_Connect_Login.
+	 *
+	 * @see EOS_Connect_CreateDeviceId
+	 */
+	EIK_ECT_DEVICEID_ACCESS_TOKEN = 10,
+	/**
+	 * Apple ID Token
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_APPLE_ID_TOKEN = 11,
+	/**
+	 * Google ID Token
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_GOOGLE_ID_TOKEN = 12,
+	/**
+	 * Oculus User ID and Nonce
+	 *
+	 * Call ovr_User_GetUserProof(), or Platform.User.GetUserProof() if you are using Unity, to retrieve the nonce.
+	 * Then pass the local User ID and the Nonce as a "{UserID}|{Nonce}" formatted string for the EOS_Connect_Login Token parameter.
+	 *
+	 * Note that in order to successfully retrieve a valid non-zero id for the local user using ovr_User_GetUser(),
+	 * your Oculus App needs to be configured in the Oculus Developer Dashboard to have the User ID feature enabled.
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_OCULUS_USERID_NONCE = 13,
+	/**
+	 * itch.io JWT Access Token
+	 *
+	 * Use the itch.io app manifest to receive a JWT access token for the local user via the ITCHIO_API_KEY process environment variable.
+	 * The itch.io access token is valid for 7 days after which the game needs to be restarted by the user as otherwise EOS Connect
+	 * authentication session can no longer be refreshed.
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_ITCHIO_JWT = 14,
+	/**
+	 * itch.io Key Access Token
+	 *
+	 * This access token type is retrieved through the OAuth 2.0 authentication flow for the itch.io application.
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_ITCHIO_KEY = 15,
+	/**
+	 * Epic Games ID Token
+	 *
+	 * Acquired using EOS_Auth_CopyIdToken that returns EOS_Auth_IdToken::JsonWebToken.
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_EPIC_ID_TOKEN = 16,
+	/**
+	 * Amazon Access Token
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_AMAZON_ACCESS_TOKEN = 17,
+	/**
+	 * Steam Auth Session Ticket
+	 *
+	 * Generated using the ISteamUser::GetAuthTicketForWebApi API of Steamworks SDK.
+	 *
+	 * @attention
+	 * The pchIdentity input parameter of GetAuthTicketForWebApi API must be set to a valid non-empty string value.
+	 * The string value used by the game client must match identically to the backend-configured value in EOS Dev Portal.
+	 * The recommended value to use is "epiconlineservices" in lowercase, matching the default value for new Steam identity provider credentials in EOS Dev Portal.
+	 * This identifier is important for security reasons to prevent session hijacking. Applications must use a dedicated unique identity identifier for Session Tickets passed to the EOS SDK APIs.
+	 * Session Tickets using the EOS-assigned identifier must not be used with anything else than the EOS SDK APIs. You must use a different identifier when generating Session Tickets to authenticate with other parties.
+	 *
+	 * @warning
+	 * To update an already live game to use the new GetAuthTicketForWebApi API instead of the deprecated GetAuthSessionTicket API, follow these steps in this order to prevent breaking the live game for players:
+	 * 1. Update your game client code to use the new ISteamUser::GetAuthTicketForWebApi API.
+	 * 2. Publish the new game client update to end-users.
+	 * 3. Update the existing Steam identity provider credentials entry in EOS Dev Portal to use the same identity string identifier as the game client.
+	 *
+	 * @example
+	 * SteamUser()->GetAuthTicketForWebApi("epiconlineservices");
+	 *
+	 * The retrieved Auth Session Ticket byte buffer needs to be converted into a hex-encoded UTF-8 string (e.g. "FA87097A..") before passing it to the EOS_Auth_Login or EOS_Connect_Login APIs.
+	 * EOS_ByteArray_ToString can be used for this conversion.
+	 *
+	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
+	 *
+	 * @version 1.15.1+
+	 */
+	EIK_ECT_STEAM_SESSION_TICKET = 18,
+	/**
+	 * VIVEPORT User Session Token
+	 *
+	 * Supported with EOS_Connect_Login.
+	 */
+	EIK_ECT_VIVEPORT_USER_TOKEN = 19
+
+};
 UENUM(BlueprintType)
 enum EEIK_EExternalAccountType
 {
@@ -414,6 +631,8 @@ enum EEIK_EExternalAccountType
 	/** External account is associated with Viveport */
 	EIK_EAT_VIVEPORT = 14 UMETA(DisplayName = "Viveport"),
 };
+
+
 
 USTRUCT(BlueprintType)
 struct FEIK_Connect_ExternalAccountInfo
