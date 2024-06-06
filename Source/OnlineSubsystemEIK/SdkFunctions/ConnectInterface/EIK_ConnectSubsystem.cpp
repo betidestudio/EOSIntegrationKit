@@ -101,3 +101,52 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserExter
 	UE_LOG(LogEIK, Error, TEXT("Failed to copy product user external account by account id either OnlineSubsystem is not valid or EOSRef is not valid."));
 	return EEIK_Result::EOS_NotFound;
 }
+
+TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserExternalAccountByAccountType(
+	FEIK_ProductUserId LocalUserId, TEnumAsByte<EEIK_EExternalAccountType> AccountType,
+	FEIK_Connect_ExternalAccountInfo& OutExternalAccountInfo)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Connect_ExternalAccountInfo* ExternalAccountInfo = nullptr;
+			EOS_Connect_CopyProductUserExternalAccountByAccountTypeOptions CopyProductUserExternalAccountByAccountTypeOptions = { };
+			CopyProductUserExternalAccountByAccountTypeOptions.ApiVersion = EOS_CONNECT_COPYPRODUCTUSEREXTERNALACCOUNTBYACCOUNTTYPE_API_LATEST;
+			CopyProductUserExternalAccountByAccountTypeOptions.TargetUserId = LocalUserId.ProductUserId_FromString();
+			CopyProductUserExternalAccountByAccountTypeOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountType.GetValue());
+			auto ResultVal = EOS_Connect_CopyProductUserExternalAccountByAccountType(EOSRef->ConnectHandle, &CopyProductUserExternalAccountByAccountTypeOptions, &ExternalAccountInfo);
+			if(ExternalAccountInfo)
+			{
+				OutExternalAccountInfo = *ExternalAccountInfo;
+			}
+			return static_cast<EEIK_Result>(ResultVal);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to copy product user external account by account type either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return EEIK_Result::EOS_NotFound;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserExternalAccountByIndex(
+	FEIK_ProductUserId LocalUserId, int32 Index, FEIK_Connect_ExternalAccountInfo& OutExternalAccountInfo)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Connect_ExternalAccountInfo* ExternalAccountInfo = nullptr;
+			EOS_Connect_CopyProductUserExternalAccountByIndexOptions CopyProductUserExternalAccountByIndexOptions = { };
+			CopyProductUserExternalAccountByIndexOptions.ApiVersion = EOS_CONNECT_COPYPRODUCTUSEREXTERNALACCOUNTBYINDEX_API_LATEST;
+			CopyProductUserExternalAccountByIndexOptions.TargetUserId = LocalUserId.ProductUserId_FromString();
+			CopyProductUserExternalAccountByIndexOptions.ExternalAccountInfoIndex = Index;
+			auto ResultVal = EOS_Connect_CopyProductUserExternalAccountByIndex(EOSRef->ConnectHandle, &CopyProductUserExternalAccountByIndexOptions, &ExternalAccountInfo);
+			if(ExternalAccountInfo)
+			{
+				OutExternalAccountInfo = *ExternalAccountInfo;
+			}
+			return static_cast<EEIK_Result>(ResultVal);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to copy product user external account by index either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return EEIK_Result::EOS_NotFound;
+}
