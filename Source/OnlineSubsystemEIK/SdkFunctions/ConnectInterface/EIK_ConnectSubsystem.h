@@ -56,4 +56,8 @@ public:
 	//Fetch a Product User ID that maps to an external account ID cached from a previous query.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetExternalAccountMapping")
 	FEIK_ProductUserId EIK_Connect_GetExternalAccountMapping(FEIK_ProductUserId LocalUserId, EEIK_EExternalAccountType AccountIdType, FString TargetExternalUserId);
+
+	//Fetch a Product User ID that is logged in. This Product User ID is in the Epic Online Services namespace.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_GetLoggedInUserByIndex")
+	FEIK_ProductUserId EIK_Connect_GetLoggedInUserByIndex(int32 Index);
 };

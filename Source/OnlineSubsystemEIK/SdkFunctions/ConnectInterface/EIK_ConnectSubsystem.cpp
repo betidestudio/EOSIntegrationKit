@@ -201,3 +201,16 @@ FEIK_ProductUserId UEIK_ConnectSubsystem::EIK_Connect_GetExternalAccountMapping(
 	UE_LOG(LogEIK, Error, TEXT("Failed to get external account mapping either OnlineSubsystem is not valid or EOSRef is not valid."));
 	return FEIK_ProductUserId();
 }
+
+FEIK_ProductUserId UEIK_ConnectSubsystem::EIK_Connect_GetLoggedInUserByIndex(int32 Index)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			return EOS_Connect_GetLoggedInUserByIndex(EOSRef->ConnectHandle, Index);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get logged in user by index either OnlineSubsystem is not valid or EOSRef is not valid."));
+	return FEIK_ProductUserId();
+}
