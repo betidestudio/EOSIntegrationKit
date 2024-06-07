@@ -285,3 +285,29 @@ void UEIK_ConnectSubsystem::EIK_Connect_IdToken_Release(FEIK_Connect_IdToken IdT
 	EOS_Connect_IdToken ReleaseIdToken = IdToken.EOS_Connect_IdToken_FromStruct();
 	EOS_Connect_IdToken_Release(&ReleaseIdToken);
 }
+
+void UEIK_ConnectSubsystem::EIK_Connect_RemoveNotifyAuthExpiration(FEIK_NotificationId InId)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Connect_RemoveNotifyAuthExpiration(EOSRef->ConnectHandle, InId.NotificationId);
+			return;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to remove notify auth expiration either OnlineSubsystem is not valid or EOSRef is not valid."));
+}
+
+void UEIK_ConnectSubsystem::EIK_Connect_RemoveNotifyLoginStatusChanged(FEIK_NotificationId InId)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Connect_RemoveNotifyLoginStatusChanged(EOSRef->ConnectHandle, InId.NotificationId);
+			return;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to remove notify login status changed either OnlineSubsystem is not valid or EOSRef is not valid."));
+}
