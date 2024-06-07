@@ -63,7 +63,14 @@ struct FEIK_Connect_VerifyIdTokenCallbackInfo
 	{
 		Result = static_cast<EEIK_Result>(Data->ResultCode);
 		LocalUserId = Data->ProductUserId;
-		bIsAccountInfoPresent = Data->bIsAccountInfoPresent;
+		if(Data->bIsAccountInfoPresent == EOS_TRUE)
+		{
+			bIsAccountInfoPresent = true;
+		}
+		else
+		{
+			bIsAccountInfoPresent = false;
+		}
 		AccountType = static_cast<EEIK_EExternalAccountType>(Data->AccountIdType);
 		AccountId = Data->AccountId;
 		Platform = Data->Platform;
