@@ -21,7 +21,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnResponseFromSanctions, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnResponseFromEpicForAccessToken, bool, bWasSuccess, const FString&, AccessToken);
 
 UENUM(BlueprintType)
-enum class EEOSSanctionType : uint8
+enum EEOSSanctionType
 {
 	IncorrectSanction,
 	CompromisedAccount,
@@ -30,7 +30,7 @@ enum class EEOSSanctionType : uint8
 };
 
 UENUM(BlueprintType)
-enum class EEIK_LoginStatus : uint8
+enum EEIK_LoginStatus
 {
 	/** Player has not logged in or chosen a local profile */
 	NotLoggedIn,

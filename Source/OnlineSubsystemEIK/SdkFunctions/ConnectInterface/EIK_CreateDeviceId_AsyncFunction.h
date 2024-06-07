@@ -6,13 +6,14 @@
 #include "eos_base.h"
 #include "eos_connect_types.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #include "EIK_CreateDeviceId_AsyncFunction.generated.h"
 
 
 /** The result of a create device id request
  * @param Result The result of the create device id request
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCreateDeviceIdComplete, TEnumAsByte<EEIK_Result>, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCreateDeviceIdComplete, const TEnumAsByte<EEIK_Result>&, Result);
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_CreateDeviceId_AsyncFunction : public UBlueprintAsyncActionBase
 {

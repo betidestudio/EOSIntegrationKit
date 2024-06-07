@@ -10,7 +10,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogEIK, Log, All);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthExpirationCallback, FEIK_ProductUserId, LocalUserId);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLoginStatusChangedCallback, FEIK_ProductUserId, LocalUserId, TEnumAsByte<EIK_ELoginStatus>, LoginStatus);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLoginStatusChangedCallback, FEIK_ProductUserId, LocalUserId, const TEnumAsByte<EIK_ELoginStatus>&, LoginStatus);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_ConnectSubsystem : public UGameInstanceSubsystem

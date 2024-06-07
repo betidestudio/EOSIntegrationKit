@@ -6,7 +6,6 @@
 #include "EIK_ConnectSubsystem.h"
 #include "OnlineSubsystemEOS.h"
 #include "Async/Async.h"
-#include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 
 UEIK_CreateDeviceId_AsyncFunction* UEIK_CreateDeviceId_AsyncFunction::CreateDeviceId(FString DeviceModel)
 {
