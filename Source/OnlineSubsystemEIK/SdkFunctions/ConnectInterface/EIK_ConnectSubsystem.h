@@ -82,4 +82,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_IdToken_Release")
 	void EIK_Connect_IdToken_Release(FEIK_Connect_IdToken IdToken);
 
+	//Unregister from receiving expiration notifications.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_RemoveNotifyAuthExpiration")
+	void EIK_Connect_RemoveNotifyAuthExpiration(FEIK_NotificationId InId);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Connect Interface", DisplayName="EOS_Connect_RemoveNotifyLoginStatusChanged")
+	void EIK_Connect_RemoveNotifyLoginStatusChanged(FEIK_NotificationId InId);
+
 };
