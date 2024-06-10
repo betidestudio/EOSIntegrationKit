@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "eos_common.h"
 #include "eos_connect_types.h"
+#include "eos_achievements_types.h"
 #include "UObject/Object.h"
 #include "EIK_SharedFunctionFile.generated.h"
 
@@ -685,7 +686,55 @@ struct FEIK_Connect_ExternalAccountInfo
 };
 
 
+USTRUCT(BlueprintType)
+struct FEIK_Achievements_DefinitionV2
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString AchievementId;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString UnlockedDisplayName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString UnlockedDescription;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString LockedDisplayName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString LockedDescription;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString FlavorText;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString UnlockedIconURL;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString LockedIconURL;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	bool bIsHidden;
+	
+	FEIK_Achievements_DefinitionV2(): bIsHidden(false)
+	{
+	}
+
+	FEIK_Achievements_DefinitionV2(EOS_Achievements_DefinitionV2 InDefinition)
+	{
+		AchievementId = FString(UTF8_TO_TCHAR(InDefinition.AchievementId));
+		UnlockedDisplayName = FString(UTF8_TO_TCHAR(InDefinition.UnlockedDisplayName));
+		UnlockedDescription = FString(UTF8_TO_TCHAR(InDefinition.UnlockedDescription));
+		LockedDisplayName = FString(UTF8_TO_TCHAR(InDefinition.LockedDisplayName));
+		LockedDescription = FString(UTF8_TO_TCHAR(InDefinition.LockedDescription));
+		FlavorText = FString(UTF8_TO_TCHAR(InDefinition.FlavorText));
+		UnlockedIconURL = FString(UTF8_TO_TCHAR(InDefinition.UnlockedIconURL));
+		LockedIconURL = FString(UTF8_TO_TCHAR(InDefinition.LockedIconURL));
+		bIsHidden = InDefinition.bIsHidden == EOS_TRUE;
+	}
+};
 
 
 UCLASS()
