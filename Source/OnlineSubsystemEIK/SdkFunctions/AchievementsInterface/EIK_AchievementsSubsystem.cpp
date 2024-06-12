@@ -15,7 +15,7 @@ FEIK_NotificationId UEIK_AchievementsSubsystem::EIK_Achievements_AddNotifyAchiev
 		{
 			EOS_Achievements_AddNotifyAchievementsUnlockedV2Options Options;
 			Options.ApiVersion = EOS_ACHIEVEMENTS_ADDNOTIFYACHIEVEMENTSUNLOCKEDV2_API_LATEST;
-			return EOS_Achievements_AddNotifyAchievementsUnlockedV2(EOSRef->AchievementsHandle(), &Options, this,[](const EOS_Achievements_OnAchievementsUnlockedCallbackV2Info* Data)
+			return EOS_Achievements_AddNotifyAchievementsUnlockedV2(EOSRef->AchievementsHandle, &Options, this,[](const EOS_Achievements_OnAchievementsUnlockedCallbackV2Info* Data)
 			{
 				UEIK_AchievementsSubsystem* AchievementsSubsystem = static_cast<UEIK_AchievementsSubsystem*>(Data->ClientData);
 				if (AchievementsSubsystem)
@@ -43,9 +43,10 @@ TEnumAsByte<EEIK_Result> UEIK_AchievementsSubsystem::EIK_Achievements_CopyAchiev
 			}
 			Options.AchievementId = TCHAR_TO_ANSI(*AchievementId);
 			EOS_Achievements_DefinitionV2* OutAchievementDefinition1 = nullptr;
-			auto Result = EOS_Achievements_CopyAchievementDefinitionV2ByAchievementId(EOSRef->AchievementsHandle(), &Options, &OutAchievementDefinition1);
+			EOS_EResult Result = EOS_Achievements_CopyAchievementDefinitionV2ByAchievementId(EOSRef->AchievementsHandle, &Options, &OutAchievementDefinition1);
 			OutAchievementDefinition = *OutAchievementDefinition1;
-			return static_cast<EEIK_Result>(Result);
+			TEnumAsByte<EEIK_Result> ResultEnum = static_cast<EEIK_Result>(Result);
+			return ResultEnum;
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
