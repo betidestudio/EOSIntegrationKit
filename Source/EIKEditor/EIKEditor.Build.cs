@@ -9,17 +9,26 @@ public class EIKEditor : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core",
+                "Core", "MainFrame", "EditorStyle",
             }
         );
-
+        
         PrivateDependencyModuleNames.AddRange(
             new string[]
             {
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "EditorStyle",
+                "UnrealEd",
+                "LevelEditor",
+                "ToolMenus",
+                "Projects",
+                "UnrealEd", 
+                "LauncherServices",
+                "EOSIntegrationKit",
+                // ... add private dependencies that you statically link with here ...
             }
         );
     }
