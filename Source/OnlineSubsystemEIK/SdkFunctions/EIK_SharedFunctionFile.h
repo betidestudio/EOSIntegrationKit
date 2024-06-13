@@ -36,6 +36,8 @@ struct FEIK_ProductUserId
 		EOS_ProductUserId ProductUserIdSec = EOS_ProductUserId_FromString(ProductIdAnsi);
 		return ProductUserIdSec;
 	}
+
+	//Preserved for future use
 };
 
 UENUM(BlueprintType)
@@ -717,6 +719,8 @@ struct FEIK_Achievements_DefinitionV2
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
 	bool bIsHidden;
+
+	EOS_Achievements_DefinitionV2* DefinitionRef;
 	
 	FEIK_Achievements_DefinitionV2(): bIsHidden(false)
 	{
@@ -733,6 +737,108 @@ struct FEIK_Achievements_DefinitionV2
 		UnlockedIconURL = FString(UTF8_TO_TCHAR(InDefinition.UnlockedIconURL));
 		LockedIconURL = FString(UTF8_TO_TCHAR(InDefinition.LockedIconURL));
 		bIsHidden = InDefinition.bIsHidden == EOS_TRUE;
+	}
+	EOS_Achievements_DefinitionV2* GetReference()
+	{
+		return DefinitionRef;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Achievements_PlayerStatInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString Name;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	int32 CurrentValue;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	int32 ThresholdValue;
+
+	FEIK_Achievements_PlayerStatInfo()
+	{
+		Name = "";
+		CurrentValue = 0;
+		ThresholdValue = 0;
+	}
+	FEIK_Achievements_PlayerStatInfo(EOS_Achievements_PlayerStatInfo InStatInfo)
+	{
+		Name = UTF8_TO_TCHAR(InStatInfo.Name);
+		CurrentValue = InStatInfo.CurrentValue;
+		ThresholdValue = InStatInfo.ThresholdValue;
+	}
+	
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Achievements_PlayerAchievement
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString AchievementId;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	double Progress;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	int64 UnlockTime;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	int32 StatInfoCount;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	TArray<FEIK_Achievements_PlayerStatInfo> StatInfo;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString DisplayName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString Description;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString IconURL;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
+	FString FlavorText;
+
+	EOS_Achievements_PlayerAchievement* PlayerAchievementRef;
+
+	FEIK_Achievements_PlayerAchievement()
+	{
+		AchievementId = "";
+		Progress = 0;
+		UnlockTime = 0;
+		StatInfoCount = 0;
+		StatInfo = TArray<FEIK_Achievements_PlayerStatInfo>();
+		DisplayName = "";
+		Description = "";
+		IconURL = "";
+		FlavorText = "";
+	}
+	FEIK_Achievements_PlayerAchievement(EOS_Achievements_PlayerAchievement InPlayerAchievement)
+	{
+		PlayerAchievementRef = &InPlayerAchievement;
+		AchievementId = UTF8_TO_TCHAR(InPlayerAchievement.AchievementId);
+		Progress = InPlayerAchievement.Progress;
+		UnlockTime = InPlayerAchievement.UnlockTime;
+		StatInfoCount = InPlayerAchievement.StatInfoCount;
+		for (int32 i = 0; i < InPlayerAchievement.StatInfoCount; i++)
+		{
+			StatInfo.Add(InPlayerAchievement.StatInfo[i]);
+		}
+		DisplayName = UTF8_TO_TCHAR(InPlayerAchievement.DisplayName);
+		Description = UTF8_TO_TCHAR(InPlayerAchievement.Description);
+		IconURL = UTF8_TO_TCHAR(InPlayerAchievement.IconURL);
+		FlavorText = UTF8_TO_TCHAR(InPlayerAchievement.FlavorText);
+	}
+
+	EOS_Achievements_PlayerAchievement* GetReference()
+	{
+		return PlayerAchievementRef;
 	}
 };
 
