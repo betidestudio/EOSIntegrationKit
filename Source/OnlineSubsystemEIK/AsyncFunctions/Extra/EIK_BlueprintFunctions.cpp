@@ -215,7 +215,8 @@ bool UEIK_BlueprintFunctions::AcceptSessionInvite(FString InviteId, FString Loca
 		{
 			EOS_ProductUserId LocalProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*LocalUserId));
 			EOS_ProductUserId InviterProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*InviterUserId));
-			const char* InviteIdChar = TCHAR_TO_ANSI(*InviteId);
+			FTCHARToUTF8 Convert(InviteId);
+			const char* InviteIdChar = Convert.Get();
 			EOSRef->SessionInterfacePtr->OnLobbyInviteAccepted(InviteIdChar, LocalProductUserId, InviterProductUserId);
 			return true;
 		}
@@ -230,7 +231,8 @@ bool UEIK_BlueprintFunctions::RejectSessionInvite(FString InviteId, FString Loca
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
 			EOS_ProductUserId LocalProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*LocalUserId));
-			const char* InviteIdChar = TCHAR_TO_ANSI(*InviteId);
+			FTCHARToUTF8 Convert(InviteId);
+			const char* InviteIdChar = Convert.Get();
 			EOS_Lobby_RejectInviteOptions RejectOptions;
 			RejectOptions.ApiVersion = EOS_LOBBY_REJECTINVITE_API_LATEST;
 			RejectOptions.LocalUserId = LocalProductUserId;
