@@ -75,7 +75,14 @@ struct FEIK_Auth_VerifyIdTokenCallbackInfo
 		SandboxId = FString(UTF8_TO_TCHAR(Data.SandboxId));
 		DeploymentId = FString(UTF8_TO_TCHAR(Data.DeploymentId));
 		DisplayName = FString(UTF8_TO_TCHAR(Data.DisplayName));
-		bIsExternalAccountInfoPresent = Data.bIsExternalAccountInfoPresent;
+		if(Data.bIsExternalAccountInfoPresent == EOS_TRUE)
+		{
+			bIsExternalAccountInfoPresent = true;
+		}
+		else
+		{
+			bIsExternalAccountInfoPresent = false;
+		}
 		ExternalAccountIdType = static_cast<EEIK_EExternalAccountType>(Data.ExternalAccountIdType);
 		ExternalAccountId = FString(UTF8_TO_TCHAR(Data.ExternalAccountId));
 		ExternalAccountDisplayName = FString(UTF8_TO_TCHAR(Data.ExternalAccountDisplayName));
