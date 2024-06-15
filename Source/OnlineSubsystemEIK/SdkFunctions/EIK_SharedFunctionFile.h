@@ -989,6 +989,55 @@ struct FEIK_Auth_Token
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FEIK_Auth_PinGrantInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString UserCode;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString VerificationURI;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	float ExpiresIn;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString VerificationURIComplete;
+
+	EOS_Auth_PinGrantInfo PinGrantInfo;
+
+	FEIK_Auth_PinGrantInfo(): ExpiresIn(0), PinGrantInfo()
+	{
+		UserCode = "";
+		VerificationURI = "";
+		VerificationURIComplete = "";
+	}
+
+	FEIK_Auth_PinGrantInfo(EOS_Auth_PinGrantInfo InPinGrantInfo)
+	{
+		PinGrantInfo = InPinGrantInfo;
+		UserCode = UTF8_TO_TCHAR(InPinGrantInfo.UserCode);
+		VerificationURI = UTF8_TO_TCHAR(InPinGrantInfo.VerificationURI);
+		ExpiresIn = InPinGrantInfo.ExpiresIn;
+		VerificationURIComplete = UTF8_TO_TCHAR(InPinGrantInfo.VerificationURIComplete);
+	}
+
+	EOS_Auth_PinGrantInfo EOS_Auth_PinGrantInfo_FromStruct()
+	{
+		return PinGrantInfo;
+	}
+	
+};
+
+UENUM(BlueprintType)
+enum EEIK_ELinkAccountFlags
+{
+	EIK_LA_NoFlags = 0x0,
+	EIK_LA_NintendoNsaId = 0x1
+};
+
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
