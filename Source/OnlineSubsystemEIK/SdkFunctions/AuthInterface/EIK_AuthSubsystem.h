@@ -44,5 +44,14 @@ class ONLINESUBSYSTEMEIK_API UEIK_AuthSubsystem : public UGameInstanceSubsystem
 	//Fetches the login status for an Epic Account ID.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_GetLoginStatus")
 	TEnumAsByte<EIK_ELoginStatus> EIK_Auth_GetLoginStatus(const FEIK_EpicAccountId& LocalUserId);
+
+	//Fetch one of the merged account IDs for a given logged in account.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_GetMergedAccountByIndex")
+	FEIK_EpicAccountId EIK_Auth_GetMergedAccountByIndex(const FEIK_EpicAccountId& LocalUserId, int32 Index);
+
+
+
+
+	
 	
 };

@@ -113,3 +113,17 @@ TEnumAsByte<EIK_ELoginStatus> UEIK_AuthSubsystem::EIK_Auth_GetLoginStatus(const 
 	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
 	return EIK_ELoginStatus::EIK_LS_NotLoggedIn;
 }
+
+FEIK_EpicAccountId UEIK_AuthSubsystem::EIK_Auth_GetMergedAccountByIndex(const FEIK_EpicAccountId& LocalUserId,
+	int32 Index)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			return EOS_Auth_GetMergedAccountByIndex(EOSRef->AuthHandle, LocalUserId.EpicAccountIdBasic, Index);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
+	return FEIK_EpicAccountId();
+}
