@@ -53,7 +53,13 @@ class ONLINESUBSYSTEMEIK_API UEIK_AuthSubsystem : public UGameInstanceSubsystem
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_GetMergedAccountsCount")
 	int32 EIK_Auth_GetMergedAccountsCount(const FEIK_EpicAccountId& LocalUserId);
 
+	//Fetch the selected account ID to the current application for a local authenticated user.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_GetSelectedAccountId")
+	TEnumAsByte<EEIK_Result> EIK_Auth_GetSelectedAccountId(const FEIK_EpicAccountId& LocalUserId, FEIK_EpicAccountId& OutSelectedAccountId);
 
+	//Release the memory associated with an EOS_Auth_IdToken structure. This must be called on data retrieved from EOS_Auth_CopyIdToken.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_IdToken_Release")
+	void EIK_Auth_IdToken_Release(FEIK_Auth_IdToken& Token);
 
 	
 	

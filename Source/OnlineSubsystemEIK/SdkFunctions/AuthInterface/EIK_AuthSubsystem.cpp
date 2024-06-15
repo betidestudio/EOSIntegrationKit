@@ -140,3 +140,23 @@ int32 UEIK_AuthSubsystem::EIK_Auth_GetMergedAccountsCount(const FEIK_EpicAccount
 	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
 	return 0;
 }
+
+TEnumAsByte<EEIK_Result> UEIK_AuthSubsystem::EIK_Auth_GetSelectedAccountId(const FEIK_EpicAccountId& LocalUserId,
+	FEIK_EpicAccountId& OutSelectedAccountId)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			return static_cast<EEIK_Result>(EOS_Auth_GetSelectedAccountId(EOSRef->AuthHandle, LocalUserId.EpicAccountIdBasic, &OutSelectedAccountId.EpicAccountIdBasic));
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
+	return EEIK_Result::EOS_NotFound;
+}
+
+void UEIK_AuthSubsystem::EIK_Auth_IdToken_Release(FEIK_Auth_IdToken& Token)
+{
+	EOS_Auth_IdToken ReleaseToken = Token.EOS_Auth_IdToken_FromStruct();
+	EOS_Auth_IdToken_Release(&ReleaseToken);
+}

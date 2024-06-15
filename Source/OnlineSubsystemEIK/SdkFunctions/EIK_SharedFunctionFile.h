@@ -899,15 +899,23 @@ struct FEIK_Auth_IdToken
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
 	FString JsonWebToken;
 
-	FEIK_Auth_IdToken()
+	EOS_Auth_IdToken TokenRef;
+
+	FEIK_Auth_IdToken(): TokenRef()
 	{
 		AccountId = FEIK_EpicAccountId();
 		JsonWebToken = "";
 	}
+
 	FEIK_Auth_IdToken(EOS_Auth_IdToken InIdToken)
 	{
+		TokenRef = InIdToken;
 		AccountId = InIdToken.AccountId;
 		JsonWebToken = UTF8_TO_TCHAR(InIdToken.JsonWebToken);
+	}
+	EOS_Auth_IdToken EOS_Auth_IdToken_FromStruct()
+	{
+		return TokenRef;
 	}
 };
 
