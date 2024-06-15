@@ -961,7 +961,9 @@ struct FEIK_Auth_Token
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
 	FString RefreshExpiresAt;
 
-	FEIK_Auth_Token()
+	EOS_Auth_Token TokenRef;
+
+	FEIK_Auth_Token(): TokenRef()
 	{
 		App = "";
 		ClientId = "";
@@ -974,7 +976,8 @@ struct FEIK_Auth_Token
 		RefreshExpiresIn = 0;
 		RefreshExpiresAt = "";
 	}
-	FEIK_Auth_Token(EOS_Auth_Token InToken)
+
+	FEIK_Auth_Token(EOS_Auth_Token InToken): TokenRef()
 	{
 		App = UTF8_TO_TCHAR(InToken.App);
 		ClientId = UTF8_TO_TCHAR(InToken.ClientId);
@@ -986,6 +989,10 @@ struct FEIK_Auth_Token
 		RefreshToken = UTF8_TO_TCHAR(InToken.RefreshToken);
 		RefreshExpiresIn = InToken.RefreshExpiresIn;
 		RefreshExpiresAt = UTF8_TO_TCHAR(InToken.RefreshExpiresAt);
+	}
+	EOS_Auth_Token EOS_Auth_Token_FromStruct()
+	{
+		return TokenRef;
 	}
 };
 
