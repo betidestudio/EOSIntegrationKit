@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+THIRD_PARTY_INCLUDES_START
 #include "eos_common.h"
 #include "eos_connect_types.h"
 #include "eos_achievements_types.h"
+#include "eos_auth_types.h"
+THIRD_PARTY_INCLUDES_END
 #include "UObject/Object.h"
 #include "EIK_SharedFunctionFile.generated.h"
 
@@ -17,13 +20,16 @@ struct FEIK_ProductUserId
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS|Connect")
 	FString ProductUserId;
 
-	FEIK_ProductUserId()
+	EOS_ProductUserId ProductUserIdBasic;
+
+	FEIK_ProductUserId(): ProductUserIdBasic(nullptr)
 	{
 		ProductUserId = "";
 	}
 
 	FEIK_ProductUserId(EOS_ProductUserId InProductUserId)
 	{
+		ProductUserIdBasic = InProductUserId;
 		char ProductIdAnsi[EOS_PRODUCTUSERID_MAX_LENGTH+1];
 		int32 ProductIdLen;
 		EOS_ProductUserId_ToString(InProductUserId, ProductIdAnsi, &ProductIdLen);
@@ -32,13 +38,53 @@ struct FEIK_ProductUserId
 
 	EOS_ProductUserId ProductUserId_FromString()
 	{
+		if (EOS_ProductUserId_IsValid(ProductUserIdBasic))
+		{
+			return ProductUserIdBasic;
+		}
 		const char* ProductIdAnsi = TCHAR_TO_ANSI(*ProductUserId);
 		EOS_ProductUserId ProductUserIdSec = EOS_ProductUserId_FromString(ProductIdAnsi);
 		return ProductUserIdSec;
 	}
-
-	//Preserved for future use
 };
+
+USTRUCT(BlueprintType)
+struct FEIK_EpicAccountId 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString EpicAccountId;
+
+	EOS_EpicAccountId EpicAccountIdBasic;
+
+	FEIK_EpicAccountId(): EpicAccountIdBasic(nullptr)
+	{
+		EpicAccountId = "";
+	}
+
+	FEIK_EpicAccountId(EOS_EpicAccountId InEpicAccountId)
+	{
+		EpicAccountIdBasic = InEpicAccountId;
+		char EpicAccountIdAnsi[EOS_EPICACCOUNTID_MAX_LENGTH + 1];
+		int32 EpicAccountIdLen;
+		EOS_EpicAccountId_ToString(InEpicAccountId, EpicAccountIdAnsi, &EpicAccountIdLen);
+		EpicAccountId = FString(UTF8_TO_TCHAR(EpicAccountIdAnsi));
+	}
+	EOS_EpicAccountId EpicAccountId_FromString()
+	{
+		if (EOS_EpicAccountId_IsValid(EpicAccountIdBasic))
+		{
+			return EpicAccountIdBasic;
+		}
+		const char* EpicAccountIdAnsi = TCHAR_TO_ANSI(*EpicAccountId);
+		EOS_EpicAccountId EpicAccountIdSec = EOS_EpicAccountId_FromString(EpicAccountIdAnsi);
+		return EpicAccountIdSec;
+	}
+	
+};
+
+
 
 UENUM(BlueprintType)
 enum EIK_ELoginStatus
@@ -839,6 +885,99 @@ struct FEIK_Achievements_PlayerAchievement
 	EOS_Achievements_PlayerAchievement* GetReference()
 	{
 		return PlayerAchievementRef;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Auth_IdToken
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FEIK_EpicAccountId AccountId;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString JsonWebToken;
+
+	FEIK_Auth_IdToken()
+	{
+		AccountId = FEIK_EpicAccountId();
+		JsonWebToken = "";
+	}
+	FEIK_Auth_IdToken(EOS_Auth_IdToken InIdToken)
+	{
+		AccountId = InIdToken.AccountId;
+		JsonWebToken = UTF8_TO_TCHAR(InIdToken.JsonWebToken);
+	}
+};
+
+UENUM(BlueprintType)
+enum EEIK_EAuthTokenType
+{
+	EIK_ATT_Client = 0 UMETA(DisplayName = "Client"),
+	EIK_ATT_User = 1 UMETA(DisplayName = "User")
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Auth_Token
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString App;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString ClientId;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FEIK_EpicAccountId AccountId;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString AccessToken;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	float ExpiresIn;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString ExpiresAt;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	TEnumAsByte<EEIK_EAuthTokenType> AuthType;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString RefreshToken;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	float RefreshExpiresIn;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString RefreshExpiresAt;
+
+	FEIK_Auth_Token()
+	{
+		App = "";
+		ClientId = "";
+		AccountId = FEIK_EpicAccountId();
+		AccessToken = "";
+		ExpiresIn = 0;
+		ExpiresAt = "";
+		AuthType = EIK_ATT_Client;
+		RefreshToken = "";
+		RefreshExpiresIn = 0;
+		RefreshExpiresAt = "";
+	}
+	FEIK_Auth_Token(EOS_Auth_Token InToken)
+	{
+		App = UTF8_TO_TCHAR(InToken.App);
+		ClientId = UTF8_TO_TCHAR(InToken.ClientId);
+		AccountId = InToken.AccountId;
+		AccessToken = UTF8_TO_TCHAR(InToken.AccessToken);
+		ExpiresIn = InToken.ExpiresIn;
+		ExpiresAt = UTF8_TO_TCHAR(InToken.ExpiresAt);
+		AuthType = static_cast<EEIK_EAuthTokenType>(InToken.AuthType);
+		RefreshToken = UTF8_TO_TCHAR(InToken.RefreshToken);
+		RefreshExpiresIn = InToken.RefreshExpiresIn;
+		RefreshExpiresAt = UTF8_TO_TCHAR(InToken.RefreshExpiresAt);
 	}
 };
 
