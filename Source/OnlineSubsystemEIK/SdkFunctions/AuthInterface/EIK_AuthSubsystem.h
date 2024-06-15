@@ -61,6 +61,11 @@ class ONLINESUBSYSTEMEIK_API UEIK_AuthSubsystem : public UGameInstanceSubsystem
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_IdToken_Release")
 	void EIK_Auth_IdToken_Release(FEIK_Auth_IdToken& Token);
 
-	
-	
+	//Unregister from receiving login status updates.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_RemoveNotifyLoginStatusChanged")
+	void EIK_Auth_RemoveNotifyLoginStatusChanged(FEIK_NotificationId NotificationId);
+
+	//Release the memory associated with an EOS_Auth_Token structure. This must be called on data retrieved from EOS_Auth_CopyUserAuthToken.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_Token_Release")
+	void EIK_Auth_Token_Release(FEIK_Auth_Token& Token);
 };

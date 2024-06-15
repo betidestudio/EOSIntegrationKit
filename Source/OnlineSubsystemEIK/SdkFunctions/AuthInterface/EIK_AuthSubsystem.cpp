@@ -160,3 +160,22 @@ void UEIK_AuthSubsystem::EIK_Auth_IdToken_Release(FEIK_Auth_IdToken& Token)
 	EOS_Auth_IdToken ReleaseToken = Token.EOS_Auth_IdToken_FromStruct();
 	EOS_Auth_IdToken_Release(&ReleaseToken);
 }
+
+void UEIK_AuthSubsystem::EIK_Auth_RemoveNotifyLoginStatusChanged(FEIK_NotificationId NotificationId)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Auth_RemoveNotifyLoginStatusChanged(EOSRef->AuthHandle, NotificationId.EOS_NotificationId_FromInt64());
+			return;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
+}
+
+void UEIK_AuthSubsystem::EIK_Auth_Token_Release(FEIK_Auth_Token& Token)
+{
+	EOS_Auth_Token ReleaseToken = Token.EOS_Auth_Token_FromStruct();
+	EOS_Auth_Token_Release(&ReleaseToken);
+}
