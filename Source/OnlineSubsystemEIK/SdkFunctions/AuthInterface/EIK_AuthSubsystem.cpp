@@ -74,3 +74,29 @@ TEnumAsByte<EEIK_Result> UEIK_AuthSubsystem::EIK_Auth_CopyUserAuthToken(const FE
 	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
 	return EEIK_Result::EOS_NotFound;
 }
+
+FEIK_EpicAccountId UEIK_AuthSubsystem::EIK_Auth_GetLoggedInAccountByIndex(int32 Index)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			return EOS_Auth_GetLoggedInAccountByIndex(EOSRef->AuthHandle, Index);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
+	return FEIK_EpicAccountId();
+}
+
+int32 UEIK_AuthSubsystem::EIK_Auth_GetLoggedInAccountsCount()
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			return EOS_Auth_GetLoggedInAccountsCount(EOSRef->AuthHandle);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
+	return 0;
+}

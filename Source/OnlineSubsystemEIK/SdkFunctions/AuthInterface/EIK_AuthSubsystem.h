@@ -32,4 +32,14 @@ class ONLINESUBSYSTEMEIK_API UEIK_AuthSubsystem : public UGameInstanceSubsystem
 	//Fetch a user auth token for an Epic Account ID. A user authentication token allows any code with possession (backend/client) to perform certain actions on behalf of the user. Because of this, for the purposes of user identity verification, the EOS_Auth_CopyIdToken API should be used instead.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_CopyUserAuthToken")
 	TEnumAsByte<EEIK_Result> EIK_Auth_CopyUserAuthToken(const FEIK_EpicAccountId& LocalUserId, FEIK_Auth_Token& OutToken);
+
+	//Fetch an Epic Account ID that is logged in.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_GetLoggedInAccountByIndex")
+	FEIK_EpicAccountId EIK_Auth_GetLoggedInAccountByIndex(int32 Index);
+
+	//Fetch the number of accounts that are logged in.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_GetLoggedInAccountsCount")
+	int32 EIK_Auth_GetLoggedInAccountsCount();
+
+	
 };
