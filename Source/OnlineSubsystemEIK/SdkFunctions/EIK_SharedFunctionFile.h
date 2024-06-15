@@ -1038,6 +1038,95 @@ enum EEIK_ELinkAccountFlags
 	EIK_LA_NintendoNsaId = 0x1
 };
 
+UENUM(BlueprintType)
+enum EEIK_ELoginCredentialType
+{
+	//Login using account email address and password.
+	EIK_LCT_Password = 0 UMETA(DisplayName = "Password"),
+	//A short-lived one-time use exchange code to login the local user. When started, the application is expected to consume the exchange code by using the EOS_Auth_Login API as soon as possible. This is needed in order to authenticate the local user before the exchange code would expire. Attempting to consume an already expired exchange code will return EOS_EResult::EOS_Auth_ExchangeCodeNotFound error by the EOS_Auth_Login API.
+	EIK_LCT_ExchangeCode = 1 UMETA(DisplayName = "Exchange Code"),
+	//Used by standalone applications distributed outside the supported game platforms such as Epic Games Store or Steam, and on Nintendo Switch. Persistent Auth is used in conjunction with the EOS_LCT_AccountPortal login method for automatic login of the local user across multiple runs of the application. Standalone applications implement the login sequence as follows: 1. Application calls EOS_Auth_Login with EOS_LCT_PersistentAuth, using a previously stored Epic refresh token for an automatic user login. 2. If automatic login fails, the application discards the Epic refresh token used as defunct, and proceeds to call EOS_Auth_Login with EOS_LCT_AccountPortal to prompt the user for manual login. On Nintendo Switch, after a successful login the refresh token must be retrieved using the EOS_Auth_CopyUserAuthToken API and stored by the application specifically for the active Nintendo Switch user.
+	EIK_LCT_PersistentAuth = 2 UMETA(DisplayName = "Persistent Auth"),
+	//Not supported. Superseded by EOS_LCT_ExternalAuth login method.
+	EIK_LCT_DeviceCode = 3 UMETA(DisplayName = "Developer"),
+	//Login with named credentials hosted by the EOS SDK Developer Authentication Tool.
+	EIK_LCT_Developer = 4 UMETA(DisplayName = "Device Code"),
+	//Refresh token that was retrieved from a previous call to EOS_Auth_Login API in another local process context. Mainly used in conjunction with custom desktop launcher applications. in-between that requires authenticating the user before eventually starting the actual game client application. In such scenario, an intermediate launcher will log in the user by consuming the exchange code it received from the Epic Games Launcher. To allow the game client to also authenticate the user, it can copy the refresh token using the EOS_Auth_CopyUserAuthToken API and pass it via launch parameters to the started game client. The game client can then use the refresh token to log in the user.
+	EIK_LCT_RefreshToken = 5 UMETA(DisplayName = "Refresh Token"),
+	//Used by standalone applications distributed outside the supported game platforms such as Epic Games Store or Steam, and on Nintendo Switch. Login using the built-in user onboarding experience provided by the SDK, which will automatically store a persistent refresh token to enable automatic user login for consecutive application runs on the local device. Applications are expected to attempt automatic login using the EOS_LCT_PersistentAuth login method, and fall back to EOS_LCT_AccountPortal to prompt users for manual login. and to have the local Epic Online Services redistributable installed on the local system. See EOS_Platform_GetDesktopCrossplayStatus for adding a readiness check prior to calling EOS_Auth_Login.
+	EIK_LCT_AccountPortal = 6 UMETA(DisplayName = "Account Portal"),
+	//Login using external account provider credentials, such as PlayStation(TM)Network, Steam, and Xbox Live. This is the intended login method on PlayStation® and Xbox console devices. On Desktop and Mobile, used when launched through any of the commonly supported platform clients. If the local platform account is already linked with the user's Epic account, the login will succeed and EOS_EResult::EOS_Success is returned. When the local platform account has not been linked with an Epic account yet, EOS_EResult::EOS_InvalidUser is returned and the EOS_ContinuanceToken will be set in the EOS_Auth_LoginCallbackInfo data. If EOS_EResult::EOS_InvalidUser is returned, the application should proceed to call the EOS_Auth_LinkAccount API with the EOS_ContinuanceToken to continue with the external account login and to link the external account at the end of the login flow. 1. Game calls EOS_Auth_Login with the EOS_LCT_ExternalAuth credential type. 2. EOS_Auth_Login returns EOS_EResult::EOS_InvalidUser with a non-null EOS_ContinuanceToken in the EOS_Auth_LoginCallbackInfo data. 3. Game calls EOS_Auth_LinkAccount with the EOS_ContinuanceToken to initiate the login flow for linking the platform account with the user's Epic account. 4. The user is taken automatically to the Epic accounts user onboarding flow managed by the SDK. 5. Once the user completes the login, cancels it or if the login flow times out, EOS_Auth_LinkAccount invokes the completion callback to the caller. - If the user was logged in successfully, EOS_EResult::EOS_Success is returned in the EOS_Auth_LoginCallbackInfo. Otherwise, an error result code is returned accordingly. and to have the local Epic Online Services redistributable installed on the local system. See EOS_Platform_GetDesktopCrossplayStatus for adding a readiness check prior to calling EOS_Auth_Login.
+	EIK_LCT_ExternalAuth = 7 UMETA(DisplayName = "External Auth"),
+};
+
+UENUM(BlueprintType)
+enum EEIK_EAuthScopeFlags
+{
+	//Flags that describe user permissions
+	EIK_AS_NoFlags = 0x0,
+	//Permissions to see your account ID, display name, and language
+	EIK_AS_BasicProfile = 0x1,
+	//Permissions to see a list of your friends who use this application
+	EIK_AS_FriendsList = 0x2,
+	//Permissions to set your online presence and see presence of your friends
+	EIK_AS_Presence = 0x4,
+	//Permissions to manage the Epic friends list. This scope is restricted to Epic first party products, and attempting to use it will result in authentication failures.
+	EIK_AS_FriendsManagement = 0x8,
+	//Permissions to see email in the response when fetching information for a user. This scope is restricted to Epic first party products, and attempting to use it will result in authentication failures.
+	EIK_AS_Email = 0x10,
+	//Permissions to see your country
+	EIK_AS_Country = 0x20,
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Auth_Credentials
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString Id;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	FString Token;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	TEnumAsByte<EEIK_ELoginCredentialType> Type;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
+	TEnumAsByte<EEIK_EExternalCredentialType> ExternalType;
+
+	FEIK_Auth_Credentials()
+	{
+		Id = "";
+		Token = "";
+		Type = EIK_LCT_Password;
+		ExternalType = EIK_ECT_EPIC;
+	}
+	EOS_Auth_Credentials EOS_Auth_Credentials_FromStruct()
+	{
+		EOS_Auth_Credentials Credentials;
+		Credentials.ApiVersion = EOS_AUTH_CREDENTIALS_API_LATEST;
+		if(Id.IsEmpty())
+		{
+			Credentials.Id = nullptr;
+		}
+		else
+		{
+			Credentials.Id = TCHAR_TO_ANSI(*Id);
+		}
+		if(Token.IsEmpty())
+		{
+			Credentials.Token = nullptr;
+		}
+		else
+		{
+			Credentials.Token = TCHAR_TO_ANSI(*Token);
+		}
+		Credentials.Type = static_cast<EOS_ELoginCredentialType>(Type.GetValue());
+		Credentials.ExternalType = static_cast<EOS_EExternalCredentialType>(ExternalType.GetValue());
+		return Credentials;
+	}
+};
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
