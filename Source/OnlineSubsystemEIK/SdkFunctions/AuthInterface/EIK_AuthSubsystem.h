@@ -49,6 +49,9 @@ class ONLINESUBSYSTEMEIK_API UEIK_AuthSubsystem : public UGameInstanceSubsystem
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_GetMergedAccountByIndex")
 	FEIK_EpicAccountId EIK_Auth_GetMergedAccountByIndex(const FEIK_EpicAccountId& LocalUserId, int32 Index);
 
+	//Fetch the number of merged accounts for a given logged in account.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Auth Interface", DisplayName="EOS_Auth_GetMergedAccountsCount")
+	int32 EIK_Auth_GetMergedAccountsCount(const FEIK_EpicAccountId& LocalUserId);
 
 
 
