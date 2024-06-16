@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 THIRD_PARTY_INCLUDES_START
 #include "eos_common.h"
+#include "eos_ecom_types.h"
+#include "eos_ecom.h"
 #include "eos_connect_types.h"
 #include "eos_achievements_types.h"
 #include "eos_auth_types.h"
@@ -1134,6 +1136,141 @@ struct FEIK_Auth_Credentials
 		return Credentials;
 	}
 };
+
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_CatalogItemId 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString Value;
+	EOS_Ecom_CatalogItemId Ref;
+
+	FEIK_Ecom_CatalogItemId(): Ref(nullptr)
+	{
+	}
+	FEIK_Ecom_CatalogItemId(EOS_Ecom_CatalogItemId InCatalogItemId)
+	{
+		Ref = InCatalogItemId;
+		Value = UTF8_TO_TCHAR(InCatalogItemId);
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_EntitlementName 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString Value;
+	EOS_Ecom_EntitlementName Ref;
+
+	FEIK_Ecom_EntitlementName(): Ref(nullptr)
+	{
+	}
+
+	FEIK_Ecom_EntitlementName(EOS_Ecom_EntitlementName InEntitlementName)
+	{
+		Ref = InEntitlementName;
+		Value = UTF8_TO_TCHAR(InEntitlementName);
+	}
+};
+
+UENUM(BlueprintType)
+enum EEIK_EEcomItemType
+{
+	//This entitlement is intended to persist.
+	EIK_EIT_Durable = 0 UMETA(DisplayName = "Durable"),
+	//This entitlement is intended to be transient and redeemed.
+	EIK_EIT_Consumable = 1 UMETA(DisplayName = "Consumable"),
+	//This entitlement has a type that is not currently intended for an in-game store.
+	EOS_EIT_Other = 2 UMETA(DisplayName = "Other"),
+	
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_CatalogItem
+{
+	GENERATED_BODY()
+
+	//Product namespace in which this item exists
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString CatalogNamespace;
+
+	//The ID of this item
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FEIK_Ecom_CatalogItemId Id;
+
+	//The entitlement name associated with this item
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FEIK_Ecom_EntitlementName EntitlementName;
+
+	//Localized UTF-8 title of this item
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString TitleText;
+
+	//Localized UTF-8 description of this item
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString DescriptionText;
+
+	//Localized UTF-8 long description of this item
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString LongDescriptionText;
+
+	//Localized UTF-8 technical details of this item
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString TechnicalDetailsText;
+
+	//Localized UTF-8 developer of this item
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString DeveloperText;
+
+	//The type of item as defined in the catalog
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	TEnumAsByte<EEIK_EEcomItemType> ItemType;
+
+	//If not -1 then this is the POSIX timestamp that the entitlement will end
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int64 EntitlementEndTimestamp;
+	
+	EOS_Ecom_CatalogItem Ref;
+
+	FEIK_Ecom_CatalogItem(): Ref()
+	{
+		CatalogNamespace = "";
+		Id = FEIK_Ecom_CatalogItemId();
+		EntitlementName = FEIK_Ecom_EntitlementName();
+		TitleText = "";
+		DescriptionText = "";
+		LongDescriptionText = "";
+		TechnicalDetailsText = "";
+		DeveloperText = "";
+		ItemType = EIK_EIT_Durable;
+		EntitlementEndTimestamp = -1;
+	}
+
+	FEIK_Ecom_CatalogItem(EOS_Ecom_CatalogItem InCatalogItem)
+	{
+		Ref = InCatalogItem;
+		CatalogNamespace = UTF8_TO_TCHAR(InCatalogItem.CatalogNamespace);
+		Id = InCatalogItem.Id;
+		EntitlementName = InCatalogItem.EntitlementName;
+		TitleText = FString(UTF8_TO_TCHAR(InCatalogItem.TitleText));
+		DescriptionText = FString(UTF8_TO_TCHAR(InCatalogItem.DescriptionText));
+		LongDescriptionText = FString(UTF8_TO_TCHAR(InCatalogItem.LongDescriptionText));
+		TechnicalDetailsText = FString(UTF8_TO_TCHAR(InCatalogItem.TechnicalDetailsText));
+		DeveloperText = FString(UTF8_TO_TCHAR(InCatalogItem.DeveloperText));
+		ItemType = static_cast<EEIK_EEcomItemType>(InCatalogItem.ItemType);
+		EntitlementEndTimestamp = InCatalogItem.EntitlementEndTimestamp;
+	}
+};
+
+
+
+
+
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
