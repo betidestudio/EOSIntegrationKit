@@ -58,16 +58,16 @@ struct FEIK_EpicAccountId
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
 	FString EpicAccountId;
 
-	EOS_EpicAccountId EpicAccountIdBasic;
+	EOS_EpicAccountId Ref;
 
-	FEIK_EpicAccountId(): EpicAccountIdBasic(nullptr)
+	FEIK_EpicAccountId(): Ref(nullptr)
 	{
 		EpicAccountId = "";
 	}
 
 	FEIK_EpicAccountId(EOS_EpicAccountId InEpicAccountId)
 	{
-		EpicAccountIdBasic = InEpicAccountId;
+		Ref = InEpicAccountId;
 		char EpicAccountIdAnsi[EOS_EPICACCOUNTID_MAX_LENGTH + 1];
 		int32 EpicAccountIdLen;
 		EOS_EpicAccountId_ToString(InEpicAccountId, EpicAccountIdAnsi, &EpicAccountIdLen);
@@ -75,9 +75,9 @@ struct FEIK_EpicAccountId
 	}
 	EOS_EpicAccountId EpicAccountId_FromString()
 	{
-		if (EOS_EpicAccountId_IsValid(EpicAccountIdBasic))
+		if (EOS_EpicAccountId_IsValid(Ref))
 		{
-			return EpicAccountIdBasic;
+			return Ref;
 		}
 		const char* EpicAccountIdAnsi = TCHAR_TO_ANSI(*EpicAccountId);
 		EOS_EpicAccountId EpicAccountIdSec = EOS_EpicAccountId_FromString(EpicAccountIdAnsi);
@@ -1267,10 +1267,458 @@ struct FEIK_Ecom_CatalogItem
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_CatalogOfferId
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString OfferId;
+
+	EOS_Ecom_CatalogOfferId CatalogOfferId;
+	FEIK_Ecom_CatalogOfferId(): CatalogOfferId(nullptr)
+	{
+		OfferId = "";
+	}
+
+	FEIK_Ecom_CatalogOfferId(EOS_Ecom_CatalogOfferId InCatalogOfferId)
+	{
+		CatalogOfferId = InCatalogOfferId;
+		OfferId = FString(UTF8_TO_TCHAR(InCatalogOfferId));
+	}
+};
 
 
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_CatalogOffer
+{
+	GENERATED_BODY()
+
+	//The index of this offer as it exists on the server. This is useful for understanding pagination data.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 ServerIndex;
+
+	//Product namespace in which this offer exists
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString CatalogNamespace;
+
+	//The ID of this offer
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FEIK_Ecom_CatalogOfferId  Id;
+
+	//Localized UTF-8 title of this offer
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString TitleText;
+
+	//Localized UTF-8 description of this offer
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString DescriptionText;
+
+	//Localized UTF-8 long description of this offer
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString LongDescriptionText;
+
+	//The Currency Code for this offer
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString CurrencyCode;
+
+	//If this value is EOS_Success then OriginalPrice, CurrentPrice, and DiscountPercentage contain valid data. Otherwise this value represents the error that occurred on the price query.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	TEnumAsByte<EEIK_Result> PriceResult;
+
+	//A value from 0 to 100 define the percentage of the OrignalPrice that the CurrentPrice represents
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 DiscountPercentage;
+
+	//Contains the POSIX timestamp that the offer expires or -1 if it does not expire
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int64 ExpirationTimestamp;
+
+	//The maximum number of times that the offer can be purchased. A negative value implies there is no limit.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 PurchaseLimit;
+
+	//True if the user can purchase this offer.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	bool bAvailableForPurchase;
+
+	//The original price of this offer as a 64-bit number.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int64 OriginalPrice64;
+
+	//The current price including discounts of this offer as a 64-bit number.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int64 CurrentPrice64;
+
+	//The decimal point for the provided price. For example, DecimalPoint '2' and CurrentPrice64 '12345' would be '123.45'.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 DecimalPoint;
+
+	//Timestamp indicating when the time when the offer was released. Can be ignored if set to -1.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int64 ReleaseDateTimestamp;
+
+	//Timestamp indicating the effective date of the offer. Can be ignored if set to -1.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int64 EffectiveDateTimestamp;
+
+	EOS_Ecom_CatalogOffer Ref;
+
+	FEIK_Ecom_CatalogOffer(): Ref()
+	{
+		ServerIndex = 0;
+		CatalogNamespace = "";
+		Id = FEIK_Ecom_CatalogOfferId();
+		TitleText = "";
+		DescriptionText = "";
+		LongDescriptionText = "";
+		CurrencyCode = "";
+		PriceResult = EEIK_Result::EOS_Canceled;
+		DiscountPercentage = 0;
+		ExpirationTimestamp = -1;
+		PurchaseLimit = 0;
+		bAvailableForPurchase = false;
+		OriginalPrice64 = 0;
+		CurrentPrice64 = 0;
+		DecimalPoint = 0;
+		ReleaseDateTimestamp = -1;
+		EffectiveDateTimestamp = -1;
+	}
+
+	FEIK_Ecom_CatalogOffer(EOS_Ecom_CatalogOffer InCatalogOffer)
+	{
+		Ref = InCatalogOffer;
+		ServerIndex = InCatalogOffer.ServerIndex;
+		CatalogNamespace = FString(UTF8_TO_TCHAR(InCatalogOffer.CatalogNamespace));
+		Id = InCatalogOffer.Id;
+		TitleText = FString(UTF8_TO_TCHAR(InCatalogOffer.TitleText));
+		DescriptionText = FString(UTF8_TO_TCHAR(InCatalogOffer.DescriptionText));
+		LongDescriptionText = FString(UTF8_TO_TCHAR(InCatalogOffer.LongDescriptionText));
+		CurrencyCode = FString(UTF8_TO_TCHAR(InCatalogOffer.CurrencyCode));
+		PriceResult = static_cast<EEIK_Result>(InCatalogOffer.PriceResult);
+		DiscountPercentage = InCatalogOffer.DiscountPercentage;
+		ExpirationTimestamp = InCatalogOffer.ExpirationTimestamp;
+		PurchaseLimit = InCatalogOffer.PurchaseLimit;
+		bAvailableForPurchase = InCatalogOffer.bAvailableForPurchase == EOS_TRUE;
+		OriginalPrice64 = InCatalogOffer.OriginalPrice64;
+		CurrentPrice64 = InCatalogOffer.CurrentPrice64;
+		DecimalPoint = InCatalogOffer.DecimalPoint;
+		ReleaseDateTimestamp = InCatalogOffer.ReleaseDateTimestamp;
+		EffectiveDateTimestamp = InCatalogOffer.EffectiveDateTimestamp;
+	}
+	EOS_Ecom_CatalogOffer EOS_Ecom_CatalogOffer_FromStruct()
+	{
+		return Ref;
+	}
+};
 
 
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_CatalogRelease
+{
+	GENERATED_BODY()
+
+	//The number of APP IDs
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 CompatibleAppIdCount;
+
+	//A list of compatible APP IDs
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	TArray<FString> CompatibleAppIds;
+
+	//The number of platforms
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 CompatiblePlatformCount;
+
+	//A list of compatible Platforms
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	TArray<FString> CompatiblePlatforms;
+	
+	//Release note for compatible versions
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString ReleaseNote;
+
+	EOS_Ecom_CatalogRelease Ref;
+
+	FEIK_Ecom_CatalogRelease(): Ref()
+	{
+		CompatibleAppIdCount = 0;
+		CompatibleAppIds = TArray<FString>();
+		CompatiblePlatformCount = 0;
+		CompatiblePlatforms = TArray<FString>();
+		ReleaseNote = "";
+	}
+
+	FEIK_Ecom_CatalogRelease(EOS_Ecom_CatalogRelease InCatalogRelease)
+	{
+		Ref = InCatalogRelease;
+		CompatibleAppIdCount = InCatalogRelease.CompatibleAppIdCount;
+		for (int32 i = 0; i < CompatibleAppIdCount; i++)
+		{
+			CompatibleAppIds.Add(FString(UTF8_TO_TCHAR(InCatalogRelease.CompatibleAppIds[i])));
+		}
+		CompatiblePlatformCount = InCatalogRelease.CompatiblePlatformCount;
+		for (int32 i = 0; i < CompatiblePlatformCount; i++)
+		{
+			CompatiblePlatforms.Add(FString(UTF8_TO_TCHAR(InCatalogRelease.CompatiblePlatforms[i])));
+		}
+		ReleaseNote = FString(UTF8_TO_TCHAR(InCatalogRelease.ReleaseNote));
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_CheckoutEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FEIK_Ecom_CatalogItemId OfferId;
+
+	EOS_Ecom_CheckoutEntry Ref;
+	FEIK_Ecom_CheckoutEntry(): Ref()
+	{
+	}
+
+	FEIK_Ecom_CheckoutEntry(EOS_Ecom_CheckoutEntry InCheckoutEntry)
+	{
+		Ref = InCheckoutEntry;
+		OfferId = InCheckoutEntry.OfferId;
+	}
+	EOS_Ecom_CheckoutEntry EOS_Ecom_CheckoutEntry_FromStruct()
+	{
+		EOS_Ecom_CheckoutEntry CheckoutEntry;
+		CheckoutEntry.ApiVersion = EOS_ECOM_CHECKOUTENTRY_API_LATEST;
+		CheckoutEntry.OfferId = OfferId.Ref;
+		return CheckoutEntry;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_EntitlementId
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString Value;
+
+	EOS_Ecom_EntitlementId Ref;
+
+	FEIK_Ecom_EntitlementId(): Value(), Ref(nullptr)
+	{
+	}
+
+	FEIK_Ecom_EntitlementId(EOS_Ecom_EntitlementId InEntitlementId)
+	{
+		Ref = InEntitlementId;
+		Value = UTF8_TO_TCHAR(InEntitlementId);
+	}
+};
+
+//Contains information about a single entitlement associated with an account. Instances of this structure are created by EOS_Ecom_CopyEntitlementByIndex, EOS_Ecom_CopyEntitlementByNameAndIndex, or EOS_Ecom_CopyEntitlementById. They must be passed to EOS_Ecom_Entitlement_Release.
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_Entitlement
+{
+	GENERATED_BODY()
+
+	//Name of the entitlement
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FEIK_Ecom_EntitlementName EntitlementName;
+
+	//ID of the entitlement owned by an account
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FEIK_Ecom_EntitlementId EntitlementId;
+
+	//ID of the item associated with the offer which granted this entitlement
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FEIK_Ecom_CatalogItemId CatalogItemId;
+
+	//If queried using pagination then ServerIndex represents the index of the entitlement as it exists on the server. If not queried using pagination then ServerIndex will be -1.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 ServerIndex;
+
+	//If true then the catalog has this entitlement marked as redeemed
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	bool bRedeemed;
+
+	//If not -1 then this is a POSIX timestamp that this entitlement will end
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int64 EndTimestamp;
+
+	EOS_Ecom_Entitlement Ref;
+	FEIK_Ecom_Entitlement(): ServerIndex(0), bRedeemed(false), EndTimestamp(-1), Ref()
+	{
+	}
+
+	FEIK_Ecom_Entitlement(EOS_Ecom_Entitlement InEntitlement)
+	{
+		Ref = InEntitlement;
+		EntitlementName = InEntitlement.EntitlementName;
+		EntitlementId = InEntitlement.EntitlementId;
+		CatalogItemId = InEntitlement.CatalogItemId;
+		ServerIndex = InEntitlement.ServerIndex;
+		bRedeemed = InEntitlement.bRedeemed == EOS_TRUE;
+		EndTimestamp = InEntitlement.EndTimestamp;
+	}
+};
+
+
+/*
+ *Contains information about a key image used by the catalog.
+ *Instances of this structure are created by EOS_Ecom_CopyItemImageInfoByIndex.
+ *They must be passed to EOS_Ecom_KeyImageInfo_Release.
+ *A Key Image is defined within Dev Portal and is associated with a Catalog Item.
+ *A Key Image is intended to be used to provide imagery for an in-game store.
+*/
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_KeyImageInfo
+{
+	GENERATED_BODY()
+
+	//Describes the usage of the image (ex: home_thumbnail)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString Type;
+
+	//The URL of the image
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString Url;
+
+	//The expected width in pixels of the image
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 Width;
+
+	//The expected height in pixels of the image
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 Height;
+
+	EOS_Ecom_KeyImageInfo Ref;
+
+	FEIK_Ecom_KeyImageInfo(): Width(0), Height(0), Ref()
+	{
+		Type = "";
+	}
+
+	FEIK_Ecom_KeyImageInfo(EOS_Ecom_KeyImageInfo InKeyImageInfo)
+	{
+		Ref = InKeyImageInfo;
+		Type = FString(UTF8_TO_TCHAR(InKeyImageInfo.Type));
+		Url = FString(UTF8_TO_TCHAR(InKeyImageInfo.Url));
+		Width = InKeyImageInfo.Width;
+		Height = InKeyImageInfo.Height;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_HTransaction
+{
+	GENERATED_BODY()
+
+	EOS_Ecom_HTransaction* Ref;
+	
+	FEIK_Ecom_HTransaction(): Ref(nullptr)
+	{
+	}
+
+	FEIK_Ecom_HTransaction(EOS_Ecom_HTransaction* InHTransaction)
+	{
+		Ref = InHTransaction;
+	}
+	EOS_Ecom_HTransaction* GetReference()
+	{
+		return Ref;
+	}
+};
+
+UENUM(BlueprintType)
+enum EEIK_EOwnershipStatus
+{
+	EIK_OS_NotOwned = 0 UMETA(DisplayName = "Not Owned"),
+	EIK_OS_Owned = 1 UMETA(DisplayName = "Owned"),
+};
+
+//Contains information about a single item ownership associated with an account. This structure is returned as part of the EOS_Ecom_QueryOwnershipCallbackInfo structure.
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_ItemOwnership
+{
+	GENERATED_BODY()
+
+	//ID of the catalog item
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FEIK_Ecom_CatalogItemId Id;
+
+	//Is this catalog item owned by the local user
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	TEnumAsByte<EEIK_EOwnershipStatus> OwnershipStatus;
+
+
+	EOS_Ecom_ItemOwnership Ref;
+	FEIK_Ecom_ItemOwnership(): Ref()
+	{
+		Id = FEIK_Ecom_CatalogItemId();
+		OwnershipStatus = EIK_OS_NotOwned;
+	}
+
+	FEIK_Ecom_ItemOwnership(EOS_Ecom_ItemOwnership InItemOwnership)
+	{
+		Ref = InItemOwnership;
+		Id = InItemOwnership.Id;
+		OwnershipStatus = static_cast<EEIK_EOwnershipStatus>(InItemOwnership.OwnershipStatus);
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_SandboxId
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FString Value;
+
+	EOS_Ecom_SandboxId Ref;
+
+	FEIK_Ecom_SandboxId(): Value(), Ref(nullptr)
+	{
+	}
+	FEIK_Ecom_SandboxId(EOS_Ecom_SandboxId InSandboxId)
+	{
+		Ref = InSandboxId;
+		Value = UTF8_TO_TCHAR(InSandboxId);
+	}
+	EOS_Ecom_SandboxId EOS_Ecom_SandboxId_FromStruct()
+	{
+		return Ref;
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_Ecom_SandboxIdItemOwnership
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	FEIK_Ecom_SandboxId SandboxId;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	TArray<FEIK_Ecom_CatalogItemId> OwnedCatalogItemIds;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
+	int32 OwnedCatalogItemIdsCount;
+
+	FEIK_Ecom_SandboxIdItemOwnership(): OwnedCatalogItemIdsCount(0)
+	{
+		SandboxId = FEIK_Ecom_SandboxId();
+	}
+
+	FEIK_Ecom_SandboxIdItemOwnership(EOS_Ecom_SandboxIdItemOwnership InSandboxIdItemOwnership)
+	{
+		SandboxId = InSandboxIdItemOwnership.SandboxId;
+		OwnedCatalogItemIdsCount = InSandboxIdItemOwnership.OwnedCatalogItemIdsCount;
+		for (int32 i = 0; i < OwnedCatalogItemIdsCount; i++)
+		{
+			OwnedCatalogItemIds.Add(InSandboxIdItemOwnership.OwnedCatalogItemIds[i]);
+		}
+	}
+};
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
