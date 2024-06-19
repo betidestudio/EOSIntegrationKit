@@ -1720,6 +1720,20 @@ struct FEIK_Ecom_SandboxIdItemOwnership
 	}
 };
 
+
+UENUM(BlueprintType)
+enum EEIK_EFriendsStatus
+{
+	//The two accounts have no friendship status.
+	EIK_FS_NotFriends = 0 UMETA(DisplayName = "Not Friends"),
+	//The local account has sent a friend invite to the other account. NOTE: EOS_FS_InviteSent is not returned by EOS_Friends_GetStatus or in EOS_Friends_AddNotifyFriendsUpdate callbacks unless the local account was logged in with the EOS_AS_FriendsManagement authentication scope. Friend invites are managed automatically by the Social Overlay.
+	EIK_FS_InviteSent = 1 UMETA(DisplayName = "Invite Sent"),
+	//The other account has sent a friend invite to the local account. NOTE: EOS_FS_InviteReceived is not returned by EOS_Friends_GetStatus or in EOS_Friends_AddNotifyFriendsUpdate callbacks unless the local account was logged in with the EOS_AS_FriendsManagement authentication scope. Friend invites are managed automatically by the Social Overlay.
+	EIK_FS_InviteReceived = 2 UMETA(DisplayName = "Invite Received"),
+	//The accounts have accepted friendship.
+	EIK_FS_Friends = 3 UMETA(DisplayName = "Friends"),
+};
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
 {
