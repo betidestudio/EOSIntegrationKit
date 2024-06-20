@@ -6,6 +6,7 @@
 THIRD_PARTY_INCLUDES_START
 #include "eos_common.h"
 #include "eos_ecom_types.h"
+#include "eos_leaderboards_types.h"
 #include "eos_ecom.h"
 #include "eos_connect_types.h"
 #include "eos_achievements_types.h"
@@ -1734,6 +1735,151 @@ enum EEIK_EFriendsStatus
 	EIK_FS_Friends = 3 UMETA(DisplayName = "Friends"),
 };
 
+UENUM(BlueprintType)
+enum EEIK_ELeaderboardAggregation
+{
+	//Minimum
+	EIK_LA_Min = 0 UMETA(DisplayName = "Min"),
+	//Maximum
+	EIK_LA_Max = 1 UMETA(DisplayName = "Max"),
+	//Sum
+	EIK_LA_Sum = 2 UMETA(DisplayName = "Sum"),
+	//Latest
+	EIK_LA_Latest = 3 UMETA(DisplayName = "Latest"),
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Leaderboards_Definition
+{
+	GENERATED_BODY()
+
+	//Unique ID to identify leaderboard.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	FString LeaderboardId;
+
+	//Name of stat used to rank leaderboard.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	FString StatName;
+	
+	//Aggregation used to sort leaderboard.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	TEnumAsByte<EEIK_ELeaderboardAggregation> Aggregation;
+
+	//The POSIX timestamp for the start time, or EOS_LEADERBOARDS_TIME_UNDEFINED.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	int64 StartTime;
+
+	//The POSIX timestamp for the end time, or EOS_LEADERBOARDS_TIME_UNDEFINED.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	int64 EndTime;
+
+	EOS_Leaderboards_Definition Ref;
+	FEIK_Leaderboards_Definition(): LeaderboardId(), StatName(), Aggregation(EEIK_ELeaderboardAggregation::EIK_LA_Min),
+	                                StartTime(0), EndTime(0), Ref()
+	{
+	}
+
+	FEIK_Leaderboards_Definition(EOS_Leaderboards_Definition InLeaderboardDefinition)
+	{
+		Ref = InLeaderboardDefinition;
+		LeaderboardId = FString(UTF8_TO_TCHAR(InLeaderboardDefinition.LeaderboardId));
+		StatName = FString(UTF8_TO_TCHAR(InLeaderboardDefinition.StatName));
+		Aggregation = static_cast<EEIK_ELeaderboardAggregation>(InLeaderboardDefinition.Aggregation);
+		StartTime = InLeaderboardDefinition.StartTime;
+		EndTime = InLeaderboardDefinition.EndTime;
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_Leaderboards_LeaderboardRecord
+{
+	GENERATED_BODY()
+
+	//The Product User ID associated with this record
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	FEIK_ProductUserId UserId;
+
+	//Sorted position on leaderboard
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	int32 Rank;
+
+	//Leaderboard score
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	int32 Score;
+
+	//The latest display name seen for the user since they last time logged in. This is empty if the user does not have a display name set.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	FString UserDisplayName;
+
+	EOS_Leaderboards_LeaderboardRecord Ref;
+	FEIK_Leaderboards_LeaderboardRecord(): UserId(), Rank(0), Score(0), UserDisplayName(), Ref()
+	{
+	}
+
+	FEIK_Leaderboards_LeaderboardRecord(EOS_Leaderboards_LeaderboardRecord InLeaderboardRecord)
+	{
+		Ref = InLeaderboardRecord;
+		UserId = InLeaderboardRecord.UserId;
+		Rank = InLeaderboardRecord.Rank;
+		Score = InLeaderboardRecord.Score;
+		UserDisplayName = FString(UTF8_TO_TCHAR(InLeaderboardRecord.UserDisplayName));
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_Leaderboards_LeaderboardUserScore
+{
+	GENERATED_BODY()
+
+	//The Product User ID of the user who got this score
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	FEIK_ProductUserId UserId;
+
+	//Leaderboard score
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	int32 Score;
+
+	EOS_Leaderboards_LeaderboardUserScore Ref;
+
+	FEIK_Leaderboards_LeaderboardUserScore(): UserId(), Score(0), Ref()
+	{
+	}
+
+	FEIK_Leaderboards_LeaderboardUserScore(EOS_Leaderboards_LeaderboardUserScore InLeaderboardUserScore)
+	{
+		Ref = InLeaderboardUserScore;
+		UserId = InLeaderboardUserScore.UserId;
+		Score = InLeaderboardUserScore.Score;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Leaderboards_UserScoresQueryStatInfo
+{
+	GENERATED_BODY()
+
+	//The name of the stat to query.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	FString StatName;
+
+	//Aggregation used to sort the cached user scores.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Leaderboards Interface")
+	TEnumAsByte<EEIK_ELeaderboardAggregation> Aggregation;
+
+	FEIK_Leaderboards_UserScoresQueryStatInfo(): StatName(), Aggregation(EEIK_ELeaderboardAggregation::EIK_LA_Min)
+	{
+	}
+	EOS_Leaderboards_UserScoresQueryStatInfo EOS_Leaderboards_UserScoresQueryStatInfo_FromStruct()
+	{
+		EOS_Leaderboards_UserScoresQueryStatInfo UserScoresQueryStatInfo;
+		UserScoresQueryStatInfo.ApiVersion = EOS_LEADERBOARDS_USERSCORESQUERYSTATINFO_API_LATEST;
+		UserScoresQueryStatInfo.StatName = TCHAR_TO_ANSI(*StatName);
+		UserScoresQueryStatInfo.Aggregation = static_cast<EOS_ELeaderboardAggregation>(Aggregation.GetValue());
+		return UserScoresQueryStatInfo;
+	}
+};
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
 {
