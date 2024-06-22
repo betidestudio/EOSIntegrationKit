@@ -11,6 +11,12 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_connect_types.h"
 #include "eos_achievements_types.h"
 #include "eos_auth_types.h"
+#include "eos_friends_types.h"
+#include "eos_sessions_types.h"
+#include "eos_presence_types.h"
+#include "eos_lobby_types.h"
+#include "eos_lobby.h"
+#include "eos_ui_types.h"
 THIRD_PARTY_INCLUDES_END
 #include "UObject/Object.h"
 #include "EIK_SharedFunctionFile.generated.h"
@@ -1878,6 +1884,260 @@ struct FEIK_Leaderboards_UserScoresQueryStatInfo
 		UserScoresQueryStatInfo.StatName = TCHAR_TO_ANSI(*StatName);
 		UserScoresQueryStatInfo.Aggregation = static_cast<EOS_ELeaderboardAggregation>(Aggregation.GetValue());
 		return UserScoresQueryStatInfo;
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_UI_EventId 
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | UI Interface")
+	int64 Value;
+	
+	EOS_UI_EventId Ref;
+	
+	FEIK_UI_EventId(): Ref(-1)
+	{
+		Value = -1;
+	}
+	FEIK_UI_EventId(EOS_UI_EventId InEventId)
+	{
+		Ref = InEventId;
+		Value = InEventId;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_LobbyId
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	FString Value;
+
+	EOS_LobbyId Ref;
+
+	FEIK_LobbyId(): Value(), Ref(nullptr)
+	{
+	}
+	FEIK_LobbyId(EOS_LobbyId InLobbyId)
+	{
+		Ref = InLobbyId;
+		Value = UTF8_TO_TCHAR(InLobbyId);
+	}
+	EOS_LobbyId EOS_LobbyId_FromStruct()
+	{
+		return Ref;
+	}
+};
+
+UENUM(BlueprintType)
+enum EEIK_ELobbyMemberStatus
+{
+	//The user has joined the lobby
+	EIK_LMS_Joined = 0 UMETA(DisplayName = "Joined"),
+	//The user has explicitly left the lobby
+	EIK_LMS_Left = 1 UMETA(DisplayName = "Left"),
+	//The user has unexpectedly left the lobby
+	EIK_LMS_Disconnected = 2 UMETA(DisplayName = "Disconnected"),
+	//The user has been kicked from the lobby
+	EIK_LMS_Kicked = 3 UMETA(DisplayName = "Kicked"),
+	//The user has been promoted to lobby owner
+	EIK_LMS_Promoted = 4 UMETA(DisplayName = "Promoted"),
+	//The lobby has been closed and user has been removed
+	EIK_LMS_Closed = 5 UMETA(DisplayName = "Closed"),
+};
+
+/** Advertisement properties for a single attribute associated with a lobby */
+UENUM(BlueprintType)
+enum EEIK_ELobbyAttributeVisibility
+{
+	/** Data is visible to lobby members, searchable and visible in search results. */
+	EIK_LAV_Public = 0 UMETA(DisplayName = "Public"),
+	/** Data is only visible to the user setting the data. Data is not visible to lobby members, not searchable, and not visible in search results. */
+	EIK_LAV_Private = 1 UMETA(DisplayName = "Private"),
+};
+
+/**
+ * Supported types of data that can be stored with inside an attribute (used by sessions/lobbies/etc)
+ *
+ * @see EOS_LobbySearch_SetParameter
+ * @see EOS_SessionSearch_SetParameter
+ */
+UENUM(BlueprintType)
+enum EEIK_EAttributeType
+{
+	/** Boolean value (true/false) */
+	EIK_AT_BOOL = 0 UMETA(DisplayName = "Bool"),
+	/** 64 bit integers */
+	EIK_AT_INT64 = 1 UMETA(DisplayName = "Int64"),
+	/** Double precision floating point */
+	EIK_AT_DOUBLE = 2 UMETA(DisplayName = "Double"),
+	/** UTF-8 string */
+	EIK_AT_STRING = 3 UMETA(DisplayName = "String"),
+};
+
+/**
+ * Contains information about lobby and lobby member data
+ */
+USTRUCT(BlueprintType)
+struct FEIK_Lobby_AttributeData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	FString Key;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	int64 ValueAsInt64;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	FString ValueAsString;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	bool bValueAsBool;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	double ValueAsDouble;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	TEnumAsByte<EEIK_EAttributeType> ValueType;
+
+	EOS_Lobby_AttributeData Ref;
+
+	FEIK_Lobby_AttributeData(): ValueAsInt64(0), bValueAsBool(false), ValueAsDouble(0), ValueType(), Ref()
+	{
+	}
+
+	FEIK_Lobby_AttributeData(EOS_Lobby_AttributeData InLobbyAttributeData)
+	{
+		Ref = InLobbyAttributeData;
+		Key = UTF8_TO_TCHAR(InLobbyAttributeData.Key);
+		ValueAsInt64 = InLobbyAttributeData.Value.AsInt64;
+		ValueAsString = UTF8_TO_TCHAR(InLobbyAttributeData.Value.AsUtf8);
+		bValueAsBool = InLobbyAttributeData.Value.AsBool == EOS_TRUE;
+		ValueAsDouble = InLobbyAttributeData.Value.AsDouble;
+		ValueType = static_cast<EEIK_EAttributeType>(InLobbyAttributeData.ValueType);
+	}
+};
+
+
+/**
+ *  An attribute and its visibility setting stored with a lobby.
+ *  Used to store both lobby and lobby member data
+ */
+USTRUCT(BlueprintType)
+struct FEIK_Lobby_Attribute
+{
+	GENERATED_BODY()
+	
+	/** Key/Value pair describing the attribute */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	FEIK_Lobby_AttributeData Data;
+
+	/** Is this attribute public or private to the lobby and its members */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	TEnumAsByte<EEIK_ELobbyAttributeVisibility> Visibility;
+	
+	EOS_Lobby_Attribute* Ref;
+	FEIK_Lobby_Attribute(): Visibility()
+	{
+		Ref = nullptr;
+	}
+
+	FEIK_Lobby_Attribute(EOS_Lobby_Attribute* InLobbyAttribute)
+	{
+		Ref = InLobbyAttribute;
+		Data = *InLobbyAttribute->Data;
+		Visibility = static_cast<EEIK_ELobbyAttributeVisibility>(InLobbyAttribute->Visibility);
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_HLobbyDetails
+{
+	GENERATED_BODY()
+
+	EOS_HLobbyDetails* Ref;
+
+	FEIK_HLobbyDetails(): Ref(nullptr)
+	{
+	}
+	FEIK_HLobbyDetails(EOS_HLobbyDetails* InHLobbyDetails)
+	{
+		Ref = InHLobbyDetails;
+	}
+};
+
+
+/** Permission level gets more restrictive further down */
+UENUM(BlueprintType)
+enum EEIK_ELobbyPermissionLevel
+{
+	/** Anyone can find this lobby as long as it isn't full */
+	EIK_LPL_PublicAdvertised = 0 UMETA(DisplayName = "PublicAdvertised"),
+	/** Players who have access to presence can see this lobby */
+	EIK_LPL_JoinViaPresence = 1 UMETA(DisplayName = "JoinViaPresence"),
+	/** Only players with invites registered can see this lobby */
+	EIK_LPL_InviteOnly = 2 UMETA(DisplayName = "InviteOnly"),
+};
+
+/**
+ * Input parameters to use with Lobby RTC Rooms.
+ */
+USTRUCT(BlueprintType)
+struct FEIK_Lobby_LocalRTCOptions
+{
+	GENERATED_BODY()
+
+	/** Flags for the local user in this room. The default is 0 if this struct is not specified. @see EOS_RTC_JoinRoomOptions::Flags */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	int32 Flags;
+
+	/**
+	* Set to EOS_TRUE to enable Manual Audio Input. If manual audio input is enabled, audio recording is not started and the audio buffers
+	* must be passed manually using EOS_RTCAudio_SendAudio. The default is EOS_FALSE if this struct is not specified.
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	bool bUseManualAudioInput;
+	
+	/**
+	* Set to EOS_TRUE to enable Manual Audio Output. If manual audio output is enabled, audio rendering is not started and the audio buffers
+	* must be received with EOS_RTCAudio_AddNotifyAudioBeforeRender and rendered manually. The default is EOS_FALSE if this struct is not
+	* specified.
+	*/
+	bool bUseManualAudioOutput;
+	
+	/**
+	 * Set to EOS_TRUE to start the audio input device's stream as muted when first connecting to the RTC room.
+	 *
+	 * It must be manually unmuted with a call to EOS_RTCAudio_UpdateSending. If manual audio output is enabled, this value is ignored.
+	 * The default value is EOS_FALSE if this struct is not specified.
+	 */
+	bool bLocalAudioDeviceInputStartsMuted;
+
+	FEIK_Lobby_LocalRTCOptions(): Flags(0), bUseManualAudioInput(false), bUseManualAudioOutput(false), bLocalAudioDeviceInputStartsMuted(false)
+	{
+	}
+	FEIK_Lobby_LocalRTCOptions(EOS_Lobby_LocalRTCOptions InLocalRTCOptions)
+	{
+		Flags = InLocalRTCOptions.Flags;
+		bUseManualAudioInput = InLocalRTCOptions.bUseManualAudioInput == EOS_TRUE;
+		bUseManualAudioOutput = InLocalRTCOptions.bUseManualAudioOutput == EOS_TRUE;
+		bLocalAudioDeviceInputStartsMuted = InLocalRTCOptions.bLocalAudioDeviceInputStartsMuted == EOS_TRUE;
+	}
+	EOS_Lobby_LocalRTCOptions EOS_Lobby_LocalRTCOptions_FromStruct()
+	{
+		EOS_Lobby_LocalRTCOptions LocalRTCOptions;
+		LocalRTCOptions.ApiVersion = EOS_LOBBY_LOCALRTCOPTIONS_API_LATEST;
+		LocalRTCOptions.Flags = Flags;
+		LocalRTCOptions.bUseManualAudioInput = bUseManualAudioInput ? EOS_TRUE : EOS_FALSE;
+		LocalRTCOptions.bUseManualAudioOutput = bUseManualAudioOutput ? EOS_TRUE : EOS_FALSE;
+		LocalRTCOptions.bLocalAudioDeviceInputStartsMuted = bLocalAudioDeviceInputStartsMuted ? EOS_TRUE : EOS_FALSE;
+		return LocalRTCOptions;
 	}
 };
 UCLASS()
