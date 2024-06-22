@@ -2170,6 +2170,163 @@ struct FEIK_Lobby_LocalRTCOptions
 		return LocalRTCOptions;
 	}
 };
+
+USTRUCT(BlueprintType)
+struct FEIK_LobbyDetailsInfo
+{
+	GENERATED_BODY()
+
+	//Lobby ID
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	FEIK_LobbyId LobbyId;
+
+	//The Product User ID of the current owner of the lobby
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	FEIK_ProductUserId LobbyOwnerUserId;
+
+	//Permission level of the lobby
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	TEnumAsByte<EEIK_ELobbyPermissionLevel> PermissionLevel;
+
+	//Current available space
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	int32 AvailableSlots;
+
+	//Max allowed members in the lobby
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	int32 MaxMembers;
+
+	//If true, users can invite others to this lobby
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	bool bAllowInvites;
+
+	//The main indexed parameter for this lobby, can be any string (i.e. "Region:GameMode")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	FString BucketId;
+
+	//Is host migration allowed
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	bool bAllowHostMigration;
+
+	//Was a Real-Time Communication (RTC) room enabled at lobby creation?
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	bool bRTCRoomEnabled;
+
+	//Is EOS_Lobby_JoinLobbyById allowed
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	bool bAllowJoinById;
+
+	//Does rejoining after being kicked require an invite
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	bool bRejoinAfterKickRequiresInvite;
+
+	//If true, this lobby will be associated with the local user's presence information.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	bool bPresenceEnabled;
+
+	//Array of platform IDs indicating the player platforms allowed to register with the session. Platform IDs are found in the EOS header file, e.g. EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform specific header file. If null, the lobby will be unrestricted.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	TArray<int32> AllowedPlatformIds;
+
+	EOS_LobbyDetails_Info Ref;
+
+	FEIK_LobbyDetailsInfo(): LobbyId(), LobbyOwnerUserId(), PermissionLevel(), AvailableSlots(0), MaxMembers(0),
+	                         bAllowInvites(false), BucketId(),
+	                         bAllowHostMigration(false), bRTCRoomEnabled(false), bAllowJoinById(false),
+	                         bRejoinAfterKickRequiresInvite(false), bPresenceEnabled(false), AllowedPlatformIds(), Ref()
+	{
+	}
+
+	FEIK_LobbyDetailsInfo(EOS_LobbyDetails_Info InLobbyDetailsInfo)
+	{
+		Ref = InLobbyDetailsInfo;
+		LobbyId = InLobbyDetailsInfo.LobbyId;
+		LobbyOwnerUserId = InLobbyDetailsInfo.LobbyOwnerUserId;
+		PermissionLevel = static_cast<EEIK_ELobbyPermissionLevel>(InLobbyDetailsInfo.PermissionLevel);
+		AvailableSlots = InLobbyDetailsInfo.AvailableSlots;
+		MaxMembers = InLobbyDetailsInfo.MaxMembers;
+		bAllowInvites = InLobbyDetailsInfo.bAllowInvites == EOS_TRUE;
+		BucketId = FString(UTF8_TO_TCHAR(InLobbyDetailsInfo.BucketId));
+		bAllowHostMigration = InLobbyDetailsInfo.bAllowHostMigration == EOS_TRUE;
+		bRTCRoomEnabled = InLobbyDetailsInfo.bRTCRoomEnabled == EOS_TRUE;
+		bAllowJoinById = InLobbyDetailsInfo.bAllowJoinById == EOS_TRUE;
+		bRejoinAfterKickRequiresInvite = InLobbyDetailsInfo.bRejoinAfterKickRequiresInvite == EOS_TRUE;
+		bPresenceEnabled = InLobbyDetailsInfo.bPresenceEnabled == EOS_TRUE;
+		for (int32 i = 0; i < (int32)InLobbyDetailsInfo.AllowedPlatformIdsCount; i++)
+		{
+			AllowedPlatformIds.Add(InLobbyDetailsInfo.AllowedPlatformIds[i]);
+		}
+	}
+};
+
+ 
+
+USTRUCT(BlueprintType)
+struct FEIK_LobbyDetails_MemberInfo
+{
+	GENERATED_BODY()
+
+	//The Product User ID of the lobby member.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	FEIK_ProductUserId UserId;
+
+	//The platform of the lobby member.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	int32 Platform;
+	
+	//Does this member allow crossplay
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	bool bAllowsCrossplay;
+
+	EOS_LobbyDetails_MemberInfo Ref;
+
+	FEIK_LobbyDetails_MemberInfo(): UserId(), Platform(0), bAllowsCrossplay(false), Ref()
+	{
+	}
+
+	FEIK_LobbyDetails_MemberInfo(EOS_LobbyDetails_MemberInfo InLobbyDetailsMemberInfo)
+	{
+		Ref = InLobbyDetailsMemberInfo;
+		UserId = InLobbyDetailsMemberInfo.UserId;
+		Platform = InLobbyDetailsMemberInfo.Platform;
+		bAllowsCrossplay = InLobbyDetailsMemberInfo.bAllowsCrossplay == EOS_TRUE;
+	}
+};
+
+/**
+ * All comparison operators associated with parameters in a search query
+ *
+ * @see EOS_LobbySearch_SetParameter
+ * @see EOS_SessionSearch_SetParameter
+ */ 
+UENUM(BlueprintType)
+enum EEIK_EComparisonOp
+{
+	/** Value must equal the one stored on the lobby/session */
+	EIK_CO_EQUAL = 0,
+	/** Value must not equal the one stored on the lobby/session */
+	EIK_CO_NOTEQUAL = 1,
+	/** Value must be strictly greater than the one stored on the lobby/session */
+	EIK_CO_GREATERTHAN = 2,
+	/** Value must be greater than or equal to the one stored on the lobby/session */
+	EIK_CO_GREATERTHANOREQUAL = 3,
+	/** Value must be strictly less than the one stored on the lobby/session */
+	EIK_CO_LESSTHAN = 4,
+	/** Value must be less than or equal to the one stored on the lobby/session */
+	EIK_CO_LESSTHANOREQUAL = 5,
+	/** Prefer values nearest the one specified ie. abs(SearchValue-SessionValue) closest to 0 */
+	EIK_CO_DISTANCE = 6,
+	/** Value stored on the lobby/session may be any from a specified list */
+	EIK_CO_ANYOF = 7,
+	/** Value stored on the lobby/session may NOT be any from a specified list */
+	EIK_CO_NOTANYOF = 8,
+	/** This one value is a part of a collection */
+	EIK_CO_ONEOF = 9,
+	/** This one value is NOT part of a collection */
+	EIK_CO_NOTONEOF = 10,
+	/** This value is a CASE SENSITIVE substring of an attribute stored on the lobby/session */
+	EIK_CO_CONTAINS = 11
+};
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
 {

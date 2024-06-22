@@ -191,7 +191,95 @@ public:
 	TEnumAsByte<EEIK_Result> EIK_LobbyDetails_CopyAttributeByKey(FEIK_HLobbyDetails LobbyDetailsHandle, const FString& AttrKey, FEIK_Lobby_Attribute& OutAttribute);
 
 	//EOS_LobbyDetails_CopyInfo is used to immediately retrieve a copy of lobby information from a given source such as a existing lobby or a search result. If the call returns an EOS_Success result, the out parameter, OutLobbyDetailsInfo, must be passed to EOS_LobbyDetails_Info_Release to release the memory associated with it.
-	//UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_CopyInfo")
-	//TEnumAsByte<EEIK_Result> EIK_LobbyDetails_CopyInfo(FEIK_HLobbyDetails LobbyDetailsHandle, FEIK_LobbyDetailsInfo& OutLobbyDetailsInfo);
-	
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_CopyInfo")
+	TEnumAsByte<EEIK_Result> EIK_LobbyDetails_CopyInfo(FEIK_HLobbyDetails LobbyDetailsHandle, FEIK_LobbyDetailsInfo& OutLobbyDetailsInfo);
+
+	//EOS_LobbyDetails_CopyMemberAttributeByIndex is used to immediately retrieve a copy of a lobby member attribute from an existing lobby. If the call returns an EOS_Success result, the out parameter, OutAttribute, must be passed to EOS_Lobby_Attribute_Release to release the memory associated with it. Note: this information is only available if you are actively in the lobby. It is not available for search results.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_CopyMemberAttributeByIndex")
+	TEnumAsByte<EEIK_Result> EIK_LobbyDetails_CopyMemberAttributeByIndex(FEIK_HLobbyDetails LobbyDetailsHandle, FEIK_ProductUserId TargetUserId, int32 AttrIndex, FEIK_Lobby_Attribute& OutAttribute);
+
+	//EOS_LobbyDetails_CopyMemberAttributeByIndex is used to immediately retrieve a copy of a lobby member attribute from an existing lobby. If the call returns an EOS_Success result, the out parameter, OutAttribute, must be passed to EOS_Lobby_Attribute_Release to release the memory associated with it. Note: this information is only available if you are actively in the lobby. It is not available for search results.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_CopyMemberAttributeByKey")
+	TEnumAsByte<EEIK_Result> EIK_LobbyDetails_CopyMemberAttributeByKey(FEIK_HLobbyDetails LobbyDetailsHandle, FEIK_ProductUserId TargetUserId, const FString& AttrKey, FEIK_Lobby_Attribute& OutAttribute);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_CopyMemberInfo")
+	TEnumAsByte<EEIK_Result> EIK_LobbyDetails_CopyMemberInfo(FEIK_HLobbyDetails LobbyDetailsHandle, FEIK_ProductUserId TargetUserId, FEIK_LobbyDetails_MemberInfo& OutMemberInfo);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_GetAttributeCount")
+	int32 EIK_LobbyDetails_GetAttributeCount(FEIK_HLobbyDetails LobbyDetailsHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_GetLobbyOwner")
+	FEIK_ProductUserId EIK_LobbyDetails_GetLobbyOwner(FEIK_HLobbyDetails LobbyDetailsHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_GetMemberAttributeCount")
+	int32 EIK_LobbyDetails_GetMemberAttributeCount(FEIK_HLobbyDetails LobbyDetailsHandle, FEIK_ProductUserId TargetUserId);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_GetMemberByIndex")
+	FEIK_ProductUserId EIK_LobbyDetails_GetMemberByIndex(FEIK_HLobbyDetails LobbyDetailsHandle, int32 MemberIndex);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_GetMemberCount")
+	int32 EIK_LobbyDetails_GetMemberCount(FEIK_HLobbyDetails LobbyDetailsHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_Info_Release")
+	void EIK_LobbyDetails_Info_Release(FEIK_LobbyDetailsInfo& LobbyDetailsInfo);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_MemberInfo_Release")
+	void EIK_LobbyDetails_MemberInfo_Release(FEIK_LobbyDetails_MemberInfo& MemberInfo);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_Release")
+	void EIK_LobbyDetails_Release(FEIK_HLobbyDetails LobbyDetailsHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_AddAttribute")
+	TEnumAsByte<EEIK_Result> EIK_LobbyModification_AddAttribute(FEIK_HLobbyModification LobbyModificationHandle, const FEIK_Lobby_AttributeData& Attribute, const TEnumAsByte<EEIK_ELobbyAttributeVisibility>& Visibility);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_AddMemberAttribute")
+	TEnumAsByte<EEIK_Result> EIK_LobbyModification_AddMemberAttribute(FEIK_HLobbyModification LobbyModificationHandle, const FEIK_Lobby_AttributeData& Attribute, const TEnumAsByte<EEIK_ELobbyAttributeVisibility>& Visibility);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_Release")
+	void EIK_LobbyModification_Release(FEIK_HLobbyModification LobbyModificationHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_RemoveAttribute")
+	TEnumAsByte<EEIK_Result> EIK_LobbyModification_RemoveAttribute(FEIK_HLobbyModification LobbyModificationHandle, const FString& Options);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_RemoveMemberAttribute")
+	TEnumAsByte<EEIK_Result> EIK_LobbyModification_RemoveMemberAttribute(FEIK_HLobbyModification LobbyModificationHandle, const FString& Options);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_SetAllowedPlatformIds")
+	TEnumAsByte<EEIK_Result> EIK_LobbyModification_SetAllowedPlatformIds(FEIK_HLobbyModification LobbyModificationHandle, const TArray<int32>& Options);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_SetBucketId")
+	TEnumAsByte<EEIK_Result> EIK_LobbyModification_SetBucketId(FEIK_HLobbyModification LobbyModificationHandle, const FString& Options);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_SetInvitesAllowed")
+	TEnumAsByte<EEIK_Result> EIK_LobbyModification_SetInvitesAllowed(FEIK_HLobbyModification LobbyModificationHandle, const bool& Options);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_SetMaxMembers")
+	TEnumAsByte<EEIK_Result> EIK_LobbyModification_SetMaxMembers(FEIK_HLobbyModification LobbyModificationHandle, const int32& Options);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyModification_SetPermissionLevel")
+	TEnumAsByte<EEIK_Result> EIK_LobbyModification_SetPermissionLevel(FEIK_HLobbyModification LobbyModificationHandle, const TEnumAsByte<EEIK_ELobbyPermissionLevel>& Options);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbySearch_CopySearchResultByIndex")
+	TEnumAsByte<EEIK_Result> EIK_LobbySearch_CopySearchResultByIndex(FEIK_HLobbySearch LobbySearchHandle, int32 LobbyIndex, FEIK_HLobbyDetails& OutLobbyDetailsHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbySearch_GetSearchResultCount")
+	int32 EIK_LobbySearch_GetSearchResultCount(FEIK_HLobbySearch LobbySearchHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbySearch_Release")
+	void EIK_LobbySearch_Release(FEIK_HLobbySearch LobbySearchHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbySearch_RemoveParameter")
+	TEnumAsByte<EEIK_Result> EIK_LobbySearch_RemoveParameter(FEIK_HLobbySearch LobbySearchHandle, const FString& Key, const TEnumAsByte<EEIK_EComparisonOp>& ComparisonOp);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbySearch_SetLobbyId")
+	TEnumAsByte<EEIK_Result> EIK_LobbySearch_SetLobbyId(FEIK_HLobbySearch LobbySearchHandle, const FEIK_LobbyId& Options);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbySearch_SetMaxResults")
+	TEnumAsByte<EEIK_Result> EIK_LobbySearch_SetMaxResults(FEIK_HLobbySearch LobbySearchHandle, const int32 MaxResults);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbySearch_SetParameter")
+	TEnumAsByte<EEIK_Result> EIK_LobbySearch_SetParameter(FEIK_HLobbySearch LobbySearchHandle, const FEIK_Lobby_AttributeData& Parameter, const TEnumAsByte<EEIK_EComparisonOp>& ComparisonOp);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbySearch_SetTargetUserId")
+	TEnumAsByte<EEIK_Result> EIK_LobbySearch_SetTargetUserId(FEIK_HLobbySearch LobbySearchHandle, FEIK_ProductUserId Options);
 };
