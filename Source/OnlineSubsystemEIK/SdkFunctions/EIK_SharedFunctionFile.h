@@ -2055,6 +2055,22 @@ struct FEIK_Lobby_Attribute
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FEIK_HLobbySearch
+{
+	GENERATED_BODY()
+
+	EOS_HLobbySearch* Ref;
+
+	FEIK_HLobbySearch(): Ref(nullptr)
+	{
+	}
+	FEIK_HLobbySearch(EOS_HLobbySearch* InHLobbySearch)
+	{
+		Ref = InHLobbySearch;
+	}
+};
+
 
 USTRUCT(BlueprintType)
 struct FEIK_HLobbyDetails

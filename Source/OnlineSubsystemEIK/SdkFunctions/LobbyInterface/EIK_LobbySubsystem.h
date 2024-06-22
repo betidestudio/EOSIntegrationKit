@@ -146,5 +146,38 @@ public:
 	//EOS_Lobby_CopyLobbyDetailsHandleByUiEventId is used to immediately retrieve a handle to the lobby information from after notification of an join game If the call returns an EOS_Success result, the out parameter, OutLobbyDetailsHandle, must be passed to EOS_LobbyDetails_Release to release the memory associated with it.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_CopyLobbyDetailsHandleByUiEventId")
 	TEnumAsByte<EEIK_Result> EIK_Lobby_CopyLobbyDetailsHandleByUiEventId(const FEIK_UI_EventId& UiEventId, FEIK_HLobbyDetails& OutLobbyDetailsHandle);
+
+
+	/*
+	Create a lobby search handle. This handle may be modified to include various search parameters. Searching is possible in three methods, all mutually exclusive
+
+	set the lobby ID to find a specific lobby
+	set the target user ID to find a specific user
+	set lobby parameters to find an array of lobbies that match the search criteria
+	*/
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_CreateLobbySearch")
+	TEnumAsByte<EEIK_Result> EIK_Lobby_CreateLobbySearch(int32 MaxResults, FEIK_HLobbySearch& OutLobbySearchHandle);
+
+	//Get the Connection string for an EOS lobby. The connection string describes the presence of a player in terms of game state. Xbox platforms expect titles to embed this into their MultiplayerActivity at creation. When present, the SDK will use this value to populate session presence in the social overlay and facilitate platform invitations.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_GetConnectString")
+	TEnumAsByte<EEIK_Result> EIK_Lobby_GetConnectString(FEIK_ProductUserId LocalUserId, FEIK_LobbyId LobbyId, FString& OutConnectString);
+
+	//Get the number of known invites for a given user
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_GetInviteCount")
+	int32 EIK_Lobby_GetInviteCount(FEIK_ProductUserId LocalUserId);
+
+	//Retrieve an invite ID from a list of active invites for a given user
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_GetInviteIdByIndex")
+	TEnumAsByte<EEIK_Result> EIK_Lobby_GetInviteIdByIndex(FEIK_ProductUserId LocalUserId, int32 Index, FString& OutInviteId);
+
+	//Get the name of the RTC room associated with a specific lobby a local user belongs to. This value can be used whenever you need a RoomName value in the RTC_* suite of functions. RTC Room Names must not be used with EOS_RTC_JoinRoom, EOS_RTC_LeaveRoom, or EOS_RTC_AddNotifyDisconnected. Doing so will return EOS_AccessDenied or EOS_INVALID_NOTIFICATIONID if used with those functions. This function will only succeed when called on a lobby the local user is currently a member of.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_GetRTCRoomName")
+	TEnumAsByte<EEIK_Result> EIK_Lobby_GetRTCRoomName(FEIK_ProductUserId LocalUserId, FEIK_LobbyId LobbyId, FString& OutRTCRoomName);
+
+	//@TODO HARD MUTE
+
+	//Get the current connection status of the RTC Room for a lobby. The RTC Room connection status is independent of the lobby connection status, however the lobby system will attempt to keep them consistent, automatically connecting to the RTC room after joining a lobby which has an associated RTC room and disconnecting from the RTC room when a lobby is left or disconnected. This function will only succeed when called on a lobby the local user is currently a member of.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_IsRTCRoomConnected")
+	TEnumAsByte<EEIK_Result> EIK_Lobby_IsRTCRoomConnected(FEIK_ProductUserId LocalUserId, FEIK_LobbyId LobbyId, bool& bOutIsConnected);
 	
 };

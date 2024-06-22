@@ -7,6 +7,7 @@
 #include "OnlineSessionEOS.h"
 #include "OnlineSubsystemEOS.h"
 #include "Async/Async.h"
+#include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyJoinLobbyAccepted(FEIK_Lobby_OnJoinLobbyAcceptedCallback Callback)
 {
@@ -283,6 +284,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CopyLobbyDetailsHandleBy
 			return Result;
 		}
 	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_CopyLobbyDetailsHandleByInviteId: OnlineSubsystemEOS is not valid"));
 	return EEIK_Result::EOS_NotFound;
 }
 
@@ -302,6 +304,130 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CopyLobbyDetailsHandleBy
 			return Result;
 		}
 	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_CopyLobbyDetailsHandleByUiEventId: OnlineSubsystemEOS is not valid"));
+	return EEIK_Result::EOS_NotFound;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CreateLobbySearch(int32 MaxResults,
+	FEIK_HLobbySearch& OutLobbySearchHandle)
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Lobby_CreateLobbySearchOptions Options = {};
+			Options.ApiVersion = EOS_LOBBY_CREATELOBBYSEARCH_API_LATEST;
+			Options.MaxResults = MaxResults;
+			EOS_HLobbySearch Handle = nullptr;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_CreateLobbySearch(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &Handle));
+			OutLobbySearchHandle = &Handle;
+			return Result;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_CreateLobbySearch: OnlineSubsystemEOS is not valid"));
+	return EEIK_Result::EOS_NotFound;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_GetConnectString(FEIK_ProductUserId LocalUserId,
+	FEIK_LobbyId LobbyId, FString& OutConnectString)
+{
+	char Buffer[EOS_LOBBY_GETCONNECTSTRING_BUFFER_SIZE];
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Lobby_GetConnectStringOptions Options = {};
+			Options.ApiVersion = EOS_LOBBY_GETCONNECTSTRING_API_LATEST;
+			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LobbyId = LobbyId.Ref;
+			uint32_t* InOutBufferLength= nullptr;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_GetConnectString(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, Buffer, InOutBufferLength));
+			OutConnectString = Buffer;
+			return Result;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_GetConnectString: OnlineSubsystemEOS is not valid"));
+	return EEIK_Result::EOS_NotFound;
+}
+
+int32 UEIK_LobbySubsystem::EIK_Lobby_GetInviteCount(FEIK_ProductUserId LocalUserId)
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Lobby_GetInviteCountOptions Options = {};
+			Options.ApiVersion = EOS_LOBBY_GETINVITECOUNT_API_LATEST;
+			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			return EOS_Lobby_GetInviteCount(EOSRef->SessionInterfacePtr->LobbyHandle, &Options);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_GetInviteCount: OnlineSubsystemEOS is not valid"));
+	return 0;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_GetInviteIdByIndex(FEIK_ProductUserId LocalUserId, int32 Index,
+	FString& OutInviteId)
+{
+	char Buffer[256];
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Lobby_GetInviteIdByIndexOptions Options = {};
+			Options.ApiVersion = EOS_LOBBY_GETINVITEIDBYINDEX_API_LATEST;
+			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.Index = Index;
+			int32_t* InOutBufferLength = nullptr;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_GetInviteIdByIndex(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, Buffer, InOutBufferLength));
+			OutInviteId = Buffer;
+			return Result;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_GetInviteIdByIndex: OnlineSubsystemEOS is not valid"));
+	return EEIK_Result::EOS_NotFound;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_GetRTCRoomName(FEIK_ProductUserId LocalUserId,
+	FEIK_LobbyId LobbyId, FString& OutRTCRoomName)
+{
+	char Buffer[256];
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Lobby_GetRTCRoomNameOptions Options = {};
+			Options.ApiVersion = EOS_LOBBY_GETRTCROOMNAME_API_LATEST;
+			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LobbyId = LobbyId.Ref;
+			uint32_t* InOutBufferLength = nullptr;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_GetRTCRoomName(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, Buffer, InOutBufferLength));
+			OutRTCRoomName = Buffer;
+			return Result;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_GetRTCRoomName: OnlineSubsystemEOS is not valid"));
+	return EEIK_Result::EOS_NotFound;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_IsRTCRoomConnected(FEIK_ProductUserId LocalUserId,
+	FEIK_LobbyId LobbyId, bool& bOutIsConnected)
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Lobby_IsRTCRoomConnectedOptions Options = {};
+			Options.ApiVersion = EOS_LOBBY_ISRTCROOMCONNECTED_API_LATEST;
+			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LobbyId = LobbyId.Ref;
+			EOS_Bool VarTemp = EOS_FALSE;
+			EOS_EResult Result = EOS_Lobby_IsRTCRoomConnected(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &VarTemp);
+			bOutIsConnected = VarTemp == EOS_TRUE;
+			return static_cast<EEIK_Result>(Result);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_IsRTCRoomConnected: OnlineSubsystemEOS is not valid"));
 	return EEIK_Result::EOS_NotFound;
 }
 
@@ -327,6 +453,7 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyMemberStatusRec
 			});
 		}
 	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_AddNotifyLobbyMemberStatusReceived: OnlineSubsystemEOS is not valid"));
 	return FEIK_NotificationId();
 }
 
@@ -352,6 +479,7 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyMemberUpdateRec
 			});
 		}
 	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_AddNotifyLobbyMemberUpdateReceived: OnlineSubsystemEOS is not valid"));
 	return FEIK_NotificationId();
 }
 
@@ -377,11 +505,11 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyUpdateReceived(
 			});
 		}
 	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_AddNotifyLobbyUpdateReceived: OnlineSubsystemEOS is not valid"));
 	return FEIK_NotificationId();
 }
 
-FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyRTCRoomConnectionChanged(
-	FEIK_Lobby_OnRTCRoomConnectionChangedCallback Callback)
+FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyRTCRoomConnectionChanged(FEIK_Lobby_OnRTCRoomConnectionChangedCallback Callback)
 {
 	OnRTCRoomConnectionChanged = Callback;
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -396,12 +524,14 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyRTCRoomConnectionCha
 				{
 					AsyncTask(ENamedThreads::GameThread, [CallbackObj, Data]()
 					{
-						CallbackObj->OnRTCRoomConnectionChanged.ExecuteIfBound(Data->LobbyId, Data->LocalUserId, Data->bIsConnected, static_cast<EEIK_Result>(Data->DisconnectReason));
+						bool bResult = true;
+						CallbackObj->OnRTCRoomConnectionChanged.ExecuteIfBound(Data->LobbyId, Data->LocalUserId, bResult, static_cast<EEIK_Result>(Data->DisconnectReason));
 					});
 				}
 			});
 		}
 	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_AddNotifyRTCRoomConnectionChanged: OnlineSubsystemEOS is not valid"));
 	return FEIK_NotificationId();
 }
 
@@ -427,5 +557,6 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifySendLobbyNativeInvit
 			});
 		}
 	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_AddNotifySendLobbyNativeInviteRequested: OnlineSubsystemEOS is not valid"));
 	return FEIK_NotificationId();
 }

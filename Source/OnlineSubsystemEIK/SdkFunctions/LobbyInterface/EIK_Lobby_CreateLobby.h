@@ -93,19 +93,25 @@ struct FEIK_Lobby_CreateLobbyOptions
 		Options.BucketId = TCHAR_TO_ANSI(*BucketId);
 		Options.bDisableHostMigration = bDisableHostMigration;
 		Options.bEnableRTCRoom = bEnableRTCRoom;
-		Options.LocalRTCOptions = LocalRTCOptions.EOS_Lobby_LocalRTCOptions_FromStruct();
+		EOS_Lobby_LocalRTCOptions TempValue = LocalRTCOptions.EOS_Lobby_LocalRTCOptions_FromStruct();
+		Options.LocalRTCOptions = &TempValue;
 		Options.LobbyId = LobbyId.EOS_LobbyId_FromStruct();
 		Options.bEnableJoinById = bEnableJoinById;
 		Options.bRejoinAfterKickRequiresInvite = bRejoinAfterKickRequiresInvite;
 		Options.AllowedPlatformIdsCount = AllowedPlatformIds.Num();
+		uint32_t* TempVar = new uint32_t[AllowedPlatformIds.Num()];
 		for (int32 i = 0; i < AllowedPlatformIds.Num(); i++)
 		{
-			Options.AllowedPlatformIds[i] = AllowedPlatformIds[i];
+			TempVar[i] = AllowedPlatformIds[i];
 		}
+		Options.AllowedPlatformIds = TempVar;
 		Options.bCrossplayOptOut = bCrossplayOptOut;
 		return Options;
 	}
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_Lobby_CreateLobbyComplete, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_LobbyId&, LobbyId);
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_Lobby_CreateLobby : public UBlueprintAsyncActionBase
 {
@@ -116,6 +122,12 @@ public:
 	//Creates a lobby and adds the user to the lobby membership. There is no data associated with the lobby at the start and can be added vis EOS_Lobby_UpdateLobbyModification If the lobby is successfully created with an RTC Room enabled, the lobby system will automatically join and maintain the connection to the RTC room as long as the local user remains in the lobby. Applications can use the EOS_Lobby_GetRTCRoomName to get the name of the RTC Room associated with a lobby, which may be used with many of the EOS_RTC_* suite of functions. This can be useful to: register for notifications for talking status; to mute or unmute the local user's audio output; to block or unblock room participants; to set local audio device settings; and more.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_CreateLobby")
 	static UEIK_Lobby_CreateLobby* EIK_Lobby_CreateLobby(FEIK_Lobby_CreateLobbyOptions CreateLobbyOptions);
-private:
+
+	UPROPERTY(BlueprintAssignable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
+	FEIK_Lobby_CreateLobbyComplete OnCallback;
 	
+private:
+	FEIK_Lobby_CreateLobbyOptions Var_CreateLobbyOptions;
+	static void EOS_CALL OnCreateLobbyComplete(const EOS_Lobby_CreateLobbyCallbackInfo* Data);
+	virtual void Activate() override;
 };
