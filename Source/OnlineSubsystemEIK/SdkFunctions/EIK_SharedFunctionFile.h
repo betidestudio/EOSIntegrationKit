@@ -2071,6 +2071,20 @@ struct FEIK_HLobbySearch
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FEIK_HLobbyModification
+{
+	GENERATED_BODY()
+
+	EOS_HLobbyModification* Ref;
+	FEIK_HLobbyModification(): Ref(nullptr)
+	{
+	}
+	FEIK_HLobbyModification(EOS_HLobbyModification* InHLobbyModification)
+	{
+		Ref = InHLobbyModification;
+	}
+};
 
 USTRUCT(BlueprintType)
 struct FEIK_HLobbyDetails

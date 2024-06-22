@@ -431,6 +431,64 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_IsRTCRoomConnected(FEIK_
 	return EEIK_Result::EOS_NotFound;
 }
 
+TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_ParseLobbyIdFromConnectString(FString ConnectString,
+	FEIK_LobbyId& OutLobbyId)
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
+			EOS_Lobby_ParseConnectStringOptions Options = {};
+			Options.ApiVersion = EOS_LOBBY_PARSECONNECTSTRING_API_LATEST;
+			Options.ConnectString = TCHAR_TO_ANSI(*ConnectString);
+			char* OutBuffer = nullptr;
+			uint32_t* InOutBufferLength = nullptr;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_ParseConnectString(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, OutBuffer, InOutBufferLength));
+			OutLobbyId = OutBuffer;
+			return Result;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_ParseLobbyIdFromConnectString: OnlineSubsystemEOS is not valid"));
+	return EEIK_Result::EOS_NotFound;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyAttributeByIndex(
+	FEIK_HLobbyDetails LobbyDetailsHandle, int32 AttrIndex, FEIK_Lobby_Attribute& OutAttribute)
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
+			EOS_LobbyDetails_CopyAttributeByIndexOptions Options = {};
+			Options.ApiVersion = EOS_LOBBYDETAILS_COPYATTRIBUTEBYINDEX_API_LATEST;
+			Options.AttrIndex = AttrIndex;
+			EOS_Lobby_Attribute* Attribute = nullptr;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyAttributeByIndex(*LobbyDetailsHandle.Ref, &Options, &Attribute));
+			OutAttribute = Attribute;
+			return Result;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_LobbyDetails_CopyAttributeByIndex: OnlineSubsystemEOS is not valid"));
+	return EEIK_Result::EOS_NotFound;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyAttributeByKey(FEIK_HLobbyDetails LobbyDetailsHandle,
+	const FString& AttrKey, FEIK_Lobby_Attribute& OutAttribute)
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
+			EOS_LobbyDetails_CopyAttributeByKeyOptions Options = {};
+			Options.ApiVersion = EOS_LOBBYDETAILS_COPYATTRIBUTEBYKEY_API_LATEST;
+			Options.AttrKey = TCHAR_TO_ANSI(*AttrKey);
+			EOS_Lobby_Attribute* Attribute = nullptr;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyAttributeByKey(*LobbyDetailsHandle.Ref, &Options, &Attribute));
+			OutAttribute = Attribute;
+			return Result;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_LobbyDetails_CopyAttributeByKey: OnlineSubsystemEOS is not valid"));
+	return EEIK_Result::EOS_NotFound;
+}
+
 FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyMemberStatusReceived(
 	FEIK_Lobby_OnLobbyMemberStatusReceivedCallback Callback)
 {
