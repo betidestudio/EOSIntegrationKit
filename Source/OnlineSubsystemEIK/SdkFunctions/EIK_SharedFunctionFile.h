@@ -16,6 +16,8 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_presence_types.h"
 #include "eos_lobby_types.h"
 #include "eos_lobby.h"
+#include "eos_playerdatastorage.h"
+#include "eos_playerdatastorage_types.h"
 #include "eos_ui_types.h"
 THIRD_PARTY_INCLUDES_END
 #include "UObject/Object.h"
@@ -2327,6 +2329,73 @@ enum EEIK_EComparisonOp
 	/** This value is a CASE SENSITIVE substring of an attribute stored on the lobby/session */
 	EIK_CO_CONTAINS = 11
 };
+
+
+USTRUCT(BlueprintType)
+struct FEIK_PlayerDataStorage_FileMetadata
+{
+	GENERATED_BODY()
+
+	//The total size of the file in bytes (Includes file header in addition to file contents)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Player Data Storage Interface")
+	int32 FileSizeBytes;
+
+	//The MD5 Hash of the entire file (including additional file header), in hex digits
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Player Data Storage Interface")
+	FString MD5Hash;
+
+	//The file's name
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Player Data Storage Interface")
+	FString Filename;
+
+	//The POSIX timestamp when the file was saved last time or EOS_PLAYERDATASTORAGE_TIME_UNDEFINED if the time is undefined. It will be undefined after a file is written and uploaded at first before a query operation is completed.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Player Data Storage Interface")
+	int64 LastModifiedTime;
+
+	//The size of data (payload) in file in unencrypted (original) form.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Player Data Storage Interface")
+	int32 UnencryptedDataSizeBytes;
+
+	EOS_PlayerDataStorage_FileMetadata Ref;
+
+	FEIK_PlayerDataStorage_FileMetadata(): FileSizeBytes(0), MD5Hash(), Filename(), LastModifiedTime(0),
+	                                       UnencryptedDataSizeBytes(0), Ref()
+	{
+	}
+
+	FEIK_PlayerDataStorage_FileMetadata(EOS_PlayerDataStorage_FileMetadata InFileMetadata)
+	{
+		Ref = InFileMetadata;
+		FileSizeBytes = InFileMetadata.FileSizeBytes;
+		MD5Hash = FString(UTF8_TO_TCHAR(InFileMetadata.MD5Hash));
+		Filename = FString(UTF8_TO_TCHAR(InFileMetadata.Filename));
+		LastModifiedTime = InFileMetadata.LastModifiedTime;
+		UnencryptedDataSizeBytes = InFileMetadata.UnencryptedDataSizeBytes;
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_HPlayerDataStorageFileTransferRequest 
+{
+	GENERATED_BODY()
+
+	EOS_HPlayerDataStorageFileTransferRequest Ref;
+
+	FEIK_HPlayerDataStorageFileTransferRequest(): Ref(nullptr)
+	{
+	}
+	FEIK_HPlayerDataStorageFileTransferRequest(EOS_HPlayerDataStorageFileTransferRequest InHPlayerDataStorageFileTransferRequest)
+	{
+		Ref = InHPlayerDataStorageFileTransferRequest;
+	}
+	
+};
+
+
+
+
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
 {
