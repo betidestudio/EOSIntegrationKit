@@ -2392,7 +2392,180 @@ struct FEIK_HPlayerDataStorageFileTransferRequest
 	
 };
 
+/**
+ * Presence Status states of a user
+ *
+ * @see EOS_Presence_CopyPresence
+ * @see EOS_PresenceModification_SetStatus
+ */
+UENUM(BlueprintType)
+enum EEIK_Presence_EStatus
+{
+	/** The status of the account is offline or not known */
+	EIK_PS_Offline = 0 UMETA(DisplayName = "Offline"),
+	/** The status of the account is online */
+	EIK_PS_Online = 1 UMETA(DisplayName = "Online"),
+	/** The status of the account is away */
+	EIK_PS_Away = 2 UMETA(DisplayName = "Away"),
+	/** The status of the account is away, and has been away for a while */
+	EIK_PS_ExtendedAway = 3 UMETA(DisplayName = "Extended Away"),
+	/** The status of the account is do-not-disturb */
+	EIK_PS_DoNotDisturb = 4 UMETA(DisplayName = "Do Not Disturb"),
+};
 
+
+/**
+ * An individual presence data record that belongs to a EOS_Presence_Info object. This object is released when its parent EOS_Presence_Info object is released.
+ *
+ * @see EOS_Presence_Info
+ */
+USTRUCT(BlueprintType)
+struct FEIK_Presence_DataRecord
+{
+	GENERATED_BODY()
+	
+	/** The name of this data */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FString Key;
+
+	/** The value of this data */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FString Value;
+	
+	EOS_Presence_DataRecord* Ref;
+	FEIK_Presence_DataRecord(): Key(), Value(), Ref(nullptr)
+	{
+	}
+
+	FEIK_Presence_DataRecord(EOS_Presence_DataRecord* InPresenceDataRecord)
+	{
+		Ref = InPresenceDataRecord;
+		Key = UTF8_TO_TCHAR(InPresenceDataRecord->Key);
+		Value = UTF8_TO_TCHAR(InPresenceDataRecord->Value);
+	}
+	FEIK_Presence_DataRecord(EOS_Presence_DataRecord InPresenceDataRecord)
+	{
+		EOS_Presence_DataRecord* InPresenceDataRecordPtr = &InPresenceDataRecord;
+		Ref = InPresenceDataRecordPtr;
+		Key = FString(UTF8_TO_TCHAR(InPresenceDataRecord.Key));
+		Value = FString(UTF8_TO_TCHAR(InPresenceDataRecord.Value));
+	}
+};
+
+/**
+ * All the known presence information for a specific user. This object must be released by calling EOS_Presence_Info_Release.
+ *
+ * @see EOS_Presence_CopyPresence
+ * @see EOS_Presence_Info_Release
+ */
+USTRUCT(BlueprintType)
+struct FEIK_Presence_Info
+{
+	GENERATED_BODY()
+
+	/** The status of the user */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	TEnumAsByte<EEIK_Presence_EStatus> Status;
+
+	/** The Epic Account ID of the user */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FEIK_EpicAccountId UserId;
+
+	/** The product ID that the user is logged in from */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FString ProductId;
+
+	/** The version of the product the user is logged in from */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FString ProductVersion;
+
+	/** The platform of that the user is logged in from */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FString Platform;
+
+	/** The rich-text of the user */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FString RichText;
+
+	/** The count of records available */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	int32 RecordsCount;
+
+	/** The first data record, or NULL if RecordsCount is not at least 1 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FEIK_Presence_DataRecord Record;
+	
+	/** The user-facing name for the product the user is logged in from */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FString ProductName;
+
+	/** The integrated platform that the user is logged in with */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FString IntegratedPlatform;
+
+	EOS_Presence_Info Ref;
+
+	FEIK_Presence_Info(): Status(), UserId(), ProductId(), ProductVersion(), Platform(), RichText(), RecordsCount(0),
+	                      Record(), ProductName(), IntegratedPlatform(), Ref()
+	{
+	}
+
+	FEIK_Presence_Info(EOS_Presence_Info InPresenceInfo)
+	{
+		Ref = InPresenceInfo;
+		Status = static_cast<EEIK_Presence_EStatus>(InPresenceInfo.Status);
+		UserId = InPresenceInfo.UserId;
+		ProductId = FString(UTF8_TO_TCHAR(InPresenceInfo.ProductId));
+		ProductVersion = FString(UTF8_TO_TCHAR(InPresenceInfo.ProductVersion));
+		Platform = FString(UTF8_TO_TCHAR(InPresenceInfo.Platform));
+		RichText = FString(UTF8_TO_TCHAR(InPresenceInfo.RichText));
+		RecordsCount = InPresenceInfo.RecordsCount;
+		if (RecordsCount > 0)
+		{
+			Record = InPresenceInfo.Records[0];
+		}
+		ProductName = FString(UTF8_TO_TCHAR(InPresenceInfo.ProductName));
+		IntegratedPlatform = FString(UTF8_TO_TCHAR(InPresenceInfo.IntegratedPlatform));
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_HPresenceModification
+{
+	GENERATED_BODY()
+
+	EOS_HPresenceModification* Ref;
+
+	FEIK_HPresenceModification(): Ref(nullptr)
+	{
+	}
+	FEIK_HPresenceModification(EOS_HPresenceModification* InHPresenceModification)
+	{
+		Ref = InHPresenceModification;
+	}
+	
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_PresenceModification_DataRecordId
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
+	FString Key;
+
+	EOS_PresenceModification_DataRecordId* Ref;
+
+	FEIK_PresenceModification_DataRecordId(): Key(), Ref()
+	{
+	}
+
+	FEIK_PresenceModification_DataRecordId(EOS_PresenceModification_DataRecordId* InPresenceModificationDataRecordId)
+	{
+		Ref = InPresenceModificationDataRecordId;
+		Key = FString(UTF8_TO_TCHAR(InPresenceModificationDataRecordId->Key));
+	}
+};
 
 
 
