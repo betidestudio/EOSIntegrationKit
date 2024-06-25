@@ -14,6 +14,9 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_friends_types.h"
 #include "eos_sessions_types.h"
 #include "eos_presence_types.h"
+#include "eos_rtc.h"
+#include "eos_rtc_audio.h"
+#include "eos_rtc_types.h"
 #include "eos_lobby_types.h"
 #include "eos_lobby.h"
 #include "eos_playerdatastorage.h"
@@ -2564,6 +2567,35 @@ struct FEIK_PresenceModification_DataRecordId
 	{
 		Ref = InPresenceModificationDataRecordId;
 		Key = FString(UTF8_TO_TCHAR(InPresenceModificationDataRecordId->Key));
+	}
+};
+
+/**
+ * This struct is used to get information about a specific participant metadata item.
+ */
+USTRUCT(BlueprintType)
+struct FEIK_RTC_ParticipantMetadata
+{
+	GENERATED_BODY()
+
+	/** The unique key of this metadata item. The max size of the string is EOS_RTC_PARTICIPANTMETADATA_KEY_MAXCHARCOUNT. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Interface")
+	FString Key;
+
+	/** The value of this metadata item. The max size of the string is EOS_RTC_PARTICIPANTMETADATA_VALUE_MAXCHARCOUNT. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Interface")
+	FString Value;
+
+	EOS_RTC_ParticipantMetadata Ref;
+
+	FEIK_RTC_ParticipantMetadata(): Key(), Value(), Ref()
+	{
+	}
+	FEIK_RTC_ParticipantMetadata(EOS_RTC_ParticipantMetadata InParticipantMetadata)
+	{
+		Ref = InParticipantMetadata;
+		Key = FString(UTF8_TO_TCHAR(InParticipantMetadata.Key));
+		Value = FString(UTF8_TO_TCHAR(InParticipantMetadata.Value));
 	}
 };
 
