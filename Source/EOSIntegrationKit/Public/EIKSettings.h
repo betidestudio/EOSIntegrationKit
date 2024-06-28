@@ -134,21 +134,7 @@ public:
 	/*Your api key found in Game Services -> Player Ticketing -> [Show Api Key]*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Support Tickets")
 	FString ApiKey;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString ClientId;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString ClientSecret;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString ProductId;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString SandboxId;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString DeploymentId;
+	
 	/**
 	 * The directory any PDS/TDS files are cached into. This is per artifact e.g.:
 	 *
@@ -194,47 +180,28 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings")
 	FString VoiceArtifactName = TEXT("VoiceArtifact");
 
-	/** Artifact settings to be used for Android */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidArtifactName = TEXT("AndroidArtifact");
-
 	/** Artifact settings to be used for IOS */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString IOSArtifactName = TEXT("IOSArtifact");
+	FString PlatformSpecificArtifactName = TEXT("DefaultArtifact");
 
 	/** Per artifact SDK settings. A game might have a FooStaging, FooQA, and public Foo artifact */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings")
 	TArray<FEArtifactSettings> Artifacts;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidProductId;
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString ProductId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidClientSecret;
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString ClientSecret;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidDeploymentId;
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString DeploymentId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidSandboxId;
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString SandboxId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidClientId;
-
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSProductId;
-
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSClientSecret;
-
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSDeploymentId;
-
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSSandboxId;
-
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSClientId;	
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString ClientId;
 
 	/** Set to true to have Epic Accounts used (friends list will be unified with the default platform) */
 	UPROPERTY()

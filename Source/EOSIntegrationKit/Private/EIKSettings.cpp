@@ -310,27 +310,15 @@ void UEIKSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 		Super::PostEditChangeProperty(PropertyChangedEvent);
 		return;
 	}
-
 	{
 		FEOSArtifactSettings OutSettings;
-		if(!AndroidArtifactName.IsEmpty() && GetSettingsForArtifact(AndroidArtifactName, OutSettings))
+		if(!PlatformSpecificArtifactName.IsEmpty() && GetSettingsForArtifact(PlatformSpecificArtifactName, OutSettings))
 		{
-			AndroidClientId = OutSettings.ClientId;
-			AndroidClientSecret = OutSettings.ClientSecret;
-			AndroidProductId = OutSettings.ProductId;
-			AndroidSandboxId = OutSettings.SandboxId;
-			AndroidDeploymentId = OutSettings.DeploymentId;
-		}
-	}
-	{
-		FEOSArtifactSettings OutSettings;
-		if(!IOSArtifactName.IsEmpty() && GetSettingsForArtifact(IOSArtifactName, OutSettings))
-		{
-			IOSClientId = OutSettings.ClientId;
-			IOSClientSecret = OutSettings.ClientSecret;
-			IOSProductId = OutSettings.ProductId;
-			IOSSandboxId = OutSettings.SandboxId;
-			IOSDeploymentId = OutSettings.DeploymentId;
+			ClientId = OutSettings.ClientId;
+			ClientSecret = OutSettings.ClientSecret;
+			ProductId = OutSettings.ProductId;
+			SandboxId = OutSettings.SandboxId;
+			DeploymentId = OutSettings.DeploymentId;
 		}
 	}
 	
@@ -417,10 +405,6 @@ if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 		{
 			if (!Artifact.ClientId.IsEmpty())
 			{
-				if(Artifact.ArtifactName == AndroidArtifactName || Artifact.ArtifactName == IOSArtifactName)
-				{
-					
-				}
 				if (!Artifact.ClientId.StartsWith(TEXT("xyz")))
 				{
 					FMessageDialog::Open(EAppMsgType::Ok,

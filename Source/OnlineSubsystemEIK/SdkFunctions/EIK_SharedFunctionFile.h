@@ -56,8 +56,7 @@ struct FEIK_ProductUserId
 		{
 			return ProductUserIdBasic;
 		}
-		const char* ProductIdAnsi = TCHAR_TO_ANSI(*ProductUserId);
-		EOS_ProductUserId ProductUserIdSec = EOS_ProductUserId_FromString(ProductIdAnsi);
+		EOS_ProductUserId ProductUserIdSec = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*ProductUserId));
 		return ProductUserIdSec;
 	}
 };
@@ -91,8 +90,7 @@ struct FEIK_EpicAccountId
 		{
 			return Ref;
 		}
-		const char* EpicAccountIdAnsi = TCHAR_TO_ANSI(*EpicAccountId);
-		EOS_EpicAccountId EpicAccountIdSec = EOS_EpicAccountId_FromString(EpicAccountIdAnsi);
+		EOS_EpicAccountId EpicAccountIdSec = EOS_EpicAccountId_FromString(TCHAR_TO_ANSI(*EpicAccountId));
 		return EpicAccountIdSec;
 	}
 	
