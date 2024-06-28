@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <Eigen/Eigen/Cholesky>
 
 #include "CoreMinimal.h"
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
