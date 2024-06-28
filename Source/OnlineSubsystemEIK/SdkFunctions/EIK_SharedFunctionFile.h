@@ -2597,6 +2597,14 @@ struct FEIK_RTC_ParticipantMetadata
 	}
 };
 
+UENUM(BlueprintType)
+enum EEIK_ERTCParticipantStatus
+{
+	//Participant joined the room
+	EIK_RTCPS_Joined = 0 UMETA(DisplayName = "Joined"),
+	//Participant left the room
+	EIK_RTCPS_Left = 1 UMETA(DisplayName = "Left"),
+};
 
 
 UCLASS()
