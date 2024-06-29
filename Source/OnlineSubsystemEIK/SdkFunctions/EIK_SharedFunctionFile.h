@@ -15,6 +15,8 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_sessions_types.h"
 #include "eos_presence_types.h"
 #include "eos_rtc.h"
+#include "eos_stats.h"
+#include "eos_stats_types.h"
 #include "eos_rtc_audio.h"
 #include "eos_rtc_types.h"
 #include "eos_lobby_types.h"
@@ -2982,6 +2984,49 @@ struct FEIK_HSessionSearch
 	{
 		Ref = InHSessionSearch;
 	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Stats_Stat
+{
+	GENERATED_BODY()
+
+	//Name of the stat.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Stats Interface")
+	FString Name;
+
+	//If not EOS_STATS_TIME_UNDEFINED then this is the POSIX timestamp for start time.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Stats Interface")
+	int64 StartTime;
+
+	//If not EOS_STATS_TIME_UNDEFINED then this is the POSIX timestamp for end time.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Stats Interface")
+	int64 EndTime;
+
+	//Current value for the stat.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Stats Interface")
+	int32 Value;
+
+	FEIK_Stats_Stat(): Name(), StartTime(0), EndTime(0), Value(0)
+	{
+	}
+
+	FEIK_Stats_Stat(EOS_Stats_Stat InStat)
+	{
+		Name = FString(UTF8_TO_TCHAR(InStat.Name));
+		StartTime = InStat.StartTime;
+		EndTime = InStat.EndTime;
+		Value = InStat.Value;
+	}
+};
+
+UENUM(BlueprintType)
+enum EEIK_UI_ENotificationLocation
+{
+	EIK_UNL_TopLeft,
+	EIK_UNL_TopRight,
+	EIK_UNL_BottomLeft,
+	EIK_UNL_BottomRight
 };
 
 UCLASS()
