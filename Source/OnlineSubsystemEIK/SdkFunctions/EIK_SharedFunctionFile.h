@@ -20,6 +20,8 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_lobby_types.h"
 #include "eos_lobby.h"
 #include "eos_playerdatastorage.h"
+#include "eos_sanctions.h"
+#include "eos_sanctions_types.h"
 #include "eos_playerdatastorage_types.h"
 #include "eos_ui_types.h"
 THIRD_PARTY_INCLUDES_END
@@ -2606,6 +2608,54 @@ enum EEIK_ERTCParticipantStatus
 	EIK_RTCPS_Left = 1 UMETA(DisplayName = "Left"),
 };
 
+USTRUCT(BlueprintType)
+struct FEIK_Sanctions_PlayerSanction
+{
+	GENERATED_BODY()
+
+	//The POSIX timestamp when the sanction was placed
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sanctions Interface")
+	int64 TimePlaced;
+
+	//The POSIX timestamp when the sanction will expire. If the sanction is permanent, this will be 0.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sanctions Interface")
+	int64 TimeExpires;
+
+	//The action associated with this sanction
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sanctions Interface")
+	FString Action;
+
+	//A unique identifier for this specific sanction
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sanctions Interface")
+	FString ReferenceId;
+
+	FEIK_Sanctions_PlayerSanction(): TimePlaced(0), TimeExpires(0), Action(), ReferenceId()
+	{
+	}
+	FEIK_Sanctions_PlayerSanction(EOS_Sanctions_PlayerSanction InPlayerSanction)
+	{
+		TimePlaced = InPlayerSanction.TimePlaced;
+		TimeExpires = InPlayerSanction.TimeExpires;
+		Action = FString(UTF8_TO_TCHAR(InPlayerSanction.Action));
+		ReferenceId = FString(UTF8_TO_TCHAR(InPlayerSanction.ReferenceId));
+	}
+};
+
+
+UENUM(BlueprintType)
+enum EEIK_ESanctionAppealReason
+{
+	//Not used
+	EIK_SAR_Invalid = 0 UMETA(DisplayName = "Invalid"),
+	//Incorrectly placed sanction
+	EIK_SAR_IncorrectSanction = 1 UMETA(DisplayName = "Incorrect Sanction"),
+	//The account was compromised, typically this means stolen
+	EIK_SAR_CompromisedAccount = 2 UMETA(DisplayName = "Compromised Account"),
+	//The punishment is considered too severe by the user
+	EIK_SAR_UnfairPunishment = 3 UMETA(DisplayName = "Unfair Punishment"),
+	//The user admits to rulebreaking, but still appeals for forgiveness
+	EIK_SAR_AppealForForgiveness = 4 UMETA(DisplayName = "Appeal For Forgiveness"),
+};
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
