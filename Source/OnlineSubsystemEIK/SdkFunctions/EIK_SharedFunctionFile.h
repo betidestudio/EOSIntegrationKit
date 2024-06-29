@@ -2657,6 +2657,333 @@ enum EEIK_ESanctionAppealReason
 	EIK_SAR_AppealForForgiveness = 4 UMETA(DisplayName = "Appeal For Forgiveness"),
 };
 
+/** All possible states of an existing named session */
+UENUM(BlueprintType)
+enum EEIK_EOnlineSessionState
+{
+	/** An online session has not been created yet */
+	EIK_OSS_NoSession = 0,
+	/** An online session is in the process of being created */
+	EIK_OSS_Creating = 1,
+	/** Session has been created but the session hasn't started (pre match lobby) */
+	EIK_OSS_Pending = 2,
+	/** Session has been asked to start (may take time due to communication with backend) */
+	EIK_OSS_Starting = 3,
+	/** The current session has started. Sessions with join in progress disabled are no longer joinable */
+	EIK_OSS_InProgress = 4,
+	/** The session is still valid, but the session is no longer being played (post match lobby) */
+	EIK_OSS_Ending = 5,
+	/** The session is closed and any stats committed */
+	EIK_OSS_Ended = 6,
+	/** The session is being destroyed */
+	EIK_OSS_Destroying = 7
+};
+
+UENUM(BlueprintType)
+enum EEIK_EOnlineSessionPermissionLevel
+{
+	/** Anyone can find this session as long as it isn't full */
+	EIK_OSPF_PublicAdvertised = 0 UMETA(DisplayName = "Public Advertised"),
+	/** Players who have access to presence can see this session */
+	EIK_OSPF_JoinViaPresence = 1 UMETA(DisplayName = "Join Via Presence"),
+	/** Only players with invites registered can see this session */
+	EIK_OSPF_InviteOnly = 2 UMETA(DisplayName = "Invite Only"),
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_SessionDetails_Settings
+{
+	GENERATED_BODY()
+
+	/** The main indexed parameter for this session, can be any string (i.e. "Region:GameMode") */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FString BucketId;
+
+	/** Number of total players allowed in the session */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	int32 NumPublicConnections;
+
+	/** Are players allowed to join the session while it is in the "in progress" state */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	bool bAllowJoinInProgress;
+
+	/** Permission level describing allowed access to the session when joining or searching for the session */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	TEnumAsByte<EEIK_EOnlineSessionPermissionLevel> PermissionLevel;
+
+	/** Are players allowed to send invites for the session */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	bool bAllowInvites;
+
+	/** Are sanctioned players allowed to join - sanctioned players will be rejected if set to true */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	bool bSanctionsEnabled;
+
+	/** 
+	 * Array of platform IDs indicating the player platforms allowed to register with the session. Platform IDs are
+	 * found in the EOS header file, e.g. EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform specific
+	 * header file. If null, the session will be unrestricted.
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	TArray<int32> AllowedPlatformIds;
+
+	FEIK_SessionDetails_Settings()
+	{
+		BucketId = "";
+		NumPublicConnections = 0;
+		bAllowJoinInProgress = false;
+		PermissionLevel = EEIK_EOnlineSessionPermissionLevel::EIK_OSPF_PublicAdvertised;
+		bAllowInvites = false;
+		bSanctionsEnabled = false;
+		AllowedPlatformIds.Empty();
+	}
+	FEIK_SessionDetails_Settings(EOS_SessionDetails_Settings InSessionDetailsSettings)
+	{
+		BucketId = FString(UTF8_TO_TCHAR(InSessionDetailsSettings.BucketId));
+		NumPublicConnections = InSessionDetailsSettings.NumPublicConnections;
+		bAllowJoinInProgress = InSessionDetailsSettings.bAllowJoinInProgress == EOS_TRUE;
+		PermissionLevel = static_cast<EEIK_EOnlineSessionPermissionLevel>(InSessionDetailsSettings.PermissionLevel);
+		bAllowInvites = InSessionDetailsSettings.bInvitesAllowed == EOS_TRUE;
+		bSanctionsEnabled = InSessionDetailsSettings.bSanctionsEnabled == EOS_TRUE;
+		for (int32 i = 0; i < static_cast<int32>(InSessionDetailsSettings.AllowedPlatformIdsCount); i++)
+		{
+			AllowedPlatformIds.Add(InSessionDetailsSettings.AllowedPlatformIds[i]);
+		}
+	}
+	
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_SessionDetails_Info
+{
+	GENERATED_BODY()
+
+	/** Session ID assigned by the backend service */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FString SessionId;
+
+	/** IP address of this session as visible by the backend service */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FString HostAddress;
+
+	/** Number of remaining open spaces on the session (NumPublicConnections - RegisteredPlayers */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	int32 NumOpenPublicConnections;
+
+	/** Reference to the additional settings associated with this session */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FEIK_SessionDetails_Settings Settings;
+
+	/** The Product User ID of the session owner. Null if the session is not owned by a user. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FEIK_ProductUserId OwnerUserId;
+
+	/** The client id of the session owner. Null if the session is not owned by a server. The session is owned by a server if EOS_Platform_Options::bIsServer is EOS_TRUE. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FString OwnerServerClientId;
+
+	FEIK_SessionDetails_Info()
+	{
+		SessionId = "";
+		HostAddress = "";
+		NumOpenPublicConnections = 0;
+		Settings = FEIK_SessionDetails_Settings();
+		OwnerUserId = FEIK_ProductUserId();
+		OwnerServerClientId = "";
+	}
+	FEIK_SessionDetails_Info(EOS_SessionDetails_Info InSessionDetailsInfo)
+	{
+		SessionId = FString(UTF8_TO_TCHAR(InSessionDetailsInfo.SessionId));
+		HostAddress = FString(UTF8_TO_TCHAR(InSessionDetailsInfo.HostAddress));
+		NumOpenPublicConnections = InSessionDetailsInfo.NumOpenPublicConnections;
+		Settings = *InSessionDetailsInfo.Settings;
+		OwnerUserId = InSessionDetailsInfo.OwnerUserId;
+		OwnerServerClientId = UTF8_TO_TCHAR(InSessionDetailsInfo.OwnerServerClientId);
+	}
+	
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_ActiveSession_Info
+{
+	GENERATED_BODY()
+	
+	/** Name of the session */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FString SessionName;
+
+	/** The Product User ID of the local user who created or joined the session */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FEIK_ProductUserId LocalUserId;
+
+	/** Current state of the session */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	TEnumAsByte<EEIK_EOnlineSessionState> State;
+
+	/** Session details */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FEIK_SessionDetails_Info SessionDetails;
+
+	FEIK_ActiveSession_Info()
+	{
+		SessionName = "";
+		LocalUserId = FEIK_ProductUserId();
+		State = EEIK_EOnlineSessionState::EIK_OSS_NoSession;
+		SessionDetails = FEIK_SessionDetails_Info();
+	}
+	FEIK_ActiveSession_Info(EOS_ActiveSession_Info InActiveSessionInfo)
+	{
+		SessionName = FString(UTF8_TO_TCHAR(InActiveSessionInfo.SessionName));
+		LocalUserId = InActiveSessionInfo.LocalUserId;
+		State = static_cast<EEIK_EOnlineSessionState>(InActiveSessionInfo.State);
+		SessionDetails = *InActiveSessionInfo.SessionDetails;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_HActiveSession
+{
+	GENERATED_BODY()
+
+	EOS_HActiveSession* Ref;
+
+	FEIK_HActiveSession(): Ref(nullptr)
+	{
+	}
+	FEIK_HActiveSession(EOS_HActiveSession* InHActiveSession)
+	{
+		Ref = InHActiveSession;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_HSessionDetails
+{
+	GENERATED_BODY()
+
+	EOS_HSessionDetails* Ref;
+
+	FEIK_HSessionDetails(): Ref(nullptr)
+	{
+	}
+	FEIK_HSessionDetails(EOS_HSessionDetails* InHSessionDetails)
+	{
+		Ref = InHSessionDetails;
+	}
+};
+
+UENUM(BlueprintType)
+enum EIK_ESessionAttributeAdvertisementType
+{
+	/** Don't advertise via the online service */
+	EIK_SAAT_DontAdvertise = 0,
+	/** Advertise via the online service only */
+	EIK_SAAT_Advertise = 1
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_Sessions_AttributeData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FString Key;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	int64 ValueAsInt64;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FString ValueAsString;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	bool bValueAsBool;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	double ValueAsDouble;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	TEnumAsByte<EEIK_EAttributeType> ValueType;
+
+	FEIK_Sessions_AttributeData(): Key(), ValueAsInt64(0), ValueAsString(), bValueAsBool(false), ValueAsDouble(0.0), ValueType()
+	{
+	}
+	FEIK_Sessions_AttributeData(EOS_Sessions_AttributeData InAttributeData)
+	{
+		Key = FString(UTF8_TO_TCHAR(InAttributeData.Key));
+		ValueAsInt64 = InAttributeData.Value.AsInt64;
+		ValueAsString = FString(UTF8_TO_TCHAR(InAttributeData.Value.AsUtf8));
+		bValueAsBool = InAttributeData.Value.AsBool == EOS_TRUE;
+		ValueAsDouble = InAttributeData.Value.AsDouble;
+		ValueType = static_cast<EEIK_EAttributeType>(InAttributeData.ValueType);
+	}
+	EOS_Sessions_AttributeData GetAsEosData()
+	{
+		EOS_Sessions_AttributeData AttributeData;
+		AttributeData.ApiVersion = EOS_SESSIONS_ATTRIBUTEDATA_API_LATEST;
+		AttributeData.Key = TCHAR_TO_UTF8(*Key);
+		AttributeData.Value.AsInt64 = ValueAsInt64;
+		AttributeData.Value.AsUtf8 = TCHAR_TO_UTF8(*ValueAsString);
+		AttributeData.Value.AsBool = bValueAsBool ? EOS_TRUE : EOS_FALSE;
+		AttributeData.Value.AsDouble = ValueAsDouble;
+		AttributeData.ValueType = static_cast<EOS_EAttributeType>(ValueType.GetValue());
+		return AttributeData;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_SessionDetails_Attribute
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	FEIK_Sessions_AttributeData Data;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
+	TEnumAsByte<EIK_ESessionAttributeAdvertisementType> ValueType;
+
+	FEIK_SessionDetails_Attribute(): Data(), ValueType()
+	{
+	}
+	FEIK_SessionDetails_Attribute(EOS_SessionDetails_Attribute InSessionDetailsAttribute)
+	{
+		Data = *InSessionDetailsAttribute.Data;
+		ValueType = static_cast<EIK_ESessionAttributeAdvertisementType>(InSessionDetailsAttribute.AdvertisementType);
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_HSessionModification
+{
+	GENERATED_BODY()
+
+	EOS_SessionModificationHandle* Ref;
+
+	FEIK_HSessionModification(): Ref(nullptr)
+	{
+	}
+	FEIK_HSessionModification(EOS_SessionModificationHandle* InHSessionModification)
+	{
+		Ref = InHSessionModification;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_HSessionSearch
+{
+	GENERATED_BODY()
+
+	EOS_HSessionSearch* Ref;
+
+	FEIK_HSessionSearch(): Ref(nullptr)
+	{
+	}
+	FEIK_HSessionSearch(EOS_HSessionSearch* InHSessionSearch)
+	{
+		Ref = InHSessionSearch;
+	}
+};
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
 {
