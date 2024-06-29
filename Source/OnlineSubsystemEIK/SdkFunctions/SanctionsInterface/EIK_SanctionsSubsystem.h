@@ -15,7 +15,7 @@ THIRD_PARTY_INCLUDES_END
 /**
  * 
  */
-UCLASS()
+UCLASS(DisplayName="Sanctions Interface", meta=(DisplayName="Sanctions Interface"))
 class ONLINESUBSYSTEMEIK_API UEIK_SanctionsSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
