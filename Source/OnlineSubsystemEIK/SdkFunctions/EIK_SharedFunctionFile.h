@@ -14,6 +14,8 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_friends_types.h"
 #include "eos_sessions_types.h"
 #include "eos_presence_types.h"
+#include "eos_p2p.h"
+#include "eos_p2p_types.h"
 #include "eos_rtc.h"
 #include "eos_stats.h"
 #include "eos_stats_types.h"
@@ -3178,6 +3180,159 @@ struct FEIK_UserInfo
 		}
 	}
 };
+
+USTRUCT(BlueprintType)
+struct FEIK_P2P_SocketId
+{
+	GENERATED_BODY()
+
+	/** A name for the connection. Must be a NULL-terminated string of between 1-32 alpha-numeric characters (A-Z, a-z, 0-9, '-', '_', ' ', '+', '=', '.') */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | P2P Interface")
+	FString SocketName;
+
+	FEIK_P2P_SocketId(): SocketName()
+	{
+	}
+	FEIK_P2P_SocketId(EOS_P2P_SocketId InSocketId)
+	{
+		SocketName = FString(UTF8_TO_TCHAR(InSocketId.SocketName));
+	}
+	EOS_P2P_SocketId GetAsEosData()
+	{
+		EOS_P2P_SocketId SocketId;
+		SocketId.ApiVersion = EOS_P2P_SOCKETID_API_LATEST;
+		FCStringAnsi::Strncpy(SocketId.SocketName, TCHAR_TO_UTF8(*SocketName), SocketName.Len() + 1);
+		return SocketId;
+	}
+};
+
+
+UENUM(BlueprintType)
+enum EEIK_EConnectionClosedReason
+{
+	/** The connection was closed for unknown reasons. This most notably happens during application shutdown. */
+	EIK_CCR_Unknown = 0,
+	/** The connection was at least locally accepted, but was closed by the local user via a call to EOS_P2P_CloseConnection / EOS_P2P_CloseConnections. */
+	EIK_CCR_ClosedByLocalUser = 1,
+	/** The connection was at least locally accepted, but was gracefully closed by the remote user via a call to EOS_P2P_CloseConnection / EOS_P2P_CloseConnections. */
+	EIK_CCR_ClosedByPeer = 2,
+	/** The connection was at least locally accepted, but was not remotely accepted in time. */
+	EIK_CCR_TimedOut = 3,
+	/** The connection was accepted, but the connection could not be created due to too many other existing connections */
+	EIK_CCR_TooManyConnections = 4,
+	/** The connection was accepted, The remote user sent an invalid message */
+	EIK_CCR_InvalidMessage = 5,
+	/** The connection was accepted, but the remote user sent us invalid data */
+	EIK_CCR_InvalidData = 6,
+	/** The connection was accepted, but we failed to ever establish a connection with the remote user due to connectivity issues. */
+	EIK_CCR_ConnectionFailed = 7,
+	/** The connection was accepted and established, but the peer silently went away. */
+	EIK_CCR_ConnectionClosed = 8,
+	/** The connection was locally accepted, but we failed to negotiate a connection with the remote user. This most commonly occurs if the local user goes offline or is logged-out during the connection process. */
+	EIK_CCR_NegotiationFailed = 9,
+	/** The connection was accepted, but there was an internal error occurred and the connection cannot be created or continue. */
+	EIK_CCR_UnexpectedError = 10
+};
+
+UENUM(BlueprintType)
+enum EEIK_EConnectionEstablishedType
+{
+	/** The connection is brand new */
+	EIK_CET_NewConnection = 0,
+	/** The connection is reestablished (reconnection) */
+	EIK_CET_Reconnection = 1
+};
+
+UENUM(BlueprintType)
+enum EEIK_ENetworkConnectionType
+{
+	/** There is no established connection */
+	EIK_NCT_NoConnection = 0,
+	/** A direct connection to the peer over the Internet or Local Network */
+	EIK_NCT_DirectConnection = 1,
+	/** A relayed connection using Epic-provided servers to the peer over the Internet */
+	EIK_NCT_RelayedConnection = 2
+};
+
+UENUM(BlueprintType)
+enum EEIK_ENATType
+{
+	/** NAT type either unknown (remote) or we are unable to determine it (local) */
+	EIK_NAT_Unknown = 0,
+	/** All peers can directly-connect to you */
+	EIK_NAT_Open = 1,
+	/** You can directly-connect to other Moderate and Open peers */
+	EIK_NAT_Moderate = 2,
+	/** You can only directly-connect to Open peers */
+	EIK_NAT_Strict = 3
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_P2P_PacketQueueInfo
+{
+	GENERATED_BODY()
+
+	//The maximum size in bytes of the incoming packet queue
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | P2P Interface")
+	int64 IncomingPacketQueueMaxSizeBytes;
+
+	//The current size in bytes of the incoming packet queue
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | P2P Interface")
+	int64 IncomingPacketQueueCurrentSizeBytes;
+
+	//The current number of queued packets in the incoming packet queue
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | P2P Interface")
+	int64 IncomingPacketQueueCurrentPacketCount;
+
+	//The maximum size in bytes of the outgoing packet queue
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | P2P Interface")
+	int64 OutgoingPacketQueueMaxSizeBytes;
+
+	//The current size in bytes of the outgoing packet queue
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | P2P Interface")
+	int64 OutgoingPacketQueueCurrentSizeBytes;
+
+	//The current amount of queued packets in the outgoing packet queue
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | P2P Interface")
+	int64 OutgoingPacketQueueCurrentPacketCount;
+
+	FEIK_P2P_PacketQueueInfo(): IncomingPacketQueueMaxSizeBytes(0), IncomingPacketQueueCurrentSizeBytes(0), IncomingPacketQueueCurrentPacketCount(0),
+	                           OutgoingPacketQueueMaxSizeBytes(0), OutgoingPacketQueueCurrentSizeBytes(0), OutgoingPacketQueueCurrentPacketCount(0)
+	{
+	}
+	FEIK_P2P_PacketQueueInfo(EOS_P2P_PacketQueueInfo InPacketQueueInfo)
+	{
+		IncomingPacketQueueMaxSizeBytes = InPacketQueueInfo.IncomingPacketQueueMaxSizeBytes;
+		IncomingPacketQueueCurrentSizeBytes = InPacketQueueInfo.IncomingPacketQueueCurrentSizeBytes;
+		IncomingPacketQueueCurrentPacketCount = InPacketQueueInfo.IncomingPacketQueueCurrentPacketCount;
+		OutgoingPacketQueueMaxSizeBytes = InPacketQueueInfo.OutgoingPacketQueueMaxSizeBytes;
+		OutgoingPacketQueueCurrentSizeBytes = InPacketQueueInfo.OutgoingPacketQueueCurrentSizeBytes;
+		OutgoingPacketQueueCurrentPacketCount = InPacketQueueInfo.OutgoingPacketQueueCurrentPacketCount;
+	}
+};
+
+UENUM(BlueprintType)
+enum EEIK_ERelayControl
+{
+	/** Peer connections will never attempt to use relay servers. Clients with restrictive NATs may not be able to connect to peers. */
+	EIK_RC_NoRelays = 0,
+	/** Peer connections will attempt to use relay servers, but only after direct connection attempts fail. This is the default value if not changed. */
+	EIK_RC_AllowRelays = 1,
+	/** Peer connections will only ever use relay servers. This will add latency to all connections, but will hide IP Addresses from peers. */
+	EIK_RC_ForceRelays = 2
+};
+
+UENUM(BlueprintType)
+enum EEIK_EPacketReliability
+{
+	/** Packets will only be sent once and may be received out of order */
+	EIK_PR_UnreliableUnordered = 0,
+	/** Packets may be sent multiple times and may be received out of order */
+	EIK_PR_ReliableUnordered = 1,
+	/** Packets may be sent multiple times and will be received in order */
+	EIK_PR_ReliableOrdered = 2
+};
+
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
