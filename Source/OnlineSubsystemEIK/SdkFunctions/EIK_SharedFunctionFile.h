@@ -26,6 +26,8 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_sanctions_types.h"
 #include "eos_playerdatastorage_types.h"
 #include "eos_ui_types.h"
+#include "eos_userinfo.h"
+#include "eos_userinfo_types.h"
 THIRD_PARTY_INCLUDES_END
 #include "UObject/Object.h"
 #include "EIK_SharedFunctionFile.generated.h"
@@ -3027,6 +3029,154 @@ enum EEIK_UI_ENotificationLocation
 	EIK_UNL_TopRight,
 	EIK_UNL_BottomLeft,
 	EIK_UNL_BottomRight
+};
+
+
+USTRUCT(BlueprintType)
+struct FEIK_UserInfo_BestDisplayName
+{
+	GENERATED_BODY()
+
+	//The Epic Account ID of the user
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FEIK_EpicAccountId UserId;
+
+	//The display name (un-sanitized). This may be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString DisplayName;
+
+	//The raw display name (sanitized). This may be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString DisplayNameSanitized;
+
+	//A nickname/alias for the target user assigned by the local user. This may be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString Nickname;
+
+	//The platform type for the user which corresponds to the display name
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	int32 PlatformType;
+
+	FEIK_UserInfo_BestDisplayName(): UserId(), DisplayName(), DisplayNameSanitized(), Nickname(), PlatformType(0)
+	{
+	}
+	FEIK_UserInfo_BestDisplayName(EOS_UserInfo_BestDisplayName InBestDisplayName)
+	{
+		UserId = InBestDisplayName.UserId;
+		if(InBestDisplayName.DisplayName != nullptr)
+		{
+			DisplayName = FString(UTF8_TO_TCHAR(InBestDisplayName.DisplayName));
+		}
+		if(InBestDisplayName.DisplayNameSanitized != nullptr)
+		{
+			DisplayNameSanitized = FString(UTF8_TO_TCHAR(InBestDisplayName.DisplayNameSanitized));
+		}
+		if(InBestDisplayName.Nickname != nullptr)
+		{
+			Nickname = FString(UTF8_TO_TCHAR(InBestDisplayName.Nickname));
+		}
+		PlatformType = InBestDisplayName.PlatformType;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_UserInfo_ExternalUserInfo
+{
+	GENERATED_BODY()
+	
+	//The type of the external account
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	TEnumAsByte<EEIK_EExternalAccountType> AccountType;
+
+	//The ID of the external account. Can be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString AccountId;
+
+	//The display name of the external account (un-sanitized). Can be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString DisplayName;
+
+	//The display name of the external account (sanitized). Can be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString DisplayNameSanitized;
+
+	FEIK_UserInfo_ExternalUserInfo(): AccountType(), AccountId(), DisplayName(), DisplayNameSanitized()
+	{
+	}
+	FEIK_UserInfo_ExternalUserInfo(EOS_UserInfo_ExternalUserInfo InExternalUserInfo)
+	{
+		AccountType = static_cast<EEIK_EExternalAccountType>(InExternalUserInfo.AccountType);
+		if(InExternalUserInfo.AccountId != nullptr)
+		{
+			AccountId = FString(UTF8_TO_TCHAR(InExternalUserInfo.AccountId));
+		}
+		if(InExternalUserInfo.DisplayName != nullptr)
+		{
+			DisplayName = FString(UTF8_TO_TCHAR(InExternalUserInfo.DisplayName));
+		}
+		if(InExternalUserInfo.DisplayNameSanitized != nullptr)
+		{
+			DisplayNameSanitized = FString(UTF8_TO_TCHAR(InExternalUserInfo.DisplayNameSanitized));
+		}
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_UserInfo
+{
+	GENERATED_BODY()
+
+	//The Epic Account ID of the user
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FEIK_EpicAccountId UserId;
+
+	//The name of the owner's country. This may be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString Country;
+
+	//The display name (un-sanitized). This may be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString DisplayName;
+
+	//The ISO 639 language code for the user's preferred language. This may be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString PreferredLanguage;
+
+	//A nickname/alias for the target user assigned by the local user. This may be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString Nickname;
+
+	//The raw display name (sanitized). This may be null
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | User Info Interface")
+	FString DisplayNameSanitized;
+
+	FEIK_UserInfo(): UserId(), Country(), DisplayName(), PreferredLanguage(), Nickname(), DisplayNameSanitized()
+	{
+	}
+	FEIK_UserInfo(EOS_UserInfo InUserInfo)
+	{
+		UserId = InUserInfo.UserId;
+		if(InUserInfo.Country != nullptr)
+		{
+			Country = FString(UTF8_TO_TCHAR(InUserInfo.Country));
+		}
+		if(InUserInfo.DisplayName != nullptr)
+		{
+			DisplayName = FString(UTF8_TO_TCHAR(InUserInfo.DisplayName));
+		}
+		if(InUserInfo.PreferredLanguage != nullptr)
+		{
+			PreferredLanguage = FString(UTF8_TO_TCHAR(InUserInfo.PreferredLanguage));
+		}
+		if(InUserInfo.Nickname != nullptr)
+		{
+			Nickname = FString(UTF8_TO_TCHAR(InUserInfo.Nickname));
+		}
+		if(InUserInfo.DisplayNameSanitized != nullptr)
+		{
+			DisplayNameSanitized = FString(UTF8_TO_TCHAR(InUserInfo.DisplayNameSanitized));
+		}
+	}
 };
 
 UCLASS()
