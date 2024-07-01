@@ -473,7 +473,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * @see EOS_ECT_STEAM_SESSION_TICKET
 	 */
-	EIK_ECT_STEAM_APP_TICKET = 1,
+	EIK_ECT_STEAM_APP_TICKET = 1 UMETA(DisplayName = "Steam"),
 	/**
 	 * PlayStation(TM)Network ID Token
 	 *
@@ -481,7 +481,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
 	 */
-	EIK_ECT_PSN_ID_TOKEN = 2,
+	EIK_ECT_PSN_ID_TOKEN = 2 UMETA(DisplayName = "PlayStation Network"),
 	/**
 	 * Xbox Live XSTS Token
 	 *
@@ -489,7 +489,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
 	 */
-	EIK_ECT_XBL_XSTS_TOKEN = 3,
+	EIK_ECT_XBL_XSTS_TOKEN = 3 UMETA(DisplayName = "Xbox Live"),
 	/**
 	 * Discord Access Token
 	 *
@@ -497,7 +497,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_DISCORD_ACCESS_TOKEN = 4,
+	EIK_ECT_DISCORD_ACCESS_TOKEN = 4 UMETA(DisplayName = "Discord"),
 	/**
 	 * GOG Galaxy Encrypted App Ticket
 	 *
@@ -510,7 +510,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_GOG_SESSION_TICKET = 5,
+	EIK_ECT_GOG_SESSION_TICKET = 5 UMETA(DisplayName = "GOG Galaxy"),
 	/**
 	 * Nintendo Account ID Token
 	 *
@@ -519,7 +519,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
 	 */
-	EIK_ECT_NINTENDO_ID_TOKEN = 6,
+	EIK_ECT_NINTENDO_ID_TOKEN = 6 UMETA(DisplayName = "Nintendo"),
 	/**
 	 * Nintendo Service Account ID Token (NSA ID)
 	 *
@@ -540,17 +540,17 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Auth_Login, EOS_Connect_Login.
 	 */
-	EIK_ECT_NINTENDO_NSA_ID_TOKEN = 7,
+	EIK_ECT_NINTENDO_NSA_ID_TOKEN = 7 UMETA(DisplayName = "Nintendo Service"),
 	/**
 	 * Uplay Access Token
 	 */
-	EIK_ECT_UPLAY_ACCESS_TOKEN = 8,
+	EIK_ECT_UPLAY_ACCESS_TOKEN = 8 UMETA(DisplayName = "Uplay"),
 	/**
 	 * OpenID Provider Access Token
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_OPENID_ACCESS_TOKEN = 9,
+	EIK_ECT_OPENID_ACCESS_TOKEN = 9 UMETA(DisplayName = "OpenID Provider"),
 	/**
 	 * Device ID access token that identifies the current locally logged in user profile on the local device.
 	 * The local user profile here refers to the operating system user login, for example the user's Windows Account
@@ -567,7 +567,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * @see EOS_Connect_CreateDeviceId
 	 */
-	EIK_ECT_DEVICEID_ACCESS_TOKEN = 10,
+	EIK_ECT_DEVICEID_ACCESS_TOKEN = 10 UMETA(DisplayName = "Device ID"),
 	/**
 	 * Apple ID Token
 	 *
@@ -579,7 +579,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_GOOGLE_ID_TOKEN = 12,
+	EIK_ECT_GOOGLE_ID_TOKEN = 12 UMETA(DisplayName = "Google"),
 	/**
 	 * Oculus User ID and Nonce
 	 *
@@ -591,7 +591,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_OCULUS_USERID_NONCE = 13,
+	EIK_ECT_OCULUS_USERID_NONCE = 13 UMETA(DisplayName = "Oculus"),
 	/**
 	 * itch.io JWT Access Token
 	 *
@@ -601,7 +601,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_ITCHIO_JWT = 14,
+	EIK_ECT_ITCHIO_JWT = 14 UMETA(DisplayName = "itch.io JWT"),
 	/**
 	 * itch.io Key Access Token
 	 *
@@ -609,7 +609,7 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_ITCHIO_KEY = 15,
+	EIK_ECT_ITCHIO_KEY = 15 UMETA(DisplayName = "itch.io Key"),
 	/**
 	 * Epic Games ID Token
 	 *
@@ -617,13 +617,13 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_EPIC_ID_TOKEN = 16,
+	EIK_ECT_EPIC_ID_TOKEN = 16 UMETA(DisplayName = "Epic Games ID Token"),
 	/**
 	 * Amazon Access Token
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_AMAZON_ACCESS_TOKEN = 17,
+	EIK_ECT_AMAZON_ACCESS_TOKEN = 17 UMETA(DisplayName = "Amazon Access Token"),
 	/**
 	 * Steam Auth Session Ticket
 	 *
@@ -652,13 +652,13 @@ enum EEIK_EExternalCredentialType
 	 *
 	 * @version 1.15.1+
 	 */
-	EIK_ECT_STEAM_SESSION_TICKET = 18,
+	EIK_ECT_STEAM_SESSION_TICKET = 18 UMETA(DisplayName = "Steam Session Ticket"),
 	/**
 	 * VIVEPORT User Session Token
 	 *
 	 * Supported with EOS_Connect_Login.
 	 */
-	EIK_ECT_VIVEPORT_USER_TOKEN = 19
+	EIK_ECT_VIVEPORT_USER_TOKEN = 19 UMETA(DisplayName = "VIVEPORT User Token"),
 
 };
 UENUM(BlueprintType)
