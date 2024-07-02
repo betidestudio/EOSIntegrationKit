@@ -25,10 +25,7 @@ public class EOSIntegrationKit : ModuleRules
 				"Projects",
 				"OnlineSubsystem",
 				"Slate",
-				"SlateCore", 
-				//TODO Remove this when the work is done
-				"EIKSDK", 
-				"OnlineSubsystemEIK", 
+				"SlateCore",
 			}
 		);
 		if (Target.bBuildEditor)
