@@ -87,10 +87,16 @@ struct FEIK_EpicAccountId
 	FEIK_EpicAccountId(EOS_EpicAccountId InEpicAccountId)
 	{
 		Ref = InEpicAccountId;
-		char EpicAccountIdAnsi[EOS_EPICACCOUNTID_MAX_LENGTH + 1];
-		int32 EpicAccountIdLen;
-		EOS_EpicAccountId_ToString(InEpicAccountId, EpicAccountIdAnsi, &EpicAccountIdLen);
-		EpicAccountId = FString(UTF8_TO_TCHAR(EpicAccountIdAnsi));
+
+		char AccountIdString[EOS_EPICACCOUNTID_MAX_LENGTH + 1];
+		AccountIdString[0] = '\0';
+		int32_t BufferSize = sizeof(AccountIdString);
+		if (EOS_EpicAccountId_IsValid(InEpicAccountId) == EOS_TRUE &&
+			EOS_EpicAccountId_ToString(InEpicAccountId, AccountIdString, &BufferSize) == EOS_EResult::EOS_Success)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Epic Account ID: %hs"), UTF8_TO_TCHAR(AccountIdString));
+			EpicAccountId = UTF8_TO_TCHAR(AccountIdString);
+		}
 	}
 	EOS_EpicAccountId EpicAccountId_FromString()
 	{
