@@ -502,15 +502,6 @@ bool UEIK_BlueprintFunctions::IsValidSession(FSessionFindStruct Session)
 	return false;
 }
 
-bool UEIK_BlueprintFunctions::Initialize_EIK_For_Friends(APlayerController* PlayerController)
-{
-	if (UEIK_Subsystem* EIK_Subsystem = PlayerController->GetGameInstance()->GetSubsystem<UEIK_Subsystem>())
-	{
-		return EIK_Subsystem->InitializeEIK();
-	}
-	return false;
-}
-
 FString UEIK_BlueprintFunctions::GetCurrentPort(AGameModeBase* CurrentGameMode)
 {
 	if(!CurrentGameMode)

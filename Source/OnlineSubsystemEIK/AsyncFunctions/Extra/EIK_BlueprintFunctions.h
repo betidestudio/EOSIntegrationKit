@@ -296,9 +296,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
 	static bool IsValidSession(FSessionFindStruct Session);
 
-	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
-	static bool Initialize_EIK_For_Friends(APlayerController* PlayerController);
-
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
 	static FString GetCurrentPort(AGameModeBase* CurrentGameMode);
 
