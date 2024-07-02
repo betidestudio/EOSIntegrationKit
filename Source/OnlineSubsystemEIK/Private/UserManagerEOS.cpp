@@ -678,7 +678,7 @@ EEIK_EExternalCredentialType FUserManagerEOS::GetExternalCredentialType(const FS
 
 EEIK_ELoginCredentialType FUserManagerEOS::GetLoginCredentialType(const FString& Type)
 {
-	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ELoginMethod"), true);
+	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEIK_ELoginCredentialType"), true);
 	if (!EnumPtr)
 	{
 		UE_LOG(LogEIK, Error, TEXT("Enum not found in GetLoginCredentialType! Type: %s"), *Type);
@@ -891,10 +891,93 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 }
 
 void FUserManagerEOS::LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials)
-
 {
-	//EOS_Auth_Credentials Credentials;
-	//Credentials.Id
+	TArray<FString> BrokenTypeString;
+	EEIK_EExternalCredentialType ExternalCredentialType = EEIK_EExternalCredentialType::EIK_ECT_EPIC;
+	EEIK_ELoginCredentialType LoginCredentialType = EEIK_ELoginCredentialType::EIK_LCT_AccountPortal;
+	if(AccountCredentials.Type.ParseIntoArray(BrokenTypeString, TEXT("_+_"), true) > 0)
+	{
+		ExternalCredentialType = GetExternalCredentialType(BrokenTypeString[2]);
+		LoginCredentialType = GetLoginCredentialType(BrokenTypeString[1]);
+	}
+	else
+	{
+		UE_LOG(LogEIK, Error, TEXT("Failed to parse AccountCredentials.Type into BrokenTypeString"));
+	}
+	bool bIsPersistentLogin = false;
+	EOS_Auth_LoginOptions LoginOptions = { };
+	LoginOptions.ApiVersion = EOS_AUTH_LOGIN_API_LATEST;
+	LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_FriendsList | EOS_EAuthScopeFlags::EOS_AS_Presence | EOS_EAuthScopeFlags::EOS_AS_Country;
+	EOS_Auth_Credentials TempCredentials;
+	if(AccountCredentials.Id.IsEmpty())
+	{
+		TempCredentials.Id = nullptr;
+	}
+	else
+	{
+		TempCredentials.Id = TCHAR_TO_UTF8(*AccountCredentials.Id);
+	}
+	if(AccountCredentials.Token.IsEmpty())
+	{
+		TempCredentials.Token = nullptr;
+	}
+	else
+	{
+		TempCredentials.Token = TCHAR_TO_UTF8(*AccountCredentials.Token);
+	}
+	TempCredentials.ApiVersion = EOS_AUTH_CREDENTIALS_API_LATEST;
+	TempCredentials.Type = static_cast<EOS_ELoginCredentialType>(LoginCredentialType);
+	TempCredentials.ExternalType = static_cast<EOS_EExternalCredentialType>(ExternalCredentialType);
+	if(LoginCredentialType == EEIK_ELoginCredentialType::EIK_LCT_PersistentAuth)
+	{
+		bIsPersistentLogin = true;
+	}
+	LoginOptions.Credentials = &TempCredentials;
+	FLoginCallback* CallbackObj = new FLoginCallback(AsWeak());
+	CallbackObj->CallbackLambda = [this, LocalUserNum, bIsPersistentLogin](const EOS_Auth_LoginCallbackInfo* Data)
+	{
+		if (Data->ResultCode == EOS_EResult::EOS_Success)
+		{
+			// Continue the login process by getting the product user id for EAS only
+			ConnectLoginEAS(LocalUserNum, Data->LocalUserId);
+		}
+		else
+		{
+			auto TriggerLoginFailure = [this, LocalUserNum, LoginResultCode = Data->ResultCode]()
+			{
+				FString ErrorString = FString::Printf(TEXT("Login(%d) failed with EOS result code (%s)"), LocalUserNum, ANSI_TO_TCHAR(EOS_EResult_ToString(LoginResultCode)));
+				UE_LOG_ONLINE(Warning, TEXT("%s"), *ErrorString);
+				TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), ErrorString);
+			};
+
+			const bool bShouldRemoveCachedToken =
+				Data->ResultCode == EOS_EResult::EOS_InvalidAuth ||
+				Data->ResultCode == EOS_EResult::EOS_AccessDenied ||
+				Data->ResultCode == EOS_EResult::EOS_Auth_InvalidToken;
+
+			// Check for invalid persistent login credentials.
+			if (bIsPersistentLogin && bShouldRemoveCachedToken)
+			{
+				FDeletePersistentAuthCallback* DeleteAuthCallbackObj = new FDeletePersistentAuthCallback(AsWeak());
+				DeleteAuthCallbackObj->CallbackLambda = [this, LocalUserNum, TriggerLoginFailure](const EOS_Auth_DeletePersistentAuthCallbackInfo* Data)
+				{
+					// Deleting the auth token is best effort.
+					TriggerLoginFailure();
+				};
+
+				EOS_Auth_DeletePersistentAuthOptions DeletePersistentAuthOptions;
+				DeletePersistentAuthOptions.ApiVersion = EOS_AUTH_DELETEPERSISTENTAUTH_API_LATEST;
+				DeletePersistentAuthOptions.RefreshToken = nullptr;
+				EOS_Auth_DeletePersistentAuth(EOSSubsystem->AuthHandle, &DeletePersistentAuthOptions, (void*)DeleteAuthCallbackObj, DeleteAuthCallbackObj->GetCallbackPtr());
+			}
+			else
+			{
+				TriggerLoginFailure();
+			}
+		}
+	};
+	// Perform the auth call
+	EOS_Auth_Login(EOSSubsystem->AuthHandle, &LoginOptions, (void*)CallbackObj, CallbackObj->GetCallbackPtr());
 }
 
 void FUserManagerEOS::LoginViaExternalAuth(int32 LocalUserNum)
