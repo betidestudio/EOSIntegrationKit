@@ -406,21 +406,6 @@ FName UEIK_BlueprintFunctions::GetActiveSubsystem()
 	return FName();
 }
 
-ELoginTypes UEIK_BlueprintFunctions::GetActivePlatformSubsystem()
-{
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::GetByPlatform(false))
-	{
-		if(SubsystemRef->GetSubsystemName() == TEXT("STEAM"))
-		{
-			return ELoginTypes::Steam;
-		}
-		else if(SubsystemRef->GetSubsystemName() == TEXT("GOOGLEPLAY"))
-		{
-			return ELoginTypes::Google;
-		}
-	}
-	return ELoginTypes::None;
-}
 
 FString UEIK_BlueprintFunctions::ByteArrayToString(const TArray<uint8>& DataToConvert)
 {

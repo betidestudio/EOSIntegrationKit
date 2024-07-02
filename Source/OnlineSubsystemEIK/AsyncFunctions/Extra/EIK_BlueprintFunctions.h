@@ -253,11 +253,6 @@ public:
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
 	static FName GetActiveSubsystem();
 
-	// Get the active platform's login type for EOS subsystem.
-	// This function returns the active platform's login type (e.g., Epic, Steam) as an ELoginTypes enum.
-	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
-	static ELoginTypes GetActivePlatformSubsystem();
-
 	// Convert a TArray<uint8> to a FString using Base64 encoding.
 	// This is useful for converting binary data to a human-readable string format.
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra || Conversions")
