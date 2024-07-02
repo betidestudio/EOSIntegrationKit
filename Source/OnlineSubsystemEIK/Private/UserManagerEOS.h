@@ -7,6 +7,7 @@
 #include "Interfaces/OnlineExternalUIInterface.h"
 #include "Interfaces/OnlineFriendsInterface.h"
 #include "Interfaces/OnlinePresenceInterface.h"
+#include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 
 
 #if WITH_EOS_SDK
@@ -267,17 +268,19 @@ public:
 	
 
 	//Custom Function
-	void LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials);
+	//void LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void CreateDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void CreateConnectID(EOS_ContinuanceToken ContinuanceToken, const FOnlineAccountCredentials& AccountCredentials);
 	void DeleteDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountId AccountId, EOS_ProductUserId UserId);
-	void EIK_Auto_Login();
 	void OpenIDLogin(const FOnlineAccountCredentials& AccountCredentials);
-	void StartConnectInterfaceLogin(const FOnlineAccountCredentials& AccountCredentials);
 
 // IOnlineIdentity Interface
 	virtual bool Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials) override;
+	void LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials);
+	void LoginViaConnectInterface(const FOnlineAccountCredentials& AccountCredentials);
+	static EEIK_EExternalCredentialType GetExternalCredentialType(const FString& Type);
+	static EEIK_ELoginCredentialType GetLoginCredentialType(const FString& Type);
 	virtual bool Logout(int32 LocalUserNum) override;
 	virtual bool AutoLogin(int32 LocalUserNum) override;
 	virtual TSharedPtr<FUserOnlineAccount> GetUserAccount(const FUniqueNetId& UserId) const override;

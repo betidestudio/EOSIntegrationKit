@@ -18,6 +18,7 @@
 #include "EIKSettings.h"
 #include "CoreMinimal.h"
 #include "IEOSSDKManager.h"
+#include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 #include COMPILED_PLATFORM_HEADER(EOSHelpers.h)
 
@@ -419,56 +420,6 @@ struct FAuthCredentials :
 	char TokenAnsi[EOS_MAX_TOKEN_SIZE];
 };
 
-void FUserManagerEOS::LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials)
-{
-	UE_LOG(LogTemp, Warning, TEXT("EOS Login using Device ID 2345"));
-	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
-	FString DisplayName = AccountCredentials.Id;
-	EOS_Connect_Credentials UserCredentials;
-	UserCredentials.Token = nullptr;
-	UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_DEVICEID_ACCESS_TOKEN;
-	UserCredentials.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
-
-	if (DisplayName.IsEmpty() || DisplayName.Equals(""))
-	{
-		DisplayName = "DefaultName";
-	}	
-	EOS_Connect_UserLoginInfo LoginInfo;
-	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
-	FString DisplayNameStr = DisplayName;
-	LoginInfo.DisplayName = "DisplayNameChar";
-	EOS_Connect_LoginOptions LoginOptions;
-	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;
-	LoginOptions.UserLoginInfo = &LoginInfo;
-	LoginOptions.Credentials = &UserCredentials;
-
-	int32 LocalUserNum = 0;
-	CallbackObj->CallbackLambda = [LocalUserNum,AccountCredentials, UserCredentials, this, CallbackObj](const EOS_Connect_LoginCallbackInfo* Data)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("EOS Login using Device ID Callback"));
-		if(Data->ResultCode == EOS_EResult::EOS_Success)
-		{
-			//TriggerOnLoginCompleteDelegates(LocalUserNum, true, *NetIdEos.ToSharedRef(), "");
-			CompleteDeviceIDLogin(LocalUserNum,nullptr,Data->LocalUserId);
-			CallbackObj->CallbackLambda.Reset();
-		}
-		else if(Data->ResultCode == EOS_EResult::EOS_NotFound)
-		{
-			CreateDeviceID(AccountCredentials);
-			CallbackObj->CallbackLambda.Reset();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("EOS Login using Device ID Failed due to %hs"), EOS_EResult_ToString(Data->ResultCode));
-			EOS_EResult ResultCode = Data->ResultCode;
-			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
-			FString ResultCodeString = FString(ResultCodeStr);
-			TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
-		}
-	};
-	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, CallbackObj, CallbackObj->GetCallbackPtr());
-}
-
 void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCredentials)
 {
 	EOS_Connect_CreateDeviceIdOptions DeviceIdOptions = {};
@@ -487,7 +438,7 @@ void FUserManagerEOS::CreateDeviceID(const FOnlineAccountCredentials& AccountCre
 	{
 		if(Data->ResultCode == EOS_EResult::EOS_Success || Data->ResultCode == EOS_EResult::EOS_DuplicateNotAllowed )
 		{
-			StartConnectInterfaceLogin(AccountCredentials);
+			LoginViaConnectInterface(AccountCredentials);
 		}
 		else
 		{
@@ -509,7 +460,7 @@ void FUserManagerEOS::CreateConnectID(EOS_ContinuanceToken ContinuanceToken, con
 		if(Data->ResultCode == EOS_EResult::EOS_Success)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("EOS Create User Success"));
-			StartConnectInterfaceLogin(AccountCredentials);
+			LoginViaConnectInterface(AccountCredentials);
 		}
 		else
 		{
@@ -551,7 +502,7 @@ void FUserManagerEOS::CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountI
 		{
 			if(Data->CurrentStatus == EOS_ELoginStatus::EOS_LS_NotLoggedIn)
 			{
-				LoginWithDeviceID(*LocalUserNumToLastLoginCredentials[0]);
+				//LoginWithDeviceID(*LocalUserNumToLastLoginCredentials[0]);
 			}	
 		};
 
@@ -587,10 +538,6 @@ void FUserManagerEOS::CompleteDeviceIDLogin(int32 LocalUserNum, EOS_EpicAccountI
 	TriggerOnLoginStatusChangedDelegates(LocalUserNum, ELoginStatus::NotLoggedIn, ELoginStatus::LoggedIn, *UserNetId);
 }
 
-void FUserManagerEOS::EIK_Auto_Login()
-{
-}
-
 void FUserManagerEOS::OpenIDLogin(const FOnlineAccountCredentials& AccountCredentials)
 {
 	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
@@ -623,78 +570,42 @@ void FUserManagerEOS::OpenIDLogin(const FOnlineAccountCredentials& AccountCreden
 			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
 			FString ResultCodeString = FString(ResultCodeStr);
 			TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
-		}
+		}		
 	};
 	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, CallbackObj, CallbackObj->GetCallbackPtr());
 }
 
-void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials& AccountCredentials)
+void FUserManagerEOS::LoginViaConnectInterface(const FOnlineAccountCredentials& AccountCredentials)
 {
-	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
-	EOS_Connect_Credentials UserCredentials;
-	if(AccountCredentials.Type == "apple")
+	TArray<FString> BrokenTypeString;
+	EEIK_EExternalCredentialType ExternalCredentialType;
+	if(AccountCredentials.Type.ParseIntoArray(BrokenTypeString, TEXT("_+_"), true) > 0)
 	{
-		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_APPLE_ID_TOKEN;
-		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
-		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
-		UserCredentials.Token = ClientId;
-	}
-	else if(AccountCredentials.Type == "steam")
-	{
-		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_STEAM_SESSION_TICKET;
-		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
-		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
-		UserCredentials.Token = ClientId;
-	}
-	else if(AccountCredentials.Type == "google")
-	{
-		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_GOOGLE_ID_TOKEN;
-		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
-		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
-		UserCredentials.Token = ClientId;
-	}
-	else if(AccountCredentials.Type == "openid")
-	{
-		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_OPENID_ACCESS_TOKEN;
-		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
-		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
-		UserCredentials.Token = ClientId;
-	}
-	else if(AccountCredentials.Type == "deviceid")
-	{
-		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_DEVICEID_ACCESS_TOKEN;
-		UserCredentials.Token = nullptr;
-	}
-	else if(AccountCredentials.Type == "oculus")
-	{
-		UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_OCULUS_USERID_NONCE;
-		const char* ClientId = new char[EOS_MAX_TOKEN_SIZE];
-		FCStringAnsi::Strncpy(const_cast<char*>(ClientId), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
-		UserCredentials.Token = ClientId;
+		ExternalCredentialType = GetExternalCredentialType(BrokenTypeString[1]);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("EOS Login using Interface connect Failed due to %hs"), EOS_EResult_ToString(EOS_EResult::EOS_InvalidParameters));
-		EOS_EResult ResultCode = EOS_EResult::EOS_InvalidParameters;
-		const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
-		FString ResultCodeString = FString(ResultCodeStr);
-		TriggerOnLoginCompleteDelegates(0, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
-		return;
+		UE_LOG(LogEIK, Error, TEXT("Failed to parse AccountCredentials.Type into BrokenTypeString"));
 	}
+	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
+	EOS_Connect_Credentials UserCredentials;
 	UserCredentials.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
-
+	if(AccountCredentials.Token.IsEmpty())
+	{
+		UserCredentials.Token = nullptr;
+	}
+	else
+	{
+		const char* TokenRef = new char[EOS_MAX_TOKEN_SIZE];
+		FCStringAnsi::Strncpy(const_cast<char*>(TokenRef), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
+		UserCredentials.Token = TokenRef;
+	}
+	UserCredentials.Type = static_cast<EOS_EExternalCredentialType>(ExternalCredentialType);
 	EOS_Connect_UserLoginInfo LoginInfo;
 	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
 	if(AccountCredentials.Id.IsEmpty())
 	{
-		if(AccountCredentials.Type != "openid" && AccountCredentials.Type != "steam")
-		{
-			LoginInfo.DisplayName = "DefaultName";
-		}
-		else
-		{
-			LoginInfo.DisplayName = nullptr;
-		}
+		LoginInfo.DisplayName = nullptr;
 	}
 	else
 	{
@@ -705,12 +616,12 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 #if PLATFORM_WINDOWS || PLATFORM_LINUX || PLATFORM_MAC
 	LoginInfo.NsaIdToken = nullptr;
 #endif
-	
 	EOS_Connect_LoginOptions LoginOptions;
 	LoginOptions.Credentials = &UserCredentials;
 	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;
 	LoginOptions.UserLoginInfo = &LoginInfo;
 	int32 LocalUserNum = 0;
+	UE_LOG(LogEIK, Log, TEXT("LoginViaConnectInterface called. Login Method: %s"), *AccountCredentials.Type);
 	CallbackObj->CallbackLambda = [LocalUserNum,AccountCredentials, UserCredentials, this](const EOS_Connect_LoginCallbackInfo* Data)
 	{
 		if(Data->ResultCode == EOS_EResult::EOS_Success)
@@ -747,12 +658,78 @@ void FUserManagerEOS::StartConnectInterfaceLogin(const FOnlineAccountCredentials
 	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, CallbackObj, CallbackObj->GetCallbackPtr());
 }
 
+EEIK_EExternalCredentialType FUserManagerEOS::GetExternalCredentialType(const FString& Type)
+{
+	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEIK_EExternalCredentialType"), true);
+	if (!EnumPtr)
+	{
+		UE_LOG(LogEIK, Error, TEXT("Enum not found in GetExternalCredentialType! Type: %s"), *Type);
+		return EEIK_EExternalCredentialType::EIK_ECT_EPIC; // Return a default value or handle error
+	}
+
+	int32 EnumValue = EnumPtr->GetValueByName(FName(*Type));
+	if (EnumValue == INDEX_NONE)
+	{
+		UE_LOG(LogEIK, Error, TEXT("Enum value not found in GetExternalCredentialType! Type: %s"), *Type);
+		return EEIK_EExternalCredentialType::EIK_ECT_EPIC; // Return a default value or handle error
+	}
+	return static_cast<EEIK_EExternalCredentialType>(EnumValue);	
+}
+
+EEIK_ELoginCredentialType FUserManagerEOS::GetLoginCredentialType(const FString& Type)
+{
+	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ELoginMethod"), true);
+	if (!EnumPtr)
+	{
+		UE_LOG(LogEIK, Error, TEXT("Enum not found in GetLoginCredentialType! Type: %s"), *Type);
+		return EEIK_ELoginCredentialType::EIK_LCT_AccountPortal; // Return a default value or handle error
+	}
+
+	int32 EnumValue = EnumPtr->GetValueByName(FName(*Type));
+	if (EnumValue == INDEX_NONE)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Enum value not found in GetLoginCredentialType! Type: %s"), *Type);
+		return EEIK_ELoginCredentialType::EIK_LCT_AccountPortal; // Return a default value or handle error
+	}
+	return static_cast<EEIK_ELoginCredentialType>(EnumValue);	
+}
+
 bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials)
 {
 	LocalUserNumToLastLoginCredentials.Emplace(LocalUserNum, MakeShared<FOnlineAccountCredentials>(AccountCredentials));
-
 	FEOSSettings Settings = UEIKSettings::GetSettings();
 
+	// We don't support offline logged in, so they are either logged in or not
+	if (GetLoginStatus(LocalUserNum) == ELoginStatus::LoggedIn)
+	{
+		UE_LOG_ONLINE(Warning, TEXT("User (%d) already logged in."), LocalUserNum);
+		TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), FString(TEXT("Already logged in")));
+		return true;
+	}
+
+	TArray<FString> BrokenTypeString;
+	if(AccountCredentials.Type.ParseIntoArray(BrokenTypeString, TEXT("_+_"), true) > 0)
+	{
+		if(BrokenTypeString[0] == "noeas")
+		{
+			UE_LOG(LogEIK, Warning, TEXT("Login using EIK called. Login Method: %s and UseEas: false"), *BrokenTypeString[1]);
+			LoginViaConnectInterface(AccountCredentials);
+			return true;
+		}
+		if(BrokenTypeString[0] == "eas")
+		{
+			UE_LOG(LogEIK, Warning, TEXT("Login using EIK called. Login Method: %s  UseEas: true and ExternalAuth: %s"), *BrokenTypeString[1], *BrokenTypeString[2]);
+			//LoginViaAuthInterface(LocalUserNum, AccountCredentials, GetExternalCredentialType(BrokenTypeString[2]), GetLoginCredentialType(BrokenTypeString[1]));
+			LoginViaAuthInterface(LocalUserNum, AccountCredentials);
+			return true;
+		}
+		UE_LOG(LogEIK, Warning, TEXT("Login using EIK called. But the format of the type is not correct. Type: %s"), *AccountCredentials.Type);
+	}
+	else
+	{
+		UE_LOG(LogEIK, Warning, TEXT("Login using EIK called. But the format of the type is not correct. Type: %s"), *AccountCredentials.Type);
+	}
+	return false;
 	// Are we configured to run at all?
 	if (!EOSSubsystem->bIsDefaultOSS && !EOSSubsystem->bIsPlatformOSS && !Settings.bUseEAS && !Settings.bUseEOSConnect)
 	{
@@ -767,14 +744,6 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 		// Call the EOS + Platform login path
 		return ConnectLoginNoEAS(LocalUserNum);
 	}
-	
-	// We don't support offline logged in, so they are either logged in or not
-	if (GetLoginStatus(LocalUserNum) == ELoginStatus::LoggedIn)
-	{
-		UE_LOG_ONLINE(Warning, TEXT("User (%d) already logged in."), LocalUserNum);
-		TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), FString(TEXT("Already logged in")));
-		return true;
-	}
 
 	// See if we are logging in using platform credentials to link to EAS
 	if (!EOSSubsystem->bIsDefaultOSS && !EOSSubsystem->bIsPlatformOSS && Settings.bUseEAS)
@@ -784,7 +753,7 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	}
 	if(AccountCredentials.Type == TEXT("deviceid") || AccountCredentials.Type == TEXT("openid") || AccountCredentials.Type == TEXT("oculus") || AccountCredentials.Type == TEXT("steam") || AccountCredentials.Type == TEXT("google") )
 	{
-		StartConnectInterfaceLogin(AccountCredentials);
+		LoginViaConnectInterface(AccountCredentials);
 		return true;
 	}
 	if(AccountCredentials.Type == TEXT("steam"))
@@ -793,7 +762,7 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	}
 	if(AccountCredentials.Type == TEXT("apple"))
 	{
-		StartConnectInterfaceLogin(AccountCredentials);
+		LoginViaConnectInterface(AccountCredentials);
 		return true;
 	}
 	if(AccountCredentials.Type == TEXT("openid"))
@@ -919,6 +888,13 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	// Perform the auth call
 	EOS_Auth_Login(EOSSubsystem->AuthHandle, &LoginOptions, (void*)CallbackObj, CallbackObj->GetCallbackPtr());
 	return true;
+}
+
+void FUserManagerEOS::LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials)
+
+{
+	//EOS_Auth_Credentials Credentials;
+	//Credentials.Id
 }
 
 void FUserManagerEOS::LoginViaExternalAuth(int32 LocalUserNum)
@@ -1162,7 +1138,7 @@ void FUserManagerEOS::RefreshConnectLogin(int32 LocalUserNum)
 	if(LocalUserNumToLastLoginCredentials[0]->Type == TEXT("deviceid"))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Refresh Connect Login for Device ID"));
-		StartConnectInterfaceLogin(*LocalUserNumToLastLoginCredentials[0]);
+		LoginViaConnectInterface(*LocalUserNumToLastLoginCredentials[0]);
 		return;
 	}
 
