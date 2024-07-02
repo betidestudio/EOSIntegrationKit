@@ -6,11 +6,13 @@
 
 #include "CoreMinimal.h"
 #include "eos_auth_types.h"
+#include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #include "eos_auth.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_Auth_DeletePersistentAuth.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeletePersistentAuthCallback, TEnumAsByte<EEIK_Result>, ResultCode);
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_Auth_DeletePersistentAuth : public UBlueprintAsyncActionBase
 {

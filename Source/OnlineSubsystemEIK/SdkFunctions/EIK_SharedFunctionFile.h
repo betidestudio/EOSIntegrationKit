@@ -94,7 +94,6 @@ struct FEIK_EpicAccountId
 		if (EOS_EpicAccountId_IsValid(InEpicAccountId) == EOS_TRUE &&
 			EOS_EpicAccountId_ToString(InEpicAccountId, AccountIdString, &BufferSize) == EOS_EResult::EOS_Success)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Epic Account ID: %hs"), UTF8_TO_TCHAR(AccountIdString));
 			EpicAccountId = UTF8_TO_TCHAR(AccountIdString);
 		}
 	}
