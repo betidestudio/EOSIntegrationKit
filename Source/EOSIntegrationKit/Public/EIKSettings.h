@@ -74,6 +74,8 @@ struct FEOSSettings
 	FString ReturnLevelName;
 	FString CacheDir;
 	FString DefaultArtifactName;
+	FString VoiceArtifactName;
+	FString DedicatedServerArtifactName;
 	int32 TickBudgetInMilliseconds;
 	int32 TitleStorageReadChunkLength;
 	bool bEnableOverlay;
@@ -178,7 +180,11 @@ public:
 
 	/** Artifact settings to be used for voice operations */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings")
-	FString VoiceArtifactName = TEXT("VoiceArtifact");
+	FString VoiceArtifactName = TEXT("DefaultArtifact");
+
+	/** Artifact settings to be used for Dedicated Servers. If empty, the default artifact will be used  but Dedicated Server usually require the policy to not have User Required */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings")
+	FString DedicatedServerArtifactName = TEXT("DefaultArtifact");
 
 	/** Artifact settings to be used for IOS */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")

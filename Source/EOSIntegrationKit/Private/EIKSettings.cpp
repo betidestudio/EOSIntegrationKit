@@ -180,6 +180,8 @@ FEOSSettings UEIKSettings::ToNative() const
 	Native.TickBudgetInMilliseconds = TickBudgetInMilliseconds;
 	Native.TitleStorageReadChunkLength = TitleStorageReadChunkLength;
 	Native.bEnableOverlay = bEnableOverlay;
+	Native.DedicatedServerArtifactName = DedicatedServerArtifactName;
+	Native.VoiceArtifactName = VoiceArtifactName;
 	Native.bEnableSocialOverlay = bEnableSocialOverlay;
 	Native.bEnableEditorOverlay = bEnableEditorOverlay;
 	Native.bShouldEnforceBeingLaunchedByEGS = bShouldEnforceBeingLaunchedByEGS;
@@ -280,7 +282,21 @@ bool UEIKSettings::AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSA
 	FParse::Value(FCommandLine::Get(), TEXT("EOSArtifactNameOverride="), ArtifactNameOverride);
 	if (ArtifactNameOverride.IsEmpty())
 	{
-		ArtifactNameOverride = ArtifactName;
+		if(IsRunningDedicatedServer())
+		{
+			if(!This->DedicatedServerArtifactName.IsEmpty())
+			{
+				ArtifactNameOverride = This->DedicatedServerArtifactName;
+			}
+			else
+			{
+				ArtifactNameOverride = ArtifactName;
+			}
+		}
+		else
+		{
+			ArtifactNameOverride = ArtifactName;
+		}
 	}
 	for (const FEArtifactSettings& Artifact : This->Artifacts)
 	{
