@@ -13,6 +13,7 @@
 #include "GameFramework/SaveGame.h"
 #include "eos_sessions.h"
 #include "Interfaces/OnlineLeaderboardInterface.h"
+#include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 #ifdef PLAYFAB_PLUGIN_INSTALLED
 #include "Core/PlayFabClientAPI.h"
 #endif
@@ -21,27 +22,15 @@
 
 UEIK_Subsystem::UEIK_Subsystem()
 {
-	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	// Add the delegate to the online subsystem
+	IOnlineSessionPtr SessionInt = Online::GetSessionInterface(GetWorld());
+	if (SessionInt.IsValid())
 	{
-		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
-		{
-			EOS_Sessions_AddNotifySessionInviteReceivedOptions Options = {};
-			Options.ApiVersion = EOS_SESSIONS_ADDNOTIFYSESSIONINVITERECEIVED_API_LATEST;
-			EOS_Sessions_AddNotifySessionInviteReceived(EOSRef->SessionsHandle, &Options, this, OnSessionInviteReceivedCallback);
-		}
+		UE_LOG(LogEIK, Log, TEXT("Binding OnSessionUserInviteAcceptedDelegate_Handle"));
+		SessionInt->AddOnSessionUserInviteAcceptedDelegate_Handle(OnSessionUserInviteAcceptedDelegate);
 	}
 }
 
-void UEIK_Subsystem::OnSessionInviteReceivedCallback(const EOS_Sessions_SessionInviteReceivedCallbackInfo* Data)
-{
-	if(UEIK_Subsystem* EIKSubsystem = static_cast<UEIK_Subsystem*>(Data->ClientData))
-	{
-		FString SessionInfo = FString(UTF8_TO_TCHAR(Data->InviteId));
-		FString LocalUserID = FString(UTF8_TO_TCHAR(Data->LocalUserId));
-		FString TargetUserID = FString(UTF8_TO_TCHAR(Data->TargetUserId));
-		EIKSubsystem->OnSessionInviteReceived.Broadcast(SessionInfo, LocalUserID, TargetUserID);
-	}
-}
 
 void UEIK_Subsystem::Login(int32 LocalUserNum, FString ID, FString Token , FString Type, const FBP_Login_Callback& Result)
 {
@@ -66,51 +55,6 @@ void UEIK_Subsystem::Login(int32 LocalUserNum, FString ID, FString Token , FStri
 	{
 		Result.ExecuteIfBound(false,"Failed to get Subsystem");
 	}
-}
-
-bool UEIK_Subsystem::InitializeEIK()
-{
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
-	{
-		if(const IOnlineFriendsPtr FriendsPtr = SubsystemRef->GetFriendsInterface())
-		{
-			// Bind the OnSessionUserInviteAccepted event to a delegate
-			OnSessionUserInviteAcceptedDelegate.BindUObject(this, &UEIK_Subsystem::OnSessionUserInviteAccepted);
-			FriendsPtr->OnInviteReceivedDelegates.AddLambda([this](const FUniqueNetId& LocalUserId, const FUniqueNetId& FriendId)
-			{
-				FEIKUniqueNetId LocalUNetID;
-				LocalUNetID.SetUniqueNetId(LocalUserId.AsShared());
-				FEIKUniqueNetId FriendUNetID;
-				FriendUNetID.SetUniqueNetId(FriendId.AsShared());
-				OnInviteRecieved.Broadcast(LocalUNetID,FriendUNetID);
-			});
-			FriendsPtr->OnInviteAcceptedDelegates.AddLambda([this](const FUniqueNetId& LocalUserId, const FUniqueNetId& FriendId)
-			{
-				FEIKUniqueNetId LocalUNetID;
-				LocalUNetID.SetUniqueNetId(LocalUserId.AsShared());
-				FEIKUniqueNetId FriendUNetID;
-				FriendUNetID.SetUniqueNetId(FriendId.AsShared());
-				OnInviteAccepted.Broadcast(LocalUNetID,FriendUNetID);
-			});
-			FriendsPtr->OnInviteReceivedDelegates.AddLambda([this](const FUniqueNetId& LocalUserId, const FUniqueNetId& FriendId)
-			{
-				FEIKUniqueNetId LocalUNetID;
-				LocalUNetID.SetUniqueNetId(LocalUserId.AsShared());
-				FEIKUniqueNetId FriendUNetID;
-				FriendUNetID.SetUniqueNetId(FriendId.AsShared());
-				OnInviteRejected.Broadcast(LocalUNetID,FriendUNetID);
-			});
-			
-			// Add the delegate to the online subsystem
-			IOnlineSessionPtr SessionInt = Online::GetSessionInterface(GetWorld());
-			if (SessionInt.IsValid())
-			{
-				SessionInt->AddOnSessionUserInviteAcceptedDelegate_Handle(OnSessionUserInviteAcceptedDelegate);
-			}
-			return true;
-		}
-	}
-	return false;
 }
 
 /*
@@ -1038,7 +982,6 @@ void UEIK_Subsystem::OnCreateLobbyCompleted(FName SessionName, bool bWasSuccessf
 {
 	if(bWasSuccessful)
 	{
-		FDelegateHandle SessionJoinHandle;
 		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 		{
 			if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
