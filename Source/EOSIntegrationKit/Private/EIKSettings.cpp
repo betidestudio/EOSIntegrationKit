@@ -321,13 +321,9 @@ bool UEIKSettings::AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSA
 #if WITH_EDITOR
 void UEIKSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-	if (PropertyChangedEvent.Property == nullptr)
+	FString EngineIniPath = FPaths::ProjectConfigDir() / TEXT("DefaultEngine.ini");
 	{
-		Super::PostEditChangeProperty(PropertyChangedEvent);
-		return;
-	}
-	{
-		FEOSArtifactSettings OutSettings;
+		/*FEOSArtifactSettings OutSettings;
 		if(!PlatformSpecificArtifactName.IsEmpty() && GetSettingsForArtifact(PlatformSpecificArtifactName, OutSettings))
 		{
 			ClientId = OutSettings.ClientId;
@@ -335,7 +331,17 @@ void UEIKSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 			ProductId = OutSettings.ProductId;
 			SandboxId = OutSettings.SandboxId;
 			DeploymentId = OutSettings.DeploymentId;
-		}
+			SaveConfig();
+			if(GConfig)
+			{
+				GConfig->Flush(false, EngineIniPath);
+			}
+		}*/
+	}
+	if (PropertyChangedEvent.Property == nullptr)
+	{
+		Super::PostEditChangeProperty(PropertyChangedEvent);
+		return;
 	}
 	
 if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
@@ -469,7 +475,6 @@ if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 	{
 		if(bAutomaticallySetupEIK)
 		{
-			FString EngineIniPath = FPaths::ProjectConfigDir() / TEXT("DefaultEngine.ini");
 			FString EngineIniText;
 			if (FFileHelper::LoadFileToString(EngineIniText, *EngineIniPath))
 			{
@@ -574,6 +579,11 @@ if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 	}
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+
+void UEIKSettings::PreSave(const ITargetPlatform* TargetPlatform)
+{
+	Super::PreSave(TargetPlatform);
 }
 
 #endif

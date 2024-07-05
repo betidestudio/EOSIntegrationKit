@@ -194,19 +194,19 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings")
 	TArray<FEArtifactSettings> Artifacts;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
 	FString ProductId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
 	FString ClientSecret;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
 	FString DeploymentId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
 	FString SandboxId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
 	FString ClientId;
 
 	/** Set to true to have Epic Accounts used (friends list will be unified with the default platform) */
@@ -243,6 +243,7 @@ private:
 #if WITH_EDITOR
 	EAppReturnType::Type ShowRestartWarning(const FText& Title);
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual void PreSave(const ITargetPlatform* TargetPlatform) override;
 #endif
 	static bool AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings);
 	static bool ManualGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings);
