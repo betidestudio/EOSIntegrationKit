@@ -586,8 +586,8 @@ void FUserManagerEOS::LoginViaConnectInterface(const FOnlineAccountCredentials& 
 	else
 	{
 		UE_LOG(LogEIK, Error, TEXT("Failed to parse AccountCredentials.Type into BrokenTypeString"));
+		ExternalCredentialType = EEIK_EExternalCredentialType::EIK_ECT_EPIC;
 	}
-	FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
 	EOS_Connect_Credentials UserCredentials;
 	UserCredentials.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
 	if(AccountCredentials.Token.IsEmpty())
@@ -622,40 +622,7 @@ void FUserManagerEOS::LoginViaConnectInterface(const FOnlineAccountCredentials& 
 	LoginOptions.UserLoginInfo = &LoginInfo;
 	int32 LocalUserNum = 0;
 	UE_LOG(LogEIK, Log, TEXT("LoginViaConnectInterface called. Login Method: %s"), *AccountCredentials.Type);
-	CallbackObj->CallbackLambda = [LocalUserNum,AccountCredentials, UserCredentials, this](const EOS_Connect_LoginCallbackInfo* Data)
-	{
-		if(Data->ResultCode == EOS_EResult::EOS_Success)
-		{
-			CompleteDeviceIDLogin(LocalUserNum,nullptr,Data->LocalUserId);
-		}
-		else if(Data->ResultCode == EOS_EResult::EOS_NotFound)
-		{
-			if(AccountCredentials.Type == "deviceid")
-			{
-				CreateDeviceID(AccountCredentials);
-			}
-			else
-			{
-				EOS_EResult ResultCode = Data->ResultCode;
-				const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
-				FString ResultCodeString = FString(ResultCodeStr);
-				TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
-			}
-		}
-		else if(Data->ResultCode == EOS_EResult::EOS_InvalidUser)
-		{
-			CreateConnectID(Data->ContinuanceToken,AccountCredentials);
-		}
-		else
-		{
-			EOS_EResult ResultCode = Data->ResultCode;
-			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
-			FString ResultCodeString = FString(ResultCodeStr);
-			TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
-
-		}
-	};
-	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, CallbackObj, CallbackObj->GetCallbackPtr());
+	EOS_Connect_Login(EOSSubsystem->ConnectHandle, &LoginOptions, this, &FUserManagerEOS::LoginViaConnectInterfaceCallback);
 }
 
 EEIK_EExternalCredentialType FUserManagerEOS::GetExternalCredentialType(const FString& Type)
@@ -978,6 +945,44 @@ void FUserManagerEOS::LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAcc
 	};
 	// Perform the auth call
 	EOS_Auth_Login(EOSSubsystem->AuthHandle, &LoginOptions, (void*)CallbackObj, CallbackObj->GetCallbackPtr());
+}
+
+void FUserManagerEOS::LoginViaConnectInterfaceCallback(const EOS_Connect_LoginCallbackInfo* Data)
+{
+	UE_LOG(LogEIK, Log, TEXT("LoginViaConnectInterfaceCallback called. ResultCode: %hs"), EOS_EResult_ToString(Data->ResultCode));
+	if(FUserManagerEOS* UserManager = static_cast<FUserManagerEOS*>(Data->ClientData))
+	{
+		if(Data->ResultCode == EOS_EResult::EOS_Success)
+		{
+			UserManager->CompleteDeviceIDLogin(0,nullptr,Data->LocalUserId);
+		}
+		else if(Data->ResultCode == EOS_EResult::EOS_NotFound)
+		{
+			if(UserManager->LocalUserNumToLastLoginCredentials[0].Get().Type == "deviceid")
+			{
+				UserManager->CreateDeviceID(UserManager->LocalUserNumToLastLoginCredentials[0].Get());
+			}
+			else
+			{
+				EOS_EResult ResultCode = Data->ResultCode;
+				const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
+				FString ResultCodeString = FString(ResultCodeStr);
+				UserManager->TriggerOnLoginCompleteDelegates(0, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
+			}
+		}
+		else if(Data->ResultCode == EOS_EResult::EOS_InvalidUser)
+		{
+			UserManager->CreateConnectID(Data->ContinuanceToken,UserManager->LocalUserNumToLastLoginCredentials[0].Get());
+		}
+		else
+		{
+			EOS_EResult ResultCode = Data->ResultCode;
+			const char* ResultCodeStr = EOS_EResult_ToString(ResultCode);
+			FString ResultCodeString = FString(ResultCodeStr);
+			UserManager->TriggerOnLoginCompleteDelegates(0, false, *FUniqueNetIdEOS::EmptyId(), *ResultCodeString);
+
+		}
+	}
 }
 
 void FUserManagerEOS::LoginViaExternalAuth(int32 LocalUserNum)
