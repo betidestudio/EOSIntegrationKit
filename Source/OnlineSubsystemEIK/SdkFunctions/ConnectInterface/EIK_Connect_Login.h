@@ -87,7 +87,14 @@ struct FEIK_Connect_Credentials
 	{
 		EOS_Connect_Credentials Result;
 		Result.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
-		Result.Token = TCHAR_TO_ANSI(*Token);
+		if(Token.Len() > 0)
+		{
+			Result.Token = TCHAR_TO_ANSI(*Token);
+		}
+		else
+		{
+			Result.Token = nullptr;
+		}
 		Result.Type = static_cast<EOS_EExternalCredentialType>(Type.GetValue());
 		return Result;
 	
