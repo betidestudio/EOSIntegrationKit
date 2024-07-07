@@ -278,6 +278,7 @@ public:
 // IOnlineIdentity Interface
 	virtual bool Login(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials) override;
 	void LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAccountCredentials& AccountCredentials);
+	static void EOS_CALL LoginViaConnectInterfaceCallback(const EOS_Connect_LoginCallbackInfo* Data);
 	void LoginViaConnectInterface(const FOnlineAccountCredentials& AccountCredentials);
 	static EEIK_EExternalCredentialType GetExternalCredentialType(const FString& Type);
 	static EEIK_ELoginCredentialType GetLoginCredentialType(const FString& Type);
