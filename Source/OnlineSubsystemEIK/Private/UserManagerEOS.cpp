@@ -679,13 +679,13 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	{
 		if(BrokenTypeString[0] == "noeas")
 		{
-			UE_LOG(LogEIK, Warning, TEXT("Login using EIK called. Login Method: %s and UseEas: false"), *BrokenTypeString[1]);
+			UE_LOG(LogEIK, Log, TEXT("Login using EIK called. Login Method: %s and UseEas: false"), *BrokenTypeString[1]);
 			LoginViaConnectInterface(AccountCredentials);
 			return true;
 		}
 		if(BrokenTypeString[0] == "eas")
 		{
-			UE_LOG(LogEIK, Warning, TEXT("Login using EIK called. Login Method: %s  UseEas: true and ExternalAuth: %s"), *BrokenTypeString[1], *BrokenTypeString[2]);
+			UE_LOG(LogEIK, Log, TEXT("Login using EIK called. Login Method: %s  UseEas: true and ExternalAuth: %s"), *BrokenTypeString[1], *BrokenTypeString[2]);
 			//LoginViaAuthInterface(LocalUserNum, AccountCredentials, GetExternalCredentialType(BrokenTypeString[2]), GetLoginCredentialType(BrokenTypeString[1]));
 			LoginViaAuthInterface(LocalUserNum, AccountCredentials);
 			return true;
@@ -698,6 +698,7 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	}
 	return false;
 	// Are we configured to run at all?
+	// ReSharper disable once CppUnreachableCode
 	if (!EOSSubsystem->bIsDefaultOSS && !EOSSubsystem->bIsPlatformOSS && !Settings.bUseEAS && !Settings.bUseEOSConnect)
 	{
 		UE_LOG_ONLINE(Warning, TEXT("Neither EAS nor EOS are configured to be used. Failed to login in user (%d)"), LocalUserNum);
@@ -741,7 +742,7 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	LoginOptions.ApiVersion = EOS_AUTH_LOGIN_API_LATEST;
 	if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
 	{
-		if(EIKSettings->bUseCountryScope)
+		/*if(EIKSettings->bUseCountryScope)
 		{
 			LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_FriendsList | EOS_EAuthScopeFlags::EOS_AS_Presence | EOS_EAuthScopeFlags::EOS_AS_Country;
 		}
@@ -749,7 +750,7 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 		{
 			LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_FriendsList | EOS_EAuthScopeFlags::EOS_AS_Presence;
 
-		}
+		}*/
 	}
 	else
 	{
@@ -874,7 +875,42 @@ void FUserManagerEOS::LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAcc
 	bool bIsPersistentLogin = false;
 	EOS_Auth_LoginOptions LoginOptions = { };
 	LoginOptions.ApiVersion = EOS_AUTH_LOGIN_API_LATEST;
-	LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_FriendsList | EOS_EAuthScopeFlags::EOS_AS_Presence | EOS_EAuthScopeFlags::EOS_AS_Country;
+	UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>();
+	if(EIKSettings)
+	{
+		if(EIKSettings->LoginFlags.Contains(EEIK_LoginFlags_LocalForSettings::T_EOS_AS_NoFlags))
+		{
+			LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_NoFlags;
+		}
+		else
+		{
+			if(EIKSettings->LoginFlags.Contains(EEIK_LoginFlags_LocalForSettings::EOS_AS_Email))
+			{
+				LoginOptions.ScopeFlags |= EOS_EAuthScopeFlags::EOS_AS_Email;
+			}
+			if(EIKSettings->LoginFlags.Contains(EEIK_LoginFlags_LocalForSettings::EOS_AS_FriendsList))
+			{
+				LoginOptions.ScopeFlags |= EOS_EAuthScopeFlags::EOS_AS_FriendsList;
+			}
+			if(EIKSettings->LoginFlags.Contains(EEIK_LoginFlags_LocalForSettings::EOS_AS_Presence))
+			{
+				LoginOptions.ScopeFlags |= EOS_EAuthScopeFlags::EOS_AS_Presence;
+			}
+			if(EIKSettings->LoginFlags.Contains(EEIK_LoginFlags_LocalForSettings::EOS_AS_Country))
+			{
+				LoginOptions.ScopeFlags |= EOS_EAuthScopeFlags::EOS_AS_Country;
+			}
+			if(EIKSettings->LoginFlags.Contains(EEIK_LoginFlags_LocalForSettings::EOS_AS_BasicProfile))
+			{
+				LoginOptions.ScopeFlags |= EOS_EAuthScopeFlags::EOS_AS_BasicProfile;
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogEIK, Warning, TEXT("EIKSettings is null in LoginViaAuthInterface, using default settings"));
+		LoginOptions.ScopeFlags = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_FriendsList | EOS_EAuthScopeFlags::EOS_AS_Presence;
+	}
 	EOS_Auth_Credentials TempCredentials;
 	if(AccountCredentials.Id.IsEmpty())
 	{
@@ -882,7 +918,9 @@ void FUserManagerEOS::LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAcc
 	}
 	else
 	{
-		TempCredentials.Id = TCHAR_TO_UTF8(*AccountCredentials.Id);
+		const char* IdRef = new char[EOS_MAX_TOKEN_SIZE];
+		FCStringAnsi::Strncpy(const_cast<char*>(IdRef), TCHAR_TO_ANSI(*AccountCredentials.Id), EOS_MAX_TOKEN_SIZE);
+		TempCredentials.Id = IdRef;
 	}
 	if(AccountCredentials.Token.IsEmpty())
 	{
@@ -890,7 +928,9 @@ void FUserManagerEOS::LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAcc
 	}
 	else
 	{
-		TempCredentials.Token = TCHAR_TO_UTF8(*AccountCredentials.Token);
+		const char* TokenRef = new char[EOS_MAX_TOKEN_SIZE];
+		FCStringAnsi::Strncpy(const_cast<char*>(TokenRef), TCHAR_TO_ANSI(*AccountCredentials.Token), EOS_MAX_TOKEN_SIZE);
+		TempCredentials.Token = TokenRef;
 	}
 	TempCredentials.ApiVersion = EOS_AUTH_CREDENTIALS_API_LATEST;
 	TempCredentials.Type = static_cast<EOS_ELoginCredentialType>(LoginCredentialType);

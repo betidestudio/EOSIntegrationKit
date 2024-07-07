@@ -36,7 +36,7 @@ void UEIK_Connect_VerifyIdToken::Activate()
 		{
 			EOS_Connect_VerifyIdTokenOptions VerifyIdTokenOptions = {};
 			VerifyIdTokenOptions.ApiVersion = EOS_CONNECT_VERIFYIDTOKEN_API_LATEST;
-			EOS_Connect_IdToken Temp = Var_IdToken.EOS_Connect_IdToken_FromStruct();
+			EOS_Connect_IdToken Temp = Var_IdToken.GetValueAsEosType();
 			VerifyIdTokenOptions.IdToken = &Temp;
 			EOS_Connect_VerifyIdToken(EOSRef->ConnectHandle, &VerifyIdTokenOptions, this, &UEIK_Connect_VerifyIdToken::OnVerifyIdTokenCallback);
 			return;

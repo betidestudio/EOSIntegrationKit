@@ -67,7 +67,7 @@ struct FEIK_Auth_LoginOptions
 	{
 		EOS_Auth_LoginOptions Options;
 		Options.ApiVersion = EOS_AUTH_LOGIN_API_LATEST;
-		EOS_Auth_Credentials CredentialsRef = Credentials.EOS_Auth_Credentials_FromStruct();
+		EOS_Auth_Credentials CredentialsRef = Credentials.GetValueAsEosType();
 		Options.Credentials = &CredentialsRef;
 		Options.ScopeFlags = static_cast<EOS_EAuthScopeFlags>(ScopeFlags);
 		Options.LoginFlags = LoginFlags;

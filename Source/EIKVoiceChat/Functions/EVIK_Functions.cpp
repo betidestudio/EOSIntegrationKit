@@ -328,7 +328,7 @@ void UEVIK_Functions::EOSRoomToken(FString VoiceRoomName, FString PlayerName, FS
 									continue;
 
 								auto& Object = Element->AsObject();
-								TokenString = Object->TryGetField("token")->AsString();
+								TokenString = Object->TryGetField(TEXT("token"))->AsString();
 								UE_LOG(LogTemp, Warning, TEXT("Token -> %s"), *TokenString);
 							}
 						}

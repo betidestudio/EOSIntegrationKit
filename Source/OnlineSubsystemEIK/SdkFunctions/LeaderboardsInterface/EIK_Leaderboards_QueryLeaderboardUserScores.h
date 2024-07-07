@@ -60,7 +60,7 @@ struct FEIK_Leaderboards_QueryLeaderboardUserScoresOptions
 		EOS_Leaderboards_UserScoresQueryStatInfo* TempStatInfo = new EOS_Leaderboards_UserScoresQueryStatInfo[Result.StatInfoCount];
 		for (int i = 0; i < StatInfo.Num(); i++)
 		{
-			TempStatInfo[i] = StatInfo[i].EOS_Leaderboards_UserScoresQueryStatInfo_FromStruct();
+			TempStatInfo[i] = StatInfo[i].GetValueAsEosType();
 		}
 		Result.UserIds = TempUserIds;
 		Result.StatInfo = TempStatInfo;

@@ -142,7 +142,7 @@ void UEIK_UiSubsystem::EIK_UI_RemoveNotifyDisplaySettingsUpdated(FEIK_Notificati
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_UI_RemoveNotifyDisplaySettingsUpdated(EOSRef->UIHandle, NotificationId.EOS_NotificationId_FromInt64());
+			EOS_UI_RemoveNotifyDisplaySettingsUpdated(EOSRef->UIHandle, NotificationId.GetValueAsEosType());
 		}
 	}
 }
@@ -154,7 +154,7 @@ void UEIK_UiSubsystem::EIK_UI_RemoveNotifyMemoryMonitor(FEIK_NotificationId Noti
 		{
 			if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 			{
-				EOS_UI_RemoveNotifyMemoryMonitor(EOSRef->UIHandle, NotificationId.EOS_NotificationId_FromInt64());
+				EOS_UI_RemoveNotifyMemoryMonitor(EOSRef->UIHandle, NotificationId.GetValueAsEosType());
 			}
 		}
 	}

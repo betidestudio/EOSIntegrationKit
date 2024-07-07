@@ -186,7 +186,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionModification_AddAttr
 			EOS_SessionModification_AddAttributeOptions Options;
 			Options.ApiVersion = EOS_SESSIONMODIFICATION_ADDATTRIBUTE_API_LATEST;
 			Options.AdvertisementType = static_cast<EOS_ESessionAttributeAdvertisementType>(AdvertisementType.GetValue());
-			EOS_Sessions_AttributeData LocalTemp = AttrData.GetAsEosData();
+			EOS_Sessions_AttributeData LocalTemp = AttrData.GetValueAsEosType();
 			Options.SessionAttribute = &LocalTemp;
 			return static_cast<EEIK_Result>(EOS_SessionModification_AddAttribute(Handle.Ref, &Options));
 		}
@@ -810,7 +810,7 @@ void UEIK_SessionsSubsystem::EIK_Sessions_RemoveNotifyJoinSessionAccepted(FEIK_N
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Sessions_RemoveNotifyJoinSessionAccepted(EOSRef->SessionsHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Sessions_RemoveNotifyJoinSessionAccepted(EOSRef->SessionsHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -821,7 +821,7 @@ void UEIK_SessionsSubsystem::EIK_Sessions_RemoveNotifyLeaveSessionRequested(FEIK
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Sessions_RemoveNotifyLeaveSessionRequested(EOSRef->SessionsHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Sessions_RemoveNotifyLeaveSessionRequested(EOSRef->SessionsHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -832,7 +832,7 @@ void UEIK_SessionsSubsystem::EIK_Sessions_RemoveNotifySendSessionNativeInviteReq
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Sessions_RemoveNotifySendSessionNativeInviteRequested(EOSRef->SessionsHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Sessions_RemoveNotifySendSessionNativeInviteRequested(EOSRef->SessionsHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -843,7 +843,7 @@ void UEIK_SessionsSubsystem::EIK_Sessions_RemoveNotifySessionInviteAccepted(FEIK
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Sessions_RemoveNotifySessionInviteAccepted(EOSRef->SessionsHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Sessions_RemoveNotifySessionInviteAccepted(EOSRef->SessionsHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -854,7 +854,7 @@ void UEIK_SessionsSubsystem::EIK_Sessions_RemoveNotifySessionInviteReceived(FEIK
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Sessions_RemoveNotifySessionInviteReceived(EOSRef->SessionsHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Sessions_RemoveNotifySessionInviteReceived(EOSRef->SessionsHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -865,7 +865,7 @@ void UEIK_SessionsSubsystem::EIK_Sessions_RemoveNotifySessionInviteRejected(FEIK
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Sessions_RemoveNotifySessionInviteRejected(EOSRef->SessionsHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Sessions_RemoveNotifySessionInviteRejected(EOSRef->SessionsHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -1021,7 +1021,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionSearch_SetParameter(
 			EOS_SessionSearch_SetParameterOptions Options;
 			Options.ApiVersion = EOS_SESSIONSEARCH_SETPARAMETER_API_LATEST;
 			Options.ComparisonOp = static_cast<EOS_EComparisonOp>(ComparisonOp.GetValue());
-			EOS_Sessions_AttributeData LocalData = Parameter.GetAsEosData();
+			EOS_Sessions_AttributeData LocalData = Parameter.GetValueAsEosType();
 			Options.Parameter = &LocalData;
 			return static_cast<EEIK_Result>(EOS_SessionSearch_SetParameter(*Handle.Ref, &Options));
 		}

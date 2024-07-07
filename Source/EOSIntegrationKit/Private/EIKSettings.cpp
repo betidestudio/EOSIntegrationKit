@@ -314,7 +314,14 @@ bool UEIKSettings::AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSA
 			return true;
 		}
 	}
-	UE_LOG(LogTemp, Error, TEXT("UEIKSettings::AutoGetSettingsForArtifact() failed due to missing config object specified. Check your project settings"));
+	if(!ArtifactNameOverride.IsEmpty())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to find artifact settings for %s"), *ArtifactNameOverride);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to find artifact settings or the default artifact because the name was empty. Please check project settings under EOS Integration Kit"));
+	}
 	return false;
 }
 
@@ -579,11 +586,6 @@ if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 	}
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
-}
-
-void UEIKSettings::PreSave(const ITargetPlatform* TargetPlatform)
-{
-	Super::PreSave(TargetPlatform);
 }
 
 #endif

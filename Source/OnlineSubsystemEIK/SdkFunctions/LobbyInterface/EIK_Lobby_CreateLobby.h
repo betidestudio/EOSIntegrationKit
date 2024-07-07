@@ -93,9 +93,9 @@ struct FEIK_Lobby_CreateLobbyOptions
 		Options.BucketId = TCHAR_TO_ANSI(*BucketId);
 		Options.bDisableHostMigration = bDisableHostMigration;
 		Options.bEnableRTCRoom = bEnableRTCRoom;
-		EOS_Lobby_LocalRTCOptions TempValue = LocalRTCOptions.EOS_Lobby_LocalRTCOptions_FromStruct();
+		EOS_Lobby_LocalRTCOptions TempValue = LocalRTCOptions.GetValueAsEosType();
 		Options.LocalRTCOptions = &TempValue;
-		Options.LobbyId = LobbyId.EOS_LobbyId_FromStruct();
+		Options.LobbyId = LobbyId.GetValueAsEosType();
 		Options.bEnableJoinById = bEnableJoinById;
 		Options.bRejoinAfterKickRequiresInvite = bRejoinAfterKickRequiresInvite;
 		Options.AllowedPlatformIdsCount = AllowedPlatformIds.Num();

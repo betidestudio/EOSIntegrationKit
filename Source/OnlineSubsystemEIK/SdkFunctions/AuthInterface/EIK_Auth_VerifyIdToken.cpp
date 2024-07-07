@@ -37,7 +37,7 @@ void UEIK_Auth_VerifyIdToken::Activate()
 		{
 			EOS_Auth_VerifyIdTokenOptions Options = {};
 			Options.ApiVersion = EOS_AUTH_VERIFYIDTOKEN_API_LATEST;
-			EOS_Auth_IdToken TokenRef = Var_IdToken.EOS_Auth_IdToken_FromStruct();
+			EOS_Auth_IdToken TokenRef = Var_IdToken.GetValueAsEosType();
 			Options.IdToken = &TokenRef;
 			EOS_Auth_VerifyIdToken(EOSRef->AuthHandle, &Options, this, &UEIK_Auth_VerifyIdToken::OnVerifyIdTokenCallback);
 			return;

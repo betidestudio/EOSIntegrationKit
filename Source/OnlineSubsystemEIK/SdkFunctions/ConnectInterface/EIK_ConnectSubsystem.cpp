@@ -177,7 +177,7 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserInfo(
 void UEIK_ConnectSubsystem::EIK_Connect_ExternalAccountInfo_Release(
 	FEIK_Connect_ExternalAccountInfo ExternalAccountInfo)
 {
-	EOS_Connect_ExternalAccountInfo ReleaseExternalAccountInfo = ExternalAccountInfo.EOS_Connect_ExternalAccountInfo_FromStruct();
+	EOS_Connect_ExternalAccountInfo ReleaseExternalAccountInfo = ExternalAccountInfo.GetValueAsEosType();
 	EOS_Connect_ExternalAccountInfo_Release(&ReleaseExternalAccountInfo);
 }
 
@@ -282,7 +282,7 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_GetProductUserIdMapp
 
 void UEIK_ConnectSubsystem::EIK_Connect_IdToken_Release(FEIK_Connect_IdToken IdToken)
 {
-	EOS_Connect_IdToken ReleaseIdToken = IdToken.EOS_Connect_IdToken_FromStruct();
+	EOS_Connect_IdToken ReleaseIdToken = IdToken.GetValueAsEosType();
 	EOS_Connect_IdToken_Release(&ReleaseIdToken);
 }
 

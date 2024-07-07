@@ -7,6 +7,7 @@
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineTitleFileInterface.h"
+#include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 UEIK_GetTitleData_AsyncFunction* UEIK_GetTitleData_AsyncFunction::GetTitleData(FString FileName)
 {
@@ -38,9 +39,8 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 				{
 					if (const UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
 					{
-						if (EIKSettings->bShowAdvancedLogs)
 						{
-							UE_LOG(LogTemp, Error,TEXT("EIK Log: GetTitleData: IdentityPointerRef->GetUniquePlayerId(0) is nullptr"));
+							UE_LOG(LogEIK, Error,TEXT("EIK Log: GetTitleData: IdentityPointerRef->GetUniquePlayerId(0) is nullptr"));
 						}
 					}
 					if (!bDelegateCalled)

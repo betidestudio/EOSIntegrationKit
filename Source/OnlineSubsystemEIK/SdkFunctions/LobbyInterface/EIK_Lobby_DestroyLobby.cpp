@@ -40,7 +40,7 @@ void UEIK_Lobby_DestroyLobby::Activate()
 			EOS_Lobby_DestroyLobbyOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_DESTROYLOBBY_API_LATEST;
 			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
-			Options.LobbyId = Var_LobbyId.EOS_LobbyId_FromStruct();
+			Options.LobbyId = Var_LobbyId.GetValueAsEosType();
 			EOS_Lobby_DestroyLobby(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, this, &UEIK_Lobby_DestroyLobby::OnDestroyLobbyComplete);
 			return;
 		}

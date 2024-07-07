@@ -22,7 +22,7 @@ void UEIK_Lobby_SendInvite::Activate()
 		{
 			EOS_Lobby_SendInviteOptions Options = { };
 			Options.ApiVersion = EOS_LOBBY_SENDINVITE_API_LATEST;
-			Options.LobbyId = Var_LobbyId.EOS_LobbyId_FromStruct();
+			Options.LobbyId = Var_LobbyId.GetValueAsEosType();
 			Options.TargetUserId = Var_TargetUserId.ProductUserId_FromString();
 			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
 			EOS_Lobby_SendInvite(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, this, &UEIK_Lobby_SendInvite::OnSendInviteComplete);

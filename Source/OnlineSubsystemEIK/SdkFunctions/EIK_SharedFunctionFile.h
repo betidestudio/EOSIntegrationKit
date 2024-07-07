@@ -408,7 +408,7 @@ struct FEIK_NotificationId
 		NotificationId = InNotificationId;
 	}
 
-	EOS_NotificationId EOS_NotificationId_FromInt64()
+	EOS_NotificationId GetValueAsEosType()
 	{
 		return NotificationId;
 	}
@@ -438,7 +438,7 @@ struct FEIK_Connect_IdToken
 		Token = UTF8_TO_TCHAR(InIdToken.JsonWebToken);
 	}
 
-	EOS_Connect_IdToken EOS_Connect_IdToken_FromStruct()
+	EOS_Connect_IdToken GetValueAsEosType()
 	{
 		EOS_Connect_IdToken IdToken;
 		IdToken.ApiVersion = EOS_CONNECT_IDTOKEN_API_LATEST;
@@ -744,7 +744,7 @@ struct FEIK_Connect_ExternalAccountInfo
 		LastLoginTime = InExternalAccountInfo.LastLoginTime;
 		AccountType = static_cast<EEIK_EExternalAccountType>(InExternalAccountInfo.AccountIdType);
 	}
-	EOS_Connect_ExternalAccountInfo EOS_Connect_ExternalAccountInfo_FromStruct()
+	EOS_Connect_ExternalAccountInfo GetValueAsEosType()
 	{
 		EOS_Connect_ExternalAccountInfo ExternalAccountInfo;
 		ExternalAccountInfo.ApiVersion = EOS_CONNECT_EXTERNALACCOUNTINFO_API_LATEST;
@@ -793,12 +793,13 @@ struct FEIK_Achievements_DefinitionV2
 
 	EOS_Achievements_DefinitionV2* DefinitionRef;
 	
-	FEIK_Achievements_DefinitionV2(): bIsHidden(false)
+	FEIK_Achievements_DefinitionV2(): bIsHidden(false), DefinitionRef(nullptr)
 	{
 	}
 
 	FEIK_Achievements_DefinitionV2(EOS_Achievements_DefinitionV2 InDefinition)
 	{
+		DefinitionRef = &InDefinition;
 		AchievementId = FString(UTF8_TO_TCHAR(InDefinition.AchievementId));
 		UnlockedDisplayName = FString(UTF8_TO_TCHAR(InDefinition.UnlockedDisplayName));
 		UnlockedDescription = FString(UTF8_TO_TCHAR(InDefinition.UnlockedDescription));
@@ -809,7 +810,7 @@ struct FEIK_Achievements_DefinitionV2
 		LockedIconURL = FString(UTF8_TO_TCHAR(InDefinition.LockedIconURL));
 		bIsHidden = InDefinition.bIsHidden == EOS_TRUE;
 	}
-	EOS_Achievements_DefinitionV2* GetReference()
+	EOS_Achievements_DefinitionV2* GetValueAsEosType()
 	{
 		return DefinitionRef;
 	}
@@ -878,7 +879,7 @@ struct FEIK_Achievements_PlayerAchievement
 
 	EOS_Achievements_PlayerAchievement* PlayerAchievementRef;
 
-	FEIK_Achievements_PlayerAchievement()
+	FEIK_Achievements_PlayerAchievement(): PlayerAchievementRef(nullptr)
 	{
 		AchievementId = "";
 		Progress = 0;
@@ -890,6 +891,7 @@ struct FEIK_Achievements_PlayerAchievement
 		IconURL = "";
 		FlavorText = "";
 	}
+
 	FEIK_Achievements_PlayerAchievement(EOS_Achievements_PlayerAchievement InPlayerAchievement)
 	{
 		PlayerAchievementRef = &InPlayerAchievement;
@@ -907,7 +909,7 @@ struct FEIK_Achievements_PlayerAchievement
 		FlavorText = UTF8_TO_TCHAR(InPlayerAchievement.FlavorText);
 	}
 
-	EOS_Achievements_PlayerAchievement* GetReference()
+	EOS_Achievements_PlayerAchievement* GetValueAsEosType()
 	{
 		return PlayerAchievementRef;
 	}
@@ -938,7 +940,7 @@ struct FEIK_Auth_IdToken
 		AccountId = InIdToken.AccountId;
 		JsonWebToken = UTF8_TO_TCHAR(InIdToken.JsonWebToken);
 	}
-	EOS_Auth_IdToken EOS_Auth_IdToken_FromStruct()
+	EOS_Auth_IdToken GetValueAsEosType()
 	{
 		return TokenRef;
 	}
@@ -1004,6 +1006,7 @@ struct FEIK_Auth_Token
 
 	FEIK_Auth_Token(EOS_Auth_Token InToken): TokenRef()
 	{
+		TokenRef = InToken;
 		App = UTF8_TO_TCHAR(InToken.App);
 		ClientId = UTF8_TO_TCHAR(InToken.ClientId);
 		AccountId = InToken.AccountId;
@@ -1015,7 +1018,7 @@ struct FEIK_Auth_Token
 		RefreshExpiresIn = InToken.RefreshExpiresIn;
 		RefreshExpiresAt = UTF8_TO_TCHAR(InToken.RefreshExpiresAt);
 	}
-	EOS_Auth_Token EOS_Auth_Token_FromStruct()
+	EOS_Auth_Token GetValueAsEosType()
 	{
 		return TokenRef;
 	}
@@ -1056,7 +1059,7 @@ struct FEIK_Auth_PinGrantInfo
 		VerificationURIComplete = UTF8_TO_TCHAR(InPinGrantInfo.VerificationURIComplete);
 	}
 
-	EOS_Auth_PinGrantInfo EOS_Auth_PinGrantInfo_FromStruct()
+	EOS_Auth_PinGrantInfo GetValueAsEosType()
 	{
 		return PinGrantInfo;
 	}
@@ -1134,7 +1137,7 @@ struct FEIK_Auth_Credentials
 		Type = EIK_LCT_Password;
 		ExternalType = EIK_ECT_EPIC;
 	}
-	EOS_Auth_Credentials EOS_Auth_Credentials_FromStruct()
+	EOS_Auth_Credentials GetValueAsEosType()
 	{
 		EOS_Auth_Credentials Credentials;
 		Credentials.ApiVersion = EOS_AUTH_CREDENTIALS_API_LATEST;
@@ -1167,6 +1170,7 @@ struct FEIK_Ecom_CatalogItemId
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Ecom Interface")
 	FString Value;
+	
 	EOS_Ecom_CatalogItemId Ref;
 
 	FEIK_Ecom_CatalogItemId(): Ref(nullptr)
@@ -1429,7 +1433,7 @@ struct FEIK_Ecom_CatalogOffer
 		ReleaseDateTimestamp = InCatalogOffer.ReleaseDateTimestamp;
 		EffectiveDateTimestamp = InCatalogOffer.EffectiveDateTimestamp;
 	}
-	EOS_Ecom_CatalogOffer EOS_Ecom_CatalogOffer_FromStruct()
+	EOS_Ecom_CatalogOffer GetValueAsEosType()
 	{
 		return Ref;
 	}
@@ -1706,7 +1710,7 @@ struct FEIK_Ecom_SandboxId
 		Ref = InSandboxId;
 		Value = UTF8_TO_TCHAR(InSandboxId);
 	}
-	EOS_Ecom_SandboxId EOS_Ecom_SandboxId_FromStruct()
+	EOS_Ecom_SandboxId GetValueAsEosType()
 	{
 		return Ref;
 	}
@@ -1893,7 +1897,7 @@ struct FEIK_Leaderboards_UserScoresQueryStatInfo
 	FEIK_Leaderboards_UserScoresQueryStatInfo(): StatName(), Aggregation(EEIK_ELeaderboardAggregation::EIK_LA_Min)
 	{
 	}
-	EOS_Leaderboards_UserScoresQueryStatInfo EOS_Leaderboards_UserScoresQueryStatInfo_FromStruct()
+	EOS_Leaderboards_UserScoresQueryStatInfo GetValueAsEosType()
 	{
 		EOS_Leaderboards_UserScoresQueryStatInfo UserScoresQueryStatInfo;
 		UserScoresQueryStatInfo.ApiVersion = EOS_LEADERBOARDS_USERSCORESQUERYSTATINFO_API_LATEST;
@@ -1943,7 +1947,7 @@ struct FEIK_LobbyId
 		Ref = InLobbyId;
 		Value = UTF8_TO_TCHAR(InLobbyId);
 	}
-	EOS_LobbyId EOS_LobbyId_FromStruct()
+	EOS_LobbyId GetValueAsEosType()
 	{
 		return Ref;
 	}
@@ -2175,7 +2179,7 @@ struct FEIK_Lobby_LocalRTCOptions
 		bUseManualAudioOutput = InLocalRTCOptions.bUseManualAudioOutput == EOS_TRUE;
 		bLocalAudioDeviceInputStartsMuted = InLocalRTCOptions.bLocalAudioDeviceInputStartsMuted == EOS_TRUE;
 	}
-	EOS_Lobby_LocalRTCOptions EOS_Lobby_LocalRTCOptions_FromStruct()
+	EOS_Lobby_LocalRTCOptions GetValueAsEosType()
 	{
 		EOS_Lobby_LocalRTCOptions LocalRTCOptions;
 		LocalRTCOptions.ApiVersion = EOS_LOBBY_LOCALRTCOPTIONS_API_LATEST;
@@ -2928,7 +2932,7 @@ struct FEIK_Sessions_AttributeData
 		ValueAsDouble = InAttributeData.Value.AsDouble;
 		ValueType = static_cast<EEIK_EAttributeType>(InAttributeData.ValueType);
 	}
-	EOS_Sessions_AttributeData GetAsEosData()
+	EOS_Sessions_AttributeData GetValueAsEosType()
 	{
 		EOS_Sessions_AttributeData AttributeData;
 		AttributeData.ApiVersion = EOS_SESSIONS_ATTRIBUTEDATA_API_LATEST;

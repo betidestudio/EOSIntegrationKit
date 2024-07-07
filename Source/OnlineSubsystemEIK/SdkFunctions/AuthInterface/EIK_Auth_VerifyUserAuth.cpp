@@ -37,7 +37,7 @@ void UEIK_Auth_VerifyUserAuth::Activate()
 		{
 			EOS_Auth_VerifyUserAuthOptions Options = {};
 			Options.ApiVersion = EOS_AUTH_VERIFYUSERAUTH_API_LATEST;
-			EOS_Auth_Token TokenRef = Var_AuthToken.EOS_Auth_Token_FromStruct();
+			EOS_Auth_Token TokenRef = Var_AuthToken.GetValueAsEosType();
 			Options.AuthToken = &TokenRef;
 			EOS_Auth_VerifyUserAuth(EOSRef->AuthHandle, &Options, this, &UEIK_Auth_VerifyUserAuth::OnVerifyUserAuthCallback);
 			return;

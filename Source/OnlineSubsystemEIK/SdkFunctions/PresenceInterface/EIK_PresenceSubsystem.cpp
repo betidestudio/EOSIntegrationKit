@@ -155,7 +155,7 @@ void UEIK_PresenceSubsystem::EIK_Presence_RemoveNotifyJoinGameAccepted(FEIK_Noti
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Presence_RemoveNotifyJoinGameAccepted(EOSRef->PresenceHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Presence_RemoveNotifyJoinGameAccepted(EOSRef->PresenceHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -166,7 +166,7 @@ void UEIK_PresenceSubsystem::EIK_Presence_RemoveNotifyOnPresenceChanged(FEIK_Not
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Presence_RemoveNotifyOnPresenceChanged(EOSRef->PresenceHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Presence_RemoveNotifyOnPresenceChanged(EOSRef->PresenceHandle, InId.GetValueAsEosType());
 		}
 	}
 }

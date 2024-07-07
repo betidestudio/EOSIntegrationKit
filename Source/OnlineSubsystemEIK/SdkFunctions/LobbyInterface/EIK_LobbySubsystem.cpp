@@ -39,7 +39,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyJoinLobbyAccepted(FEIK_Notificat
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifyJoinLobbyAccepted(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifyJoinLobbyAccepted(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -75,7 +75,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyLeaveLobbyRequested(FEIK_Notific
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifyLeaveLobbyRequested(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifyLeaveLobbyRequested(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -111,7 +111,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyLobbyInviteAccepted(FEIK_Notific
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifyLobbyInviteAccepted(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifyLobbyInviteAccepted(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -147,7 +147,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyLobbyInviteReceived(FEIK_Notific
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifyLobbyInviteReceived(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifyLobbyInviteReceived(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -183,7 +183,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyLobbyInviteRejected(FEIK_Notific
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifyLobbyInviteRejected(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifyLobbyInviteRejected(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -194,7 +194,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyLobbyMemberStatusReceived(FEIK_N
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifyLobbyMemberStatusReceived(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifyLobbyMemberStatusReceived(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -205,7 +205,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyLobbyMemberUpdateReceived(FEIK_N
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifyLobbyMemberUpdateReceived(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifyLobbyMemberUpdateReceived(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -216,7 +216,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyLobbyUpdateReceived(FEIK_Notific
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifyLobbyUpdateReceived(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifyLobbyUpdateReceived(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -227,7 +227,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyRTCRoomConnectionChanged(FEIK_No
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifyRTCRoomConnectionChanged(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifyRTCRoomConnectionChanged(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }
@@ -238,7 +238,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifySendLobbyNativeInviteRequested(F
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_RemoveNotifySendLobbyNativeInviteRequested(EOSRef->SessionInterfacePtr->LobbyHandle, InId.EOS_NotificationId_FromInt64());
+			EOS_Lobby_RemoveNotifySendLobbyNativeInviteRequested(EOSRef->SessionInterfacePtr->LobbyHandle, InId.GetValueAsEosType());
 		}
 	}
 }

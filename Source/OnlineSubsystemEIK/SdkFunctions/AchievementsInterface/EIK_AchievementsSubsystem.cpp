@@ -71,7 +71,7 @@ TEnumAsByte<EEIK_Result> UEIK_AchievementsSubsystem::EIK_Achievements_CopyPlayer
 void UEIK_AchievementsSubsystem::EIK_Achievements_DefinitionV2_Release(
 	FEIK_Achievements_DefinitionV2& AchievementDefinition)
 {
-	EOS_Achievements_DefinitionV2_Release(AchievementDefinition.GetReference());
+	EOS_Achievements_DefinitionV2_Release(AchievementDefinition.GetValueAsEosType());
 }
 
 int32 UEIK_AchievementsSubsystem::EIK_Achievements_GetAchievementDefinitionCount()
@@ -108,7 +108,7 @@ int32 UEIK_AchievementsSubsystem::EIK_Achievements_GetPlayerAchievementCount(FEI
 void UEIK_AchievementsSubsystem::EIK_Achievements_PlayerAchievement_Release(
 	FEIK_Achievements_PlayerAchievement& PlayerAchievement)
 {
-	EOS_Achievements_PlayerAchievement_Release(PlayerAchievement.GetReference());
+	EOS_Achievements_PlayerAchievement_Release(PlayerAchievement.GetValueAsEosType());
 }
 
 TEnumAsByte<EEIK_Result> UEIK_AchievementsSubsystem::EIK_Achievements_QueryDefinitions(FEIK_ProductUserId UserId)
@@ -134,7 +134,7 @@ void UEIK_AchievementsSubsystem::EIK_Achievements_RemoveNotifyAchievementsUnlock
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Achievements_RemoveNotifyAchievementsUnlocked(EOSRef->AchievementsHandle, Id.EOS_NotificationId_FromInt64());
+			EOS_Achievements_RemoveNotifyAchievementsUnlocked(EOSRef->AchievementsHandle, Id.GetValueAsEosType());
 		}
 	}
 }

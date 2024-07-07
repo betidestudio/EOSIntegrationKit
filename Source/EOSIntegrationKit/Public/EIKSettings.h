@@ -100,6 +100,24 @@ enum class EAutoLoginTypes : uint8 {
 	DeviceID        UMETA(DisplayName="Device ID"),
 };
 
+UENUM(BlueprintType)
+enum EEIK_LoginFlags_LocalForSettings
+{
+	T_EOS_AS_NoFlags = 0 UMETA(DisplayName = "No Flags"),
+	/** Permissions to see your account ID, display name, and language */
+	EOS_AS_BasicProfile = 0x1 UMETA(DisplayName = "Basic Profile"),
+	/** Permissions to see a list of your friends who use this application */
+	EOS_AS_FriendsList = 0x2 UMETA(DisplayName = "Friends List"),
+	/** Permissions to set your online presence and see presence of your friends */
+	EOS_AS_Presence = 0x4 UMETA(DisplayName = "Presence"),
+	/** Permissions to manage the Epic friends list. This scope is restricted to Epic first party products, and attempting to use it will result in authentication failures. */
+	EOS_AS_FriendsManagement = 0x8 UMETA(DisplayName = "Friends Management"),
+	/** Permissions to see email in the response when fetching information for a user. This scope is restricted to Epic first party products, and attempting to use it will result in authentication failures. */
+	EOS_AS_Email = 0x10 UMETA(DisplayName = "Email"),
+	/** Permissions to see your country */
+	EOS_AS_Country = 0x20 UMETA(DisplayName = "Country"),
+};
+
 UCLASS(Config=Engine, DefaultConfig)
 class EOSINTEGRATIONKIT_API UEIKSettings :
 	public URuntimeOptionsBase
@@ -121,20 +139,15 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
 	FString ProductName;
 	/** Auto-Logins the player into the game. Can be used for testing or games with only 1 type of login */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings")
 	EAutoLoginTypes AutoLoginType;
-	/** This will request the country code from the EOS SDK and login */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
-	bool bUseCountryScope;	
-	/** This will show the advanced logs for the EOS SDK and EOS Integration Kit functions*/
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
-	bool bShowAdvancedLogs;
-
-	/** Select which level which leave party button in social overlay will return to. Leave empty to return to defult game map. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EIK Level Settings")
-	FString ReturnLevelName;
+	
+	/** LoginFlags help define what permissions the user has when they login. */ 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings")
+	TArray<TEnumAsByte<EEIK_LoginFlags_LocalForSettings>> LoginFlags = {EEIK_LoginFlags_LocalForSettings::EOS_AS_BasicProfile, EEIK_LoginFlags_LocalForSettings::EOS_AS_FriendsList, EEIK_LoginFlags_LocalForSettings::EOS_AS_Presence};
 
 	/*Your api key found in Game Services -> Player Ticketing -> [Show Api Key]*/
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Support Tickets")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings|Player Ticketing Settings")
 	FString ApiKey;
 	
 	/**
@@ -143,7 +156,7 @@ public:
 	 * <UserDir>/<ArtifactId>/<CacheDir>
 	*/
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Title Storage Settings")
 	FString CacheDir = TEXT("CacheDir");
 
 	/** Used to throttle how much time EOS ticking can take */
@@ -151,15 +164,19 @@ public:
 	int32 TickBudgetInMilliseconds = 0;
 
 	/** Set to true to enable the overlay (ecom features) */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Overlay Settings")
 	bool bEnableOverlay = false;
 
 	/** Set to true to enable the social overlay (friends, invites, etc.) */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Overlay Settings")
 	bool bEnableSocialOverlay = false;
 
+	/** Select which level which leave party button in social overlay will return to. Leave empty to return to defult game map. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings|Overlay Settings")
+	FString ReturnLevelName;
+
 	/** Set to true to enable the overlay when running in the editor */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings|Overlay Settings")
 	bool bEnableEditorOverlay = false;
 
 	/** Set to true to enable the social overlay (friends, invites, etc.) */
@@ -167,11 +184,11 @@ public:
 	bool bShouldEnforceBeingLaunchedByEGS = false;
 
 	/** Tag combinations for paged queries in title file enumerations, separate tags within groups using `+` */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Title Storage Settings")
 	TArray<FString> TitleStorageTags;
 
 	/** Chunk size used when reading a title file */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Title Storage Settings")
 	int32 TitleStorageReadChunkLength = 0;
 
 	/** Used when launched from a store other than EGS or when the specified artifact name was not present */
@@ -243,7 +260,6 @@ private:
 #if WITH_EDITOR
 	EAppReturnType::Type ShowRestartWarning(const FText& Title);
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-	virtual void PreSave(const ITargetPlatform* TargetPlatform) override;
 #endif
 	static bool AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings);
 	static bool ManualGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings);

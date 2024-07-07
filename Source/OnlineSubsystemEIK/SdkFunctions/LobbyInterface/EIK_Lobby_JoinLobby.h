@@ -44,7 +44,7 @@ struct FEIK_Lobby_JoinLobbyOptions
 		Options.LobbyDetailsHandle = *LobbyDetailsHandle.Ref;
 		Options.LocalUserId = LocalUserId.ProductUserId_FromString();
 		Options.bPresenceEnabled = bPresenceEnabled ? EOS_TRUE : EOS_FALSE;
-		EOS_Lobby_LocalRTCOptions VarTemp = LobbyRTCOptions.EOS_Lobby_LocalRTCOptions_FromStruct();
+		EOS_Lobby_LocalRTCOptions VarTemp = LobbyRTCOptions.GetValueAsEosType();
 		Options.LocalRTCOptions = &VarTemp;
 		Options.bCrossplayOptOut = bCrossplayOptOut ? EOS_TRUE : EOS_FALSE;
 		return Options;

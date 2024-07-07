@@ -157,7 +157,7 @@ TEnumAsByte<EEIK_Result> UEIK_AuthSubsystem::EIK_Auth_GetSelectedAccountId(const
 
 void UEIK_AuthSubsystem::EIK_Auth_IdToken_Release(FEIK_Auth_IdToken& Token)
 {
-	EOS_Auth_IdToken ReleaseToken = Token.EOS_Auth_IdToken_FromStruct();
+	EOS_Auth_IdToken ReleaseToken = Token.GetValueAsEosType();
 	EOS_Auth_IdToken_Release(&ReleaseToken);
 }
 
@@ -167,7 +167,7 @@ void UEIK_AuthSubsystem::EIK_Auth_RemoveNotifyLoginStatusChanged(FEIK_Notificati
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Auth_RemoveNotifyLoginStatusChanged(EOSRef->AuthHandle, NotificationId.EOS_NotificationId_FromInt64());
+			EOS_Auth_RemoveNotifyLoginStatusChanged(EOSRef->AuthHandle, NotificationId.GetValueAsEosType());
 			return;
 		}
 	}
@@ -176,6 +176,6 @@ void UEIK_AuthSubsystem::EIK_Auth_RemoveNotifyLoginStatusChanged(FEIK_Notificati
 
 void UEIK_AuthSubsystem::EIK_Auth_Token_Release(FEIK_Auth_Token& Token)
 {
-	EOS_Auth_Token ReleaseToken = Token.EOS_Auth_Token_FromStruct();
+	EOS_Auth_Token ReleaseToken = Token.GetValueAsEosType();
 	EOS_Auth_Token_Release(&ReleaseToken);
 }
