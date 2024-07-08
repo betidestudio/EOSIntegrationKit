@@ -503,8 +503,8 @@ bool FOnlineSubsystemEOS::Tick(float DeltaTime)
 	}
 
 	SessionInterfacePtr->Tick(DeltaTime);
+	UserManager->Tick(DeltaTime);
 	FOnlineSubsystemImpl::Tick(DeltaTime);
-
 	return true;
 }
 

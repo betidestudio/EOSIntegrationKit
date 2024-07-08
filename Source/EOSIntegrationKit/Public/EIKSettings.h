@@ -62,7 +62,7 @@ public:
 	FString DeploymentId;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Artifact Settings")
-	FString EncryptionKey;
+	FString EncryptionKey = TEXT("9B86F278E855EE69855A5CAE0B1AD04166A143FD98CF96EC71AA4409F9B301C3");
 
 	FEOSArtifactSettings ToNative() const;
 };
@@ -93,11 +93,36 @@ struct FEOSSettings
 };
 
 UENUM(BlueprintType)
-enum class EAutoLoginTypes : uint8 {
+enum EEIK_AutoLoginType {
 	None 			UMETA(DisplayName="None"),
-	AccountPortal       UMETA(DisplayName="Account Portal"),
-	PersistentAuth              UMETA(DisplayName="Persistent Auth"),
-	DeviceID        UMETA(DisplayName="Device ID"),
+	/** Persistent Auth will automatically log the user in with EAS credentials if they have previously logged in */
+	AutoLogin_PersistentAuth 	UMETA(DisplayName="Persistent Auth"),
+	/** Device ID login will automatically log the user in with the device ID */
+	AutoLogin_DeviceIdLogin 	UMETA(DisplayName="Device ID Login"),
+	/** Account Portal login will automatically log the user in with the Epic Account Portal */
+	AutoLogin_AccountPortalLogin 	UMETA(DisplayName="Account Portal Login"),
+	/** Platform login will automatically log the user in with the platform's login system */
+	AutoLogin_PlatformLogin 	UMETA(DisplayName="Platform Login"),
+	/** Steam login will automatically log the user in with the Steam login system */
+	AutoLogin_SteamLogin 	UMETA(DisplayName="Steam Login"),
+	/** (NOT ACTIVE ATM) PSN login will automatically log the user in with the PSN login system */
+	AutoLogin_PSNLogin 	UMETA(DisplayName="PSN Login"),
+	/** Google login will automatically log the user in with the Google login system but only works on Android */
+	AutoLogin_GoogleLogin 	UMETA(DisplayName="Google Login"),
+	/** Apple login will automatically log the user in with the Apple login system but only works on iOS */
+	AutoLogin_AppleLogin 	UMETA(DisplayName="Apple Login"),
+	
+};
+
+UENUM(BlueprintType)
+enum EEIK_FallbackForAutoLoginType
+{
+	/** No fallback */
+	Fallback_None UMETA(DisplayName="None"),
+	/** Use the device id login */
+	Fallback_DeviceIdLogin UMETA(DisplayName="Device ID Login"),
+	/** Use the Epic Account Portal login */
+	Fallback_AccountPortalLogin UMETA(DisplayName="Account Portal Login")
 };
 
 UENUM(BlueprintType)
@@ -138,9 +163,18 @@ public:
 	/** Products are games or other software projects that contain sandboxes and deployments within EOS. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
 	FString ProductName;
+	
 	/** Auto-Logins the player into the game. Can be used for testing or games with only 1 type of login */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings")
-	EAutoLoginTypes AutoLoginType;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
+	TEnumAsByte<EEIK_AutoLoginType> AutoLoginType;
+
+	/** If the AutoLoginType fails, this will be used as a fallback */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
+	TEnumAsByte<EEIK_FallbackForAutoLoginType> FallbackForAutoLoginType;
+
+	/** If true, the Auth Interface will be used to login the user, inshort, the user will be logged in using the Epic Account Services */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
+	bool bUse_EAS_ForAutoLogin = false;
 	
 	/** LoginFlags help define what permissions the user has when they login. */ 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings")

@@ -263,7 +263,11 @@ public:
 
 	void Init();
 	void Shutdown();
-
+	void Tick(float DeltaTime);
+	virtual bool AutoLogin(int32 LocalUserNum) override;
+	virtual bool AutoLoginWithFallback(int32 LocalUserNum);
+	bool bAutoLoginAttempted = false;
+	bool bAutoLoginInProgress = false;
 
 	
 
@@ -283,7 +287,6 @@ public:
 	static EEIK_EExternalCredentialType GetExternalCredentialType(const FString& Type);
 	static EEIK_ELoginCredentialType GetLoginCredentialType(const FString& Type);
 	virtual bool Logout(int32 LocalUserNum) override;
-	virtual bool AutoLogin(int32 LocalUserNum) override;
 	virtual TSharedPtr<FUserOnlineAccount> GetUserAccount(const FUniqueNetId& UserId) const override;
 	virtual TArray<TSharedPtr<FUserOnlineAccount>> GetAllUserAccounts() const override;
 	virtual FUniqueNetIdPtr GetUniquePlayerId(int32 LocalUserNum) const override;
