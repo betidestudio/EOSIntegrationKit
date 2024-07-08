@@ -182,6 +182,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_ParseLobbyIdFromConnectString")
 	TEnumAsByte<EEIK_Result> EIK_Lobby_ParseLobbyIdFromConnectString(FString ConnectString, FEIK_LobbyId& OutLobbyId);
 
+	//Creates a lobby modification handle (EOS_HLobbyModification). The lobby modification handle is used to modify an existing lobby and can be applied with EOS_Lobby_UpdateLobby. The EOS_HLobbyModification must be released by calling EOS_LobbyModification_Release once it is no longer needed.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_Lobby_UpdateLobbyModification")
+	TEnumAsByte<EEIK_Result> EIK_Lobby_UpdateLobbyModification(FEIK_ProductUserId LocalUserId, FEIK_LobbyId LobbyId, FEIK_HLobbyModification& OutLobbyModificationHandle);
+	
 	//EOS_LobbyDetails_CopyAttributeByIndex is used to immediately retrieve a copy of a lobby attribute from a given source such as a existing lobby or a search result. If the call returns an EOS_Success result, the out parameter, OutAttribute, must be passed to EOS_Lobby_Attribute_Release to release the memory associated with it.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface", DisplayName="EOS_LobbyDetails_CopyAttributeByIndex")
 	TEnumAsByte<EEIK_Result> EIK_LobbyDetails_CopyAttributeByIndex(FEIK_HLobbyDetails LobbyDetailsHandle, int32 AttrIndex, FEIK_Lobby_Attribute& OutAttribute);

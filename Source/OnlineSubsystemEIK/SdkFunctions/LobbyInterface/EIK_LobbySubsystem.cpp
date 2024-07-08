@@ -451,6 +451,26 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_ParseLobbyIdFromConnectS
 	return EEIK_Result::EOS_NotFound;
 }
 
+TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_UpdateLobbyModification(FEIK_ProductUserId LocalUserId,
+	FEIK_LobbyId LobbyId, FEIK_HLobbyModification& OutLobbyModificationHandle)
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
+			EOS_Lobby_UpdateLobbyModificationOptions Options = {};
+			Options.ApiVersion = EOS_LOBBY_UPDATELOBBYMODIFICATION_API_LATEST;
+			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LobbyId = LobbyId.Ref;
+			EOS_HLobbyModification Handle = nullptr;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_UpdateLobbyModification(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &Handle));
+			OutLobbyModificationHandle = &Handle;
+			return Result;
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Lobby_UpdateLobbyModification: OnlineSubsystemEOS is not valid"));
+	return EEIK_Result::EOS_NotFound;
+}
+
 TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyAttributeByIndex(
 	FEIK_HLobbyDetails LobbyDetailsHandle, int32 AttrIndex, FEIK_Lobby_Attribute& OutAttribute)
 {
