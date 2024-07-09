@@ -7,7 +7,6 @@
 #include "OnlineSubsystemEOS.h"
 
 //LogEIK
-DEFINE_LOG_CATEGORY(LogEIK);
 
 FEIK_NotificationId UEIK_ConnectSubsystem::EIK_Connect_AddNotifyAuthExpiration(const FOnAuthExpirationCallback& Callback)
 {

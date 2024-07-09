@@ -7,11 +7,9 @@
 #include "OnlineSubsystemEOS.h"
 #include "UserManagerEOS.h"
 
-UEIK_GetPlatformAuthToken_AsyncFunction* UEIK_GetPlatformAuthToken_AsyncFunction::GetPlatformAuthToken(
-	TEnumAsByte<EEIK_PlatformToUse> PlatformToUse)
+UEIK_GetPlatformAuthToken_AsyncFunction* UEIK_GetPlatformAuthToken_AsyncFunction::GetPlatformAuthToken()
 {
 	UEIK_GetPlatformAuthToken_AsyncFunction* Node = NewObject<UEIK_GetPlatformAuthToken_AsyncFunction>();
-	Node->PlatformToUse = PlatformToUse;
 	return Node;
 }
 
@@ -33,21 +31,19 @@ void UEIK_GetPlatformAuthToken_AsyncFunction::OnGetPlatformAuthTokenComplete(int
 void UEIK_GetPlatformAuthToken_AsyncFunction::Activate()
 {
 	Super::Activate();
-	if(PlatformToUse == EEIK_PlatformToUse::Steam)
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
 	{
-		if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+			if(FUserManagerEOS* UserManager = EOSRef->UserManager.Get())
 			{
-				if(FUserManagerEOS* UserManager = EOSRef->UserManager.Get())
-				{
-					FUserManagerEOS::FOnGetLinkedAccountAuthTokenCompleteDelegate Delegate = FUserManagerEOS::FOnGetLinkedAccountAuthTokenCompleteDelegate::CreateUObject(this, &UEIK_GetPlatformAuthToken_AsyncFunction::OnGetPlatformAuthTokenComplete);
-					UserManager->GetPlatformAuthToken(0,Delegate);
-					return;
-				}
+				FUserManagerEOS::FOnGetLinkedAccountAuthTokenCompleteDelegate Delegate = FUserManagerEOS::FOnGetLinkedAccountAuthTokenCompleteDelegate::CreateUObject(this, &UEIK_GetPlatformAuthToken_AsyncFunction::OnGetPlatformAuthTokenComplete);
+				UserManager->GetPlatformAuthToken(0,Delegate);
+				return;
 			}
 		}
 	}
+	
 	SetReadyToDestroy();
 	MarkAsGarbage();
 }

@@ -15,6 +15,7 @@ enum EEIK_PlatformToUse
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetPlatformAuthTokenComplete, const FString&, AuthToken);
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_GetPlatformAuthToken_AsyncFunction : public UBlueprintAsyncActionBase
 {
@@ -22,8 +23,8 @@ class ONLINESUBSYSTEMEIK_API UEIK_GetPlatformAuthToken_AsyncFunction : public UB
 
 public:
 
-	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"))
-	static UEIK_GetPlatformAuthToken_AsyncFunction* GetPlatformAuthToken(TEnumAsByte<EEIK_PlatformToUse> PlatformToUse);
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), DisplayName="Get Steam Auth Token", Category = "EOS Integration Kit|Extra")
+	static UEIK_GetPlatformAuthToken_AsyncFunction* GetPlatformAuthToken();
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnGetPlatformAuthTokenComplete OnSuccess;
@@ -31,7 +32,6 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnGetPlatformAuthTokenComplete OnFailure;
 private:
-	TEnumAsByte<EEIK_PlatformToUse> PlatformToUse;
 	void OnGetPlatformAuthTokenComplete(int I, bool bArg, const FExternalAuthToken& ExternalAuthToken);
 	virtual void Activate() override;
 	

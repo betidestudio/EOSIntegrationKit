@@ -8,7 +8,6 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "EIK_ConnectSubsystem.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogEIK, Verbose, All);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthExpirationCallback, FEIK_ProductUserId, LocalUserId);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLoginStatusChangedCallback, FEIK_ProductUserId, LocalUserId, const TEnumAsByte<EIK_ELoginStatus>&, LoginStatus);
 

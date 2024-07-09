@@ -2,3 +2,4 @@
 
 
 #include "EIK_SharedFunctionFile.h"
+DEFINE_LOG_CATEGORY(LogEIK);
