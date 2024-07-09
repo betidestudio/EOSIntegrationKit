@@ -13,6 +13,7 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_auth_types.h"
 #include "eos_friends_types.h"
 #include "eos_sessions_types.h"
+#include "eos_rtc_admin_types.h"
 #include "eos_presence_types.h"
 #include "eos_p2p.h"
 #include "eos_p2p_types.h"
@@ -3346,6 +3347,220 @@ enum EEIK_EPacketReliability
 	EIK_PR_ReliableOrdered = 2
 };
 
+USTRUCT(BlueprintType)
+struct FEIK_RTC_Option
+{
+	GENERATED_BODY()
+
+	//The unique key of the option. The max size of the string is EOS_RTC_OPTION_KEY_MAXCHARCOUNT
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Interface")
+	FString Key;
+
+	//The value of the option. The max size of the string is EOS_RTC_OPTION_VALUE_MAXCHARCOUNT.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Interface")
+	FString Value;
+
+	FEIK_RTC_Option(): Key(), Value()
+	{
+	}
+	FEIK_RTC_Option(EOS_RTC_Option InOption)
+	{
+		Key = FString(UTF8_TO_TCHAR(InOption.Key));
+		Value = FString(UTF8_TO_TCHAR(InOption.Value));
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_RTCAdmin_UserToken
+{
+	GENERATED_BODY()
+
+	//The Product User ID for the user who owns this user token
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Admin Interface")
+	FEIK_ProductUserId ProductUserId;
+
+	//Access token to enable a user to join a room
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Admin Interface")
+	FString Token;
+
+	FEIK_RTCAdmin_UserToken(): ProductUserId(), Token()
+	{
+	}
+	FEIK_RTCAdmin_UserToken(EOS_RTCAdmin_UserToken InUserToken)
+	{
+		ProductUserId = InUserToken.ProductUserId;
+		Token = FString(UTF8_TO_TCHAR(InUserToken.Token));
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_RTCAudio_AudioBuffer
+{
+	GENERATED_BODY()
+
+	/** Pointer to the data with the interleaved audio frames in signed 16 bits format. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	TArray<int32> Data;
+
+	/**
+ * Number of frames available in the Frames buffer.
+ * @note This is the number of frames in a channel, not the total number of frames in the buffer.
+ */
+ 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	int32 FramesCount;
+
+	/** Sample rate for the samples in the Frames buffer. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	int32 SampleRate;
+
+	/** Number of channels for the samples in the Frames buffer. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	int32 NumChannels;
+
+	EOS_RTCAudio_AudioBuffer GetValueAsEosType() const
+	{
+		EOS_RTCAudio_AudioBuffer AudioBuffer;
+		AudioBuffer.ApiVersion = EOS_RTCAUDIO_AUDIOBUFFER_API_LATEST;
+		AudioBuffer.Frames = new int16[Data.Num()];
+		for (int32 i = 0; i < Data.Num(); i++)
+		{
+			AudioBuffer.Frames[i] = Data[i];
+		}
+		AudioBuffer.FramesCount = FramesCount;
+		AudioBuffer.SampleRate = SampleRate;
+		AudioBuffer.Channels = NumChannels;
+		return AudioBuffer;
+	}
+	FEIK_RTCAudio_AudioBuffer(): Data(), FramesCount(0), SampleRate(0), NumChannels(0)
+	{
+	}
+	FEIK_RTCAudio_AudioBuffer(EOS_RTCAudio_AudioBuffer InAudioBuffer)
+	{
+		Data.Empty();
+		for (int32 i = 0; i < static_cast<int32>(InAudioBuffer.FramesCount * InAudioBuffer.Channels); i++)
+		{
+			Data.Add(InAudioBuffer.Frames[i]);
+		}
+		FramesCount = InAudioBuffer.FramesCount;
+		SampleRate = InAudioBuffer.SampleRate;
+		NumChannels = InAudioBuffer.Channels;
+	}
+	FEIK_RTCAudio_AudioBuffer(EOS_RTCAudio_AudioBuffer* InAudioBuffer)
+	{
+		Data.Empty();
+		for (int32 i = 0; i < static_cast<int32>(InAudioBuffer->FramesCount * InAudioBuffer->Channels); i++)
+		{
+			Data.Add(InAudioBuffer->Frames[i]);
+		}
+		FramesCount = InAudioBuffer->FramesCount;
+		SampleRate = InAudioBuffer->SampleRate;
+		NumChannels = InAudioBuffer->Channels;
+	}
+};
+
+
+UENUM(BlueprintType)
+enum EEIK_ERTCAudioInputStatus
+{
+	EIK_RTCAIS_Idle = 0 UMETA(DisplayName = "Idle"),
+	EIK_RTCAIS_Recording = 1 UMETA(DisplayName = "Recording"),
+	EIK_RTCAIS_RecordingSilent = 2 UMETA(DisplayName = "Recording Silent"),
+	EIK_RTCAIS_RecordingDisconnected = 3 UMETA(DisplayName = "Recording Disconnected"),
+	EIK_RTCAIS_Failed = 4 UMETA(DisplayName = "Failed"),
+};
+
+UENUM(BlueprintType)
+enum EEIK_ERTCAudioOutputStatus
+{
+	EIK_RTCAOS_Idle = 0 UMETA(DisplayName = "Idle"),
+	EIK_RTCAOS_Playing = 1 UMETA(DisplayName = "Playing"),
+	EIK_RTCAOS_Failed = 2 UMETA(DisplayName = "Failed"),
+};
+
+UENUM(BlueprintType)
+enum EEIK_ERTCAudioStatus
+{
+	EIK_RTCAS_Unsupported = 0 UMETA(DisplayName = "Unsupported"),
+	EIK_RTCAS_Enabled = 1 UMETA(DisplayName = "Enabled"),
+	//Audio disabled
+	EIK_RTCAS_Disabled = 2 UMETA(DisplayName = "Disabled"),
+	//Audio disabled by the administrator
+	EIK_RTCAS_DisabledByAdmin = 3 UMETA(DisplayName = "Disabled By Admin"),
+	//Audio channel is disabled temporarily for both sending and receiving
+	EIK_RTCAS_NotListeningDisabled = 4 UMETA(DisplayName = "Not Listening Disabled"),
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_RTCAudio_InputDeviceInformation
+{
+	GENERATED_BODY()
+
+	//True if this is the default audio input device in the system
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	bool bDefaultDevice;
+
+	//The persistent unique id of the audio input device. The value can be cached - invalidated only when the audio device pool is changed.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	FString DeviceId;
+
+	//Human-readable name of the audio input device
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	FString DeviceName;
+
+	EOS_RTCAudio_InputDeviceInformation Ref;
+	FEIK_RTCAudio_InputDeviceInformation(): bDefaultDevice(false), DeviceId(), DeviceName(), Ref()
+	{
+	}
+
+	FEIK_RTCAudio_InputDeviceInformation(EOS_RTCAudio_InputDeviceInformation InInputDeviceInformation)
+	{
+		Ref = InInputDeviceInformation;
+		bDefaultDevice = InInputDeviceInformation.bDefaultDevice == EOS_TRUE;
+		DeviceId = FString(UTF8_TO_TCHAR(InInputDeviceInformation.DeviceId));
+		DeviceName = FString(UTF8_TO_TCHAR(InInputDeviceInformation.DeviceName));
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEIK_RTCAudio_OutputDeviceInformation
+{
+	GENERATED_BODY()
+
+	//True if this is the default audio output device in the system.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	bool bDefaultDevice;
+
+	//The persistent unique id of the audio output device. The value can be cached - invalidated only when the audio device pool is changed.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	FString DeviceId;
+
+	//Human-readable name of the audio output device
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | RTC Audio Interface")
+	FString DeviceName;
+
+	EOS_RTCAudio_OutputDeviceInformation Ref;
+	FEIK_RTCAudio_OutputDeviceInformation(): bDefaultDevice(false), DeviceId(), DeviceName(), Ref()
+	{
+	}
+
+	FEIK_RTCAudio_OutputDeviceInformation(EOS_RTCAudio_OutputDeviceInformation InOutputDeviceInformation)
+	{
+		Ref = InOutputDeviceInformation;
+		bDefaultDevice = InOutputDeviceInformation.bDefaultDevice == EOS_TRUE;
+		DeviceId = FString(UTF8_TO_TCHAR(InOutputDeviceInformation.DeviceId));
+		DeviceName = FString(UTF8_TO_TCHAR(InOutputDeviceInformation.DeviceName));
+	}
+};
+
+
+UENUM(BlueprintType)
+enum EEIK_ERTCDataStatus
+{
+	EIK_RTCDS_Unsupported = 0 UMETA(DisplayName = "Unsupported"),
+	EIK_RTCDS_Enabled = 1 UMETA(DisplayName = "Enabled"),
+	//Data disabled
+	EIK_RTCDS_Disabled = 2 UMETA(DisplayName = "Disabled"),
+};
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
