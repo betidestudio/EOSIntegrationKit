@@ -136,15 +136,9 @@ FString UEIK_Subsystem::GetPlayerNickname(const int32 LocalUserNum)
 		{
 			return IdentityPointerRef->GetPlayerNickname(LocalUserNum);
 		}
-		else
-		{
-			return FString();
-		}
-	}
-	else
-	{
 		return FString();
 	}
+	return FString();
 }
 
 /*

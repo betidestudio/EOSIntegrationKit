@@ -1166,6 +1166,44 @@ AutoLoginWithFallback(0);
 			break;
 		case AutoLogin_AppleLogin:
 			break;
+		case AutoLogin_DeveloperTool:
+#if WITH_EDITOR
+			{
+				FString CommandLine = FString(FCommandLine::Get());
+				FString SearchString = TEXT("GameUserSettingsINI=PIEGameUserSettings");
+
+				int32 FoundIndex;
+				if (CommandLine.FindChar('=', FoundIndex))
+				{
+					int32 StartIndex = CommandLine.Find(SearchString);
+					if (StartIndex != INDEX_NONE)
+					{
+						StartIndex += SearchString.Len();
+						int32 EndIndex = CommandLine.Find(TEXT(" "), ESearchCase::IgnoreCase, ESearchDir::FromStart, StartIndex);
+						if (EndIndex == INDEX_NONE)
+						{
+							EndIndex = CommandLine.Len();
+						}
+						FString NumberString = CommandLine.Mid(StartIndex, EndIndex - StartIndex);
+						UE_LOG(LogEIK, Log, TEXT("AutoLogin: Found GameUserSettingsINI=PIEGameUserSettings. Using LocalUserNum: %d"), FCString::Atoi(*NumberString));
+						TempDetails.Type = "eas_+_EIK_LCT_Developer_+_EIK_ECT_EPIC";
+						TempDetails.Id = EIKSettings->DeveloperToolUrl;
+						int32 LocalUserNum = FCString::Atoi(*NumberString) + 1;
+						UE_LOG(LogEIK, Log, TEXT("AutoLogin: LocalUserNum: %d"), LocalUserNum);
+						TempDetails.Token = "Context_" + FString::FromInt(LocalUserNum);
+						Login(0,TempDetails);
+						bAutoLoginAttempted = true;
+						bAutoLoginInProgress = true;
+						return;
+					}
+				}
+				UE_LOG(LogEIK, Warning, TEXT("AutoLogin: DeveloperTool is enabled but GameUserSettingsINI=PIEGameUserSettings is not found. Skipping auto login"));
+				bAutoLoginAttempted = true;
+				bAutoLoginInProgress = false;
+				AutoLoginWithFallback(0);
+			}
+#endif
+			break;
 		default: ;
 		}
 	}

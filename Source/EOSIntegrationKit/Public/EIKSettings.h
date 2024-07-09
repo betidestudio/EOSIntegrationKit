@@ -95,6 +95,8 @@ struct FEOSSettings
 UENUM(BlueprintType)
 enum EEIK_AutoLoginType {
 	None 			UMETA(DisplayName="None"),
+	/** Developer Token login will automatically log the user in with the developer token depending upon the standalone number */
+	AutoLogin_DeveloperTool 	UMETA(DisplayName="Developer Tool"),
 	/** Persistent Auth will automatically log the user in with EAS credentials if they have previously logged in */
 	AutoLogin_PersistentAuth 	UMETA(DisplayName="Persistent Auth"),
 	/** Device ID login will automatically log the user in with the device ID */
@@ -175,6 +177,9 @@ public:
 	/** If true, the Auth Interface will be used to login the user, inshort, the user will be logged in using the Epic Account Services */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
 	bool bUse_EAS_ForAutoLogin = false;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
+	FString DeveloperToolUrl = TEXT("localhost:6300");
 	
 	/** LoginFlags help define what permissions the user has when they login. */ 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings")
