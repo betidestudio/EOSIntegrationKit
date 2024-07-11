@@ -3567,4 +3567,9 @@ UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SharedFunctionFile : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	
+	UFUNCTION(BlueprintPure, Category = "EOS Integration Kit | SDK Functions | Shared Functions")
+	static FString ConvertOculusUserIdAndNonceToEosFormat(FString OculusUserId, FString OculusNonce);
 };
