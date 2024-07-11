@@ -2296,6 +2296,11 @@ FString FUserManagerEOS::GetAuthToken(int32 LocalUserNum) const
 	return FString();
 }
 #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 4
+void FUserManagerEOS::GetUserPrivilege(const FUniqueNetId& LocalUserId, EUserPrivileges::Type Privilege,
+	const FOnGetUserPrivilegeCompleteDelegate& Delegate, EShowPrivilegeResolveUI ShowResolveUI)
+{
+	Delegate.ExecuteIfBound(LocalUserId, Privilege, static_cast<unsigned>(EPrivilegeResults::NoFailures));
+}
 #else
 void FUserManagerEOS::GetUserPrivilege(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege,
 	const FOnGetUserPrivilegeCompleteDelegate& Delegate)

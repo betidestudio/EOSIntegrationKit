@@ -311,10 +311,7 @@ public:
 #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 4
 	void GetUserPrivilege(const FUniqueNetId& LocalUserId, EUserPrivileges::Type Privilege,
 	                      const FOnGetUserPrivilegeCompleteDelegate& Delegate,
-	                      EShowPrivilegeResolveUI ShowResolveUI) override
-	{
-		//Delegate.ExecuteIfBound(LocalUserId, Privilege, EPrivilegeResults::NoFailures);
-	}
+	                      EShowPrivilegeResolveUI ShowResolveUI) override;
 #endif
 // IOnlineExternalUI Interface
 	virtual bool ShowLoginUI(const int ControllerIndex, bool bShowOnlineOnly, bool bShowSkipButton, const FOnLoginUIClosedDelegate& Delegate = FOnLoginUIClosedDelegate()) override;
