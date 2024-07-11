@@ -20,16 +20,6 @@
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 
-#if SUPPORTOCULUSPLATFORM
-#include "OVRPlatformCppRequests.h"
-#include "OVRPlatform.h"
-#include "OVRPlatformModels.h"
-#include "OVRPlatformOptions.h"
-#include "OVRPlatformRequestsSupport.h"
-#include "OVRPlatformCppPageRequests.h"
-#include "OVRPlatform/Public/OVRPlatformUtils.h"
-#endif
-
 
 #include "Interfaces/IPluginManager.h"
 
@@ -468,8 +458,7 @@ void FUserManagerEOS::CreateConnectID(EOS_ContinuanceToken ContinuanceToken, con
 	{
 		if(Data->ResultCode == EOS_EResult::EOS_Success)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("EOS Create User Success"));
-			LoginViaConnectInterface(AccountCredentials);
+			CompleteDeviceIDLogin(0,nullptr,Data->LocalUserId);
 		}
 		else
 		{
@@ -622,9 +611,7 @@ void FUserManagerEOS::LoginViaConnectInterface(const FOnlineAccountCredentials& 
 		FCStringAnsi::Strncpy(const_cast<char*>(CharDisplayName), TCHAR_TO_ANSI(*AccountCredentials.Id), EOS_MAX_TOKEN_SIZE);
 		LoginInfo.DisplayName = CharDisplayName;
 	}
-#if PLATFORM_WINDOWS || PLATFORM_LINUX || PLATFORM_MAC
 	LoginInfo.NsaIdToken = nullptr;
-#endif
 	EOS_Connect_LoginOptions LoginOptions;
 	LoginOptions.Credentials = &UserCredentials;
 	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;

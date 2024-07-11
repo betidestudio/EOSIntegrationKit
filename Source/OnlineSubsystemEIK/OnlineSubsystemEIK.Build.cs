@@ -54,7 +54,6 @@ public class OnlineSubsystemEIK : ModuleRules
 		if (bSupportOculusPlatform)
 		{
 			PublicDefinitions.Add("SUPPORTOCULUSPLATFORM=1");
-			PrivateDependencyModuleNames.AddRange(new string[] { "OVRPlatform", "OVRPlatformSDK" });
 		}
 		else
 		{
