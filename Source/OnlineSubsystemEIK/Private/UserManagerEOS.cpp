@@ -31,6 +31,8 @@
 #endif
 
 
+#include "Interfaces/IPluginManager.h"
+
 #include COMPILED_PLATFORM_HEADER(EOSHelpers.h)
 
 #if WITH_EOS_SDK
@@ -1527,6 +1529,27 @@ void FUserManagerEOS::Tick(float DeltaTime)
 		if(!bAutoLoginAttempted)
 		{
 			AutoLogin(0);
+			UWorld* World;
+			if(GEngine)
+			{
+				UE_LOG(LogEIK, Verbose, TEXT("AutoLaunchDevTool: GEngine is valid"));
+				World = GEngine->GetWorldContexts()[0].World();
+				if(World)
+				{
+					if(World->WorldType == EWorldType::Editor)
+					{
+						if(EIKSettings->bAutoLaunchDevTool)
+						{
+							UE_LOG(LogEIK, Log, TEXT("World is a PIE world. Launching DevTool as auto launch is enabled"));
+							LaunchDevTool();
+						}
+					}
+				}
+				else
+				{
+					UE_LOG(LogEIK, Warning, TEXT("World is not valid. Skipping auto launch of DevTool"));
+				}
+			}
 		}
 	}
 }
@@ -1555,6 +1578,22 @@ bool FUserManagerEOS::AutoLogin(int32 LocalUserNum)
 	bAutoLoginAttempted = true;
 	bAutoLoginInProgress = false;
 	return Login(LocalUserNum, Creds);
+}
+
+void FUserManagerEOS::LaunchDevTool()
+{
+	IPluginManager& PluginManager = IPluginManager::Get();
+	TSharedPtr<IPlugin> EOSPlugin = PluginManager.FindPlugin(TEXT("EOSIntegrationKit"));
+	if(!EOSPlugin.IsValid())
+	{
+		UE_LOG(LogEIK, Error, TEXT("EOSIntegrationKit plugin not found"));
+		return;
+	}
+	FString PluginRoot = EOSPlugin->GetBaseDir();
+	auto MainModulePath = FPaths::Combine(*PluginRoot, TEXT("Source/ThirdParty/EIKSDK/Tools/EOS_DevAuthTool-win32-x64-1.2.0"));
+	FString DevToolPath = FPaths::Combine(*MainModulePath, TEXT("EOS_DevAuthTool.exe"));
+	FString DevToolArgs = TEXT("");
+	FPlatformProcess::CreateProc(*DevToolPath, *DevToolArgs, true, false, false, nullptr, 0, nullptr, nullptr);
 }
 
 bool FUserManagerEOS::AutoLoginUsingSettings(int32 LocalUserNum)
