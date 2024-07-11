@@ -265,6 +265,7 @@ public:
 	void Shutdown();
 	void Tick(float DeltaTime);
 	virtual bool AutoLogin(int32 LocalUserNum) override;
+	virtual bool AutoLoginUsingSettings(int32 LocalUserNum);
 	virtual bool AutoLoginWithFallback(int32 LocalUserNum);
 	bool bAutoLoginAttempted = false;
 	bool bAutoLoginInProgress = false;

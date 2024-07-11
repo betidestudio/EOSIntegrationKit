@@ -993,222 +993,6 @@ void FUserManagerEOS::LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAcc
 	EOS_Auth_Login(EOSSubsystem->AuthHandle, &LoginOptions, (void*)CallbackObj, CallbackObj->GetCallbackPtr());
 }
 
-void FUserManagerEOS::Tick(float DeltaTime)
-{
-	if(bAutoLoginAttempted)
-	{
-		return;
-	}
-	UE_LOG(LogEIK, Verbose, TEXT("Checking if the user should be auto logged in"));
-	UWorld* World;
-	if(GEngine)
-	{
-		UE_LOG(LogEIK, Verbose, TEXT("GEngine is valid"));
-		World = GEngine->GetWorldContexts()[0].World();
-		if(World)
-		{
-			if(World->WorldType != EWorldType::Game)
-			{
-				UE_LOG(LogEIK, Display, TEXT("World is not a game world. Skipping auto login"));
-				bAutoLoginAttempted = true;
-				return;
-			}
-		}
-		else
-		{
-			UE_LOG(LogEIK, Warning, TEXT("World is not valid. Skipping auto login"));
-			bAutoLoginAttempted = true;
-			return;
-		}
-	}
-	else
-	{
-		UE_LOG(LogEIK, Warning, TEXT("GEngine is not valid. Skipping auto login"));
-		bAutoLoginAttempted = true;
-		return;
-	}
-	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEIK_EExternalCredentialType"), true);
-	UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>();
-	if(EnumPtr && EIKSettings)
-	{
-		UE_LOG(LogEIK, Verbose, TEXT("AutoLogin: Enum found for EEIK_EExternalCredentialType. Starting auto login"));
-		if(EIKSettings->AutoLoginType == EEIK_AutoLoginType::None)
-		{
-			UE_LOG(LogEIK, Display, TEXT("AutoLogin: AutoLoginType is set to None. Skipping auto login"));
-			bAutoLoginAttempted = true;
-			return;
-		}
-		OnLoginCompleteDelegates->AddLambda([this, EIKSettings](int32 LocalUserNum, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error)
-		{
-			if(!bWasSuccessful && bAutoLoginInProgress)
-			{
-				UE_LOG(LogEIK, Warning, TEXT("AutoLogin: Login failed for user (%d). Attempting to auto login with fallback"), LocalUserNum);
-				ClearOnLoginCompleteDelegates(0,this);
-				AutoLoginWithFallback(LocalUserNum);
-				return;
-			}
-			ClearOnLoginCompleteDelegates(0,this);
-		});
-		FOnlineAccountCredentials TempDetails;
-		switch (EIKSettings->AutoLoginType)
-		{
-		case None:
-			break;
-		case AutoLogin_PersistentAuth:
-			TempDetails.Type = "eas_+_EIK_LCT_PersistentAuth_+_EIK_ECT_EPIC";
-			Login(0,TempDetails);
-			bAutoLoginAttempted = true;
-			break;
-		case AutoLogin_DeviceIdLogin:
-			TempDetails.Type = "noeas_+_EIK_ECT_DEVICEID_ACCESS_TOKEN";
-			TempDetails.Id = "deviceid";
-			bAutoLoginInProgress = true;
-			Login(0,TempDetails);
-			bAutoLoginAttempted = true;
-			break;
-		case AutoLogin_AccountPortalLogin:
-			TempDetails.Type = "eas_+_EIK_LCT_AccountPortal+_EIK_ECT_EPIC";
-			bAutoLoginInProgress = true;
-			Login(0,TempDetails);
-			bAutoLoginAttempted = true;
-			break;
-		case AutoLogin_PlatformLogin:
-			break;
-/*		case AutoLogin_OculusLogin:
-#if SUPPORTOCULUSPLATFORM
-{
-    OvrPlatform_User_GetLoggedInUser_Delegate GetLoggedInUser_Delegate;
-
-    GetLoggedInUser_Delegate.BindLambda([&](bool bSuccess, FOvrUserPtr StringPtrParam, FString StringParam)
-    {
-        if(!bSuccess)
-        {
-            UE_LOG(LogEIK, Warning, TEXT("AutoLogin: Failed to get logged in user. Skipping auto login"));
-            bAutoLoginAttempted = true;
-            bAutoLoginInProgress = false;
-            AutoLoginWithFallback(0);
-            return;
-        }
-        OvrPlatform_User_GetUserProof_Delegate GetUserProof_Delegate;
-        GetUserProof_Delegate.BindLambda([&](bool bSuccess2, FOvrUserProofPtr StringVal, FString StringParam2)
-        {
-            if(!bSuccess2)
-            {
-                UE_LOG(LogEIK, Warning, TEXT("AutoLogin: Failed to get user proof. Skipping auto login"));
-                bAutoLoginAttempted = true;
-                bAutoLoginInProgress = false;
-                AutoLoginWithFallback(0);
-                return;
-            }
-            FOnlineAccountCredentials TempDetails;
-            if(EIKSettings->bUse_EAS_ForAutoLogin)
-            {
-                TempDetails.Type = "eas_+_EIK_LCT_ExternalAuth_+_EIK_ECT_OCULUS_USERID_NONCE";
-            }
-            else
-            {
-                TempDetails.Type = "noeas_+_EIK_ECT_OCULUS_USERID_NONCE";
-            }
-            TempDetails.Token = "{" + StringPtrParam.Get()->OculusID + "}|{" + *StringVal.Get()->Nonce + "}";
-            Login(0, TempDetails);
-            bAutoLoginAttempted = true;
-            bAutoLoginInProgress = true;
-        });
-        //OvrPlatform_User_GetUserProof(UGameplayStatics::GetGameInstance(World), MoveTemp(GetUserProof_Delegate));
-    });
-   OvrPlatform_User_GetLoggedInUser(UGameplayStatics::GetGameInstance(World), std::move(GetLoggedInUser_Delegate));
-}
-#else
-UE_LOG(LogEIK, Warning, TEXT("AutoLogin: Oculus login is not supported in this build. Skipping auto login"));
-bAutoLoginAttempted = true;
-bAutoLoginInProgress = false;
-AutoLoginWithFallback(0);
-#endif
-			break;*/
-		case AutoLogin_SteamLogin:
-			GetPlatformAuthToken(0,FOnGetLinkedAccountAuthTokenCompleteDelegate::CreateLambda([this,EIKSettings, WeakThis = AsWeak()](int32 LocalUserNum, bool bWasSuccessful, const FExternalAuthToken& AuthToken)
-			{
-				if (FUserManagerEOSPtr StrongThis = WeakThis.Pin())
-				{
-					if (!bWasSuccessful || !AuthToken.IsValid())
-					{
-						UE_LOG(LogEIK, Warning, TEXT("Unable to AutoLogin user (%d) due to an empty platform auth token"), LocalUserNum);
-						AutoLoginWithFallback(LocalUserNum);
-						bAutoLoginAttempted = true;
-						return;
-					}
-					if(!AuthToken.HasTokenString())
-					{
-						UE_LOG(LogEIK, Warning, TEXT("Unable to AutoLogin user (%d) due to an empty platform auth token"), LocalUserNum);
-						AutoLoginWithFallback(LocalUserNum);
-						bAutoLoginAttempted = true;
-						return;
-					}
-					FOnlineAccountCredentials TempDetails;
-					if(EIKSettings->bUse_EAS_ForAutoLogin)
-					{
-						TempDetails.Type = "eas_+_EIK_LCT_ExternalAuth_+_EIK_ECT_STEAM_SESSION_TICKET";
-					}
-					else
-					{
-						TempDetails.Type = "noeas_+_EIK_ECT_STEAM_SESSION_TICKET";
-						TempDetails.Token = AuthToken.TokenString;
-					}
-					Login(0,TempDetails);
-					bAutoLoginAttempted = true;
-					bAutoLoginInProgress = true;
-				}
-			}));
-			break;
-		case AutoLogin_PSNLogin:
-			break;
-		case AutoLogin_GoogleLogin:
-			break;
-		case AutoLogin_AppleLogin:
-			break;
-		case AutoLogin_DeveloperTool:
-#if WITH_EDITOR
-			{
-				FString CommandLine = FString(FCommandLine::Get());
-				FString SearchString = TEXT("GameUserSettingsINI=PIEGameUserSettings");
-
-				int32 FoundIndex;
-				if (CommandLine.FindChar('=', FoundIndex))
-				{
-					int32 StartIndex = CommandLine.Find(SearchString);
-					if (StartIndex != INDEX_NONE)
-					{
-						StartIndex += SearchString.Len();
-						int32 EndIndex = CommandLine.Find(TEXT(" "), ESearchCase::IgnoreCase, ESearchDir::FromStart, StartIndex);
-						if (EndIndex == INDEX_NONE)
-						{
-							EndIndex = CommandLine.Len();
-						}
-						FString NumberString = CommandLine.Mid(StartIndex, EndIndex - StartIndex);
-						UE_LOG(LogEIK, Log, TEXT("AutoLogin: Found GameUserSettingsINI=PIEGameUserSettings. Using LocalUserNum: %d"), FCString::Atoi(*NumberString));
-						TempDetails.Type = "eas_+_EIK_LCT_Developer_+_EIK_ECT_EPIC";
-						TempDetails.Id = EIKSettings->DeveloperToolUrl;
-						int32 LocalUserNum = FCString::Atoi(*NumberString) + 1;
-						UE_LOG(LogEIK, Log, TEXT("AutoLogin: LocalUserNum: %d"), LocalUserNum);
-						TempDetails.Token = "Context_" + FString::FromInt(LocalUserNum);
-						Login(0,TempDetails);
-						bAutoLoginAttempted = true;
-						bAutoLoginInProgress = true;
-						return;
-					}
-				}
-				UE_LOG(LogEIK, Warning, TEXT("AutoLogin: DeveloperTool is enabled but GameUserSettingsINI=PIEGameUserSettings is not found. Skipping auto login"));
-				bAutoLoginAttempted = true;
-				bAutoLoginInProgress = false;
-				AutoLoginWithFallback(0);
-			}
-#endif
-			break;
-		default: ;
-		}
-	}
-}
-
 void FUserManagerEOS::LoginViaConnectInterfaceCallback(const EOS_Connect_LoginCallbackInfo* Data)
 {
 	UE_LOG(LogEIK, Log, TEXT("LoginViaConnectInterfaceCallback called. ResultCode: %hs"), EOS_EResult_ToString(Data->ResultCode));
@@ -1734,6 +1518,19 @@ bool FUserManagerEOS::Logout(int32 LocalUserNum)
 	return true;
 }
 
+void FUserManagerEOS::Tick(float DeltaTime)
+{
+	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEIK_EExternalCredentialType"), true);
+	UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>();
+	if(EnumPtr && EIKSettings)
+	{
+		if(!bAutoLoginAttempted)
+		{
+			AutoLogin(0);
+		}
+	}
+}
+
 bool FUserManagerEOS::AutoLogin(int32 LocalUserNum)
 {
 	FString LoginId;
@@ -1746,16 +1543,250 @@ bool FUserManagerEOS::AutoLogin(int32 LocalUserNum)
 
 	FEOSSettings Settings = UEIKSettings::GetSettings();
 
-	if (EOSSubsystem->bIsDefaultOSS && Settings.bUseEAS && AuthType.IsEmpty())
+	if (EOSSubsystem->bIsDefaultOSS && AuthType.IsEmpty())
 	{
-		UE_LOG_ONLINE(Warning, TEXT("Unable to AutoLogin user (%d) due to missing auth command line args"), LocalUserNum);
-		return false;
+		UE_LOG(LogEIK, Log, TEXT("AutoLogin: Unable to AutoLogin user (%d) due to missing auth command line args, attempting to auto login with settings"), LocalUserNum);
+		return AutoLoginUsingSettings(LocalUserNum);
 	}
+	UE_LOG(LogEIK, Log, TEXT("AutoLogin: Attempting to auto login user (%d) with auth command line args"), LocalUserNum);
 	FOnlineAccountCredentials Creds(AuthType, LoginId, Password);
 
 	LocalUserNumToLastLoginCredentials.Emplace(LocalUserNum, MakeShared<FOnlineAccountCredentials>(Creds));
-
+	bAutoLoginAttempted = true;
+	bAutoLoginInProgress = false;
 	return Login(LocalUserNum, Creds);
+}
+
+bool FUserManagerEOS::AutoLoginUsingSettings(int32 LocalUserNum)
+{
+	if(bAutoLoginAttempted)
+	{
+		UE_LOG(LogEIK, Warning, TEXT("AutoLoginUsingSettings: Auto login has already been attempted. Skipping auto login"));
+		return false;
+	}
+	UE_LOG(LogEIK, Verbose, TEXT("Checking if the user should be auto logged in"));
+	UWorld* World;
+	if(GEngine)
+	{
+		UE_LOG(LogEIK, Verbose, TEXT("GEngine is valid"));
+		World = GEngine->GetWorldContexts()[0].World();
+		if(World)
+		{
+			if(World->WorldType != EWorldType::Game)
+			{
+				UE_LOG(LogEIK, Display, TEXT("World is not a game world. Skipping auto login"));
+				bAutoLoginAttempted = true;
+				return false;
+			}
+		}
+		else
+		{
+			UE_LOG(LogEIK, Warning, TEXT("World is not valid. Skipping auto login"));
+			bAutoLoginAttempted = true;
+			return false;
+		}
+	}
+	else
+	{
+		UE_LOG(LogEIK, Warning, TEXT("GEngine is not valid. Skipping auto login"));
+		bAutoLoginAttempted = true;
+		return false;
+	}
+	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEIK_EExternalCredentialType"), true);
+	UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>();
+	if(EnumPtr && EIKSettings)
+	{
+		UE_LOG(LogEIK, Verbose, TEXT("AutoLogin: Enum found for EEIK_EExternalCredentialType. Starting auto login"));
+		if(EIKSettings->AutoLoginType == EEIK_AutoLoginType::None)
+		{
+			UE_LOG(LogEIK, Display, TEXT("AutoLogin: AutoLoginType is set to None. Skipping auto login"));
+			bAutoLoginAttempted = true;
+			return false;
+		}
+		OnLoginCompleteDelegates->AddLambda([this, EIKSettings](int32 LocalUserNum, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error)
+		{
+			if(!bWasSuccessful && bAutoLoginInProgress)
+			{
+				UE_LOG(LogEIK, Warning, TEXT("AutoLogin: Login failed for user (%d). Attempting to auto login with fallback"), LocalUserNum);
+				ClearOnLoginCompleteDelegates(0,this);
+				AutoLoginWithFallback(LocalUserNum);
+				return;
+			}
+			ClearOnLoginCompleteDelegates(0,this);
+		});
+		FOnlineAccountCredentials TempDetails;
+		switch (EIKSettings->AutoLoginType)
+		{
+		case None:
+			UE_LOG(LogEIK, Warning, TEXT("AutoLogin: AutoLoginType is set to None. Skipping auto login"));
+			return true;
+			break;
+		case AutoLogin_PersistentAuth:
+			TempDetails.Type = "eas_+_EIK_LCT_PersistentAuth_+_EIK_ECT_EPIC";
+			Login(0,TempDetails);
+			bAutoLoginAttempted = true;
+			return true;
+			break;
+		case AutoLogin_DeviceIdLogin:
+			TempDetails.Type = "noeas_+_EIK_ECT_DEVICEID_ACCESS_TOKEN";
+			TempDetails.Id = "deviceid";
+			bAutoLoginInProgress = true;
+			Login(0,TempDetails);
+			bAutoLoginAttempted = true;
+			return true;
+			break;
+		case AutoLogin_AccountPortalLogin:
+			TempDetails.Type = "eas_+_EIK_LCT_AccountPortal+_EIK_ECT_EPIC";
+			bAutoLoginInProgress = true;
+			Login(0,TempDetails);
+			bAutoLoginAttempted = true;
+			return true;
+			break;
+		case AutoLogin_PlatformLogin:
+			break;
+/*		case AutoLogin_OculusLogin:
+#if SUPPORTOCULUSPLATFORM
+{
+    OvrPlatform_User_GetLoggedInUser_Delegate GetLoggedInUser_Delegate;
+
+    GetLoggedInUser_Delegate.BindLambda([&](bool bSuccess, FOvrUserPtr StringPtrParam, FString StringParam)
+    {
+        if(!bSuccess)
+        {
+            UE_LOG(LogEIK, Warning, TEXT("AutoLogin: Failed to get logged in user. Skipping auto login"));
+            bAutoLoginAttempted = true;
+            bAutoLoginInProgress = false;
+            AutoLoginWithFallback(0);
+            return;
+        }
+        OvrPlatform_User_GetUserProof_Delegate GetUserProof_Delegate;
+        GetUserProof_Delegate.BindLambda([&](bool bSuccess2, FOvrUserProofPtr StringVal, FString StringParam2)
+        {
+            if(!bSuccess2)
+            {
+                UE_LOG(LogEIK, Warning, TEXT("AutoLogin: Failed to get user proof. Skipping auto login"));
+                bAutoLoginAttempted = true;
+                bAutoLoginInProgress = false;
+                AutoLoginWithFallback(0);
+                return;
+            }
+            FOnlineAccountCredentials TempDetails;
+            if(EIKSettings->bUse_EAS_ForAutoLogin)
+            {
+                TempDetails.Type = "eas_+_EIK_LCT_ExternalAuth_+_EIK_ECT_OCULUS_USERID_NONCE";
+            }
+            else
+            {
+                TempDetails.Type = "noeas_+_EIK_ECT_OCULUS_USERID_NONCE";
+            }
+            TempDetails.Token = "{" + StringPtrParam.Get()->OculusID + "}|{" + *StringVal.Get()->Nonce + "}";
+            Login(0, TempDetails);
+            bAutoLoginAttempted = true;
+            bAutoLoginInProgress = true;
+        });
+        //OvrPlatform_User_GetUserProof(UGameplayStatics::GetGameInstance(World), MoveTemp(GetUserProof_Delegate));
+    });
+   OvrPlatform_User_GetLoggedInUser(UGameplayStatics::GetGameInstance(World), std::move(GetLoggedInUser_Delegate));
+}
+#else
+UE_LOG(LogEIK, Warning, TEXT("AutoLogin: Oculus login is not supported in this build. Skipping auto login"));
+bAutoLoginAttempted = true;
+bAutoLoginInProgress = false;
+AutoLoginWithFallback(0);
+#endif
+			break;*/
+		case AutoLogin_SteamLogin:
+			GetPlatformAuthToken(0,FOnGetLinkedAccountAuthTokenCompleteDelegate::CreateLambda([this,EIKSettings, WeakThis = AsWeak()](int32 LocalUserNum, bool bWasSuccessful, const FExternalAuthToken& AuthToken)
+			{
+				if (FUserManagerEOSPtr StrongThis = WeakThis.Pin())
+				{
+					if (!bWasSuccessful || !AuthToken.IsValid())
+					{
+						UE_LOG(LogEIK, Warning, TEXT("Unable to AutoLogin user (%d) due to an empty platform auth token"), LocalUserNum);
+						AutoLoginWithFallback(LocalUserNum);
+						bAutoLoginAttempted = true;
+						return;
+					}
+					if(!AuthToken.HasTokenString())
+					{
+						UE_LOG(LogEIK, Warning, TEXT("Unable to AutoLogin user (%d) due to an empty platform auth token"), LocalUserNum);
+						AutoLoginWithFallback(LocalUserNum);
+						bAutoLoginAttempted = true;
+						return;
+					}
+					FOnlineAccountCredentials TempDetails;
+					if(EIKSettings->bUse_EAS_ForAutoLogin)
+					{
+						TempDetails.Type = "eas_+_EIK_LCT_ExternalAuth_+_EIK_ECT_STEAM_SESSION_TICKET";
+					}
+					else
+					{
+						TempDetails.Type = "noeas_+_EIK_ECT_STEAM_SESSION_TICKET";
+						TempDetails.Token = AuthToken.TokenString;
+					}
+					Login(0,TempDetails);
+				}
+			}));
+			bAutoLoginAttempted = true;
+			bAutoLoginInProgress = true;
+			return true;
+			break;
+		case AutoLogin_PSNLogin:
+			break;
+		case AutoLogin_GoogleLogin:
+			break;
+		case AutoLogin_AppleLogin:
+			break;
+		case AutoLogin_DeveloperTool:
+#if WITH_EDITOR
+			{
+				FString CommandLine = FString(FCommandLine::Get());
+				FString SearchString = TEXT("GameUserSettingsINI=PIEGameUserSettings");
+
+				int32 FoundIndex;
+				if (CommandLine.FindChar('=', FoundIndex))
+				{
+					int32 StartIndex = CommandLine.Find(SearchString);
+					if (StartIndex != INDEX_NONE)
+					{
+						StartIndex += SearchString.Len();
+						int32 EndIndex = CommandLine.Find(TEXT(" "), ESearchCase::IgnoreCase, ESearchDir::FromStart, StartIndex);
+						if (EndIndex == INDEX_NONE)
+						{
+							EndIndex = CommandLine.Len();
+						}
+						FString NumberString = CommandLine.Mid(StartIndex, EndIndex - StartIndex);
+						UE_LOG(LogEIK, Log, TEXT("AutoLogin: Found GameUserSettingsINI=PIEGameUserSettings. Using LocalUserNum: %d"), FCString::Atoi(*NumberString));
+						TempDetails.Type = "eas_+_EIK_LCT_Developer_+_EIK_ECT_EPIC";
+						TempDetails.Id = EIKSettings->DeveloperToolUrl;
+						int32 LocalUserNum = FCString::Atoi(*NumberString) + 1;
+						UE_LOG(LogEIK, Log, TEXT("AutoLogin: LocalUserNum: %d"), LocalUserNum);
+						TempDetails.Token = "Context_" + FString::FromInt(LocalUserNum);
+						Login(0,TempDetails);
+						bAutoLoginAttempted = true;
+						bAutoLoginInProgress = true;
+						return true;
+					}
+				}
+				UE_LOG(LogEIK, Warning, TEXT("AutoLogin: DeveloperTool is enabled but GameUserSettingsINI=PIEGameUserSettings is not found. Skipping auto login"));
+				bAutoLoginAttempted = true;
+				bAutoLoginInProgress = false;
+				return AutoLoginWithFallback(0);
+			}
+#endif
+			default:
+			UE_LOG(LogEIK, Warning, TEXT("AutoLogin: Unknown AutoLoginType. Skipping auto login"));
+			bAutoLoginAttempted = true;
+			return false;
+		}
+	}
+	else
+	{
+		UE_LOG(LogEIK, Log, TEXT("AutoLogin: Enum not found for EEIK_EExternalCredentialType. Will retry auto login"));
+		bAutoLoginAttempted = false;
+		return false;
+	}
+	return true;
 }
 
 bool FUserManagerEOS::AutoLoginWithFallback(int32 LocalUserNum)
