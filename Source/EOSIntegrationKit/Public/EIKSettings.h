@@ -145,6 +145,28 @@ enum EEIK_LoginFlags_LocalForSettings
 	EOS_AS_Country = 0x20 UMETA(DisplayName = "Country"),
 };
 
+UENUM(BlueprintType)
+enum EEIK_BuildConfiguration
+{
+	/** Unknown build configuration. */
+	EIK_UnknownBuild = 0 UMETA(DisplayName = "Unknown"),
+
+	/** Debug build. */
+	EIK_Debug = 1 UMETA(DisplayName = "Debug"),
+
+	/** DebugGame build. */
+	EIK_DebugGame = 2 UMETA(DisplayName = "DebugGame"),
+
+	/** Development build. */
+	EIK_Development = 3 UMETA(DisplayName = "Development"),
+
+	/** Shipping build. */
+	EIK_Shipping = 4 UMETA(DisplayName = "Shipping"),
+
+	/** Test build. */
+	EIK_Test = 5 UMETA(DisplayName = "Test"),
+};
+
 UCLASS(Config=Engine, DefaultConfig)
 class EOSINTEGRATIONKIT_API UEIKSettings :
 	public URuntimeOptionsBase
@@ -153,18 +175,23 @@ class EOSINTEGRATIONKIT_API UEIKSettings :
 
 public:
 
+
 	/** This will automatically setup EOS Integration Kit.
 	 *
 	 * Restart the editor after changing this value.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK  Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
 	bool bAutomaticallySetupEIK;
+	/** If set to true, on every launch of the editor, the developer tool will be launched. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
+	bool bAutoLaunchDevTool = false;
 	/** An organization is the highest level in the Epic Online Services (EOS) product management ecosystem. It encompasses all the products and the associated members, such as a publisher or game studio. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
 	FString OrganizationName;
 	/** Products are games or other software projects that contain sandboxes and deployments within EOS. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
 	FString ProductName;
+
 	
 	/** Auto-Logins the player into the game. Can be used for testing or games with only 1 type of login */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
@@ -265,6 +292,50 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
 	FString ClientId;
 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy", DisplayName="Build Configuration")
+	TEnumAsByte<EEIK_BuildConfiguration> OneClick_BuildConfiguration;
+
+	/** Use the Organization ID string that was provided along with your credentials. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Organization Id")
+	FString OneClick_OrganizationId;
+
+	/** Use the Product ID string that was provided along with your credentials. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Product Id")
+	FString OneClick_ProductId;
+
+	/** Use the Artifact ID string that was provided along with your credentials. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Artifact Id")
+	FString OneClick_ArtifactId;
+	
+	/*BuildPatchTool uses a unique Client ID and Client Secret, separate from any EOS Client IDs your game may use. Refer to the Build Patch Tool Credentials section of your Product Settings in Dev Portal to obtain the correct Client ID and Secret. Clients listed under SDK Credentials will not function with the BuildPatchTool.*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Client Id")
+	FString OneClick_ClientId;
+	
+	/*BuildPatchTool uses a unique Client ID and Client Secret, separate from any EOS Client IDs your game may use. Refer to the Build Patch Tool Credentials section of your Product Settings in Dev Portal to obtain the correct Client ID and Secret. Clients listed under SDK Credentials will not function with the BuildPatchTool.*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Client Secret")
+	FString OneClick_ClientSecret;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="Cloud Dir")
+	FString OneClick_CloudDirOverride;
+	/** The commandline to send to the app on launch. This can be set to “” when no additional arguments are needed. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="Args Override")
+	FString OneClick_ArgsOverride;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="App Launch Override")
+	FString OneClick_AppLaunchOverride;
+	
+
+	/** Please leave this empty unless you really want to override the build version. We assign the build version automatically based on the timestamp of the build and the game version. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="Build Version Override")
+	FString OneClick_BuildVersionOverride;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="App Args Override")
+	FString OneClick_AppArgsOverride;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="Build Root Override")
+	FString OneClick_BuildRootOverride;
+
+	
 	/** Set to true to have Epic Accounts used (friends list will be unified with the default platform) */
 	UPROPERTY()
 	bool bUseEAS = false;

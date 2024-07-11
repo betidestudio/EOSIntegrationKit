@@ -76,7 +76,34 @@ void FEIKEditorModule::ShutdownModule()
 
 void FEIKEditorModule::BuildProcessCompleted(int I, bool bArg)
 {
-    UE_LOG(LogEikEditor, Warning, TEXT("Process Completed %d %d"), I, bArg);
+    if (NotificationItem.IsValid())
+    {
+        if (bArg)
+        {
+            NotificationItem->SetText(LOCTEXT("PackageSuccess", "Package Success"));
+            NotificationItem->SetCompletionState(SNotificationItem::CS_Success);
+        }
+        else
+        {
+            NotificationItem->SetText(LOCTEXT("PackageFailed", "Package Failed"));
+            NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+        }
+        NotificationItem->ExpireAndFadeout();
+    }
+}
+
+void FEIKEditorModule::HandleProcessCanceled()
+{
+    if (NotificationItem.IsValid())
+    {
+        NotificationItem->SetText(LOCTEXT("Package Failed", "Package Failed"));
+        NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+        NotificationItem->ExpireAndFadeout();
+    }
+}
+
+void FEIKEditorModule::HandleProcessOutput(const FString& String)
+{
 }
 
 void FEIKEditorModule::RegisterMenuExtensions()
@@ -118,10 +145,6 @@ void FEIKEditorModule::OpenDevPortal()
     FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 }
 
-void FEIKEditorModule::OnOption1Click()
-{
-}
-
 void FEIKEditorModule::OpenDevTool()
 {
     IPluginManager& PluginManager = IPluginManager::Get();
@@ -161,22 +184,10 @@ TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
 
     MenuBuilder.AddMenuEntry(
         LOCTEXT("Option1", "Package and Deploy"),
-        LOCTEXT("Option1_Tooltip", "Package and deploy the game to Steamworks"),
+        LOCTEXT("Option1_Tooltip", "Package and deploy the game to Epic Games"),
         FSlateIcon(FAppStyle::GetAppStyleSetName(), "PlayWorld.RepeatLastLaunch"),
-        FUIAction(FExecuteAction::CreateRaw(this, &FEIKEditorModule::OnOption1Click))
+        FUIAction(FExecuteAction::CreateRaw(this, &FEIKEditorModule::OnPackageAndDeploySelected))
     );
-
-    UEIKSettings* Settings = GetMutableDefault<UEIKSettings>();
-
-    MenuBuilder.AddMenuEntry(
-        LOCTEXT("Option3", "Login to Epic Games"),
-        LOCTEXT("Option3_Tooltip", "Login to Epic Games to authenticate the user account"),
-        FSlateIcon(FAppStyle::GetAppStyleSetName(), "ShowFlagsMenu.SubMenu.Developer"),
-        FUIAction(FExecuteAction::CreateLambda([this]()
-        {
-        }))
-    );
-
 
 
     MenuBuilder.AddMenuEntry(
@@ -185,7 +196,26 @@ TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
         FSlateIcon(FAppStyle::GetAppStyleSetName(), "MainFrame.PackageProject"),
         FUIAction(FExecuteAction::CreateLambda([]
         {
-           
+            UEIKSettings* Settings = GetMutableDefault<UEIKSettings>();
+            ILauncherServicesModule& LauncherServicesModule = FModuleManager::LoadModuleChecked<ILauncherServicesModule>(TEXT("LauncherServices"));
+            ILauncherProfileManagerRef LauncherProfileManagerRef = LauncherServicesModule.GetProfileManager();
+            if (auto Profile = LauncherProfileManagerRef->FindProfile("EIKProfile"))
+            {
+                LauncherProfileManagerRef->RemoveProfile(Profile.ToSharedRef());
+            }
+            ILauncherProfilePtr LauncherProfilePtr = LauncherProfileManagerRef->AddNewProfile();
+            LauncherProfilePtr->SetName("EIKProfile");
+            LauncherProfilePtr->SetBuildConfiguration(static_cast<EBuildConfiguration>(Settings->OneClick_BuildConfiguration.GetValue()));
+            LauncherProfilePtr->SetDeploymentMode(ELauncherProfileDeploymentModes::DoNotDeploy);
+            LauncherProfilePtr->SetCookMode(ELauncherProfileCookModes::ByTheBook);
+            LauncherProfilePtr->AddCookedPlatform("Windows");
+            LauncherProfilePtr->SetPackagingMode(ELauncherProfilePackagingModes::Locally);
+            LauncherProfilePtr->SetLaunchMode(ELauncherProfileLaunchModes::DoNotLaunch);
+            LauncherProfilePtr->SetArchive(true);            
+            LauncherProfilePtr->SetArchiveDirectory(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("EosBuilds") / TEXT("Windows")));
+            LauncherProfileManagerRef->SaveProfile(LauncherProfilePtr.ToSharedRef());
+            LauncherProfileManagerRef->SaveSettings();
+            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("ProfileCreated", "Packaging profile created successfully. Please configure the profile in Project Launcher as needed."));
         }))
     );
 
@@ -213,6 +243,135 @@ TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
     
     return MenuBuilder.MakeWidget();
 }
+
+
+
+void FEIKEditorModule::OnPackageAndDeploySelected()
+{
+    UEIKSettings* Settings = GetMutableDefault<UEIKSettings>();
+    FEOSArtifactSettings ArtifactSettings;
+    if (Settings->OneClick_ArtifactId.IsEmpty() || Settings->OneClick_ClientId.IsEmpty() || Settings->OneClick_ClientSecret.IsEmpty() || Settings->OneClick_OrganizationId.IsEmpty() || Settings->OneClick_ProductId.IsEmpty() || Settings->OneClick_CloudDirOverride.IsEmpty())
+    {
+        FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("BuildConfigurationNotSet", "Please set the Artifact ID, Client ID, Client Secret, Organization ID, and Product ID in the settings. Eeither the settings are empty or not saved."));
+        return;
+    }
+    // Create the notification item
+    FNotificationInfo Info(LOCTEXT("PackagingInProgress", "Packaging in progress..."));
+    Info.bFireAndForget = false;
+    Info.FadeOutDuration = 0.5f;
+    Info.ExpireDuration = 3.0f;
+    Info.ButtonDetails.Add(FNotificationButtonInfo(
+        LOCTEXT("CancelPackage", "Cancel"),
+        LOCTEXT("CancelPackage_Tooltip", "Cancel the packaging process"),
+        FSimpleDelegate::CreateLambda([this]() {
+            if (GEditor->LauncherWorker.IsValid())
+            {
+                GEditor->LauncherWorker->Cancel();
+                AsyncTask(ENamedThreads::GameThread, [&]()
+                {
+                    if (NotificationItem.IsValid())
+                    {
+                        NotificationItem->SetText(LOCTEXT("PackageCanceled", "Packaging process canceled"));
+                        NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+                        NotificationItem->ExpireAndFadeout();
+                    }
+                });
+            }
+            else
+            {
+                AsyncTask(ENamedThreads::GameThread, [&]()
+                {
+                    if (NotificationItem.IsValid())
+                    {
+                        NotificationItem->SetText(LOCTEXT("PackageCanceled", "Packaging process canceled"));
+                        NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+                        NotificationItem->ExpireAndFadeout();
+                    }
+                });
+            }
+        })
+    ));
+    NotificationItem = FSlateNotificationManager::Get().AddNotification(Info);
+    if (NotificationItem.IsValid())
+    {
+        NotificationItem->SetCompletionState(SNotificationItem::CS_Pending);
+    }
+    UEIKSettings* EIkSettings = GetMutableDefault<UEIKSettings>();
+    ILauncherServicesModule& LauncherServicesModule = FModuleManager::LoadModuleChecked<ILauncherServicesModule>(TEXT("LauncherServices"));
+    ILauncherProfileManagerRef LauncherProfileManagerRef = LauncherServicesModule.GetProfileManager();
+    auto LauncherProfilePtr = LauncherProfileManagerRef->FindProfile("EIKProfile");
+    if (!LauncherProfilePtr.IsValid())
+    {
+        FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("ProfileNotCreated", "Packaging profile not created. Please create a profile first."));
+        AsyncTask(ENamedThreads::GameThread, [&]()
+        {
+            if (NotificationItem.IsValid())
+            {
+                NotificationItem->SetText(LOCTEXT("PackageCanceled", "Packaging process canceled"));
+                NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+                NotificationItem->ExpireAndFadeout();
+            }
+        });
+        return;
+    }
+    ILauncherRef LauncherRef = LauncherServicesModule.CreateLauncher();
+    ITargetDeviceServicesModule& TargetDeviceServicesModule = FModuleManager::LoadModuleChecked<ITargetDeviceServicesModule>("TargetDeviceServices");
+    GEditor->LauncherWorker = LauncherRef->Launch(TargetDeviceServicesModule.GetDeviceProxyManager(), LauncherProfilePtr.ToSharedRef());
+
+    GEditor->LauncherWorker->OnOutputReceived().AddLambda([](const FString& String) {
+        UE_LOG(LogEikEditor, Log, TEXT("%s"), *String);
+    });
+
+    GEditor->LauncherWorker->OnStageStarted().AddLambda([](const FString& String) {
+    });
+    GEditor->LauncherWorker->OnCanceled().AddLambda([this](double X)
+    {
+    if (NotificationItem.IsValid())
+    {
+        AsyncTask(ENamedThreads::GameThread, [&]()
+        {
+            NotificationItem->SetText(LOCTEXT("PackageCanceled", "Packaging process canceled"));
+            NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+            NotificationItem->ExpireAndFadeout();
+        });
+    }
+});
+    GEditor->LauncherWorker->OnCompleted().AddLambda([this, Settings](bool bArg, double X, int I)
+{
+    if (bArg)
+    {
+        IPluginManager& PluginManager = IPluginManager::Get();
+        FString PluginDir = PluginManager.FindPlugin("EOSIntegrationKit")->GetBaseDir();
+        FString BuildPatchToolDir = PluginDir / TEXT("Source/ThirdParty/EIKSDK/Tools/BuildPatchTool_1.6.0/Engine/Binaries/Win64");
+        FString BuildPatchToolExe = BuildPatchToolDir / TEXT("BuildPatchTool.exe");
+        FString FilePath = Settings->OneClick_BuildRootOverride.IsEmpty() ? FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("EosBuilds") / TEXT("Windows")) : Settings->OneClick_BuildRootOverride;
+        FString VersionNumber = Settings->OneClick_BuildVersionOverride.IsEmpty() ? FString::Printf(TEXT("%s_%s"), FApp::GetProjectName(), *FDateTime::Now().ToString(TEXT("%Y%m%d%H%M%S"))) : Settings->OneClick_BuildVersionOverride;
+        FString CloudDir = Settings->OneClick_CloudDirOverride.IsEmpty() ? TEXT("\\\"\\\"")  : Settings->OneClick_CloudDirOverride;
+        FString AppArgs = Settings->OneClick_AppArgsOverride.IsEmpty() ? TEXT("\\\"\\\"")  : Settings->OneClick_AppArgsOverride;
+        FString AppLaunch = Settings->OneClick_AppLaunchOverride.IsEmpty() ? FString::Printf(TEXT("%s.exe"), FApp::GetProjectName()) : Settings->OneClick_AppLaunchOverride;
+        UE_LOG(LogTemp, Log, TEXT("CloudDir: %s"), *CloudDir);
+        FString ParametersForBuildPatchTool = FString::Printf(TEXT("-ClientId=%s -ClientSecret=%s -OrganizationId=%s -ProductId=%s -ArtifactId=%s -mode=UploadBinary -BuildRoot=%s -CloudDir=%s -BuildVersion=%s -AppArgs=%s -AppLaunch=%s"),
+            *Settings->OneClick_ClientId, *Settings->OneClick_ClientSecret, *Settings->OneClick_OrganizationId, *Settings->OneClick_ProductId, *Settings->OneClick_ArtifactId, *FilePath, *CloudDir, *VersionNumber, *AppArgs, *AppLaunch);
+        UE_LOG(LogTemp, Log, TEXT("Build Patch Tool Parameters: %s"), *ParametersForBuildPatchTool);
+        InteractiveProcess = MakeShareable(new FInteractiveProcess(*BuildPatchToolExe, ParametersForBuildPatchTool, false, true));
+        InteractiveProcess->OnCompleted().BindRaw(this, &FEIKEditorModule::BuildProcessCompleted);
+        InteractiveProcess->OnCanceled().BindRaw(this, &FEIKEditorModule::HandleProcessCanceled);
+        InteractiveProcess->OnOutput().BindRaw(this, &FEIKEditorModule::HandleProcessOutput);
+        InteractiveProcess->Launch();
+    }
+    else
+    {
+        if (NotificationItem.IsValid())
+        {
+            NotificationItem->SetText(LOCTEXT("Package Failed", "Package Failed"));
+            NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+            NotificationItem->ExpireAndFadeout();
+        }
+    }
+});
+}
+
+
 
 #undef LOCTEXT_NAMESPACE
 

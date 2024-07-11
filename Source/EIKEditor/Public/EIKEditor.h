@@ -13,11 +13,13 @@ public:
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;
     void BuildProcessCompleted(int I, bool bArg);
+    void HandleProcessCanceled();
+    void HandleProcessOutput(const FString& String);
 
 private:
     void RegisterMenuExtensions();
     void OpenDevPortal();
-    void OnOption1Click();
+    void OnPackageAndDeploySelected();
     void OpenDevTool();
     TSharedRef<SWidget> GenerateMenuContent();
     TSharedPtr<FInteractiveProcess> InteractiveProcess;
