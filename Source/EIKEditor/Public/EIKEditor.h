@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Misc/InteractiveProcess.h"
+#include "Editor/UnrealEd/Public/Editor.h"
 #include "Modules/ModuleManager.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogEikEditor, Log, All);

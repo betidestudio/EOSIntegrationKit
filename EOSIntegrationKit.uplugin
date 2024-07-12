@@ -89,7 +89,14 @@
 		{
 			"Name": "EIKEditor",
 			"Type": "Editor",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64"
+			],
+			"BlacklistPlatforms": [
+				"Mac",
+				"Linux"
+			]
 		}
 	],
 	"Plugins": [
