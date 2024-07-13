@@ -30,7 +30,7 @@ public:
 	For Input Parameters, please refer to the documentation link above.
 	*/
 	UFUNCTION(BlueprintCallable, DisplayName="Find EIK Sessions",meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
-	static UEIK_FindSessions_AsyncFunction* FindEIKSessions(TMap<FName, FEIKAttribute> SessionSettings, EMatchType MatchType = EMatchType::MT_Lobby, int32 MaxResults = 15, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection, bool bLanSearch = false);
+	static UEIK_FindSessions_AsyncFunction* FindEIKSessions(TMap<FString, FEIKAttribute> SessionSettings, EMatchType MatchType = EMatchType::MT_Lobby, int32 MaxResults = 15, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection, bool bLanSearch = false);
 
 
 	virtual void Activate() override;
@@ -42,7 +42,7 @@ public:
 	// This is a C++ variable for storing a reference to an online session search.
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 
-	TMap<FName, FEIKAttribute> SessionSettings;
+	TMap<FString, FEIKAttribute> SessionSettings;
 	ERegionInfo E_RegionToSearch;
 	EMatchType E_MatchType;
 	int32 I_MaxResults;

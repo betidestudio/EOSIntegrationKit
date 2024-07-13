@@ -93,6 +93,6 @@ public:
 	static UEIK_CreateLobby_AsyncFunction* CreateEIKLobby(
 		TMap<FString, FEIKAttribute> SessionSettings,
 		FName SessionName = "GameSession",
-		int32 NumberOfPublicConnections = 0,
+		int32 NumberOfPublicConnections = 10,
 		FCreateLobbySettings ExtraSettings = FCreateLobbySettings());
 };
