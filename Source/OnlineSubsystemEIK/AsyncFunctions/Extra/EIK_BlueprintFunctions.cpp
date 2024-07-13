@@ -8,6 +8,7 @@
 #include "OnlineSubsystemEOS.h"
 #include "Engine/GameInstance.h"
 #include "Containers/Array.h"
+#include "EIKVoiceChat/Private/Android/AndroidEOSVoiceChatUser.h"
 #include "GameFramework/GameModeBase.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
@@ -160,6 +161,205 @@ FString UEIK_BlueprintFunctions::GetProductUserID(UObject* Context)
 	{
 		return FString();
 	}
+}
+
+IVoiceChatUser* UEIK_BlueprintFunctions::GetLobbyVoiceChat(UObject* Context)
+{
+	if (Context)
+	{
+		UWorld* World = Context->GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: World is null"));
+			return nullptr;
+		}
+
+		IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+		if (!OnlineSub)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: OnlineSubsystem is null"));
+			return nullptr;
+		}
+
+		FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub);
+		if (!EOSRef)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: EOSRef is null"));
+			return nullptr;
+		}
+
+		IOnlineIdentityPtr IdentityPointerRef = OnlineSub->GetIdentityInterface();
+		if (!IdentityPointerRef.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: IdentityPointerRef is null"));
+			return nullptr;
+		}
+
+		TSharedPtr<const FUniqueNetId> UniquePlayerId = IdentityPointerRef->GetUniquePlayerId(0);
+		if (!UniquePlayerId.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: UniquePlayerId is null"));
+			return nullptr;
+		}
+		return EOSRef->GetVoiceChatUserInterface(*UniquePlayerId);
+	}
+	return nullptr;
+}
+
+bool UEIK_BlueprintFunctions::MuteLobbyVoiceChat(UObject* Context, bool bMute)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+		if (!OnlineSub)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::MuteLobbyVoiceChat: OnlineSubsystem is null"));
+			return false;
+		}
+		IOnlineIdentityPtr IdentityPointerRef = OnlineSub->GetIdentityInterface();
+		if (!IdentityPointerRef.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::MuteLobbyVoiceChat: IdentityPointerRef is null"));
+			return false;
+		}
+		GetLobbyVoiceChat(Context)->SetPlayerMuted(*IdentityPointerRef->GetUniquePlayerId(0)->ToString(), bMute);
+		return true;
+	}
+	UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::MuteLobbyVoiceChat: VoiceChatUserInterface is null"));
+	return false;
+}
+
+
+bool UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted(UObject* Context)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+		if (!OnlineSub)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: OnlineSubsystem is null"));
+			return false;
+		}
+		IOnlineIdentityPtr IdentityPointerRef = OnlineSub->GetIdentityInterface();
+		if (!IdentityPointerRef.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: IdentityPointerRef is null"));
+			return false;
+		}
+		UE_LOG(LogEIK, Verbose, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: Checking if player is muted"));
+		return GetLobbyVoiceChat(Context)->IsPlayerMuted(*IdentityPointerRef->GetUniquePlayerId(0)->ToString());
+	}
+	UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: Context is null"));
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyOutputMethod(UObject* Context, FString MethodID)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->SetOutputDeviceId(MethodID);
+		return true;
+	}
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyInputMethod(UObject* Context, FString MethodID)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->SetInputDeviceId(MethodID);
+		return true;
+	}
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::BlockLobbyVoiceChatPlayers(UObject* Context, TArray<FString> BlockedPlayers)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->BlockPlayers(BlockedPlayers);
+		return true;
+	}
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::UnblockLobbyVoiceChatPlayers(UObject* Context, TArray<FString> UnblockedPlayers)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->UnblockPlayers(UnblockedPlayers);
+		return true;
+	}
+	return false;
+}
+
+float UEIK_BlueprintFunctions::GetLobbyVoiceChatOutputVolume(UObject* Context)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		return GetLobbyVoiceChat(Context)->GetAudioOutputVolume();
+	}
+	return -1.0f;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyVoiceChatOutputVolume(UObject* Context, float Volume)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->SetAudioOutputVolume(Volume);
+		return true;
+	}
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyVoiceChatInputVolume(UObject* Context, float Volume)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+		if (!OnlineSub)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: OnlineSubsystem is null"));
+			return false;
+		}
+		IOnlineIdentityPtr IdentityPointerRef = OnlineSub->GetIdentityInterface();
+		if (!IdentityPointerRef.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: IdentityPointerRef is null"));
+			return false;
+		}
+		GetLobbyVoiceChat(Context)->SetAudioInputVolume(Volume);
+		return true;
+	}
+	return false;
+}
+
+float UEIK_BlueprintFunctions::GetLobbyVoiceChatInputVolume(UObject* Context)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		return GetLobbyVoiceChat(Context)->GetAudioInputVolume();
+	}
+	return -1.0f;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyPlayerVoiceChatVolume(UObject* Context, FString PlayerName, float Volume)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->SetPlayerVolume(PlayerName, Volume);
+		return true;
+	}
+	return false;
+}
+
+float UEIK_BlueprintFunctions::GetLobbyPlayerVoiceChatVolume(UObject* Context, FString PlayerName)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		return GetLobbyVoiceChat(Context)->GetPlayerVolume(PlayerName);
+	}
+	return -1.0f;
 }
 
 bool UEIK_BlueprintFunctions::ShowFriendsList()

@@ -10,6 +10,7 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "VoiceChat.h"
 #include "eos_lobby_types.h"
 #include "eos_lobby.h"
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
@@ -189,8 +190,56 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
 	static TArray<FName> GetAllCurrentSessionNames(UObject* Context);
+	
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
 	static FString GetProductUserID(UObject* Context);
+
+
+
+
+
+
+	/** Lobby Voice Functions START */
+
+	static IVoiceChatUser* GetLobbyVoiceChat(UObject* Context);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool MuteLobbyVoiceChat(UObject* Context, bool bMute);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool IsLobbyVoiceChatMuted(UObject* Context);
+	
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyOutputMethod(UObject* Context, FString MethodID);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyInputMethod(UObject* Context, FString MethodID);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool BlockLobbyVoiceChatPlayers(UObject* Context, TArray<FString> BlockedPlayers);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool UnblockLobbyVoiceChatPlayers(UObject* Context, TArray<FString> UnblockedPlayers);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static float GetLobbyVoiceChatOutputVolume(UObject* Context);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyVoiceChatOutputVolume(UObject* Context, float Volume);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyVoiceChatInputVolume(UObject* Context, float Volume);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static float GetLobbyVoiceChatInputVolume(UObject* Context);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyPlayerVoiceChatVolume(UObject* Context, FString PlayerName, float Volume);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static float GetLobbyPlayerVoiceChatVolume(UObject* Context, FString PlayerName);
+
+	/** Voice Chat Functions END */
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Friends")
 	static bool ShowFriendsList();
