@@ -623,13 +623,13 @@ void FUserManagerEOS::LoginViaConnectInterface(const FOnlineAccountCredentials& 
 
 EEIK_EExternalCredentialType FUserManagerEOS::GetExternalCredentialType(const FString& Type)
 {
-	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEIK_EExternalCredentialType"), true);
+	UEnum* EnumPtr = FindObject<UEnum>(nullptr, TEXT("/Script/OnlineSubsystemEIK.EEIK_EExternalCredentialType"));
 	if (!EnumPtr)
 	{
 		UE_LOG(LogEIK, Error, TEXT("Enum not found in GetExternalCredentialType! Type: %s"), *Type);
 		return EEIK_EExternalCredentialType::EIK_ECT_EPIC; // Return a default value or handle error
 	}
-
+	UE_LOG(LogEIK, Error, TEXT("Main GetNameSafe: %s"), *GetNameSafe(EnumPtr->GetOuter()));
 	int32 EnumValue = EnumPtr->GetValueByName(FName(*Type));
 	if (EnumValue == INDEX_NONE)
 	{
@@ -641,7 +641,7 @@ EEIK_EExternalCredentialType FUserManagerEOS::GetExternalCredentialType(const FS
 
 EEIK_ELoginCredentialType FUserManagerEOS::GetLoginCredentialType(const FString& Type)
 {
-	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEIK_ELoginCredentialType"), true);
+	UEnum* EnumPtr = FindObject<UEnum>(nullptr, TEXT("/Script/OnlineSubsystemEIK.EEIK_ELoginCredentialType"));
 	if (!EnumPtr)
 	{
 		UE_LOG(LogEIK, Error, TEXT("Enum not found in GetLoginCredentialType! Type: %s"), *Type);
@@ -1509,7 +1509,7 @@ bool FUserManagerEOS::Logout(int32 LocalUserNum)
 
 void FUserManagerEOS::Tick(float DeltaTime)
 {
-	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEIK_EExternalCredentialType"), true);
+	UEnum* EnumPtr = FindObject<UEnum>(nullptr, TEXT("/Script/OnlineSubsystemEIK.EEIK_EExternalCredentialType"));
 	UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>();
 	if(EnumPtr && EIKSettings)
 	{
@@ -1618,7 +1618,7 @@ bool FUserManagerEOS::AutoLoginUsingSettings(int32 LocalUserNum)
 		bAutoLoginAttempted = true;
 		return false;
 	}
-	UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EEIK_EExternalCredentialType"), true);
+	UEnum* EnumPtr = FindObject<UEnum>(nullptr, TEXT("/Script/OnlineSubsystemEIK.EEIK_EExternalCredentialType"));
 	UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>();
 	if(EnumPtr && EIKSettings)
 	{
