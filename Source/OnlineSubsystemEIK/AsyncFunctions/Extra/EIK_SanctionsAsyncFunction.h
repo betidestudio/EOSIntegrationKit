@@ -3,31 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "eos_sanctions.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #include "EIK_SanctionsAsyncFunction.generated.h"
 
-USTRUCT(BlueprintType)
-struct FSanctionsStruct
-{
-	GENERATED_BODY()
-public:
-	/** The timestamp when the sanction was placed */
-	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	FDateTime TimePlaced;
-	/** The action associated with this sanction */
-	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	FString Action = "";
-	/** The timestamp when the sanction will expire. If the sanction is permanent, this will be 0. */
-	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	FDateTime TimeExpires;
-	/** A unique identifier for this specific sanction */
-	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit | Sanctions")
-	FString ReferenceId = "";
-	
-};
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSanctionsDelegate, const TArray<FSanctionsStruct>&, Sanctions);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSanctionsDelegate, const TArray<FEIK_Sanctions_PlayerSanction>&, Sanctions);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SanctionsAsyncFunction : public UBlueprintAsyncActionBase
