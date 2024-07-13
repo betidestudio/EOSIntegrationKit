@@ -1396,7 +1396,15 @@ uint32 FOnlineSessionEOS::CreateEOSSession(int32 HostingPlayerNum, FNamedOnlineS
 		Session->SessionSettings.bAllowJoinViaPresence ||
 		Session->SessionSettings.bAllowJoinViaPresenceFriendsOnly ||
 		Session->SessionSettings.bAllowInvites) ? EOS_TRUE : EOS_FALSE;
-
+	if(Session->SessionSettings.Get("SANCTIONENABLED", Options.bSanctionsEnabled))
+	{
+		UE_LOG(LogOnline, Log, TEXT("Sanctions Enabled: %s"), Options.bSanctionsEnabled ? TEXT("True") : TEXT("False"));
+	}
+	else
+	{
+		UE_LOG(LogOnline, Log, TEXT("Sanctions Enabled not found, defaulting to false"));
+		Options.bSanctionsEnabled = false;
+	}
 	EOS_EResult ResultCode = EOS_Sessions_CreateSessionModification(EOSSubsystem->SessionsHandle, &Options, &SessionModHandle);
 	if (ResultCode != EOS_EResult::EOS_Success)
 	{

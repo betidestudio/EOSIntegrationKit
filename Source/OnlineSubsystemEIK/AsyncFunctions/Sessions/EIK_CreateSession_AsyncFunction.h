@@ -55,6 +55,9 @@ struct FCreateSessionExtraSettings
 	
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
 	bool bAllowJoinViaPresenceFriendsOnly = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	bool bEnforceSanctions = false;
 };
 
 UCLASS()
