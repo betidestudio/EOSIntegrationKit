@@ -349,10 +349,9 @@ void FEIKEditorModule::OnPackageAndDeploySelected()
         FString CloudDir = Settings->OneClick_CloudDirOverride.IsEmpty() ? TEXT("\\\"\\\"")  : Settings->OneClick_CloudDirOverride;
         FString AppArgs = Settings->OneClick_AppArgsOverride.IsEmpty() ? TEXT("\\\"\\\"")  : Settings->OneClick_AppArgsOverride;
         FString AppLaunch = Settings->OneClick_AppLaunchOverride.IsEmpty() ? FString::Printf(TEXT("%s.exe"), FApp::GetProjectName()) : Settings->OneClick_AppLaunchOverride;
-        UE_LOG(LogTemp, Log, TEXT("CloudDir: %s"), *CloudDir);
         FString ParametersForBuildPatchTool = FString::Printf(TEXT("-ClientId=%s -ClientSecret=%s -OrganizationId=%s -ProductId=%s -ArtifactId=%s -mode=UploadBinary -BuildRoot=%s -CloudDir=%s -BuildVersion=%s -AppArgs=%s -AppLaunch=%s"),
             *Settings->OneClick_ClientId, *Settings->OneClick_ClientSecret, *Settings->OneClick_OrganizationId, *Settings->OneClick_ProductId, *Settings->OneClick_ArtifactId, *FilePath, *CloudDir, *VersionNumber, *AppArgs, *AppLaunch);
-        UE_LOG(LogTemp, Log, TEXT("Build Patch Tool Parameters: %s"), *ParametersForBuildPatchTool);
+        UE_LOG(LogEikEditor, Log, TEXT("Build Patch Tool Parameters: %s"), *ParametersForBuildPatchTool);
         InteractiveProcess = MakeShareable(new FInteractiveProcess(*BuildPatchToolExe, ParametersForBuildPatchTool, false, true));
         InteractiveProcess->OnCompleted().BindRaw(this, &FEIKEditorModule::BuildProcessCompleted);
         InteractiveProcess->OnCanceled().BindRaw(this, &FEIKEditorModule::HandleProcessCanceled);
