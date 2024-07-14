@@ -18,7 +18,7 @@ struct FEIK_Auth_LoginCallbackInfo
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit")
-	TEnumAsByte<EEIK_Result> Result;
+	TEnumAsByte<EEIK_Result> Result = EEIK_Result::EOS_ServiceFailure;
 
 	UPROPERTY(BlueprintReadOnly, Category = "EOS Integration Kit")
 	FEIK_EpicAccountId LocalUserId;
@@ -52,7 +52,7 @@ struct FEIK_Auth_LoginOptions
 	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit")
 	FEIK_Auth_Credentials Credentials;
 
-	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit", meta=(Bitmask, BitmaskEnum=EEIK_EAuthScopeFlags))
+	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit", meta=(Bitmask, BitmaskEnum = "/Script/OnlineSubsystemEIK.EEIK_EAuthScopeFlags"))
 	int32 ScopeFlags;
 
 	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit")

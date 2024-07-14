@@ -10,7 +10,7 @@
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 #include "EIK_PlayerDataStorage_DuplicateFile.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_PlayerDataStorage_DuplicateFile, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_PlayerDataStorage_DuplicateFileDelegate, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_PlayerDataStorage_DuplicateFile : public UBlueprintAsyncActionBase
@@ -24,7 +24,7 @@ public:
 	static UEIK_PlayerDataStorage_DuplicateFile* EIK_PlayerDataStorage_DuplicateFile(FEIK_ProductUserId LocalUserId, FString SourceFilename, FString DestinationFilename);
 
 	UPROPERTY(BlueprintAssignable)
-	FEIK_PlayerDataStorage_DuplicateFile OnCallback;
+	FEIK_PlayerDataStorage_DuplicateFileDelegate OnCallback;
 	
 private:
 	virtual void Activate() override;

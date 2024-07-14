@@ -51,7 +51,7 @@ struct FEIK_Lobby_JoinLobbyByIdOptions
 	}
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_Lobby_JoinLobbyById, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_LobbyId&, LobbyId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_Lobby_JoinLobbyByIdDelegate, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_LobbyId&, LobbyId);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_Lobby_JoinLobbyById : public UBlueprintAsyncActionBase
@@ -64,7 +64,7 @@ public:
 	static UEIK_Lobby_JoinLobbyById* EIK_Lobby_JoinLobbyById(FEIK_Lobby_JoinLobbyByIdOptions Options);
 
 	UPROPERTY(BlueprintAssignable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
-	FEIK_Lobby_JoinLobbyById OnCallback;
+	FEIK_Lobby_JoinLobbyByIdDelegate OnCallback;
 private:
 	static void EOS_CALL OnJoinLobbyByIdComplete(const EOS_Lobby_JoinLobbyByIdCallbackInfo* Data);
 	virtual void Activate() override;

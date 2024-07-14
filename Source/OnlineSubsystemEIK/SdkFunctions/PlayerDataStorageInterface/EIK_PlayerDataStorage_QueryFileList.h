@@ -10,7 +10,7 @@
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 #include "EIK_PlayerDataStorage_QueryFileList.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FEIK_PlayerDataStorage_QueryFileList, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId, int32, FileCount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FEIK_PlayerDataStorage_QueryFileListDelegate, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId, int32, FileCount);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_PlayerDataStorage_QueryFileList : public UBlueprintAsyncActionBase
@@ -24,7 +24,7 @@ public:
 	static UEIK_PlayerDataStorage_QueryFileList* EIK_PlayerDataStorage_QueryFileList(FEIK_ProductUserId LocalUserId);
 
 	UPROPERTY(BlueprintAssignable)
-	FEIK_PlayerDataStorage_QueryFileList OnCallback;
+	FEIK_PlayerDataStorage_QueryFileListDelegate OnCallback;
 
 private:
 	virtual void Activate() override;

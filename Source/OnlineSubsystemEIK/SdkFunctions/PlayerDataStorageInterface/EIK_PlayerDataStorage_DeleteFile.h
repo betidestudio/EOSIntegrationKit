@@ -10,7 +10,7 @@
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 #include "EIK_PlayerDataStorage_DeleteFile.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_PlayerDataStorage_DeleteFile, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_PlayerDataStorage_DeleteFileDelegate, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_PlayerDataStorage_DeleteFile : public UBlueprintAsyncActionBase
@@ -24,7 +24,7 @@ public:
 	static UEIK_PlayerDataStorage_DeleteFile* EIK_PlayerDataStorage_DeleteFile(FEIK_ProductUserId LocalUserId, FString Filename);
 
 	UPROPERTY(BlueprintAssignable)
-	FEIK_PlayerDataStorage_DeleteFile OnCallback;
+	FEIK_PlayerDataStorage_DeleteFileDelegate OnCallback;
 	
 private:
 	virtual void Activate() override;

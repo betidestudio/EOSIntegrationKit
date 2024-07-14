@@ -7,7 +7,7 @@
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #include "EIK_Lobby_DestroyLobby.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_Lobby_DestroyLobby, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_LobbyId&, LobbyId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_Lobby_DestroyLobbyDelegate, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_LobbyId&, LobbyId);
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_Lobby_DestroyLobby : public UBlueprintAsyncActionBase
 {
@@ -20,7 +20,7 @@ public:
 	static UEIK_Lobby_DestroyLobby* EIK_Lobby_DestroyLobby(FEIK_ProductUserId LocalUserId, FEIK_LobbyId LobbyId);
 
 	UPROPERTY(BlueprintAssignable, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
-	FEIK_Lobby_DestroyLobby OnCallback;
+	FEIK_Lobby_DestroyLobbyDelegate OnCallback;
 
 private:
 	static void EOS_CALL OnDestroyLobbyComplete(const EOS_Lobby_DestroyLobbyCallbackInfo* Data);

@@ -10,7 +10,7 @@
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 #include "EIK_PlayerDataStorage_WriteFile.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_PlayerDataStorage_WriteFile, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_PlayerDataStorage_WriteFileDelegate, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FEIK_PlayerDataStorage_OnFileWriteTransferProgressCallback, const FEIK_ProductUserId&, LocalUserId, const FString&, Filename, int32, BytesTransferred, int32, TotalFileSizeBytes);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEIK_PlayerDataStorage_OnWriteFileDataCallback);
 UCLASS()
@@ -25,7 +25,7 @@ public:
 	static UEIK_PlayerDataStorage_WriteFile* EIK_PlayerDataStorage_WriteFile(FEIK_ProductUserId LocalUserId, FString Filename, const TArray<uint8>& Data, int32 DataLengthBytes, int32 ChunkLengthBytes);
 
 	UPROPERTY(BlueprintAssignable)
-	FEIK_PlayerDataStorage_WriteFile OnCallback;
+	FEIK_PlayerDataStorage_WriteFileDelegate OnCallback;
 
 	UPROPERTY(BlueprintAssignable)
 	FEIK_PlayerDataStorage_OnFileWriteTransferProgressCallback OnFileTransferProgressCallback;

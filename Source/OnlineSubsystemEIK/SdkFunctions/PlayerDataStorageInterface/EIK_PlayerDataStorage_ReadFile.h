@@ -10,7 +10,7 @@
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 #include "EIK_PlayerDataStorage_ReadFile.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_PlayerDataStorage_ReadFile, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_PlayerDataStorage_ReadFileDelegate, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_ProductUserId&, LocalUserId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEIK_PlayerDataStorage_OnReadFileDataCallback);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FEIK_PlayerDataStorage_OnFileTransferProgressCallback, const FEIK_ProductUserId&, LocalUserId, const FString&, Filename, int32, BytesTransferred, int32, TotalFileSizeBytes);
 UCLASS()
@@ -25,7 +25,7 @@ public:
 	static UEIK_PlayerDataStorage_ReadFile* EIK_PlayerDataStorage_ReadFile(FEIK_ProductUserId LocalUserId, FString Filename, int32 ReadChunkLengthBytes);
 
 	UPROPERTY(BlueprintAssignable)
-	FEIK_PlayerDataStorage_ReadFile OnCallback;
+	FEIK_PlayerDataStorage_ReadFileDelegate OnCallback;
 	
 	UPROPERTY(BlueprintAssignable)
 	FEIK_PlayerDataStorage_OnReadFileDataCallback OnReadFileDataCallback;
