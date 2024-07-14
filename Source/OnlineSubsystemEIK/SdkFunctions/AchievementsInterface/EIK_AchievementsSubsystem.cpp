@@ -7,8 +7,9 @@
 #include "OnlineSubsystemEOS.h"
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
-FEIK_NotificationId UEIK_AchievementsSubsystem::EIK_Achievements_AddNotifyAchievementsUnlockedV2()
+FEIK_NotificationId UEIK_AchievementsSubsystem::EIK_Achievements_AddNotifyAchievementsUnlockedV2(FOnAchievementsUnlockedV2Callback Callback)
 {
+	OnAchievementsUnlockedV2 = Callback;
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))

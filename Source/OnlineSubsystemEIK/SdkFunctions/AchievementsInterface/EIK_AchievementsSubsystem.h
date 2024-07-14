@@ -18,7 +18,7 @@ public:
 	FOnAchievementsUnlockedV2Callback OnAchievementsUnlockedV2;
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit | SDK Functions | Achievements Interface", DisplayName="EOS_Achievements_AddNotifyAchievementsUnlockedV2")
-	FEIK_NotificationId EIK_Achievements_AddNotifyAchievementsUnlockedV2();
+	FEIK_NotificationId EIK_Achievements_AddNotifyAchievementsUnlockedV2(FOnAchievementsUnlockedV2Callback Callback);
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit | SDK Functions | Achievements Interface", DisplayName="EOS_Achievements_CopyAchievementDefinitionV2ByAchievementId")
 	TEnumAsByte<EEIK_Result> EIK_Achievements_CopyAchievementDefinitionV2ByAchievementId(FString AchievementId, FEIK_Achievements_DefinitionV2& OutAchievementDefinition);
