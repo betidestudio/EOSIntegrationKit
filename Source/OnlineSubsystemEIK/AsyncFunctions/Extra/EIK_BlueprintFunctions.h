@@ -354,4 +354,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, DisplayName="Request EOS Access Token", Category="EOS Integration Kit || Extra")
 	static void RequestEOSAccessToken(const FOnResponseFromEpicForAccessToken& Response);
+
+	UFUNCTION(BlueprintCallable, DisplayName="Convert POSIX Time to DateTime", Category="EOS Integration Kit || Extra")
+	static FDateTime ConvertPosixTimeToDateTime(int64 PosixTime);
+
 };

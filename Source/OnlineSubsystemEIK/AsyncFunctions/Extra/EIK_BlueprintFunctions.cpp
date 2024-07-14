@@ -826,3 +826,8 @@ void UEIK_BlueprintFunctions::RequestEOSAccessToken(const FOnResponseFromEpicFor
 	});
 	HttpRequest->ProcessRequest();
 }
+
+FDateTime UEIK_BlueprintFunctions::ConvertPosixTimeToDateTime(int64 PosixTime)
+{
+	return FDateTime::FromUnixTimestamp(PosixTime);
+}
