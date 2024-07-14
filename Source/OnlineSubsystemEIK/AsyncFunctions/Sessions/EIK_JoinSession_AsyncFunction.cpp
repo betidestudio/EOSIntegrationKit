@@ -4,6 +4,7 @@
 #include "EIK_JoinSession_AsyncFunction.h"
 #include "OnlineSubsystemUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 
 UEIK_JoinSession_AsyncFunction* UEIK_JoinSession_AsyncFunction::JoinEIKSessions(UObject* WorldContextObject, FName SessionName, FSessionFindStruct SessionToJoin,bool bLanSession)
 {
@@ -101,7 +102,7 @@ MarkAsGarbage();
 					}
 					else
 					{
-						UE_LOG(LogTemp, Warning, TEXT("EIK: Could not retrieve address"));
+						UE_LOG(LogEIK, Warning, TEXT("EIK: Could not retrieve address"));
 						OnFail.Broadcast(EEIKJoinResult::CouldNotRetrieveAddress, FString());
 						bDelegateCalled = true;
 						SetReadyToDestroy();
