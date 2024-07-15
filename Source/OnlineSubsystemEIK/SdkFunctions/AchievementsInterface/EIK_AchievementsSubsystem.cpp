@@ -98,7 +98,7 @@ int32 UEIK_AchievementsSubsystem::EIK_Achievements_GetPlayerAchievementCount(FEI
 		{
 			EOS_Achievements_GetPlayerAchievementCountOptions Options;
 			Options.ApiVersion = EOS_ACHIEVEMENTS_GETPLAYERACHIEVEMENTCOUNT_API_LATEST;
-			Options.UserId = UserId.ProductUserId_FromString();
+			Options.UserId = UserId.GetValueAsEosType();
 			return EOS_Achievements_GetPlayerAchievementCount(EOSRef->AchievementsHandle, &Options);
 		}
 	}
@@ -120,7 +120,7 @@ TEnumAsByte<EEIK_Result> UEIK_AchievementsSubsystem::EIK_Achievements_QueryDefin
 		{
 			EOS_Achievements_QueryDefinitionsOptions Options;
 			Options.ApiVersion = EOS_ACHIEVEMENTS_QUERYDEFINITIONS_API_LATEST;
-			Options.LocalUserId = UserId.ProductUserId_FromString();
+			Options.LocalUserId = UserId.GetValueAsEosType();
 			EOS_Achievements_QueryDefinitions(EOSRef->AchievementsHandle, &Options, this, nullptr);
 			return static_cast<EEIK_Result>(EOS_EResult::EOS_Success);
 		}

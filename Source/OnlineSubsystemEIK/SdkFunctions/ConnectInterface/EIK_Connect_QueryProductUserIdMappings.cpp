@@ -40,12 +40,12 @@ void UEIK_Connect_QueryProductUserIdMappings::Activate()
 		{
 			EOS_Connect_QueryProductUserIdMappingsOptions QueryProductUserIdMappingsOptions = {};
 			QueryProductUserIdMappingsOptions.ApiVersion = EOS_CONNECT_QUERYPRODUCTUSERIDMAPPINGS_API_LATEST;
-			QueryProductUserIdMappingsOptions.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			QueryProductUserIdMappingsOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			QueryProductUserIdMappingsOptions.ProductUserIdCount = Var_TargetProductUserIds.Num();
 			EOS_ProductUserId* TargetProductUserIds = new EOS_ProductUserId[Var_TargetProductUserIds.Num()];
 			for (int i = 0; i < Var_TargetProductUserIds.Num(); i++)
 			{
-				TargetProductUserIds[i] = Var_TargetProductUserIds[i].ProductUserId_FromString();
+				TargetProductUserIds[i] = Var_TargetProductUserIds[i].GetValueAsEosType();
 			}
 			QueryProductUserIdMappingsOptions.ProductUserIds = TargetProductUserIds;
 			EOS_Connect_QueryProductUserIdMappings(EOSRef->ConnectHandle, &QueryProductUserIdMappingsOptions, this, &UEIK_Connect_QueryProductUserIdMappings::OnQueryProductUserIdMappingsCallback);

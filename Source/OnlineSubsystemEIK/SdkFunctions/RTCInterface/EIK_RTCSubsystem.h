@@ -94,32 +94,32 @@ public:
 	FEIK_RTC_OnDisconnectedCallback OnDisconnectedCallback;
 	//Register to receive notifications when disconnected from the room. If the returned NotificationId is valid, you must call EOS_RTC_RemoveNotifyDisconnected when you no longer wish to have your CompletionDelegate called. This function will always return EOS_INVALID_NOTIFICATIONID when used with lobby RTC room. To be notified of the connection status of a Lobby-managed RTC room, use the EOS_Lobby_AddNotifyRTCRoomConnectionChanged function instead.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTC_AddNotifyDisconnected")
-	FEIK_NotificationId EIK_RTC_AddNotifyDisconnected(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTC_OnDisconnectedCallback& Callback);
+	FEIK_NotificationId EIK_RTC_AddNotifyDisconnected(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTC_OnDisconnectedCallback& Callback);
 
 	FEIK_RTC_OnParticipantStatusChangedCallback OnParticipantStatusChangedCallback;
 	//Register to receive notifications when a participant's status changes (e.g: join or leave the room), or when the participant is added or removed from an applicable block list (e.g: Epic block list and/or current platform's block list). If the returned NotificationId is valid, you must call EOS_RTC_RemoveNotifyParticipantStatusChanged when you no longer wish to have your CompletionDelegate called. If you register to this notification before joining a room, you will receive a notification for every member already in the room when you join said room. This allows you to know who is already in the room when you join. To be used effectively with a Lobby-managed RTC room, this should be registered during the EOS_Lobby_CreateLobby or EOS_Lobby_JoinLobby completion callbacks when the ResultCode is EOS_Success. If this notification is registered after that point, it is possible to miss notifications for already-existing room participants. You can use this notification to detect internal automatic RTC blocks due to block lists. When a participant joins a room and while the system resolves the block list status of said participant, the participant is set to blocked and you'll receive a notification with ParticipantStatus set to EOS_RTCPS_Joined and bParticipantInBlocklist set to true. Once the block list status is resolved, if the player is not in any applicable block list(s), it is then unblocked and a new notification is sent with ParticipantStatus set to EOS_RTCPS_Joined and bParticipantInBlocklist set to false.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTC_AddNotifyParticipantStatusChanged")
-	FEIK_NotificationId EIK_RTC_AddNotifyParticipantStatusChanged(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTC_OnParticipantStatusChangedCallback& Callback);
+	FEIK_NotificationId EIK_RTC_AddNotifyParticipantStatusChanged(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTC_OnParticipantStatusChangedCallback& Callback);
 	
 	FEIK_RTC_OnRoomStatisticsUpdatedCallback OnRoomStatisticsUpdatedCallback;
 	//Register to receive notifications to receiving periodical statistics update. If the returned NotificationId is valid, you must call EOS_RTC_RemoveNotifyRoomStatisticsUpdated when you no longer wish to have your StatisticsUpdateHandler called.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTC_AddNotifyRoomStatisticsUpdated")
-	FEIK_NotificationId EIK_RTC_AddNotifyRoomStatisticsUpdated(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTC_OnRoomStatisticsUpdatedCallback& Callback);
+	FEIK_NotificationId EIK_RTC_AddNotifyRoomStatisticsUpdated(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTC_OnRoomStatisticsUpdatedCallback& Callback);
 
 	FEIK_RTC_OnBlockParticipantCallback OnBlockParticipantCallback;
 	//Use this function to block a participant already connected to the room. After blocking them no media will be sent or received between that user and the local user. This method can be used after receiving the OnParticipantStatusChanged notification.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTC_BlockParticipant")
-	void EIK_RTC_BlockParticipant(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_ProductUserId& ParticipantId, bool bBlocked, const FEIK_RTC_OnBlockParticipantCallback& Callback);
+	void EIK_RTC_BlockParticipant(FEIK_ProductUserId LocalUserId, const FString& RoomName, FEIK_ProductUserId ParticipantId, bool bBlocked, const FEIK_RTC_OnBlockParticipantCallback& Callback);
 
 	FEIK_RTC_OnJoinRoomCallback OnJoinRoomCallback;
 	//Use this function to join a room. This function does not need to called for the Lobby RTC Room system; doing so will return EOS_AccessDenied. The lobby system will automatically join and leave RTC Rooms for all lobbies that have RTC rooms enabled.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTC_JoinRoom")
-	void EIK_RTC_JoinRoom(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FString& ClientBaseUrl, const FString& ParticipantToken, const FEIK_ProductUserId& ParticipantId, bool bEnabledEcho, bool bManualAudioInputEnabled, bool bManualAudioOutputEnabled, const FEIK_RTC_OnJoinRoomCallback& Callback);
+	void EIK_RTC_JoinRoom(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FString& ClientBaseUrl, const FString& ParticipantToken, FEIK_ProductUserId ParticipantId, bool bEnabledEcho, bool bManualAudioInputEnabled, bool bManualAudioOutputEnabled, const FEIK_RTC_OnJoinRoomCallback& Callback);
 
 	FEIK_RTC_OnLeaveRoomCallback OnLeaveRoomCallback;
 	//Use this function to leave a room and clean up all the resources associated with it. This function has to always be called when the room is abandoned even if the user is already disconnected for other reasons. This function does not need to called for the Lobby RTC Room system; doing so will return EOS_AccessDenied. The lobby system will automatically join and leave RTC Rooms for all lobbies that have RTC rooms enabled.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTC_LeaveRoom")
-	void EIK_RTC_LeaveRoom(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTC_OnLeaveRoomCallback& Callback);
+	void EIK_RTC_LeaveRoom(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTC_OnLeaveRoomCallback& Callback);
 
 	//Unregister a previously bound notification handler from receiving room disconnection notifications
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTC_RemoveNotifyDisconnected")
@@ -135,7 +135,7 @@ public:
 
 	//Use this function to control settings for the specific room. The available settings are documented as part of EOS_RTC_SetRoomSettingOptions.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTC_SetRoomSetting")
-	TEnumAsByte<EEIK_Result> EIK_RTC_SetRoomSetting(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FString& SettingName, const FString& SettingValue);
+	TEnumAsByte<EEIK_Result> EIK_RTC_SetRoomSetting(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FString& SettingName, const FString& SettingValue);
 	
 	//Use this function to control settings. The available settings are documented as part of EOS_RTC_SetSettingOptions.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTC_SetSetting")
@@ -147,22 +147,22 @@ public:
 
 	//Fetches a user token for a given user ID when called inside of the OnQueryJoinRoomTokenComplete callback.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAdmin_CopyUserTokenByUserId")
-	TEnumAsByte<EEIK_Result> EIK_RTCAdmin_CopyUserTokenByUserId(const FEIK_ProductUserId& UserId, int32 QueryId, FEIK_RTCAdmin_UserToken& OutUserToken);
+	TEnumAsByte<EEIK_Result> EIK_RTCAdmin_CopyUserTokenByUserId(FEIK_ProductUserId UserId, int32 QueryId, FEIK_RTCAdmin_UserToken& OutUserToken);
 
 	FEIK_RTCAdmin_OnKickCompleteCallback OnKickCompleteCallback;
 	//Starts an asynchronous task that removes a participant from a room and revokes their token.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAdmin_Kick")
-	void EIK_RTCAdmin_Kick(const FString& RoomName, const FEIK_ProductUserId& TargetUserId, const FEIK_RTCAdmin_OnKickCompleteCallback& Callback);
+	void EIK_RTCAdmin_Kick(const FString& RoomName, FEIK_ProductUserId TargetUserId, const FEIK_RTCAdmin_OnKickCompleteCallback& Callback);
 
 	FEIK_RTCAdmin_OnQueryJoinRoomTokenCompleteCallback OnQueryJoinRoomTokenCompleteCallback;
 	//Query for a list of user tokens for joining a room. Each query generates a query id ( see EOS_RTCAdmin_QueryJoinRoomTokenCompleteCallbackInfo ) which should be used to retrieve the tokens from inside the callback. This query id and query result itself are only valid for the duration of the callback.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAdmin_QueryJoinRoomToken")
-	TEnumAsByte<EEIK_Result> EIK_RTCAdmin_QueryJoinRoomToken(const FString& RoomName, const FEIK_ProductUserId& LocalUserId, const TArray<FEIK_ProductUserId>& TargetUserIds, TArray<FString>& TargetUserIpAddresses, const FEIK_RTCAdmin_OnQueryJoinRoomTokenCompleteCallback& Callback);
+	TEnumAsByte<EEIK_Result> EIK_RTCAdmin_QueryJoinRoomToken(const FString& RoomName, FEIK_ProductUserId LocalUserId, const TArray<FEIK_ProductUserId>& TargetUserIds, TArray<FString>& TargetUserIpAddresses, const FEIK_RTCAdmin_OnQueryJoinRoomTokenCompleteCallback& Callback);
 
 	FEIK_RTCAudio_OnAudioBeforeRenderCallback OnAudioBeforeRenderCallback;
 	//Register to receive notifications with remote audio buffers before they are rendered. This gives you access to the audio data received, allowing for example the implementation of custom filters/effects. If the returned NotificationId is valid, you must call EOS_RTCAudio_RemoveNotifyAudioBeforeRender when you no longer wish to have your CompletionDelegate called.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_AddNotifyAudioBeforeRender")
-	FEIK_NotificationId EIK_RTCAudio_AddNotifyAudioBeforeRender(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, bool bUnmixedAudio, const FEIK_RTCAudio_OnAudioBeforeRenderCallback& Callback);
+	FEIK_NotificationId EIK_RTCAudio_AddNotifyAudioBeforeRender(FEIK_ProductUserId LocalUserId, const FString& RoomName, bool bUnmixedAudio, const FEIK_RTCAudio_OnAudioBeforeRenderCallback& Callback);
 
 	FEIK_RTCAudio_OnAudioDevicesChangedCallback OnAudioDevicesChangedCallback;
 	/*
@@ -182,17 +182,17 @@ public:
 	FEIK_RTCAudio_OnAudioInputStateCallback OnAudioInputStateCallback;
 	//Register to receive notifications when audio input state changed. If the returned NotificationId is valid, you must call EOS_RTCAudio_RemoveNotifyAudioInputState when you no longer wish to have your CompletionDelegate called.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_AddNotifyAudioInputState")
-	FEIK_NotificationId EIK_RTCAudio_AddNotifyAudioInputState(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTCAudio_OnAudioInputStateCallback& Callback);
+	FEIK_NotificationId EIK_RTCAudio_AddNotifyAudioInputState(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTCAudio_OnAudioInputStateCallback& Callback);
 
 	FEIK_RTCAudio_OnAudioOutputStateCallback OnAudioOutputStateCallback;
 	//Register to receive notifications when audio output state changed. If the returned NotificationId is valid, you must call EOS_RTCAudio_RemoveNotifyAudioOutputState when you no longer wish to have your CompletionDelegate called.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_AddNotifyAudioOutputState")
-	FEIK_NotificationId EIK_RTCAudio_AddNotifyAudioOutputState(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTCAudio_OnAudioOutputStateCallback& Callback);
+	FEIK_NotificationId EIK_RTCAudio_AddNotifyAudioOutputState(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTCAudio_OnAudioOutputStateCallback& Callback);
 
 	FEIK_RTCAudio_OnParticipantUpdatedCallback OnParticipantUpdatedCallback;
 	//Register to receive notifications when a room participant audio status is updated (f.e when mute state changes or speaking flag changes). The notification is raised when the participant's audio status is updated. In order not to miss any participant status changes, applications need to add the notification before joining a room. If the returned NotificationId is valid, you must call EOS_RTCAudio_RemoveNotifyParticipantUpdated when you no longer wish to have your CompletionDelegate called.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_AddNotifyParticipantUpdated")
-	FEIK_NotificationId EIK_RTCAudio_AddNotifyParticipantUpdated(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTCAudio_OnParticipantUpdatedCallback& Callback);
+	FEIK_NotificationId EIK_RTCAudio_AddNotifyParticipantUpdated(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTCAudio_OnParticipantUpdatedCallback& Callback);
 
 	//Fetches an audio input device's information from then given index that are cached locally.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_CopyInputDeviceInformationByIndex")
@@ -259,17 +259,17 @@ public:
 
 	//Use this function to push a new audio buffer to be sent to the participants of a room. This should only be used if Manual Audio Input was enabled locally for the specified room.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_SendAudio")
-	TEnumAsByte<EEIK_Result> EIK_RTCAudio_SendAudio(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTCAudio_AudioBuffer& AudioBuffer);
+	TEnumAsByte<EEIK_Result> EIK_RTCAudio_SendAudio(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTCAudio_AudioBuffer& AudioBuffer);
 
 	FEIK_RTCAudio_OnSetInputDeviceSettingsCallback OnSetInputDeviceSettingsCallback;
 	//Use this function to set audio input device settings, such as the active input device, or platform AEC.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_SetInputDeviceSettings")
-	void EIK_RTCAudio_SetInputDeviceSettings(const FEIK_ProductUserId& LocalUserId, const FString& RealDeviceId, bool bPlatformAEC, const FEIK_RTCAudio_OnSetInputDeviceSettingsCallback& Callback);
+	void EIK_RTCAudio_SetInputDeviceSettings(FEIK_ProductUserId LocalUserId, const FString& RealDeviceId, bool bPlatformAEC, const FEIK_RTCAudio_OnSetInputDeviceSettingsCallback& Callback);
 
 	FEIK_RTCAudio_OnSetOutputDeviceSettingsCallback OnSetOutputDeviceSettingsCallback;
 	//Use this function to set audio output device settings, such as the active output device.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_SetOutputDeviceSettings")
-	void EIK_RTCAudio_SetOutputDeviceSettings(const FEIK_ProductUserId& LocalUserId, const FString& RealDeviceId, const FEIK_RTCAudio_OnSetOutputDeviceSettingsCallback& Callback);
+	void EIK_RTCAudio_SetOutputDeviceSettings(FEIK_ProductUserId LocalUserId, const FString& RealDeviceId, const FEIK_RTCAudio_OnSetOutputDeviceSettingsCallback& Callback);
 
 	FEIK_RTCAudio_OnUnregisterPlatformUserCallback OnUnregisterPlatformUserCallback;
 	//Use this function to remove a user that was added with EOS_RTCAudio_RegisterPlatformUser. This function is only necessary for some platforms.
@@ -279,38 +279,38 @@ public:
 	FEIK_RTCAudio_OnUpdateParticipantVolumeCallback OnUpdateParticipantVolumeCallback;
 	//Use this function to change participant audio volume for a room.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_UpdateParticipantVolume")
-	void EIK_RTCAudio_UpdateParticipantVolume(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_ProductUserId& ParticipantId, float Volume, const FEIK_RTCAudio_OnUpdateParticipantVolumeCallback& Callback);
+	void EIK_RTCAudio_UpdateParticipantVolume(FEIK_ProductUserId LocalUserId, const FString& RoomName, FEIK_ProductUserId ParticipantId, float Volume, const FEIK_RTCAudio_OnUpdateParticipantVolumeCallback& Callback);
 
 	FEIK_RTCAudio_OnUpdateReceivingCallback OnUpdateReceivingCallback;
 	//Use this function to tweak incoming audio options for a room.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_UpdateReceiving")
-	void EIK_RTCAudio_UpdateReceiving(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_ProductUserId& ParticipantId, bool bAudioEnabled, const FEIK_RTCAudio_OnUpdateReceivingCallback& Callback);
+	void EIK_RTCAudio_UpdateReceiving(FEIK_ProductUserId LocalUserId, const FString& RoomName, FEIK_ProductUserId ParticipantId, bool bAudioEnabled, const FEIK_RTCAudio_OnUpdateReceivingCallback& Callback);
 
 	
 	FEIK_RTCAudio_OnUpdateReceivingVolumeCallback OnUpdateReceivingVolumeCallback;
 	//Use this function to change incoming audio volume for a room.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_UpdateReceivingVolume")
-	void EIK_RTCAudio_UpdateReceivingVolume(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, float Volume, const FEIK_RTCAudio_OnUpdateReceivingVolumeCallback& Callback);
+	void EIK_RTCAudio_UpdateReceivingVolume(FEIK_ProductUserId LocalUserId, const FString& RoomName, float Volume, const FEIK_RTCAudio_OnUpdateReceivingVolumeCallback& Callback);
 
 	FEIK_RTCAudio_OnUpdateSendingCallback OnUpdateSendingCallback;
 	//Use this function to tweak outgoing audio options for a room.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_UpdateSending")
-	void EIK_RTCAudio_UpdateSending(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, TEnumAsByte<EEIK_ERTCAudioStatus> AudioStatus, const FEIK_RTCAudio_OnUpdateSendingCallback& Callback);
+	void EIK_RTCAudio_UpdateSending(FEIK_ProductUserId LocalUserId, const FString& RoomName, TEnumAsByte<EEIK_ERTCAudioStatus> AudioStatus, const FEIK_RTCAudio_OnUpdateSendingCallback& Callback);
 
 	FEIK_RTCAudio_OnUpdateSendingVolumeCallback OnUpdateSendingVolumeCallback;
 	//Use this function to change outgoing audio volume for a room.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCAudio_UpdateSendingVolume")
-	void EIK_RTCAudio_UpdateSendingVolume(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, float Volume, const FEIK_RTCAudio_OnUpdateSendingVolumeCallback& Callback);
+	void EIK_RTCAudio_UpdateSendingVolume(FEIK_ProductUserId LocalUserId, const FString& RoomName, float Volume, const FEIK_RTCAudio_OnUpdateSendingVolumeCallback& Callback);
 
 	FEIK_RTCData_OnDataReceivedCallback OnDataReceivedCallback;
 	//Register to receive notifications with remote data packet received. If the returned NotificationId is valid, you must call EOS_RTCData_RemoveNotifyDataReceived when you no longer wish to have your CompletionDelegate called.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCData_AddNotifyDataReceived")
-	FEIK_NotificationId EIK_RTCData_AddNotifyDataReceived(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTCData_OnDataReceivedCallback& Callback);
+	FEIK_NotificationId EIK_RTCData_AddNotifyDataReceived(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTCData_OnDataReceivedCallback& Callback);
 
 	FEIK_RTCData_OnParticipantUpdatedCallback OnData_ParticipantUpdatedCallback;
 	//Register to receive notifications when a room participant data status is updated (f.e when connection state changes). The notification is raised when the participant's data status is updated. In order not to miss any participant status changes, applications need to add the notification before joining a room. If the returned NotificationId is valid, you must call EOS_RTCData_RemoveNotifyParticipantUpdated when you no longer wish to have your CompletionDelegate called.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCData_AddNotifyParticipantUpdated")
-	FEIK_NotificationId EIK_RTCData_AddNotifyParticipantUpdated(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_RTCData_OnParticipantUpdatedCallback& Callback);
+	FEIK_NotificationId EIK_RTCData_AddNotifyParticipantUpdated(FEIK_ProductUserId LocalUserId, const FString& RoomName, const FEIK_RTCData_OnParticipantUpdatedCallback& Callback);
 
 	//Unregister a previously bound notification handler from receiving remote data packets.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCData_RemoveNotifyDataReceived")
@@ -322,15 +322,15 @@ public:
 
 	//Use this function to send a data packet to the rest of participants.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCData_SendData")
-	TEnumAsByte<EEIK_Result> EIK_RTCData_SendData(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const TArray<uint8>& Data);
+	TEnumAsByte<EEIK_Result> EIK_RTCData_SendData(FEIK_ProductUserId LocalUserId, const FString& RoomName, const TArray<uint8>& Data);
 
 	FEIK_RTCData_OnUpdateReceivingCallback OnData_UpdateReceivingCallback;
 	//Use this function to tweak incoming data options for a room.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCData_UpdateReceiving")
-	void EIK_RTCData_UpdateReceiving(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, const FEIK_ProductUserId& ParticipantId, bool bDataEnabled, const FEIK_RTCData_OnUpdateReceivingCallback& Callback);
+	void EIK_RTCData_UpdateReceiving(FEIK_ProductUserId LocalUserId, const FString& RoomName, FEIK_ProductUserId ParticipantId, bool bDataEnabled, const FEIK_RTCData_OnUpdateReceivingCallback& Callback);
 
 	FEIK_RTCData_OnUpdateSendingCallback OnData_UpdateSendingCallback;
 	//Use this function to tweak outgoing data options for a room.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | RTC Interface", DisplayName="EOS_RTCData_UpdateSending")
-	void EIK_RTCData_UpdateSending(const FEIK_ProductUserId& LocalUserId, const FString& RoomName, bool bDataEnabled, const FEIK_RTCData_OnUpdateSendingCallback& Callback);
+	void EIK_RTCData_UpdateSending(FEIK_ProductUserId LocalUserId, const FString& RoomName, bool bDataEnabled, const FEIK_RTCData_OnUpdateSendingCallback& Callback);
 };

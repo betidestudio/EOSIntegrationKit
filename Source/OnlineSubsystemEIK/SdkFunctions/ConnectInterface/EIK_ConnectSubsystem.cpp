@@ -64,7 +64,7 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyIdToken(FEIK_Pro
 			EOS_Connect_IdToken* IdToken = nullptr;
 			EOS_Connect_CopyIdTokenOptions CopyIdTokenOptions = { };
 			CopyIdTokenOptions.ApiVersion = EOS_CONNECT_COPYIDTOKEN_API_LATEST;
-			CopyIdTokenOptions.LocalUserId = LocalUserId.ProductUserId_FromString();
+			CopyIdTokenOptions.LocalUserId = LocalUserId.GetValueAsEosType();
 			auto ResultVal = EOS_Connect_CopyIdToken(EOSRef->ConnectHandle, &CopyIdTokenOptions, &IdToken);
 			if(IdToken)
 			{
@@ -87,7 +87,7 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserExter
 			EOS_Connect_ExternalAccountInfo* ExternalAccountInfo = nullptr;
 			EOS_Connect_CopyProductUserExternalAccountByAccountIdOptions CopyProductUserExternalAccountByAccountIdOptions = { };
 			CopyProductUserExternalAccountByAccountIdOptions.ApiVersion = EOS_CONNECT_COPYPRODUCTUSEREXTERNALACCOUNTBYACCOUNTID_API_LATEST;
-			CopyProductUserExternalAccountByAccountIdOptions.TargetUserId = LocalUserId.ProductUserId_FromString();
+			CopyProductUserExternalAccountByAccountIdOptions.TargetUserId = LocalUserId.GetValueAsEosType();
 			CopyProductUserExternalAccountByAccountIdOptions.AccountId = TCHAR_TO_ANSI(*AccountId);
 			auto ResultVal = EOS_Connect_CopyProductUserExternalAccountByAccountId(EOSRef->ConnectHandle, &CopyProductUserExternalAccountByAccountIdOptions, &ExternalAccountInfo);
 			if(ExternalAccountInfo)
@@ -112,7 +112,7 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserExter
 			EOS_Connect_ExternalAccountInfo* ExternalAccountInfo = nullptr;
 			EOS_Connect_CopyProductUserExternalAccountByAccountTypeOptions CopyProductUserExternalAccountByAccountTypeOptions = { };
 			CopyProductUserExternalAccountByAccountTypeOptions.ApiVersion = EOS_CONNECT_COPYPRODUCTUSEREXTERNALACCOUNTBYACCOUNTTYPE_API_LATEST;
-			CopyProductUserExternalAccountByAccountTypeOptions.TargetUserId = LocalUserId.ProductUserId_FromString();
+			CopyProductUserExternalAccountByAccountTypeOptions.TargetUserId = LocalUserId.GetValueAsEosType();
 			CopyProductUserExternalAccountByAccountTypeOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountType.GetValue());
 			auto ResultVal = EOS_Connect_CopyProductUserExternalAccountByAccountType(EOSRef->ConnectHandle, &CopyProductUserExternalAccountByAccountTypeOptions, &ExternalAccountInfo);
 			if(ExternalAccountInfo)
@@ -136,7 +136,7 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserExter
 			EOS_Connect_ExternalAccountInfo* ExternalAccountInfo = nullptr;
 			EOS_Connect_CopyProductUserExternalAccountByIndexOptions CopyProductUserExternalAccountByIndexOptions = { };
 			CopyProductUserExternalAccountByIndexOptions.ApiVersion = EOS_CONNECT_COPYPRODUCTUSEREXTERNALACCOUNTBYINDEX_API_LATEST;
-			CopyProductUserExternalAccountByIndexOptions.TargetUserId = LocalUserId.ProductUserId_FromString();
+			CopyProductUserExternalAccountByIndexOptions.TargetUserId = LocalUserId.GetValueAsEosType();
 			CopyProductUserExternalAccountByIndexOptions.ExternalAccountInfoIndex = Index;
 			auto ResultVal = EOS_Connect_CopyProductUserExternalAccountByIndex(EOSRef->ConnectHandle, &CopyProductUserExternalAccountByIndexOptions, &ExternalAccountInfo);
 			if(ExternalAccountInfo)
@@ -160,7 +160,7 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserInfo(
 			EOS_Connect_ExternalAccountInfo* ExternalAccountInfo = nullptr;
 			EOS_Connect_CopyProductUserInfoOptions CopyProductUserInfoOptions = { };
 			CopyProductUserInfoOptions.ApiVersion = EOS_CONNECT_COPYPRODUCTUSERINFO_API_LATEST;
-			CopyProductUserInfoOptions.TargetUserId = LocalUserId.ProductUserId_FromString();
+			CopyProductUserInfoOptions.TargetUserId = LocalUserId.GetValueAsEosType();
 			auto ResultVal = EOS_Connect_CopyProductUserInfo(EOSRef->ConnectHandle, &CopyProductUserInfoOptions, &ExternalAccountInfo);
 			if(ExternalAccountInfo)
 			{
@@ -188,7 +188,7 @@ FEIK_ProductUserId UEIK_ConnectSubsystem::EIK_Connect_GetExternalAccountMapping(
 		{
 			EOS_Connect_GetExternalAccountMappingsOptions GetExternalAccountMappingsOptions = { };
 			GetExternalAccountMappingsOptions.ApiVersion = EOS_CONNECT_GETEXTERNALACCOUNTMAPPING_API_LATEST;
-			GetExternalAccountMappingsOptions.LocalUserId = LocalUserId.ProductUserId_FromString();
+			GetExternalAccountMappingsOptions.LocalUserId = LocalUserId.GetValueAsEosType();
 			GetExternalAccountMappingsOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountIdType.GetValue());
 			if(!TargetExternalUserId.IsEmpty())
 			{
@@ -233,7 +233,7 @@ TEnumAsByte<EEIK_LoginStatus> UEIK_ConnectSubsystem::EIK_Connect_GetLoginStatus(
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			return static_cast<EEIK_LoginStatus>(EOS_Connect_GetLoginStatus(EOSRef->ConnectHandle, LocalUserId.ProductUserId_FromString()));
+			return static_cast<EEIK_LoginStatus>(EOS_Connect_GetLoginStatus(EOSRef->ConnectHandle, LocalUserId.GetValueAsEosType()));
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("Failed to get login status either OnlineSubsystem is not valid or EOSRef is not valid."));
@@ -248,7 +248,7 @@ int32 UEIK_ConnectSubsystem::EIK_Connect_GetProductUserExternalAccountCount(FEIK
 		{
 			EOS_Connect_GetProductUserExternalAccountCountOptions GetProductUserExternalAccountCountOptions = { };
 			GetProductUserExternalAccountCountOptions.ApiVersion = EOS_CONNECT_GETPRODUCTUSEREXTERNALACCOUNTCOUNT_API_LATEST;
-			GetProductUserExternalAccountCountOptions.TargetUserId = LocalUserId.ProductUserId_FromString();
+			GetProductUserExternalAccountCountOptions.TargetUserId = LocalUserId.GetValueAsEosType();
 			return EOS_Connect_GetProductUserExternalAccountCount(EOSRef->ConnectHandle, &GetProductUserExternalAccountCountOptions);
 		}
 	}
@@ -265,9 +265,9 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_GetProductUserIdMapp
 		{
 			EOS_Connect_GetProductUserIdMappingOptions GetProductUserIdMappingOptions = { };
 			GetProductUserIdMappingOptions.ApiVersion = EOS_CONNECT_GETPRODUCTUSERIDMAPPING_API_LATEST;
-			GetProductUserIdMappingOptions.LocalUserId = LocalUserId.ProductUserId_FromString();
+			GetProductUserIdMappingOptions.LocalUserId = LocalUserId.GetValueAsEosType();
 			GetProductUserIdMappingOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountIdType.GetValue());
-			GetProductUserIdMappingOptions.TargetProductUserId = TargetUserId.ProductUserId_FromString();
+			GetProductUserIdMappingOptions.TargetProductUserId = TargetUserId.GetValueAsEosType();
 			char Buffer[EOS_CONNECT_EXTERNAL_ACCOUNT_ID_MAX_LENGTH + 1];
 			int32 BufferSize = EOS_CONNECT_EXTERNAL_ACCOUNT_ID_MAX_LENGTH + 1;
 			auto ResultVal = EOS_Connect_GetProductUserIdMapping(EOSRef->ConnectHandle, &GetProductUserIdMappingOptions, Buffer, &BufferSize);

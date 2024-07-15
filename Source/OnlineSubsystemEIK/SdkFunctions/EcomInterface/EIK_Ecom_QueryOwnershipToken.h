@@ -34,7 +34,7 @@ struct FEIK_Ecom_QueryOwnershipTokenOptions
 	{
 		EOS_Ecom_QueryOwnershipTokenOptions Options;
 		Options.ApiVersion = EOS_ECOM_QUERYOWNERSHIP_API_LATEST;
-		Options.LocalUserId = LocalUserId.Ref;
+		Options.LocalUserId = LocalUserId.GetValueAsEosType();
 		Options.CatalogItemIdCount = CatalogItemIds.Num();
 		Options.CatalogItemIds = new const char*[CatalogItemIds.Num()];
 		for (int i = 0; i < CatalogItemIds.Num(); i++)

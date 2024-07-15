@@ -32,7 +32,7 @@ void UEIK_Lobby_QueryInvites::Activate()
 		{
 			EOS_Lobby_QueryInvitesOptions Options = { };
 			Options.ApiVersion = EOS_LOBBY_QUERYINVITES_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_Lobby_QueryInvites(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, this, &UEIK_Lobby_QueryInvites::OnQueryInvitesComplete);
 			return;
 		}

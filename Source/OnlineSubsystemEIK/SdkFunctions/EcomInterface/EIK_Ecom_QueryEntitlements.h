@@ -34,7 +34,7 @@ struct FEIK_Ecom_QueryEntitlementsOptions
 	{
 		EOS_Ecom_QueryEntitlementsOptions Options;
 		Options.ApiVersion = EOS_ECOM_QUERYENTITLEMENTS_API_LATEST;
-		Options.LocalUserId = LocalUserId.Ref;
+		Options.LocalUserId = LocalUserId.GetValueAsEosType();
 		Options.EntitlementNameCount = EntitlementNames.Num();
 		Options.EntitlementNames = new const char*[EntitlementNames.Num()];
 		for (int i = 0; i < EntitlementNames.Num(); i++)

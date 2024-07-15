@@ -24,10 +24,10 @@ public:
 
 	//Copies an active player sanction. You must call QueryActivePlayerSanctions first to retrieve the data from the service backend. On success, EOS_Sanctions_PlayerSanction_Release must be called on OutSanction to free memory.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Sanctions Interface", DisplayName="EOS_Sanctions_CopyPlayerSanctionByIndex")
-	static TEnumAsByte<EEIK_Result> EIK_Sanctions_CopyPlayerSanctionByIndex(const FEIK_ProductUserId& LocalUserId, int32 Index, FEIK_Sanctions_PlayerSanction& OutSanction);
+	static TEnumAsByte<EEIK_Result> EIK_Sanctions_CopyPlayerSanctionByIndex(FEIK_ProductUserId LocalUserId, int32 Index, FEIK_Sanctions_PlayerSanction& OutSanction);
 
 	//Fetch the number of player sanctions that have been retrieved for a given player. You must call QueryActivePlayerSanctions first to retrieve the data from the service backend.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Sanctions Interface", DisplayName="EOS_Sanctions_GetPlayerSanctionCount")
-	static int32 EIK_Sanctions_GetPlayerSanctionCount(const FEIK_ProductUserId& LocalUserId);
+	static int32 EIK_Sanctions_GetPlayerSanctionCount(FEIK_ProductUserId LocalUserId);
 
 };

@@ -36,7 +36,7 @@ void UEIK_Connect_Logout::Activate()
 		{
 			EOS_Connect_LogoutOptions LogoutOptions = { };
 			LogoutOptions.ApiVersion = EOS_CONNECT_LOGOUT_API_LATEST;
-			LogoutOptions.LocalUserId = Var_ProductUserId.ProductUserId_FromString();
+			LogoutOptions.LocalUserId = Var_ProductUserId.GetValueAsEosType();
 			EOS_Connect_Logout(EOSRef->ConnectHandle, &LogoutOptions, this, &UEIK_Connect_Logout::OnLogoutCallback);
 			return;
 		}

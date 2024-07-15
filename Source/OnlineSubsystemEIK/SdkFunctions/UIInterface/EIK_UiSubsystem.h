@@ -36,11 +36,11 @@ public:
 
 	//Gets the friends overlay exclusive input state.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | UI Interface", DisplayName="EOS_UI_GetFriendsExclusiveInput")
-	static bool EIK_UI_GetFriendsExclusiveInput(const FEIK_EpicAccountId& LocalUserId);
+	static bool EIK_UI_GetFriendsExclusiveInput(FEIK_EpicAccountId LocalUserId);
 
 	//Gets the friends overlay visibility.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | UI Interface", DisplayName="EOS_UI_GetFriendsVisible")
-	static bool EIK_UI_GetFriendsVisible(const FEIK_EpicAccountId& LocalUserId);
+	static bool EIK_UI_GetFriendsVisible(FEIK_EpicAccountId LocalUserId);
 	
 	//Returns the current notification location display preference.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | UI Interface", DisplayName="EOS_UI_GetNotificationLocationPreference")

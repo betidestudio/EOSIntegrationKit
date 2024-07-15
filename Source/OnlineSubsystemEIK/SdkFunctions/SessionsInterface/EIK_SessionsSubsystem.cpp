@@ -647,7 +647,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_CopySessionHandleF
 			}
 			EOS_Sessions_CopySessionHandleForPresenceOptions Options;
 			Options.ApiVersion = EOS_SESSIONS_COPYSESSIONHANDLEFORPRESENCE_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			EOS_HSessionDetails LocalHandle = nullptr;
 			auto ReturnResult = EOS_Sessions_CopySessionHandleForPresence(EOSRef->SessionsHandle, &Options, &LocalHandle);
 			if (ReturnResult == EOS_EResult::EOS_Success)
@@ -748,7 +748,7 @@ int32 UEIK_SessionsSubsystem::EIK_Sessions_GetInviteCount(FEIK_ProductUserId Loc
 			}
 			EOS_Sessions_GetInviteCountOptions Options;
 			Options.ApiVersion = EOS_SESSIONS_GETINVITECOUNT_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			return EOS_Sessions_GetInviteCount(EOSRef->SessionsHandle, &Options);
 		}
 	}
@@ -769,7 +769,7 @@ FString UEIK_SessionsSubsystem::EIK_Sessions_GetInviteIdByIndex(FEIK_ProductUser
 			}
 			EOS_Sessions_GetInviteIdByIndexOptions Options;
 			Options.ApiVersion = EOS_SESSIONS_GETINVITEIDBYINDEX_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.Index = Index;
 			char Buffer[EOS_SESSIONS_INVITEID_MAX_LENGTH];
 			int32_t* InOutBufferLength = new int32_t(EOS_SESSIONS_INVITEID_MAX_LENGTH);
@@ -795,7 +795,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_IsUserInSession(FE
 			}
 			EOS_Sessions_IsUserInSessionOptions Options;
 			Options.ApiVersion = EOS_SESSIONS_ISUSERINSESSION_API_LATEST;
-			Options.TargetUserId = TargetUserId.ProductUserId_FromString();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			Options.SessionName = TCHAR_TO_ANSI(*SessionName);
 			return static_cast<EEIK_Result>(EOS_Sessions_IsUserInSession(EOSRef->SessionsHandle, &Options));
 		}
@@ -1066,7 +1066,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionSearch_SetTargetUser
 			}
 			EOS_SessionSearch_SetTargetUserIdOptions Options;
 			Options.ApiVersion = EOS_SESSIONSEARCH_SETTARGETUSERID_API_LATEST;
-			Options.TargetUserId = TargetUserId.ProductUserId_FromString();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			return static_cast<EEIK_Result>(EOS_SessionSearch_SetTargetUserId(*Handle.Ref, &Options));
 		}
 	}

@@ -22,7 +22,7 @@ void UEIK_PlayerDataStorage_DuplicateFile::Activate()
 		{
 			EOS_PlayerDataStorage_DuplicateFileOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_DUPLICATEFILE_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			Options.SourceFilename = TCHAR_TO_ANSI(*Var_SourceFilename);
 			Options.DestinationFilename = TCHAR_TO_ANSI(*Var_DestinationFilename);
 			EOS_PlayerDataStorage_DuplicateFile(EOSRef->PlayerDataStorageHandle, &Options, this, &UEIK_PlayerDataStorage_DuplicateFile::EOS_PlayerDataStorage_OnDuplicateFileComplete);

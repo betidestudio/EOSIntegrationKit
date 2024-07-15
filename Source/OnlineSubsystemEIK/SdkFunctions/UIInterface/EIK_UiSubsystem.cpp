@@ -71,7 +71,7 @@ FEIK_NotificationId UEIK_UiSubsystem::EIK_UI_AddNotifyMemoryMonitor(FEIK_OnMemor
 	return FEIK_NotificationId();
 }
 
-bool UEIK_UiSubsystem::EIK_UI_GetFriendsExclusiveInput(const FEIK_EpicAccountId& LocalUserId)
+bool UEIK_UiSubsystem::EIK_UI_GetFriendsExclusiveInput(FEIK_EpicAccountId LocalUserId)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -79,7 +79,7 @@ bool UEIK_UiSubsystem::EIK_UI_GetFriendsExclusiveInput(const FEIK_EpicAccountId&
 		{
 			EOS_UI_GetFriendsExclusiveInputOptions Options;
 			Options.ApiVersion = EOS_UI_GETFRIENDSEXCLUSIVEINPUT_API_LATEST;
-			Options.LocalUserId = LocalUserId.Ref;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			auto ExclusiveInput = EOS_UI_GetFriendsExclusiveInput(EOSRef->UIHandle, &Options);
 			return ExclusiveInput == EOS_TRUE;
 		}
@@ -88,7 +88,7 @@ bool UEIK_UiSubsystem::EIK_UI_GetFriendsExclusiveInput(const FEIK_EpicAccountId&
 	return false;
 }
 
-bool UEIK_UiSubsystem::EIK_UI_GetFriendsVisible(const FEIK_EpicAccountId& LocalUserId)
+bool UEIK_UiSubsystem::EIK_UI_GetFriendsVisible(FEIK_EpicAccountId LocalUserId)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -96,7 +96,7 @@ bool UEIK_UiSubsystem::EIK_UI_GetFriendsVisible(const FEIK_EpicAccountId& LocalU
 		{
 			EOS_UI_GetFriendsVisibleOptions Options;
 			Options.ApiVersion = EOS_UI_GETFRIENDSVISIBLE_API_LATEST;
-			Options.LocalUserId = LocalUserId.Ref;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			auto FriendsVisible = EOS_UI_GetFriendsVisible(EOSRef->UIHandle, &Options);
 			return FriendsVisible == EOS_TRUE;
 		}

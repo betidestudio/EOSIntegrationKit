@@ -29,7 +29,7 @@ void UEIK_SessionSearch_Find::Activate()
 			}
 			EOS_SessionSearch_FindOptions SessionSearchFindOptions = { };
 			SessionSearchFindOptions.ApiVersion = EOS_SESSIONSEARCH_FIND_API_LATEST;
-			SessionSearchFindOptions.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			SessionSearchFindOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_SessionSearch_Find(*Var_SessionSearchHandle.Ref, &SessionSearchFindOptions, this, &UEIK_SessionSearch_Find::OnSessionSearch_FindCallback);
 			return;
 		}

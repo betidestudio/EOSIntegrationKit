@@ -39,8 +39,8 @@ void UEIK_Friends_AcceptInvite::Activate()
 		{
 			EOS_Friends_AcceptInviteOptions AcceptInviteOptions = {};
 			AcceptInviteOptions.ApiVersion = EOS_FRIENDS_ACCEPTINVITE_API_LATEST;
-			AcceptInviteOptions.LocalUserId = Var_LocalUserId.Ref;
-			AcceptInviteOptions.TargetUserId = Var_TargetUserId.Ref;
+			AcceptInviteOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			AcceptInviteOptions.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			EOS_Friends_AcceptInvite(EOSRef->FriendsHandle, &AcceptInviteOptions, this, &UEIK_Friends_AcceptInvite::OnAcceptInviteCallback);
 			return;
 		}

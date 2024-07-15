@@ -37,7 +37,7 @@ void UEIK_Ecom_QueryOffers::Activate()
 		{
 			EOS_Ecom_QueryOffersOptions QueryOffersOptions;
 			QueryOffersOptions.ApiVersion = EOS_ECOM_QUERYOFFERS_API_LATEST;
-			QueryOffersOptions.LocalUserId = Var_LocalUserId.EpicAccountId_FromString();
+			QueryOffersOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			if(Var_OverrideCatalogNamespace.IsEmpty())
 			{
 				QueryOffersOptions.OverrideCatalogNamespace = nullptr;

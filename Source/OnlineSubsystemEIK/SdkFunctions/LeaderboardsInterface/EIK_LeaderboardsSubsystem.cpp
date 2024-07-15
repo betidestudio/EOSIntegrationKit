@@ -83,7 +83,7 @@ TEnumAsByte<EEIK_Result> UEIK_LeaderboardsSubsystem::EIK_Leaderboards_CopyLeader
 		{
 			EOS_Leaderboards_CopyLeaderboardRecordByUserIdOptions Options = {};
 			Options.ApiVersion = EOS_LEADERBOARDS_COPYLEADERBOARDRECORDBYUSERID_API_LATEST;
-			Options.UserId = UserId.ProductUserIdBasic;
+			Options.UserId = UserId.GetValueAsEosType();
 			EOS_Leaderboards_LeaderboardRecord* LeaderboardRecord = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Leaderboards_CopyLeaderboardRecordByUserId(EOSRef->LeaderboardsHandle, &Options, &LeaderboardRecord));
 			if (Result == EEIK_Result::EOS_Success)
@@ -130,7 +130,7 @@ TEnumAsByte<EEIK_Result> UEIK_LeaderboardsSubsystem::EIK_Leaderboards_CopyLeader
 		{
 			EOS_Leaderboards_CopyLeaderboardUserScoreByUserIdOptions Options = {};
 			Options.ApiVersion = EOS_LEADERBOARDS_COPYLEADERBOARDUSERSCOREBYUSERID_API_LATEST;
-			Options.UserId = UserId.ProductUserIdBasic;
+			Options.UserId = UserId.GetValueAsEosType();
 			Options.StatName = TCHAR_TO_ANSI(*StatName);
 			EOS_Leaderboards_LeaderboardUserScore* LeaderboardUserScore = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Leaderboards_CopyLeaderboardUserScoreByUserId(EOSRef->LeaderboardsHandle, &Options, &LeaderboardUserScore));

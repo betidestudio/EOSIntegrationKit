@@ -42,7 +42,7 @@ struct FEIK_Lobby_JoinLobbyOptions
 		EOS_Lobby_JoinLobbyOptions Options;
 		Options.ApiVersion = EOS_LOBBY_JOINLOBBY_API_LATEST;
 		Options.LobbyDetailsHandle = *LobbyDetailsHandle.Ref;
-		Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+		Options.LocalUserId = LocalUserId.GetValueAsEosType();
 		Options.bPresenceEnabled = bPresenceEnabled ? EOS_TRUE : EOS_FALSE;
 		EOS_Lobby_LocalRTCOptions VarTemp = LobbyRTCOptions.GetValueAsEosType();
 		Options.LocalRTCOptions = &VarTemp;

@@ -23,8 +23,8 @@ void UEIK_UserInfo_QueryUserInfo::Activate()
 		{
 			EOS_UserInfo_QueryUserInfoOptions Options;
 			Options.ApiVersion = EOS_USERINFO_QUERYUSERINFO_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.EpicAccountId_FromString();
-			Options.TargetUserId = Var_TargetUserId.EpicAccountId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			EOS_UserInfo_QueryUserInfo(EOSRef->UserInfoHandle, &Options, this, &UEIK_UserInfo_QueryUserInfo::OnQueryUserInfoCallback);
 			return;
 		}

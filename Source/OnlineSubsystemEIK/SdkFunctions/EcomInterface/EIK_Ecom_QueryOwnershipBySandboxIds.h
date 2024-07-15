@@ -29,7 +29,7 @@ struct FEIK_Ecom_QueryOwnershipBySandboxIdsOptions
 	{
 		EOS_Ecom_QueryOwnershipBySandboxIdsOptions Options;
 		Options.ApiVersion = EOS_ECOM_QUERYOWNERSHIPBYSANDBOXIDSOPTIONS_API_LATEST;
-		Options.LocalUserId = LocalUserId.Ref;
+		Options.LocalUserId = LocalUserId.GetValueAsEosType();
 		Options.SandboxIdsCount = SandboxIds.Num();
 		Options.SandboxIds = new const char*[SandboxIds.Num()];
 		for (int i = 0; i < SandboxIds.Num(); i++)

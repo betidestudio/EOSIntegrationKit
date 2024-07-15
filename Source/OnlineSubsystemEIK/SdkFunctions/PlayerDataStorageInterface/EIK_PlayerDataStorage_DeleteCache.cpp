@@ -23,7 +23,7 @@ void UEIK_PlayerDataStorage_DeleteCache::Activate()
 		{
 			EOS_PlayerDataStorage_DeleteCacheOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_DELETECACHE_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_PlayerDataStorage_DeleteCache(EOSRef->PlayerDataStorageHandle, &Options, this, &UEIK_PlayerDataStorage_DeleteCache::EOS_PlayerDataStorage_OnDeleteCacheComplete);
 			return;
 		}

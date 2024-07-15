@@ -59,7 +59,7 @@ void UEIK_PlayerDataStorage_ReadFile::Activate()
 		{
 			EOS_PlayerDataStorage_ReadFileOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_READFILE_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			Options.Filename = TCHAR_TO_ANSI(*Var_Filename);
 			Options.ReadChunkLengthBytes = Var_ReadChunkLengthBytes;
 			Options.ReadFileDataCallback = &UEIK_PlayerDataStorage_ReadFile::EOS_PlayerDataStorage_OnReadFileData;

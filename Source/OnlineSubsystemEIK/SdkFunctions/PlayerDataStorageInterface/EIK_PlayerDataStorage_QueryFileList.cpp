@@ -20,7 +20,7 @@ void UEIK_PlayerDataStorage_QueryFileList::Activate()
 		{
 			EOS_PlayerDataStorage_QueryFileListOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_QUERYFILELIST_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_PlayerDataStorage_QueryFileList(EOSRef->PlayerDataStorageHandle, &Options, this, &UEIK_PlayerDataStorage_QueryFileList::EOS_PlayerDataStorage_OnQueryFileListComplete);
 			return;
 		}

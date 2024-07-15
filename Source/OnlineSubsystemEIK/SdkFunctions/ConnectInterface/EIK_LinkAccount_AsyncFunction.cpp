@@ -40,7 +40,7 @@ void UEIK_LinkAccount_AsyncFunction::Activate()
 			EOS_Connect_LinkAccountOptions LinkAccountOptions = { };
 			LinkAccountOptions.ApiVersion = EOS_CONNECT_LINKACCOUNT_API_LATEST;
 			LinkAccountOptions.LocalUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*Var_LocalProductUserId));
-			LinkAccountOptions.ContinuanceToken = Var_ContinuanceToken.EOS_ContinuanceToken_FromStruct();
+			LinkAccountOptions.ContinuanceToken = Var_ContinuanceToken.GetValueAsEosType();
 			EOS_Connect_LinkAccount(EOSRef->ConnectHandle, &LinkAccountOptions, this, &UEIK_LinkAccount_AsyncFunction::OnLinkAccountCallback);
 			return;
 		}

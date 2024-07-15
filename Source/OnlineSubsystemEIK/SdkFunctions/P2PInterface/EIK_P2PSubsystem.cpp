@@ -6,7 +6,7 @@
 #include "OnlineSubsystemEOS.h"
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
-const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_AcceptConnection(const FEIK_ProductUserId& LocalUserId, const FEIK_ProductUserId& RemoteUserId, FEIK_P2P_SocketId SocketId)
+const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_AcceptConnection(FEIK_ProductUserId LocalUserId, FEIK_ProductUserId RemoteUserId, FEIK_P2P_SocketId SocketId)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -19,8 +19,8 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_AcceptConnection(const
 			}
 			EOS_P2P_AcceptConnectionOptions Options = {};
 			Options.ApiVersion = EOS_P2P_ACCEPTCONNECTION_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
-			Options.RemoteUserId = RemoteUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
+			Options.RemoteUserId = RemoteUserId.GetValueAsEosType();
 			EOS_P2P_SocketId SocketIdData = SocketId.GetAsEosData();
 			Options.SocketId = &SocketIdData;
 			auto Result = EOS_P2P_AcceptConnection(EOSRef->SocketSubsystem->GetP2PHandle(), &Options);
@@ -31,7 +31,7 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_AcceptConnection(const
 	return EEIK_Result::EOS_NotFound;
 }
 
-const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyIncomingPacketQueueFull(const FEIK_ProductUserId& LocalUserId, const FEIK_P2P_SocketId SocketId, const FEIK_OnIncomingPacketQueueFull& Callback)
+const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyIncomingPacketQueueFull(FEIK_ProductUserId LocalUserId, const FEIK_P2P_SocketId SocketId, const FEIK_OnIncomingPacketQueueFull& Callback)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -62,7 +62,7 @@ const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyIncomingPacketQueu
 }
 
 const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyPeerConnectionClosed(
-	const FEIK_ProductUserId& LocalUserId, const FEIK_P2P_SocketId SocketId,
+	FEIK_ProductUserId LocalUserId, const FEIK_P2P_SocketId SocketId,
 	const FEIK_OnPeerConnectionClosed& Callback)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -97,7 +97,7 @@ const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyPeerConnectionClos
 }
 
 const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyPeerConnectionEstablished(
-	const FEIK_ProductUserId& LocalUserId, const FEIK_P2P_SocketId SocketId,
+	FEIK_ProductUserId LocalUserId, const FEIK_P2P_SocketId SocketId,
 	const FEIK_OnPeerConnectionEstablished& Callback)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -128,7 +128,7 @@ const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyPeerConnectionEsta
 }
 
 const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyPeerConnectionInterrupted(
-	const FEIK_ProductUserId& LocalUserId, const FEIK_P2P_SocketId SocketId,
+	FEIK_ProductUserId LocalUserId, const FEIK_P2P_SocketId SocketId,
 	const FEIK_OnPeerConnectionInterrupted& Callback)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -159,7 +159,7 @@ const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyPeerConnectionInte
 }
 
 const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyPeerConnectionRequest(
-	const FEIK_ProductUserId& LocalUserId, const FEIK_P2P_SocketId SocketId,
+	FEIK_ProductUserId LocalUserId, const FEIK_P2P_SocketId SocketId,
 	const FEIK_OnIncomingConnectionRequest& Callback)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -189,8 +189,8 @@ const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyPeerConnectionRequ
 	return FEIK_NotificationId();
 }
 
-const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_ClearPacketQueue(const FEIK_ProductUserId& LocalUserId,
-	const FEIK_ProductUserId& RemoteUserId, FEIK_P2P_SocketId SocketId)
+const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_ClearPacketQueue(FEIK_ProductUserId LocalUserId,
+	FEIK_ProductUserId RemoteUserId, FEIK_P2P_SocketId SocketId)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -203,8 +203,8 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_ClearPacketQueue(const
 			}
 			EOS_P2P_ClearPacketQueueOptions Options = {};
 			Options.ApiVersion = EOS_P2P_CLEARPACKETQUEUE_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
-			Options.RemoteUserId = RemoteUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
+			Options.RemoteUserId = RemoteUserId.GetValueAsEosType();
 			EOS_P2P_SocketId SocketIdData = SocketId.GetAsEosData();
 			Options.SocketId = &SocketIdData;
 			auto Result = EOS_P2P_ClearPacketQueue(EOSRef->SocketSubsystem->GetP2PHandle(), &Options);
@@ -215,8 +215,8 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_ClearPacketQueue(const
 	return EEIK_Result::EOS_NotFound;
 }
 
-const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_CloseConnection(const FEIK_ProductUserId& LocalUserId,
-	const FEIK_ProductUserId& RemoteUserId, FEIK_P2P_SocketId SocketId)
+const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_CloseConnection(FEIK_ProductUserId LocalUserId,
+	FEIK_ProductUserId RemoteUserId, FEIK_P2P_SocketId SocketId)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -229,8 +229,8 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_CloseConnection(const 
 			}
 			EOS_P2P_CloseConnectionOptions Options = {};
 			Options.ApiVersion = EOS_P2P_CLOSECONNECTION_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
-			Options.RemoteUserId = RemoteUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
+			Options.RemoteUserId = RemoteUserId.GetValueAsEosType();
 			EOS_P2P_SocketId SocketIdData = SocketId.GetAsEosData();
 			Options.SocketId = &SocketIdData;
 			auto Result = EOS_P2P_CloseConnection(EOSRef->SocketSubsystem->GetP2PHandle(), &Options);
@@ -241,7 +241,7 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_CloseConnection(const 
 	return EEIK_Result::EOS_NotFound;
 }
 
-const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_CloseConnections(const FEIK_ProductUserId& LocalUserId,
+const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_CloseConnections(FEIK_ProductUserId LocalUserId,
 	FEIK_P2P_SocketId SocketId)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -255,7 +255,7 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_CloseConnections(const
 			}
 			EOS_P2P_CloseConnectionsOptions Options = {};
 			Options.ApiVersion = EOS_P2P_CLOSECONNECTIONS_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			EOS_P2P_SocketId SocketIdData = SocketId.GetAsEosData();
 			Options.SocketId = &SocketIdData;
 			auto Result = EOS_P2P_CloseConnections(EOSRef->SocketSubsystem->GetP2PHandle(), &Options);
@@ -290,7 +290,7 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_GetNATType(TEnumAsByte
 }
 
 const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_GetNextReceivedPacketSize(
-	const FEIK_ProductUserId& LocalUserId, int32 Channel, int32& OutPacketSizeBytes)
+	FEIK_ProductUserId LocalUserId, int32 Channel, int32& OutPacketSizeBytes)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -303,7 +303,7 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_GetNextReceivedPacketS
 			}
 			EOS_P2P_GetNextReceivedPacketSizeOptions Options = {};
 			Options.ApiVersion = EOS_P2P_GETNEXTRECEIVEDPACKETSIZE_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			if(Channel != -1)
 			{
 				uint8_t LocalChannel = static_cast<uint8_t>(Channel);
@@ -396,7 +396,7 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_GetRelayControl(TEnumA
 	return EEIK_Result::EOS_NotFound;
 }
 
-const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_ReceivePacket(const FEIK_ProductUserId& LocalUserId,
+const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_ReceivePacket(FEIK_ProductUserId LocalUserId,
 	int32 MaxDataSizeBytes, int32 RequestedChannel, FEIK_P2P_SocketId& OutSocketId, FEIK_ProductUserId& OutPeerId,
 	int32& OutChannel, TArray<uint8>& OutData, int32& OutBytesRead)
 {
@@ -412,7 +412,7 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_ReceivePacket(const FE
 			}
 			EOS_P2P_ReceivePacketOptions Options = {};
 			Options.ApiVersion = EOS_P2P_RECEIVEPACKET_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.MaxDataSizeBytes = MaxDataSizeBytes;
 			if(RequestedChannel != -1)
 			{
@@ -495,8 +495,8 @@ void UEIK_P2PSubsystem::EIK_P2P_RemoveNotifyPeerConnectionRequest(const FEIK_Not
 	}
 }
 
-const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_SendPacket(const FEIK_ProductUserId& LocalUserId,
-	const FEIK_ProductUserId& RemoteUserId, FEIK_P2P_SocketId SocketId, int32 Channel, const TArray<uint8>& Data,
+const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_SendPacket(FEIK_ProductUserId LocalUserId,
+	FEIK_ProductUserId RemoteUserId, FEIK_P2P_SocketId SocketId, int32 Channel, const TArray<uint8>& Data,
 	bool bAllowDelayedDelivery, bool bDisableAutoAcceptConnection,
 	const TEnumAsByte<EEIK_EPacketReliability>& Reliability)
 {
@@ -511,8 +511,8 @@ const TEnumAsByte<EEIK_Result> UEIK_P2PSubsystem::EIK_P2P_SendPacket(const FEIK_
 			}
 			EOS_P2P_SendPacketOptions Options = {};
 			Options.ApiVersion = EOS_P2P_SENDPACKET_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
-			Options.RemoteUserId = RemoteUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
+			Options.RemoteUserId = RemoteUserId.GetValueAsEosType();
 			EOS_P2P_SocketId SocketIdData = SocketId.GetAsEosData();
 			Options.SocketId = &SocketIdData;
 			Options.Channel = static_cast<uint8_t>(Channel);

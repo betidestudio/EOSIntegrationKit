@@ -22,7 +22,7 @@ class ONLINESUBSYSTEMEIK_API UEIK_Stats_QueryStats : public UBlueprintAsyncActio
 public:
 	//Query for a list of stats for a specific player.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Stats Interface", DisplayName="EOS_Stats_QueryStats")
-	static UEIK_Stats_QueryStats* EIK_Stats_QueryStats(const FEIK_ProductUserId& LocalUserId, const FEIK_ProductUserId& TargetUserId, int64 StartTime, int64 EndTime, const TArray<FString>& StatNames);
+	static UEIK_Stats_QueryStats* EIK_Stats_QueryStats(FEIK_ProductUserId LocalUserId, const FEIK_ProductUserId& TargetUserId, int64 StartTime, int64 EndTime, const TArray<FString>& StatNames);
 
 	UPROPERTY(BlueprintAssignable, Category = "EOS Integration Kit | SDK Functions | Stats Interface")
 	FEIK_OnStatsQueryStatsComplete OnCallback;

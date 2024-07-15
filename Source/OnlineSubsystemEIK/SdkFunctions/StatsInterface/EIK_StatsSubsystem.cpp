@@ -5,7 +5,7 @@
 
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
-TEnumAsByte<EEIK_Result> UEIK_StatsSubsystem::EIK_Stats_CopyStatByIndex(const FEIK_ProductUserId& TargetUserId,
+TEnumAsByte<EEIK_Result> UEIK_StatsSubsystem::EIK_Stats_CopyStatByIndex(FEIK_ProductUserId TargetUserId,
                                                                         int32 StatIndex, FEIK_Stats_Stat& OutStat)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -14,7 +14,7 @@ TEnumAsByte<EEIK_Result> UEIK_StatsSubsystem::EIK_Stats_CopyStatByIndex(const FE
 		{
 			EOS_Stats_CopyStatByIndexOptions Options;
 			Options.ApiVersion = EOS_STATS_COPYSTATBYINDEX_API_LATEST;
-			Options.TargetUserId = TargetUserId.ProductUserIdBasic;
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			Options.StatIndex = StatIndex;
 			EOS_Stats_Stat *Stat = nullptr;
 			auto Result = EOS_Stats_CopyStatByIndex(EOSRef->StatsHandle, &Options, &Stat);
@@ -30,7 +30,7 @@ TEnumAsByte<EEIK_Result> UEIK_StatsSubsystem::EIK_Stats_CopyStatByIndex(const FE
 	return EEIK_Result::EOS_NotFound;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_StatsSubsystem::EIK_Stats_CopyStatByName(const FEIK_ProductUserId& TargetUserId,
+TEnumAsByte<EEIK_Result> UEIK_StatsSubsystem::EIK_Stats_CopyStatByName(FEIK_ProductUserId TargetUserId,
 	const FString& Name, FEIK_Stats_Stat& OutStat)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -39,7 +39,7 @@ TEnumAsByte<EEIK_Result> UEIK_StatsSubsystem::EIK_Stats_CopyStatByName(const FEI
 		{
 			EOS_Stats_CopyStatByNameOptions Options;
 			Options.ApiVersion = EOS_STATS_COPYSTATBYNAME_API_LATEST;
-			Options.TargetUserId = TargetUserId.ProductUserIdBasic;
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			Options.Name = TCHAR_TO_ANSI(*Name);
 			EOS_Stats_Stat *Stat = nullptr;
 			auto Result = EOS_Stats_CopyStatByName(EOSRef->StatsHandle, &Options, &Stat);
@@ -55,7 +55,7 @@ TEnumAsByte<EEIK_Result> UEIK_StatsSubsystem::EIK_Stats_CopyStatByName(const FEI
 	return EEIK_Result::EOS_NotFound;
 }
 
-int32 UEIK_StatsSubsystem::EIK_Stats_GetStatsCount(const FEIK_ProductUserId& TargetUserId)
+int32 UEIK_StatsSubsystem::EIK_Stats_GetStatsCount(FEIK_ProductUserId TargetUserId)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -63,7 +63,7 @@ int32 UEIK_StatsSubsystem::EIK_Stats_GetStatsCount(const FEIK_ProductUserId& Tar
 		{
 			EOS_Stats_GetStatCountOptions Options;
 			Options.ApiVersion = EOS_STATS_GETSTATSCOUNT_API_LATEST;
-			Options.TargetUserId = TargetUserId.ProductUserIdBasic;
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			return EOS_Stats_GetStatsCount(EOSRef->StatsHandle, &Options);
 		}
 	}

@@ -39,8 +39,8 @@ void UEIK_Auth_QueryIdToken::Activate()
 		{
 			EOS_Auth_QueryIdTokenOptions Options = {};
 			Options.ApiVersion = EOS_AUTH_QUERYIDTOKEN_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.EpicAccountId_FromString();
-			Options.TargetAccountId = Var_TargetAccountId.EpicAccountId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			Options.TargetAccountId = Var_TargetAccountId.GetValueAsEosType();
 			EOS_Auth_QueryIdToken(EOSRef->AuthHandle, &Options, this, &UEIK_Auth_QueryIdToken::OnQueryIdTokenCallback);
 			return;
 		}

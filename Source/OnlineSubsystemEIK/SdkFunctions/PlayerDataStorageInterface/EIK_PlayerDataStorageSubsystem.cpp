@@ -14,7 +14,7 @@ TEnumAsByte<EEIK_Result> UEIK_PlayerDataStorageSubsystem::EIK_PlayerDataStorage_
 		{
 			EOS_PlayerDataStorage_CopyFileMetadataAtIndexOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_COPYFILEMETADATAATINDEX_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.Index = Index;
 			EOS_PlayerDataStorage_FileMetadata* Metadata = nullptr;
 			auto Result = EOS_PlayerDataStorage_CopyFileMetadataAtIndex(EOSRef->PlayerDataStorageHandle, &Options, &Metadata);
@@ -38,7 +38,7 @@ TEnumAsByte<EEIK_Result> UEIK_PlayerDataStorageSubsystem::EIK_PlayerDataStorage_
 		{
 			EOS_PlayerDataStorage_CopyFileMetadataByFilenameOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_COPYFILEMETADATABYFILENAME_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.Filename = TCHAR_TO_ANSI(*Filename);
 			EOS_PlayerDataStorage_FileMetadata* Metadata = nullptr;
 			auto Result = EOS_PlayerDataStorage_CopyFileMetadataByFilename(EOSRef->PlayerDataStorageHandle, &Options, &Metadata);
@@ -67,7 +67,7 @@ TEnumAsByte<EEIK_Result> UEIK_PlayerDataStorageSubsystem::EIK_PlayerDataStorage_
 		{
 			EOS_PlayerDataStorage_GetFileMetadataCountOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_GETFILEMETADATACOUNT_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			int32_t Count = 0;
 			auto Result = EOS_PlayerDataStorage_GetFileMetadataCount(EOSRef->PlayerDataStorageHandle, &Options, &Count);
 			OutFileMetadataCount = Count;

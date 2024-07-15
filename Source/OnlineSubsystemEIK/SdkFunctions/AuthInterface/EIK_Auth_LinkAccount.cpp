@@ -26,8 +26,8 @@ void UEIK_Auth_LinkAccount::Activate()
 		{
 			EOS_Auth_LinkAccountOptions Options = {};
 			Options.ApiVersion = EOS_AUTH_LINKACCOUNT_API_LATEST;
-			Options.ContinuanceToken = Var_ContinuanceToken.ContinuanceTokenBasic;
-			Options.LocalUserId = Var_LocalUserId.Ref;
+			Options.ContinuanceToken = Var_ContinuanceToken.GetValueAsEosType();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			Options.LinkAccountFlags = static_cast<EOS_ELinkAccountFlags>(Var_LinkAccountFlags.GetValue());
 			EOS_Auth_LinkAccount(EOSRef->AuthHandle, &Options, this, &UEIK_Auth_LinkAccount::OnLinkAccountCallback);
 			return;

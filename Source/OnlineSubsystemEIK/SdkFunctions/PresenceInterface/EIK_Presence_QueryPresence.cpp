@@ -24,8 +24,8 @@ void UEIK_Presence_QueryPresence::Activate()
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
 			EOS_Presence_QueryPresenceOptions Options = {};
-			Options.LocalUserId = Var_LocalUserId.EpicAccountId_FromString();
-			Options.TargetUserId = Var_TargetUserId.EpicAccountId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			EOS_Presence_QueryPresence(EOSRef->PresenceHandle, &Options, this, &UEIK_Presence_QueryPresence::Internal_OnQueryPresenceComplete);
 			return;
 		}

@@ -22,7 +22,7 @@ void UEIK_Sessions_RejectInvite::Activate()
 			EOS_Sessions_RejectInviteOptions RejectInviteOptions = { };
 			RejectInviteOptions.ApiVersion = EOS_SESSIONS_REJECTINVITE_API_LATEST;
 			RejectInviteOptions.InviteId = TCHAR_TO_ANSI(*Var_InviteId);
-			RejectInviteOptions.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			RejectInviteOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_Sessions_RejectInvite(EOSRef->SessionsHandle, &RejectInviteOptions, this, &UEIK_Sessions_RejectInvite::OnRejectInviteCallback);
 			return;
 		}

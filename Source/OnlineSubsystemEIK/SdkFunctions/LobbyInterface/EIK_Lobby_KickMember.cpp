@@ -36,8 +36,8 @@ void UEIK_Lobby_KickMember::Activate()
 			EOS_Lobby_KickMemberOptions Options = { };
 			Options.ApiVersion = EOS_LOBBY_KICKMEMBER_API_LATEST;
 			Options.LobbyId = Var_LobbyId.GetValueAsEosType();
-			Options.TargetUserId = Var_TargetUserId.ProductUserId_FromString();
-			Options.LocalUserId = Var_ProductUserId.ProductUserId_FromString();
+			Options.TargetUserId = Var_TargetUserId.GetValueAsEosType();
+			Options.LocalUserId = Var_ProductUserId.GetValueAsEosType();
 			EOS_Lobby_KickMember(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, this, &UEIK_Lobby_KickMember::OnKickMemberComplete);
 			return;
 		}

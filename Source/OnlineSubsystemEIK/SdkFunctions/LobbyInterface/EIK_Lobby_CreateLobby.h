@@ -85,7 +85,7 @@ struct FEIK_Lobby_CreateLobbyOptions
 	{
 		EOS_Lobby_CreateLobbyOptions Options;
 		Options.ApiVersion = EOS_LOBBY_CREATELOBBY_API_LATEST;
-		Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+		Options.LocalUserId = LocalUserId.GetValueAsEosType();
 		Options.MaxLobbyMembers = MaxLobbyMembers;
 		Options.PermissionLevel = static_cast<EOS_ELobbyPermissionLevel>(PermissionLevel.GetValue());
 		Options.bPresenceEnabled = bPresenceEnabled;

@@ -6,7 +6,7 @@
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 TEnumAsByte<EEIK_Result> UEIK_SanctionsSubsystem::EIK_Sanctions_CopyPlayerSanctionByIndex(
-	const FEIK_ProductUserId& LocalUserId, int32 Index, FEIK_Sanctions_PlayerSanction& OutSanction)
+	FEIK_ProductUserId LocalUserId, int32 Index, FEIK_Sanctions_PlayerSanction& OutSanction)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -15,7 +15,7 @@ TEnumAsByte<EEIK_Result> UEIK_SanctionsSubsystem::EIK_Sanctions_CopyPlayerSancti
 			EOS_Sanctions_CopyPlayerSanctionByIndexOptions Options = { };
 			Options.ApiVersion = EOS_SANCTIONS_COPYPLAYERSANCTIONBYINDEX_API_LATEST;
 			Options.SanctionIndex = Index;
-			Options.TargetUserId = LocalUserId.ProductUserIdBasic;
+			Options.TargetUserId = LocalUserId.GetValueAsEosType();
 			EOS_Sanctions_PlayerSanction* OutSanctionPtr;
 			auto Result = EOS_Sanctions_CopyPlayerSanctionByIndex(EOSRef->SanctionsHandle, &Options, &OutSanctionPtr);
 			if (Result == EOS_EResult::EOS_Success)
@@ -30,7 +30,7 @@ TEnumAsByte<EEIK_Result> UEIK_SanctionsSubsystem::EIK_Sanctions_CopyPlayerSancti
 	return EEIK_Result::EOS_ServiceFailure;
 }
 
-int32 UEIK_SanctionsSubsystem::EIK_Sanctions_GetPlayerSanctionCount(const FEIK_ProductUserId& LocalUserId)
+int32 UEIK_SanctionsSubsystem::EIK_Sanctions_GetPlayerSanctionCount(FEIK_ProductUserId LocalUserId)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -38,7 +38,7 @@ int32 UEIK_SanctionsSubsystem::EIK_Sanctions_GetPlayerSanctionCount(const FEIK_P
 		{
 			EOS_Sanctions_GetPlayerSanctionCountOptions Options = { };
 			Options.ApiVersion = EOS_SANCTIONS_GETPLAYERSANCTIONCOUNT_API_LATEST;
-			Options.TargetUserId = LocalUserId.ProductUserIdBasic;
+			Options.TargetUserId = LocalUserId.GetValueAsEosType();
 			return EOS_Sanctions_GetPlayerSanctionCount(EOSRef->SanctionsHandle, &Options);
 		}
 	}

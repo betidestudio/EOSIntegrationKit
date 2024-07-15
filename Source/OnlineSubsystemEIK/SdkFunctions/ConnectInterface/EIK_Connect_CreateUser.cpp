@@ -25,7 +25,7 @@ void UEIK_Connect_CreateUser::Activate()
 		{
 			EOS_Connect_CreateUserOptions CreateUserOptions = { };
 			CreateUserOptions.ApiVersion = EOS_CONNECT_CREATEUSER_API_LATEST;
-			CreateUserOptions.ContinuanceToken = Var_ContinuanceToken.EOS_ContinuanceToken_FromStruct();
+			CreateUserOptions.ContinuanceToken = Var_ContinuanceToken.GetValueAsEosType();
 			EOS_Connect_CreateUser(EOSRef->ConnectHandle, &CreateUserOptions, this, &UEIK_Connect_CreateUser::OnCreateUserCallback);
 			return;
 		}

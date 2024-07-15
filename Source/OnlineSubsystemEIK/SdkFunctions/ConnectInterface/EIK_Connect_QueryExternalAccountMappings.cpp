@@ -40,7 +40,7 @@ void UEIK_Connect_QueryExternalAccountMappings::Activate()
 		{
 			EOS_Connect_QueryExternalAccountMappingsOptions QueryExternalAccountMappingsOptions = { };
 			QueryExternalAccountMappingsOptions.ApiVersion = EOS_CONNECT_QUERYEXTERNALACCOUNTMAPPINGS_API_LATEST;
-			QueryExternalAccountMappingsOptions.LocalUserId = Var_ProductUserId.ProductUserId_FromString();
+			QueryExternalAccountMappingsOptions.LocalUserId = Var_ProductUserId.GetValueAsEosType();
 			QueryExternalAccountMappingsOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(Var_AccountType.GetValue());
 			QueryExternalAccountMappingsOptions.ExternalAccountIdCount = Var_ExternalAccountIds.Num();
 			const char** ExternalAccountIds = new const char*[Var_ExternalAccountIds.Num()];

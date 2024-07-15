@@ -73,7 +73,7 @@ struct FEIK_Sessions_CreateSessionModificationOptions
 		EosStruct.SessionName = TCHAR_TO_ANSI(*SessionName);
 		EosStruct.BucketId = TCHAR_TO_ANSI(*BucketId);
 		EosStruct.MaxPlayers = MaxPlayers;
-		EosStruct.LocalUserId = LocalUserId.ProductUserId_FromString();
+		EosStruct.LocalUserId = LocalUserId.GetValueAsEosType();
 		EosStruct.bPresenceEnabled = bPresenceEnabled;
 		EosStruct.SessionId = TCHAR_TO_ANSI(*SessionId);
 		EosStruct.bSanctionsEnabled = bSanctionsEnabled;

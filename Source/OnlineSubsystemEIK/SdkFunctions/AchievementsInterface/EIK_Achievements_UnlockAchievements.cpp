@@ -24,7 +24,7 @@ void UEIK_Achievements_UnlockAchievements::Activate()
 		{
 			EOS_Achievements_UnlockAchievementsOptions Options;
 			Options.ApiVersion = EOS_ACHIEVEMENTS_UNLOCKACHIEVEMENTS_API_LATEST;
-			Options.UserId = Var_UserId.ProductUserId_FromString();
+			Options.UserId = Var_UserId.GetValueAsEosType();
 			Options.AchievementsCount = Var_AchievementIds.Num();
 			Options.AchievementIds = new const char*[Var_AchievementIds.Num()];
 			for (int i = 0; i < Var_AchievementIds.Num(); i++)

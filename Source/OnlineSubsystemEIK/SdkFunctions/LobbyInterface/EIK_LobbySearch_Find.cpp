@@ -22,7 +22,7 @@ void UEIK_LobbySearch_Find::Activate()
 		{
 			EOS_LobbySearch_FindOptions Options = { };
 			Options.ApiVersion = EOS_LOBBYSEARCH_FIND_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_LobbySearch_Find(*Var_Handle.Ref, &Options, this, &UEIK_LobbySearch_Find::OnFindComplete);
 			return;
 		}

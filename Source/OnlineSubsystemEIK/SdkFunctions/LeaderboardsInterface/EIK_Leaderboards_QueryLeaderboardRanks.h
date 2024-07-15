@@ -32,12 +32,12 @@ struct FEIK_Leaderboards_QueryLeaderboardRanksOptions
 		, LocalUserId()
 	{
 	}
-	EOS_Leaderboards_QueryLeaderboardRanksOptions ToEOSLeaderboardsQueryLeaderboardRanksOptions() const
+	EOS_Leaderboards_QueryLeaderboardRanksOptions ToEOSLeaderboardsQueryLeaderboardRanksOptions()
 	{
 		EOS_Leaderboards_QueryLeaderboardRanksOptions Result;
 		Result.ApiVersion = EOS_LEADERBOARDS_QUERYLEADERBOARDRANKS_API_LATEST;
 		Result.LeaderboardId = TCHAR_TO_ANSI(*LeaderboardId);
-		Result.LocalUserId = LocalUserId.ProductUserIdBasic;
+		Result.LocalUserId = LocalUserId.GetValueAsEosType();
 		return Result;
 	}
 };

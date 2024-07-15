@@ -51,7 +51,7 @@ public:
 	
 	//Ingest a stat by the amount specified in Options. When the operation is complete and the delegate is triggered the stat will be uploaded to the backend to be processed. The stat may not be updated immediately and an achievement using the stat may take a while to be unlocked once the stat has been uploaded.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Stats Interface", DisplayName="EOS_Stats_IngestStat")
-	static UEIK_Stats_IngestStat* EIK_Stats_IngestStat(const FEIK_ProductUserId& LocalUserId, const TArray<FEIK_Stats_IngestData>& Stats, const FEIK_ProductUserId& TargetUserId);
+	static UEIK_Stats_IngestStat* EIK_Stats_IngestStat(FEIK_ProductUserId LocalUserId, const TArray<FEIK_Stats_IngestData>& Stats, const FEIK_ProductUserId& TargetUserId);
 
 	UPROPERTY(BlueprintAssignable, Category = "EOS Integration Kit | SDK Functions | Stats Interface")
 	FEIK_OnStatsIngestStatComplete OnCallback;

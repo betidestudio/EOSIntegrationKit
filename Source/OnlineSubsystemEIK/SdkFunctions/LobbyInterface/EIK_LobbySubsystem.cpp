@@ -258,7 +258,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CopyLobbyDetailsHandle(F
 			EOS_Lobby_CopyLobbyDetailsHandleOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_COPYLOBBYDETAILSHANDLE_API_LATEST;
 			Options.LobbyId = LobbyId.Ref;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			EOS_HLobbyDetails Handle = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_CopyLobbyDetailsHandle(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &Handle));
 			OutLobbyDetailsHandle = &Handle;
@@ -338,7 +338,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_GetConnectString(FEIK_Pr
 		{
 			EOS_Lobby_GetConnectStringOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_GETCONNECTSTRING_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.LobbyId = LobbyId.Ref;
 			uint32_t* InOutBufferLength= nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_GetConnectString(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, Buffer, InOutBufferLength));
@@ -358,7 +358,7 @@ int32 UEIK_LobbySubsystem::EIK_Lobby_GetInviteCount(FEIK_ProductUserId LocalUser
 		{
 			EOS_Lobby_GetInviteCountOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_GETINVITECOUNT_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			return EOS_Lobby_GetInviteCount(EOSRef->SessionInterfacePtr->LobbyHandle, &Options);
 		}
 	}
@@ -376,7 +376,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_GetInviteIdByIndex(FEIK_
 		{
 			EOS_Lobby_GetInviteIdByIndexOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_GETINVITEIDBYINDEX_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.Index = Index;
 			int32_t* InOutBufferLength = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_GetInviteIdByIndex(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, Buffer, InOutBufferLength));
@@ -398,7 +398,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_GetRTCRoomName(FEIK_Prod
 		{
 			EOS_Lobby_GetRTCRoomNameOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_GETRTCROOMNAME_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.LobbyId = LobbyId.Ref;
 			uint32_t* InOutBufferLength = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_GetRTCRoomName(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, Buffer, InOutBufferLength));
@@ -419,7 +419,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_IsRTCRoomConnected(FEIK_
 		{
 			EOS_Lobby_IsRTCRoomConnectedOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_ISRTCROOMCONNECTED_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.LobbyId = LobbyId.Ref;
 			EOS_Bool VarTemp = EOS_FALSE;
 			EOS_EResult Result = EOS_Lobby_IsRTCRoomConnected(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &VarTemp);
@@ -459,7 +459,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_UpdateLobbyModification(
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_Lobby_UpdateLobbyModificationOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_UPDATELOBBYMODIFICATION_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.LobbyId = LobbyId.Ref;
 			EOS_HLobbyModification Handle = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_UpdateLobbyModification(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &Handle));
@@ -538,7 +538,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyMemberAttribu
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyDetails_CopyMemberAttributeByIndexOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_COPYMEMBERATTRIBUTEBYINDEX_API_LATEST;
-			Options.TargetUserId = TargetUserId.ProductUserId_FromString();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			Options.AttrIndex = AttrIndex;
 			EOS_Lobby_Attribute* Attribute = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberAttributeByIndex(*LobbyDetailsHandle.Ref, &Options, &Attribute));
@@ -559,7 +559,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyMemberAttribu
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyDetails_CopyMemberAttributeByKeyOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_COPYMEMBERATTRIBUTEBYKEY_API_LATEST;
-			Options.TargetUserId = TargetUserId.ProductUserId_FromString();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			Options.AttrKey = TCHAR_TO_ANSI(*AttrKey);
 			EOS_Lobby_Attribute* Attribute = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberAttributeByKey(*LobbyDetailsHandle.Ref, &Options, &Attribute));
@@ -580,7 +580,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyMemberInfo(FE
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyDetails_CopyMemberInfoOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_COPYMEMBERINFO_API_LATEST;
-			Options.TargetUserId = TargetUserId.ProductUserId_FromString();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			EOS_LobbyDetails_MemberInfo* Info1 = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberInfo(*LobbyDetailsHandle.Ref, &Options, &Info1));
 			Info = *Info1;
@@ -628,7 +628,7 @@ int32 UEIK_LobbySubsystem::EIK_LobbyDetails_GetMemberAttributeCount(FEIK_HLobbyD
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyDetails_GetMemberAttributeCountOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_GETMEMBERATTRIBUTECOUNT_API_LATEST;
-			Options.TargetUserId = TargetUserId.ProductUserId_FromString();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			return EOS_LobbyDetails_GetMemberAttributeCount(*LobbyDetailsHandle.Ref, &Options);
 		}
 	}
@@ -997,7 +997,7 @@ FEIK_ProductUserId Options)
 		{
 			EOS_LobbySearch_SetTargetUserIdOptions LocalOptions = {};
 			LocalOptions.ApiVersion = EOS_LOBBYSEARCH_SETTARGETUSERID_API_LATEST;
-			LocalOptions.TargetUserId = Options.ProductUserId_FromString();
+			LocalOptions.TargetUserId = Options.GetValueAsEosType();
 			return static_cast<EEIK_Result>(EOS_LobbySearch_SetTargetUserId(*LobbySearchHandle.Ref, &LocalOptions));
 		}
 	}

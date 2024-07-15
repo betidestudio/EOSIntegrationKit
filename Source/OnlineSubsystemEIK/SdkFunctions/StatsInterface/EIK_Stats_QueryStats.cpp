@@ -5,7 +5,7 @@
 
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
-UEIK_Stats_QueryStats* UEIK_Stats_QueryStats::EIK_Stats_QueryStats(const FEIK_ProductUserId& LocalUserId,
+UEIK_Stats_QueryStats* UEIK_Stats_QueryStats::EIK_Stats_QueryStats(FEIK_ProductUserId LocalUserId,
                                                                    const FEIK_ProductUserId& TargetUserId, int64 StartTime, int64 EndTime, const TArray<FString>& StatNames)
 {
 	UEIK_Stats_QueryStats* Node = NewObject<UEIK_Stats_QueryStats>();
@@ -39,8 +39,8 @@ void UEIK_Stats_QueryStats::Activate()
 		{
 			EOS_Stats_QueryStatsOptions Options;
 			Options.ApiVersion = EOS_STATS_QUERYSTATS_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserIdBasic;
-			Options.TargetUserId = Var_TargetUserId.ProductUserIdBasic;
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			Options.StartTime = Var_StartTime;
 			Options.EndTime = Var_EndTime;
 			Options.StatNamesCount = Var_StatNames.Num();

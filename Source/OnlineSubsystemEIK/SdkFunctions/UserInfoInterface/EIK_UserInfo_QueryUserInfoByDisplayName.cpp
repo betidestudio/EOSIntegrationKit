@@ -23,7 +23,7 @@ void UEIK_UserInfo_QueryUserInfoByDisplayName::Activate()
 		{
 			EOS_UserInfo_QueryUserInfoByDisplayNameOptions Options;
 			Options.ApiVersion = EOS_USERINFO_QUERYUSERINFOBYDISPLAYNAME_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.EpicAccountId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			Options.DisplayName = TCHAR_TO_ANSI(*Var_DisplayName);
 			EOS_UserInfo_QueryUserInfoByDisplayName(EOSRef->UserInfoHandle, &Options, this, &UEIK_UserInfo_QueryUserInfoByDisplayName::OnQueryUserInfoByDisplayNameCallback);
 			return;

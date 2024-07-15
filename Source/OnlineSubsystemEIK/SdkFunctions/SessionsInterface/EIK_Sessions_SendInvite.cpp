@@ -23,8 +23,8 @@ void UEIK_Sessions_SendInvite::Activate()
 			EOS_Sessions_SendInviteOptions SendInviteOptions = { };
 			SendInviteOptions.ApiVersion = EOS_SESSIONS_SENDINVITE_API_LATEST;
 			SendInviteOptions.SessionName = TCHAR_TO_ANSI(*Var_SessionName);
-			SendInviteOptions.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
-			SendInviteOptions.TargetUserId = Var_TargetUserId.ProductUserId_FromString();
+			SendInviteOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			SendInviteOptions.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			EOS_Sessions_SendInvite(EOSRef->SessionsHandle, &SendInviteOptions, this, &UEIK_Sessions_SendInvite::OnSendInviteCallback);
 			return;
 		}

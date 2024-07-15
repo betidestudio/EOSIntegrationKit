@@ -38,8 +38,8 @@ void UEIK_Friends_RejectInvite::Activate()
 		{
 			EOS_Friends_RejectInviteOptions RejectInviteOptions = {};
 			RejectInviteOptions.ApiVersion = EOS_FRIENDS_REJECTINVITE_API_LATEST;
-			RejectInviteOptions.LocalUserId = Var_LocalUserId.Ref;
-			RejectInviteOptions.TargetUserId = Var_TargetUserId.Ref;
+			RejectInviteOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			RejectInviteOptions.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			EOS_Friends_RejectInvite(EOSRef->FriendsHandle, &RejectInviteOptions, this, &UEIK_Friends_RejectInvite::OnRejectInviteCallback);
 			return;
 		}

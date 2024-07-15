@@ -59,7 +59,7 @@ void UEIK_PlayerDataStorage_WriteFile::Activate()
 		{
 			EOS_PlayerDataStorage_WriteFileOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_WRITEFILE_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			Options.Filename = TCHAR_TO_ANSI(*Var_Filename);
 			Options.WriteFileDataCallback = &UEIK_PlayerDataStorage_WriteFile::EOS_PlayerDataStorage_OnWriteFileData;
 			Options.FileTransferProgressCallback = &UEIK_PlayerDataStorage_WriteFile::EOS_PlayerDataStorage_OnFileTransferProgress;

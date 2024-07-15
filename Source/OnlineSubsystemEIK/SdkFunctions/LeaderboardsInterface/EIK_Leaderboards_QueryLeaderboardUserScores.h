@@ -54,7 +54,7 @@ struct FEIK_Leaderboards_QueryLeaderboardUserScoresOptions
 		EOS_ProductUserId* TempUserIds = new EOS_ProductUserId[Result.UserIdsCount];
 		for (int i = 0; i < UserIds.Num(); i++)
 		{
-			TempUserIds[i] = UserIds[i].ProductUserIdBasic;
+			TempUserIds[i] = UserIds[i].GetValueAsEosType();
 		}
 		Result.StatInfoCount = StatInfo.Num();
 		EOS_Leaderboards_UserScoresQueryStatInfo* TempStatInfo = new EOS_Leaderboards_UserScoresQueryStatInfo[Result.StatInfoCount];
@@ -66,7 +66,7 @@ struct FEIK_Leaderboards_QueryLeaderboardUserScoresOptions
 		Result.StatInfo = TempStatInfo;
 		Result.StartTime = StartTime;
 		Result.EndTime = EndTime;
-		Result.LocalUserId = LocalUserId.ProductUserIdBasic;
+		Result.LocalUserId = LocalUserId.GetValueAsEosType();
 		return Result;
 	}
 };

@@ -23,7 +23,7 @@ void UEIK_Sanctions_CreatePlayerSanctionAppeal::Activate()
 		{
 			EOS_Sanctions_CreatePlayerSanctionAppealOptions Options = {};
 			Options.ApiVersion = EOS_SANCTIONS_CREATEPLAYERSANCTIONAPPEAL_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			Options.Reason = static_cast<EOS_ESanctionAppealReason>(Var_AppealReason.GetValue());
 			Options.ReferenceId = TCHAR_TO_ANSI(*Var_ReferenceId);
 			EOS_Sanctions_CreatePlayerSanctionAppeal(EOSRef->SanctionsHandle, &Options, this, &UEIK_Sanctions_CreatePlayerSanctionAppeal::Internal_OnCreatePlayerSanctionAppealComplete);

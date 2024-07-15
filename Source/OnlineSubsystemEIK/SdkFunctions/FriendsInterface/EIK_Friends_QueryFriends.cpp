@@ -36,7 +36,7 @@ void UEIK_Friends_QueryFriends::Activate()
 		{
 			EOS_Friends_QueryFriendsOptions QueryFriendsOptions = {};
 			QueryFriendsOptions.ApiVersion = EOS_FRIENDS_QUERYFRIENDS_API_LATEST;
-			QueryFriendsOptions.LocalUserId = Var_LocalUserId.Ref;
+			QueryFriendsOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_Friends_QueryFriends(EOSRef->FriendsHandle, &QueryFriendsOptions, this, &UEIK_Friends_QueryFriends::OnQueryFriendsCallback);
 			return;
 		}

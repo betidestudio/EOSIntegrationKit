@@ -79,7 +79,7 @@ FEIK_EpicAccountId UEIK_FriendsSubsystem::EIK_Friends_GetBlockedUserAtIndex(FEIK
 		{
 			EOS_Friends_GetBlockedUserAtIndexOptions Options = {};
 			Options.ApiVersion = EOS_FRIENDS_GETBLOCKEDUSERATINDEX_API_LATEST;
-			Options.LocalUserId = LocalUserId.Ref;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.Index = Index;
 			return EOS_Friends_GetBlockedUserAtIndex(EOSRef->FriendsHandle, &Options);
 		}
@@ -96,7 +96,7 @@ int32 UEIK_FriendsSubsystem::EIK_Friends_GetBlockedUsersCount(FEIK_EpicAccountId
 		{
 			EOS_Friends_GetBlockedUsersCountOptions Options = {};
 			Options.ApiVersion = EOS_FRIENDS_GETBLOCKEDUSERSCOUNT_API_LATEST;
-			Options.LocalUserId = LocalUserId.Ref;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			return EOS_Friends_GetBlockedUsersCount(EOSRef->FriendsHandle, &Options);
 		}
 	}
@@ -112,7 +112,7 @@ FEIK_EpicAccountId UEIK_FriendsSubsystem::EIK_Friends_GetFriendAtIndex(FEIK_Epic
 		{
 			EOS_Friends_GetFriendAtIndexOptions Options = {};
 			Options.ApiVersion = EOS_FRIENDS_GETFRIENDATINDEX_API_LATEST;
-			Options.LocalUserId = LocalUserId.Ref;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.Index = Index;
 			return EOS_Friends_GetFriendAtIndex(EOSRef->FriendsHandle, &Options);
 		}
@@ -129,7 +129,7 @@ int32 UEIK_FriendsSubsystem::EIK_Friends_GetFriendsCount(FEIK_EpicAccountId Loca
 		{
 			EOS_Friends_GetFriendsCountOptions Options = {};
 			Options.ApiVersion = EOS_FRIENDS_GETFRIENDSCOUNT_API_LATEST;
-			Options.LocalUserId = LocalUserId.Ref;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			return EOS_Friends_GetFriendsCount(EOSRef->FriendsHandle, &Options);
 		}
 	}
@@ -146,8 +146,8 @@ TEnumAsByte<EEIK_EFriendsStatus> UEIK_FriendsSubsystem::EIK_Friends_GetStatus(FE
 		{
 			EOS_Friends_GetStatusOptions Options = {};
 			Options.ApiVersion = EOS_FRIENDS_GETSTATUS_API_LATEST;
-			Options.LocalUserId = LocalUserId.Ref;
-			Options.TargetUserId = TargetUserId.Ref;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			return static_cast<EEIK_EFriendsStatus>(EOS_Friends_GetStatus(EOSRef->FriendsHandle, &Options));
 		}
 	}

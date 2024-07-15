@@ -40,9 +40,9 @@ void UEIK_Connect_TransferDeviceIdAccount::Activate()
 		{
 			EOS_Connect_TransferDeviceIdAccountOptions TransferDeviceIdAccountOptions = {};
 			TransferDeviceIdAccountOptions.ApiVersion = EOS_CONNECT_TRANSFERDEVICEIDACCOUNT_API_LATEST;
-			TransferDeviceIdAccountOptions.LocalDeviceUserId = Var_LocalUserId.ProductUserId_FromString();
-			TransferDeviceIdAccountOptions.ProductUserIdToPreserve = Var_ProductUserIdToPreserve.ProductUserId_FromString();
-			TransferDeviceIdAccountOptions.PrimaryLocalUserId = Var_PrimaryLocalUserId.ProductUserId_FromString();
+			TransferDeviceIdAccountOptions.LocalDeviceUserId = Var_LocalUserId.GetValueAsEosType();
+			TransferDeviceIdAccountOptions.ProductUserIdToPreserve = Var_ProductUserIdToPreserve.GetValueAsEosType();
+			TransferDeviceIdAccountOptions.PrimaryLocalUserId = Var_PrimaryLocalUserId.GetValueAsEosType();
 			EOS_Connect_TransferDeviceIdAccount(EOSRef->ConnectHandle, &TransferDeviceIdAccountOptions, this, &UEIK_Connect_TransferDeviceIdAccount::OnTransferDeviceIdAccountCallback);
 		}
 	}

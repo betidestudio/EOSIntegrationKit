@@ -44,7 +44,7 @@ struct FEIK_Ecom_CheckoutOptions
 	{
 		EOS_Ecom_CheckoutOptions Options;
 		Options.ApiVersion = EOS_ECOM_CHECKOUT_API_LATEST;
-		Options.LocalUserId = LocalUserId.Ref;
+		Options.LocalUserId = LocalUserId.GetValueAsEosType();
 		Options.OverrideCatalogNamespace = TCHAR_TO_ANSI(*OverrideCatalogNamespace);
 		Options.EntryCount = EntryCount;
 		EOS_Ecom_CheckoutEntry* EntriesArray = new EOS_Ecom_CheckoutEntry[EntryCount];

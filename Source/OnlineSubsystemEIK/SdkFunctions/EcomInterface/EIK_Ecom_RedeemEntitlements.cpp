@@ -38,7 +38,7 @@ void UEIK_Ecom_RedeemEntitlements::Activate()
 		{
 			EOS_Ecom_RedeemEntitlementsOptions RedeemEntitlementsOptions;
 			RedeemEntitlementsOptions.ApiVersion = EOS_ECOM_REDEEMENTITLEMENTS_API_LATEST;
-			RedeemEntitlementsOptions.LocalUserId = Var_LocalUserId.Ref;
+			RedeemEntitlementsOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			RedeemEntitlementsOptions.EntitlementIdCount = Var_EntitlementIds.Num();
 			RedeemEntitlementsOptions.EntitlementIds = new EOS_Ecom_EntitlementId[Var_EntitlementIds.Num()];
 			for (int32 i = 0; i < Var_EntitlementIds.Num(); i++)

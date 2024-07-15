@@ -23,8 +23,8 @@ void UEIK_Sanctions_QueryActivePlayerSanctions::Activate()
 		{
 			EOS_Sanctions_QueryActivePlayerSanctionsOptions Options = {};
 			Options.ApiVersion = EOS_SANCTIONS_QUERYACTIVEPLAYERSANCTIONS_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserIdBasic;
-			Options.TargetUserId = Var_TargetUserId.ProductUserIdBasic;
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			EOS_Sanctions_QueryActivePlayerSanctions(EOSRef->SanctionsHandle, &Options, this, &UEIK_Sanctions_QueryActivePlayerSanctions::Internal_OnQueryActivePlayerSanctionsComplete);
 			return;
 		}

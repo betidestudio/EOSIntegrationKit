@@ -43,8 +43,9 @@ struct FEIK_ProductUserId
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS|Connect")
 	FString ProductUserId;
 
+private:
 	EOS_ProductUserId ProductUserIdBasic;
-
+public:
 	FEIK_ProductUserId(): ProductUserIdBasic(nullptr)
 	{
 		ProductUserId = "";
@@ -59,7 +60,7 @@ struct FEIK_ProductUserId
 		ProductUserId = FString(UTF8_TO_TCHAR(ProductIdAnsi));
 	}
 
-	EOS_ProductUserId ProductUserId_FromString()
+	EOS_ProductUserId GetValueAsEosType()
 	{
 		if (EOS_ProductUserId_IsValid(ProductUserIdBasic))
 		{
@@ -77,9 +78,10 @@ struct FEIK_EpicAccountId
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Auth Interface")
 	FString EpicAccountId;
-
+	
+private:
 	EOS_EpicAccountId Ref;
-
+public:
 	FEIK_EpicAccountId(): Ref(nullptr)
 	{
 		EpicAccountId = "";
@@ -98,7 +100,7 @@ struct FEIK_EpicAccountId
 			EpicAccountId = UTF8_TO_TCHAR(AccountIdString);
 		}
 	}
-	EOS_EpicAccountId EpicAccountId_FromString()
+	EOS_EpicAccountId GetValueAsEosType()
 	{
 		if (EOS_EpicAccountId_IsValid(Ref))
 		{
@@ -128,8 +130,9 @@ struct FEIK_ContinuanceToken
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS|Connect")
 	FString ContinuanceToken;
 
+private:
 	EOS_ContinuanceToken ContinuanceTokenBasic;
-
+public:
 	FEIK_ContinuanceToken(): ContinuanceTokenBasic(nullptr)
 	{
 		ContinuanceToken = "";
@@ -144,7 +147,7 @@ struct FEIK_ContinuanceToken
 		ContinuanceTokenBasic = InContinuanceToken;
 	}
 	
-	EOS_ContinuanceToken EOS_ContinuanceToken_FromStruct()
+	EOS_ContinuanceToken GetValueAsEosType()
 	{
 		return ContinuanceTokenBasic;
 	}
@@ -443,7 +446,7 @@ struct FEIK_Connect_IdToken
 	{
 		EOS_Connect_IdToken IdToken;
 		IdToken.ApiVersion = EOS_CONNECT_IDTOKEN_API_LATEST;
-		IdToken.ProductUserId = UserId.ProductUserId_FromString();
+		IdToken.ProductUserId = UserId.GetValueAsEosType();
 		IdToken.JsonWebToken = TCHAR_TO_ANSI(*Token);
 		return IdToken;
 	}
@@ -749,9 +752,23 @@ struct FEIK_Connect_ExternalAccountInfo
 	{
 		EOS_Connect_ExternalAccountInfo ExternalAccountInfo;
 		ExternalAccountInfo.ApiVersion = EOS_CONNECT_EXTERNALACCOUNTINFO_API_LATEST;
-		ExternalAccountInfo.ProductUserId = UserId.ProductUserId_FromString();
-		ExternalAccountInfo.AccountId = TCHAR_TO_ANSI(*AccountId);
-		ExternalAccountInfo.DisplayName = TCHAR_TO_ANSI(*DisplayName);
+		ExternalAccountInfo.ProductUserId = UserId.GetValueAsEosType();
+		if(AccountId.Len() > 0)
+		{
+			ExternalAccountInfo.AccountId = TCHAR_TO_ANSI(*AccountId);
+		}
+		else
+		{
+			ExternalAccountInfo.AccountId = nullptr;
+		}
+		if(DisplayName.Len() > 0)
+		{
+			ExternalAccountInfo.DisplayName = TCHAR_TO_ANSI(*DisplayName);
+		}
+		else
+		{
+			ExternalAccountInfo.DisplayName = nullptr;
+		}
 		ExternalAccountInfo.LastLoginTime = LastLoginTime;
 		ExternalAccountInfo.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountType.GetValue());
 		return ExternalAccountInfo;
@@ -791,9 +808,9 @@ struct FEIK_Achievements_DefinitionV2
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
 	bool bIsHidden;
-
+private:
 	EOS_Achievements_DefinitionV2* DefinitionRef;
-	
+public:
 	FEIK_Achievements_DefinitionV2(): bIsHidden(false), DefinitionRef(nullptr)
 	{
 	}

@@ -34,7 +34,7 @@ void UEIK_Lobby_LeaveLobby::Activate()
 			EOS_Lobby_LeaveLobbyOptions Options = { };
 			Options.ApiVersion = EOS_LOBBY_LEAVELOBBY_API_LATEST;
 			Options.LobbyId = Var_LobbyId.GetValueAsEosType();
-			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_Lobby_LeaveLobby(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, this, &UEIK_Lobby_LeaveLobby::OnLeaveLobbyComplete);
 			return;
 		}

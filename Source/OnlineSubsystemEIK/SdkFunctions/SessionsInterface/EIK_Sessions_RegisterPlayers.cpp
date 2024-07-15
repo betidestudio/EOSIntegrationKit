@@ -26,7 +26,7 @@ void UEIK_Sessions_RegisterPlayers::Activate()
 			RegisterPlayersOptions.PlayersToRegister = new EOS_ProductUserId[Var_PlayersToRegister.Num()];
 			for (int i = 0; i < Var_PlayersToRegister.Num(); i++)
 			{
-				RegisterPlayersOptions.PlayersToRegister[i] = Var_PlayersToRegister[i].ProductUserId_FromString();
+				RegisterPlayersOptions.PlayersToRegister[i] = Var_PlayersToRegister[i].GetValueAsEosType();
 			}
 			EOS_Sessions_RegisterPlayers(EOSRef->SessionsHandle, &RegisterPlayersOptions, this, &UEIK_Sessions_RegisterPlayers::OnRegisterPlayersCallback);
 			delete[] RegisterPlayersOptions.PlayersToRegister;

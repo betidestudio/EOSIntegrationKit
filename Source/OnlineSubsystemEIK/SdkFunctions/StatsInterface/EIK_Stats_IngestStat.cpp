@@ -5,7 +5,7 @@
 
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
-UEIK_Stats_IngestStat* UEIK_Stats_IngestStat::EIK_Stats_IngestStat(const FEIK_ProductUserId& LocalUserId,
+UEIK_Stats_IngestStat* UEIK_Stats_IngestStat::EIK_Stats_IngestStat(FEIK_ProductUserId LocalUserId,
                                                                    const TArray<FEIK_Stats_IngestData>& Stats, const FEIK_ProductUserId& TargetUserId)
 {
 	UEIK_Stats_IngestStat* Node = NewObject<UEIK_Stats_IngestStat>();
@@ -24,8 +24,8 @@ void UEIK_Stats_IngestStat::Activate()
 		{
 			EOS_Stats_IngestStatOptions Options;
 			Options.ApiVersion = EOS_STATS_INGESTSTAT_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserIdBasic;
-			Options.TargetUserId = Var_TargetUserId.ProductUserIdBasic;
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			Options.StatsCount = Var_Stats.Num();
 			EOS_Stats_IngestData* TempStats = new EOS_Stats_IngestData[Var_Stats.Num()];
 			for (int i = 0; i < Var_Stats.Num(); i++)

@@ -221,7 +221,6 @@ bool UEIKSettings::GetSettingsForArtifact(const FString& ArtifactName, FEOSArtif
 
 bool UEIKSettings::ManualGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings)
 {
-    UE_LOG(LogEOSIntegrationKit, Warning, TEXT("ManualGetSettingsForArtifact is deprecated and will be removed in a future release. Please use AutoGetSettingsForArtifact instead."));
     static TOptional<FString> CachedDefaultArtifactName;
     static TOptional<TArray<FEOSArtifactSettings>> CachedArtifactSettings;
 

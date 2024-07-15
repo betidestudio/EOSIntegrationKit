@@ -26,8 +26,8 @@ void UEIK_Achievements_QueryPlayerAchievements::Activate()
 		{
 			EOS_Achievements_QueryPlayerAchievementsOptions Options;
 			Options.ApiVersion = EOS_ACHIEVEMENTS_QUERYPLAYERACHIEVEMENTS_API_LATEST;
-			Options.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
-			Options.TargetUserId = Var_TargetUserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			EOS_Achievements_QueryPlayerAchievements(EOSRef->AchievementsHandle, &Options, this, [](const EOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo* Data)
 			{
 				if (UEIK_Achievements_QueryPlayerAchievements* QueryPlayerAchievements = static_cast<UEIK_Achievements_QueryPlayerAchievements*>(Data->ClientData))

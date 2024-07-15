@@ -23,7 +23,7 @@ void UEIK_Achievements_QueryDefinitions::Activate()
 		{
 			EOS_Achievements_QueryDefinitionsOptions Options;
 			Options.ApiVersion = EOS_ACHIEVEMENTS_QUERYDEFINITIONS_API_LATEST;
-			Options.LocalUserId = Var_UserId.ProductUserId_FromString();
+			Options.LocalUserId = Var_UserId.GetValueAsEosType();
 			EOS_Achievements_QueryDefinitions(EOSRef->AchievementsHandle, &Options, this, [](const EOS_Achievements_OnQueryDefinitionsCompleteCallbackInfo* Data)
 			{
 				if (UEIK_Achievements_QueryDefinitions* QueryDefinitions = static_cast<UEIK_Achievements_QueryDefinitions*>(Data->ClientData))

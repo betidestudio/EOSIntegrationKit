@@ -23,7 +23,7 @@ void UEIK_Auth_Logout::Activate()
 		{
 			EOS_Auth_LogoutOptions Options = {};
 			Options.ApiVersion = EOS_AUTH_LOGOUT_API_LATEST;
-			Options.LocalUserId = Var_EpicAccountId.EpicAccountId_FromString();
+			Options.LocalUserId = Var_EpicAccountId.GetValueAsEosType();
 			EOS_Auth_Logout(EOSRef->AuthHandle, &Options, this, &UEIK_Auth_Logout::OnLogoutCallback);
 			return;
 		}

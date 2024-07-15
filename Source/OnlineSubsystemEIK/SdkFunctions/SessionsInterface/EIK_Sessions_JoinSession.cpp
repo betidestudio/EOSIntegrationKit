@@ -24,7 +24,7 @@ void UEIK_Sessions_JoinSession::Activate()
 			EOS_Sessions_JoinSessionOptions JoinSessionOptions = { };
 			JoinSessionOptions.ApiVersion = EOS_SESSIONS_JOINSESSION_API_LATEST;
 			JoinSessionOptions.SessionName = TCHAR_TO_ANSI(*Var_SessionName);
-			JoinSessionOptions.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			JoinSessionOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			JoinSessionOptions.SessionHandle = *Var_SessionHandle.Ref;
 			JoinSessionOptions.bPresenceEnabled = Var_bPresenceEnabled;
 			EOS_Sessions_JoinSession(EOSRef->SessionsHandle, &JoinSessionOptions, this, &UEIK_Sessions_JoinSession::OnJoinSessionCallback);

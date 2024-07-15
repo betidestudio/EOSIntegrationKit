@@ -34,8 +34,8 @@ void UEIK_Friends_SendInvite::Activate()
 		{
 			EOS_Friends_SendInviteOptions SendInviteOptions = {};
 			SendInviteOptions.ApiVersion = EOS_FRIENDS_SENDINVITE_API_LATEST;
-			SendInviteOptions.LocalUserId = Var_LocalUserId.Ref;
-			SendInviteOptions.TargetUserId = Var_TargetUserId.Ref;
+			SendInviteOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			SendInviteOptions.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			EOS_Friends_SendInvite(EOSRef->FriendsHandle, &SendInviteOptions, this, &UEIK_Friends_SendInvite::OnSendInviteCallback);
 			return;
 		}

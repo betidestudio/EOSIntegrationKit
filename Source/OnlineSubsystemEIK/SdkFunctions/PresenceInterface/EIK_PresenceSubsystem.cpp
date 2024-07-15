@@ -64,8 +64,8 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_Presence_CopyPresence(FEIK_
 		{
 			EOS_Presence_CopyPresenceOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCE_COPYPRESENCE_API_LATEST;
-			Options.LocalUserId = LocalUserId.EpicAccountId_FromString();
-			Options.TargetUserId = TargetUserId.EpicAccountId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			EOS_Presence_Info* Presence = nullptr;
 			auto Result = EOS_Presence_CopyPresence(EOSRef->PresenceHandle, &Options, &Presence);
 			if (Presence)
@@ -88,7 +88,7 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_Presence_CreatePresenceModi
 		{
 			EOS_Presence_CreatePresenceModificationOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCE_CREATEPRESENCEMODIFICATION_API_LATEST;
-			Options.LocalUserId = LocalUserId.EpicAccountId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			EOS_HPresenceModification PresenceModificationHandle = nullptr;
 			auto Result = EOS_Presence_CreatePresenceModification(EOSRef->PresenceHandle, &Options, &PresenceModificationHandle);
 			OutPresenceModificationHandle = &PresenceModificationHandle;
@@ -108,8 +108,8 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_Presence_GetJoinInfo(FEIK_E
 		{
 			EOS_Presence_GetJoinInfoOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCE_GETJOININFO_API_LATEST;
-			Options.LocalUserId = LocalUserId.EpicAccountId_FromString();
-			Options.TargetUserId = TargetUserId.EpicAccountId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			char Buffer[EOS_PRESENCEMODIFICATION_JOININFO_MAX_LENGTH];
 			int32_t* OutStringLength = nullptr;
 			auto Result = EOS_Presence_GetJoinInfo(EOSRef->PresenceHandle, &Options, Buffer, OutStringLength);
@@ -129,8 +129,8 @@ bool UEIK_PresenceSubsystem::EIK_Presence_HasPresence(FEIK_EpicAccountId LocalUs
 		{
 			EOS_Presence_HasPresenceOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCE_HASPRESENCE_API_LATEST;
-			Options.LocalUserId = LocalUserId.EpicAccountId_FromString();
-			Options.TargetUserId = TargetUserId.EpicAccountId_FromString();
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			auto Result = EOS_Presence_HasPresence(EOSRef->PresenceHandle, &Options);
 			if(Result == EOS_TRUE)
 			{

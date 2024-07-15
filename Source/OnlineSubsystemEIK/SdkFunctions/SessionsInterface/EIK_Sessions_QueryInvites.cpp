@@ -19,7 +19,7 @@ void UEIK_Sessions_QueryInvites::Activate()
 		{
 			EOS_Sessions_QueryInvitesOptions QueryInvitesOptions = { };
 			QueryInvitesOptions.ApiVersion = EOS_SESSIONS_QUERYINVITES_API_LATEST;
-			QueryInvitesOptions.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			QueryInvitesOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_Sessions_QueryInvites(EOSRef->SessionsHandle, &QueryInvitesOptions, this, &UEIK_Sessions_QueryInvites::OnQueryInvitesCallback);
 			return;
 		}

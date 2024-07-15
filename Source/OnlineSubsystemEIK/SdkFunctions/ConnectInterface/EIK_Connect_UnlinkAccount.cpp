@@ -36,7 +36,7 @@ void UEIK_Connect_UnlinkAccount::Activate()
 		{
 			EOS_Connect_UnlinkAccountOptions UnlinkAccountOptions = {};
 			UnlinkAccountOptions.ApiVersion = EOS_CONNECT_UNLINKACCOUNT_API_LATEST;
-			UnlinkAccountOptions.LocalUserId = Var_LocalUserId.ProductUserId_FromString();
+			UnlinkAccountOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_Connect_UnlinkAccount(EOSRef->ConnectHandle, &UnlinkAccountOptions, this, &UEIK_Connect_UnlinkAccount::OnUnlinkAccountCallback);
 			return;
 		}

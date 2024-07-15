@@ -8,7 +8,7 @@
 #include "OnlineSubsystemEOS.h"
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
-FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyDisconnected(const FEIK_ProductUserId& LocalUserId,
+FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyDisconnected(FEIK_ProductUserId LocalUserId,
                                                                      const FString& RoomName, const FEIK_RTC_OnDisconnectedCallback& Callback)
 {
 	OnDisconnectedCallback = Callback;
@@ -18,7 +18,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyDisconnected(const FEIK_
 		{
 			EOS_RTC_AddNotifyDisconnectedOptions Options = { };
 			Options.ApiVersion = EOS_RTC_ADDNOTIFYDISCONNECTED_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			return EOS_RTC_AddNotifyDisconnected(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle), &Options, this, [](const EOS_RTC_DisconnectedCallbackInfo* Data)
 			{
@@ -33,7 +33,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyDisconnected(const FEIK_
 	return FEIK_NotificationId();
 }
 
-FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyParticipantStatusChanged(const FEIK_ProductUserId& LocalUserId,
+FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyParticipantStatusChanged(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const FEIK_RTC_OnParticipantStatusChangedCallback& Callback)
 {
 	OnParticipantStatusChangedCallback = Callback;
@@ -43,7 +43,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyParticipantStatusChanged
 		{
 			EOS_RTC_AddNotifyParticipantStatusChangedOptions Options = { };
 			Options.ApiVersion = EOS_RTC_ADDNOTIFYPARTICIPANTSTATUSCHANGED_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			return EOS_RTC_AddNotifyParticipantStatusChanged(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle), &Options, this, [](const EOS_RTC_ParticipantStatusChangedCallbackInfo* Data)
 			{
@@ -59,7 +59,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyParticipantStatusChanged
 	return FEIK_NotificationId();
 }
 
-FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyRoomStatisticsUpdated(const FEIK_ProductUserId& LocalUserId,
+FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyRoomStatisticsUpdated(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const FEIK_RTC_OnRoomStatisticsUpdatedCallback& Callback)
 {
 	OnRoomStatisticsUpdatedCallback = Callback;
@@ -69,7 +69,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyRoomStatisticsUpdated(co
 		{
 			EOS_RTC_AddNotifyRoomStatisticsUpdatedOptions Options = { };
 			Options.ApiVersion = EOS_RTC_ADDNOTIFYROOMSTATISTICSUPDATED_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			return EOS_RTC_AddNotifyRoomStatisticsUpdated(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle), &Options, this, [](const EOS_RTC_RoomStatisticsUpdatedInfo* Data)
 			{
@@ -84,8 +84,8 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTC_AddNotifyRoomStatisticsUpdated(co
 	return FEIK_NotificationId();
 }
 
-void UEIK_RTCSubsystem::EIK_RTC_BlockParticipant(const FEIK_ProductUserId& LocalUserId, const FString& RoomName,
-	const FEIK_ProductUserId& ParticipantId, bool bBlocked, const FEIK_RTC_OnBlockParticipantCallback& Callback)
+void UEIK_RTCSubsystem::EIK_RTC_BlockParticipant(FEIK_ProductUserId LocalUserId, const FString& RoomName,
+	FEIK_ProductUserId ParticipantId, bool bBlocked, const FEIK_RTC_OnBlockParticipantCallback& Callback)
 {
 	OnBlockParticipantCallback = Callback;
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -94,9 +94,9 @@ void UEIK_RTCSubsystem::EIK_RTC_BlockParticipant(const FEIK_ProductUserId& Local
 		{
 			EOS_RTC_BlockParticipantOptions Options = { };
 			Options.ApiVersion = EOS_RTC_BLOCKPARTICIPANT_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
-			Options.ParticipantId = ParticipantId.ProductUserIdBasic;
+			Options.ParticipantId = ParticipantId.GetValueAsEosType();
 			Options.bBlocked = bBlocked;
 			EOS_RTC_BlockParticipant(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle), &Options, this, [](const EOS_RTC_BlockParticipantCallbackInfo* Data)
 			{
@@ -110,8 +110,8 @@ void UEIK_RTCSubsystem::EIK_RTC_BlockParticipant(const FEIK_ProductUserId& Local
 	}
 }
 
-void UEIK_RTCSubsystem::EIK_RTC_JoinRoom(const FEIK_ProductUserId& LocalUserId, const FString& RoomName,
-	const FString& ClientBaseUrl, const FString& ParticipantToken, const FEIK_ProductUserId& ParticipantId,
+void UEIK_RTCSubsystem::EIK_RTC_JoinRoom(FEIK_ProductUserId LocalUserId, const FString& RoomName,
+	const FString& ClientBaseUrl, const FString& ParticipantToken, FEIK_ProductUserId ParticipantId,
 	bool bEnabledEcho, bool bManualAudioInputEnabled, bool bManualAudioOutputEnabled,
 	const FEIK_RTC_OnJoinRoomCallback& Callback)
 {
@@ -122,11 +122,11 @@ void UEIK_RTCSubsystem::EIK_RTC_JoinRoom(const FEIK_ProductUserId& LocalUserId, 
 		{
 			EOS_RTC_JoinRoomOptions Options = { };
 			Options.ApiVersion = EOS_RTC_JOINROOM_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			Options.ClientBaseUrl = TCHAR_TO_ANSI(*ClientBaseUrl);
 			Options.ParticipantToken = TCHAR_TO_ANSI(*ParticipantToken);
-			Options.ParticipantId = ParticipantId.ProductUserIdBasic;
+			Options.ParticipantId = ParticipantId.GetValueAsEosType();
 			Options.Flags = bEnabledEcho ? EOS_RTC_JOINROOMFLAGS_ENABLE_ECHO : 0x0;
 			Options.bManualAudioInputEnabled = bManualAudioInputEnabled;
 			Options.bManualAudioOutputEnabled = bManualAudioOutputEnabled;
@@ -147,7 +147,7 @@ void UEIK_RTCSubsystem::EIK_RTC_JoinRoom(const FEIK_ProductUserId& LocalUserId, 
 	}
 }
 
-void UEIK_RTCSubsystem::EIK_RTC_LeaveRoom(const FEIK_ProductUserId& LocalUserId, const FString& RoomName,
+void UEIK_RTCSubsystem::EIK_RTC_LeaveRoom(FEIK_ProductUserId LocalUserId, const FString& RoomName,
 	const FEIK_RTC_OnLeaveRoomCallback& Callback)
 {
 	OnLeaveRoomCallback = Callback;
@@ -157,7 +157,7 @@ void UEIK_RTCSubsystem::EIK_RTC_LeaveRoom(const FEIK_ProductUserId& LocalUserId,
 		{
 			EOS_RTC_LeaveRoomOptions Options = { };
 			Options.ApiVersion = EOS_RTC_LEAVEROOM_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			EOS_RTC_LeaveRoom(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle), &Options, this, [](const EOS_RTC_LeaveRoomCallbackInfo* Data)
 			{
@@ -204,7 +204,7 @@ void UEIK_RTCSubsystem::EIK_RTC_RemoveNotifyRoomStatisticsUpdated(FEIK_Notificat
 	}
 }
 
-TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTC_SetRoomSetting(const FEIK_ProductUserId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTC_SetRoomSetting(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const FString& SettingName, const FString& SettingValue)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -213,7 +213,7 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTC_SetRoomSetting(const FEIK_Pr
 		{
 			EOS_RTC_SetRoomSettingOptions Options = { };
 			Options.ApiVersion = EOS_RTC_SETROOMSETTING_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			Options.SettingName = TCHAR_TO_ANSI(*SettingName);
 			Options.SettingValue = TCHAR_TO_ANSI(*SettingValue);
@@ -262,7 +262,7 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAdmin_CopyUserTokenByIndex(in
 	return EEIK_Result::EOS_NotFound;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAdmin_CopyUserTokenByUserId(const FEIK_ProductUserId& UserId,
+TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAdmin_CopyUserTokenByUserId(FEIK_ProductUserId UserId,
 	int32 QueryId, FEIK_RTCAdmin_UserToken& OutUserToken)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -271,7 +271,7 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAdmin_CopyUserTokenByUserId(c
 		{
 			EOS_RTCAdmin_CopyUserTokenByUserIdOptions Options = { };
 			Options.ApiVersion = EOS_RTCADMIN_COPYUSERTOKENBYUSERID_API_LATEST;
-			Options.TargetUserId = UserId.ProductUserIdBasic;
+			Options.TargetUserId = UserId.GetValueAsEosType();
 			Options.QueryId = QueryId;
 			EOS_RTCAdmin_UserToken* OutUserTokenBasic;
 			TEnumAsByte<EEIK_Result> Result = static_cast<EEIK_Result>(EOS_RTCAdmin_CopyUserTokenByUserId(EOS_Platform_GetRTCAdminInterface(EOSRef->EOSPlatformHandle->PlatformHandle), &Options, &OutUserTokenBasic));
@@ -283,7 +283,7 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAdmin_CopyUserTokenByUserId(c
 	return EEIK_Result::EOS_NotFound;
 }
 
-void UEIK_RTCSubsystem::EIK_RTCAdmin_Kick(const FString& RoomName, const FEIK_ProductUserId& TargetUserId,
+void UEIK_RTCSubsystem::EIK_RTCAdmin_Kick(const FString& RoomName, FEIK_ProductUserId TargetUserId,
 	const FEIK_RTCAdmin_OnKickCompleteCallback& Callback)
 {
 	OnKickCompleteCallback = Callback;
@@ -294,7 +294,7 @@ void UEIK_RTCSubsystem::EIK_RTCAdmin_Kick(const FString& RoomName, const FEIK_Pr
 			EOS_RTCAdmin_KickOptions Options = { };
 			Options.ApiVersion = EOS_RTCADMIN_KICK_API_LATEST;
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
-			Options.TargetUserId = TargetUserId.ProductUserIdBasic;
+			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			EOS_RTCAdmin_Kick(EOS_Platform_GetRTCAdminInterface(EOSRef->EOSPlatformHandle->PlatformHandle), &Options, this, [](const EOS_RTCAdmin_KickCompleteCallbackInfo* Data)
 			{
 				UEIK_RTCSubsystem* Subsystem = static_cast<UEIK_RTCSubsystem*>(Data->ClientData);
@@ -308,7 +308,7 @@ void UEIK_RTCSubsystem::EIK_RTCAdmin_Kick(const FString& RoomName, const FEIK_Pr
 }
 
 TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAdmin_QueryJoinRoomToken(const FString& RoomName,
-	const FEIK_ProductUserId& LocalUserId, const TArray<FEIK_ProductUserId>& TargetUserIds,
+	FEIK_ProductUserId LocalUserId, const TArray<FEIK_ProductUserId>& TargetUserIds,
 	TArray<FString>& TargetUserIpAddresses, const FEIK_RTCAdmin_OnQueryJoinRoomTokenCompleteCallback& Callback)
 {
 	OnQueryJoinRoomTokenCompleteCallback = Callback;
@@ -317,14 +317,14 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAdmin_QueryJoinRoomToken(cons
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
 			TArray<EOS_ProductUserId> TargetUserIdsBasic;
-			for (const FEIK_ProductUserId& TargetUserId : TargetUserIds)
+			for (FEIK_ProductUserId TargetUserId : TargetUserIds)
 			{
-				TargetUserIdsBasic.Add(TargetUserId.ProductUserIdBasic);
+				TargetUserIdsBasic.Add(TargetUserId.GetValueAsEosType());
 			}
 			EOS_RTCAdmin_QueryJoinRoomTokenOptions Options = { };
 			Options.ApiVersion = EOS_RTCADMIN_QUERYJOINROOMTOKEN_API_LATEST;
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.TargetUserIdsCount = TargetUserIdsBasic.Num();
 			Options.TargetUserIds = TargetUserIdsBasic.GetData();
 			EOS_RTCAdmin_QueryJoinRoomToken(EOS_Platform_GetRTCAdminInterface(EOSRef->EOSPlatformHandle->PlatformHandle), &Options, this,[](const EOS_RTCAdmin_QueryJoinRoomTokenCompleteCallbackInfo* Data)
@@ -341,7 +341,7 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAdmin_QueryJoinRoomToken(cons
 	return EEIK_Result::EOS_NotFound;
 }
 
-FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioBeforeRender(const FEIK_ProductUserId& LocalUserId,
+FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioBeforeRender(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, bool bUnmixedAudio, const FEIK_RTCAudio_OnAudioBeforeRenderCallback& Callback)
 {
 	OnAudioBeforeRenderCallback = Callback;
@@ -351,7 +351,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioBeforeRender(c
 		{
 			EOS_RTCAudio_AddNotifyAudioBeforeRenderOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_ADDNOTIFYAUDIOBEFORERENDER_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			Options.bUnmixedAudio = bUnmixedAudio;
 			return EOS_RTCAudio_AddNotifyAudioBeforeRender(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_AudioBeforeRenderCallbackInfo* Data)
@@ -390,7 +390,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioDevicesChanged
 	return FEIK_NotificationId();
 }
 
-FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioInputState(const FEIK_ProductUserId& LocalUserId,
+FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioInputState(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const FEIK_RTCAudio_OnAudioInputStateCallback& Callback)
 {
 	OnAudioInputStateCallback = Callback;
@@ -400,7 +400,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioInputState(con
 		{
 			EOS_RTCAudio_AddNotifyAudioInputStateOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_ADDNOTIFYAUDIOINPUTSTATE_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			return EOS_RTCAudio_AddNotifyAudioInputState(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_AudioInputStateCallbackInfo* Data)
 			{
@@ -415,7 +415,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioInputState(con
 	return FEIK_NotificationId();
 }
 
-FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioOutputState(const FEIK_ProductUserId& LocalUserId,
+FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioOutputState(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const FEIK_RTCAudio_OnAudioOutputStateCallback& Callback)
 {
 	OnAudioOutputStateCallback = Callback;
@@ -425,7 +425,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioOutputState(co
 		{
 			EOS_RTCAudio_AddNotifyAudioOutputStateOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_ADDNOTIFYAUDIOOUTPUTSTATE_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			return EOS_RTCAudio_AddNotifyAudioOutputState(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_AudioOutputStateCallbackInfo* Data)
 			{
@@ -440,7 +440,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyAudioOutputState(co
 	return FEIK_NotificationId();
 }
 
-FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyParticipantUpdated(const FEIK_ProductUserId& LocalUserId,
+FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyParticipantUpdated(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const FEIK_RTCAudio_OnParticipantUpdatedCallback& Callback)
 {
 	OnParticipantUpdatedCallback = Callback;
@@ -450,7 +450,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCAudio_AddNotifyParticipantUpdated(
 		{
 			EOS_RTCAudio_AddNotifyParticipantUpdatedOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_ADDNOTIFYPARTICIPANTUPDATED_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			return EOS_RTCAudio_AddNotifyParticipantUpdated(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_ParticipantUpdatedCallbackInfo* Data)
 			{
@@ -691,7 +691,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_RemoveNotifyParticipantUpdated(FEIK_Notific
 	}
 }
 
-TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAudio_SendAudio(const FEIK_ProductUserId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAudio_SendAudio(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const FEIK_RTCAudio_AudioBuffer& AudioBuffer)
 {
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -700,7 +700,7 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAudio_SendAudio(const FEIK_Pr
 		{	
 			EOS_RTCAudio_SendAudioOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_SENDAUDIO_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			EOS_RTCAudio_AudioBuffer OptionsBuffer = AudioBuffer.GetValueAsEosType();
 			Options.Buffer = &OptionsBuffer;
@@ -711,7 +711,7 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCAudio_SendAudio(const FEIK_Pr
 	return EEIK_Result::EOS_NotFound;
 }
 
-void UEIK_RTCSubsystem::EIK_RTCAudio_SetInputDeviceSettings(const FEIK_ProductUserId& LocalUserId,
+void UEIK_RTCSubsystem::EIK_RTCAudio_SetInputDeviceSettings(FEIK_ProductUserId LocalUserId,
 	const FString& RealDeviceId, bool bPlatformAEC, const FEIK_RTCAudio_OnSetInputDeviceSettingsCallback& Callback)
 {
 	OnSetInputDeviceSettingsCallback = Callback;
@@ -721,7 +721,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_SetInputDeviceSettings(const FEIK_ProductUs
 		{	
 			EOS_RTCAudio_SetInputDeviceSettingsOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_SETINPUTDEVICESETTINGS_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RealDeviceId = TCHAR_TO_ANSI(*RealDeviceId);
 			Options.bPlatformAEC = bPlatformAEC;
 			EOS_RTCAudio_SetInputDeviceSettings(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_OnSetInputDeviceSettingsCallbackInfo* Data)
@@ -736,7 +736,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_SetInputDeviceSettings(const FEIK_ProductUs
 	}
 }
 
-void UEIK_RTCSubsystem::EIK_RTCAudio_SetOutputDeviceSettings(const FEIK_ProductUserId& LocalUserId,
+void UEIK_RTCSubsystem::EIK_RTCAudio_SetOutputDeviceSettings(FEIK_ProductUserId LocalUserId,
 	const FString& RealDeviceId, const FEIK_RTCAudio_OnSetOutputDeviceSettingsCallback& Callback)
 {
 	OnSetOutputDeviceSettingsCallback = Callback;
@@ -746,7 +746,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_SetOutputDeviceSettings(const FEIK_ProductU
 		{	
 			EOS_RTCAudio_SetOutputDeviceSettingsOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_SETOUTPUTDEVICESETTINGS_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RealDeviceId = TCHAR_TO_ANSI(*RealDeviceId);
 			EOS_RTCAudio_SetOutputDeviceSettings(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_OnSetOutputDeviceSettingsCallbackInfo* Data)
 			{
@@ -783,8 +783,8 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UnregisterPlatformUser(const FString& Platf
 	}
 }
 
-void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateParticipantVolume(const FEIK_ProductUserId& LocalUserId,
-	const FString& RoomName, const FEIK_ProductUserId& ParticipantId, float Volume,
+void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateParticipantVolume(FEIK_ProductUserId LocalUserId,
+	const FString& RoomName, FEIK_ProductUserId ParticipantId, float Volume,
 	const FEIK_RTCAudio_OnUpdateParticipantVolumeCallback& Callback)
 {
 	OnUpdateParticipantVolumeCallback = Callback;
@@ -794,9 +794,9 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateParticipantVolume(const FEIK_ProductU
 		{	
 			EOS_RTCAudio_UpdateParticipantVolumeOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_UPDATEPARTICIPANTVOLUME_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
-			Options.ParticipantId = ParticipantId.ProductUserIdBasic;
+			Options.ParticipantId = ParticipantId.GetValueAsEosType();
 			Options.Volume = Volume;
 			EOS_RTCAudio_UpdateParticipantVolume(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_UpdateParticipantVolumeCallbackInfo* Data)
 			{
@@ -809,8 +809,8 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateParticipantVolume(const FEIK_ProductU
 		}
 	}
 }
-void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateReceiving(const FEIK_ProductUserId& LocalUserId, const FString& RoomName,
-	const FEIK_ProductUserId& ParticipantId, bool bAudioEnabled,
+void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateReceiving(FEIK_ProductUserId LocalUserId, const FString& RoomName,
+	FEIK_ProductUserId ParticipantId, bool bAudioEnabled,
 	const FEIK_RTCAudio_OnUpdateReceivingCallback& Callback)
 {
 	OnUpdateReceivingCallback = Callback;
@@ -820,9 +820,9 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateReceiving(const FEIK_ProductUserId& L
 		{	
 			EOS_RTCAudio_UpdateReceivingOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_UPDATERECEIVING_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
-			Options.ParticipantId = ParticipantId.ProductUserIdBasic;
+			Options.ParticipantId = ParticipantId.GetValueAsEosType();
 			Options.bAudioEnabled = bAudioEnabled;
 			EOS_RTCAudio_UpdateReceiving(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_UpdateReceivingCallbackInfo* Data)
 			{
@@ -837,7 +837,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateReceiving(const FEIK_ProductUserId& L
 	}
 }
 
-void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateReceivingVolume(const FEIK_ProductUserId& LocalUserId,
+void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateReceivingVolume(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, float Volume, const FEIK_RTCAudio_OnUpdateReceivingVolumeCallback& Callback)
 {
 	OnUpdateReceivingVolumeCallback = Callback;
@@ -847,7 +847,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateReceivingVolume(const FEIK_ProductUse
 		{	
 			EOS_RTCAudio_UpdateReceivingVolumeOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_UPDATERECEIVINGVOLUME_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			Options.Volume = Volume;
 			EOS_RTCAudio_UpdateReceivingVolume(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_UpdateReceivingVolumeCallbackInfo* Data)
@@ -862,7 +862,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateReceivingVolume(const FEIK_ProductUse
 	}
 }
 
-void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateSending(const FEIK_ProductUserId& LocalUserId, const FString& RoomName,
+void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateSending(FEIK_ProductUserId LocalUserId, const FString& RoomName,
 	TEnumAsByte<EEIK_ERTCAudioStatus> AudioStatus, const FEIK_RTCAudio_OnUpdateSendingCallback& Callback)
 {
 	OnUpdateSendingCallback = Callback;
@@ -872,7 +872,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateSending(const FEIK_ProductUserId& Loc
 		{	
 			EOS_RTCAudio_UpdateSendingOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_UPDATESENDING_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			Options.AudioStatus = static_cast<EOS_ERTCAudioStatus>(AudioStatus.GetValue());
 			EOS_RTCAudio_UpdateSending(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_UpdateSendingCallbackInfo* Data)
@@ -887,7 +887,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateSending(const FEIK_ProductUserId& Loc
 	}
 }
 
-void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateSendingVolume(const FEIK_ProductUserId& LocalUserId, const FString& RoomName,
+void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateSendingVolume(FEIK_ProductUserId LocalUserId, const FString& RoomName,
 	float Volume, const FEIK_RTCAudio_OnUpdateSendingVolumeCallback& Callback)
 {
 	OnUpdateSendingVolumeCallback = Callback;
@@ -897,7 +897,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateSendingVolume(const FEIK_ProductUserI
 		{	
 			EOS_RTCAudio_UpdateSendingVolumeOptions Options = { };
 			Options.ApiVersion = EOS_RTCAUDIO_UPDATESENDINGVOLUME_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			Options.Volume = Volume;
 			EOS_RTCAudio_UpdateSendingVolume(EOS_RTC_GetAudioInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCAudio_UpdateSendingVolumeCallbackInfo* Data)
@@ -912,7 +912,7 @@ void UEIK_RTCSubsystem::EIK_RTCAudio_UpdateSendingVolume(const FEIK_ProductUserI
 	}
 }
 
-FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCData_AddNotifyDataReceived(const FEIK_ProductUserId& LocalUserId,
+FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCData_AddNotifyDataReceived(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const FEIK_RTCData_OnDataReceivedCallback& Callback)
 {
 	OnDataReceivedCallback = Callback;
@@ -922,7 +922,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCData_AddNotifyDataReceived(const F
 		{
 			EOS_RTCData_AddNotifyDataReceivedOptions Options = { };
 			Options.ApiVersion = EOS_RTCDATA_ADDNOTIFYDATARECEIVED_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			return EOS_RTCData_AddNotifyDataReceived(EOS_RTC_GetDataInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCData_DataReceivedCallbackInfo* Data)
 			{
@@ -941,7 +941,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCData_AddNotifyDataReceived(const F
 	return FEIK_NotificationId();
 }
 
-FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCData_AddNotifyParticipantUpdated(const FEIK_ProductUserId& LocalUserId,
+FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCData_AddNotifyParticipantUpdated(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const FEIK_RTCData_OnParticipantUpdatedCallback& Callback)
 {
 	OnData_ParticipantUpdatedCallback = Callback;
@@ -951,7 +951,7 @@ FEIK_NotificationId UEIK_RTCSubsystem::EIK_RTCData_AddNotifyParticipantUpdated(c
 		{
 			EOS_RTCData_AddNotifyParticipantUpdatedOptions Options = { };
 			Options.ApiVersion = EOS_RTCDATA_ADDNOTIFYPARTICIPANTUPDATED_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			return EOS_RTCData_AddNotifyParticipantUpdated(EOS_RTC_GetDataInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCData_ParticipantUpdatedCallbackInfo* Data)
 			{
@@ -990,7 +990,7 @@ void UEIK_RTCSubsystem::EIK_RTCData_RemoveNotifyParticipantUpdated(FEIK_Notifica
 	}
 }
 
-TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCData_SendData(const FEIK_ProductUserId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCData_SendData(FEIK_ProductUserId LocalUserId,
 	const FString& RoomName, const TArray<uint8>& Data)
 {
 	if (Data.Num() == 0)
@@ -1004,7 +1004,7 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCData_SendData(const FEIK_Prod
 		{	
 			EOS_RTCData_SendDataOptions Options = { };
 			Options.ApiVersion = EOS_RTCDATA_SENDDATA_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			Options.Data = Data.GetData();
 			Options.DataLengthBytes = Data.Num();
@@ -1015,8 +1015,8 @@ TEnumAsByte<EEIK_Result> UEIK_RTCSubsystem::EIK_RTCData_SendData(const FEIK_Prod
 	return EEIK_Result::EOS_NotFound;
 }
 
-void UEIK_RTCSubsystem::EIK_RTCData_UpdateReceiving(const FEIK_ProductUserId& LocalUserId, const FString& RoomName,
-	const FEIK_ProductUserId& ParticipantId, bool bDataEnabled, const FEIK_RTCData_OnUpdateReceivingCallback& Callback)
+void UEIK_RTCSubsystem::EIK_RTCData_UpdateReceiving(FEIK_ProductUserId LocalUserId, const FString& RoomName,
+	FEIK_ProductUserId ParticipantId, bool bDataEnabled, const FEIK_RTCData_OnUpdateReceivingCallback& Callback)
 {
 	OnData_UpdateReceivingCallback = Callback;
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -1025,9 +1025,9 @@ void UEIK_RTCSubsystem::EIK_RTCData_UpdateReceiving(const FEIK_ProductUserId& Lo
 		{
 			EOS_RTCData_UpdateReceivingOptions Options = { };
 			Options.ApiVersion = EOS_RTCDATA_UPDATERECEIVING_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
-			Options.ParticipantId = ParticipantId.ProductUserIdBasic;
+			Options.ParticipantId = ParticipantId.GetValueAsEosType();
 			Options.bDataEnabled = bDataEnabled;
 			EOS_RTCData_UpdateReceiving(EOS_RTC_GetDataInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCData_UpdateReceivingCallbackInfo* Data)
 			{
@@ -1041,7 +1041,7 @@ void UEIK_RTCSubsystem::EIK_RTCData_UpdateReceiving(const FEIK_ProductUserId& Lo
 	}
 }
 
-void UEIK_RTCSubsystem::EIK_RTCData_UpdateSending(const FEIK_ProductUserId& LocalUserId, const FString& RoomName,
+void UEIK_RTCSubsystem::EIK_RTCData_UpdateSending(FEIK_ProductUserId LocalUserId, const FString& RoomName,
 	bool bDataEnabled, const FEIK_RTCData_OnUpdateSendingCallback& Callback)
 {
 	OnData_UpdateSendingCallback = Callback;
@@ -1051,7 +1051,7 @@ void UEIK_RTCSubsystem::EIK_RTCData_UpdateSending(const FEIK_ProductUserId& Loca
 		{
 			EOS_RTCData_UpdateSendingOptions Options = { };
 			Options.ApiVersion = EOS_RTCDATA_UPDATESENDING_API_LATEST;
-			Options.LocalUserId = LocalUserId.ProductUserIdBasic;
+			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.RoomName = TCHAR_TO_ANSI(*RoomName);
 			Options.bDataEnabled = bDataEnabled;
 			EOS_RTCData_UpdateSending(EOS_RTC_GetDataInterface(EOS_Platform_GetRTCInterface(EOSRef->EOSPlatformHandle->PlatformHandle)), &Options, this, [](const EOS_RTCData_UpdateSendingCallbackInfo* Data)
