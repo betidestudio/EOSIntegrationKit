@@ -76,30 +76,36 @@ void FEIKEditorModule::ShutdownModule()
 
 void FEIKEditorModule::BuildProcessCompleted(int I, bool bArg)
 {
-    if (NotificationItem.IsValid())
+    AsyncTask(ENamedThreads::GameThread, [this, bArg]()
     {
-        if (bArg)
+        if (NotificationItem.IsValid())
         {
-            NotificationItem->SetText(LOCTEXT("PackageSuccess", "Package Success"));
-            NotificationItem->SetCompletionState(SNotificationItem::CS_Success);
+            if (bArg)
+            {
+                NotificationItem->SetText(LOCTEXT("PackageSuccess", "Package Success"));
+                NotificationItem->SetCompletionState(SNotificationItem::CS_Success);
+            }
+            else
+            {
+                NotificationItem->SetText(LOCTEXT("PackageFailed", "Package Failed"));
+                NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+            }
+            NotificationItem->ExpireAndFadeout();
         }
-        else
-        {
-            NotificationItem->SetText(LOCTEXT("PackageFailed", "Package Failed"));
-            NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
-        }
-        NotificationItem->ExpireAndFadeout();
-    }
+    });
 }
 
 void FEIKEditorModule::HandleProcessCanceled()
 {
-    if (NotificationItem.IsValid())
+    AsyncTask(ENamedThreads::GameThread, [this]()
     {
-        NotificationItem->SetText(LOCTEXT("Package Failed", "Package Failed"));
-        NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
-        NotificationItem->ExpireAndFadeout();
-    }
+        if (NotificationItem.IsValid())
+        {
+            NotificationItem->SetText(LOCTEXT("Package Failed", "Package Failed"));
+            NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+            NotificationItem->ExpireAndFadeout();
+        }
+    });
 }
 
 void FEIKEditorModule::HandleProcessOutput(const FString& String)
@@ -260,6 +266,11 @@ void FEIKEditorModule::OnPackageAndDeploySelected()
     Info.bFireAndForget = false;
     Info.FadeOutDuration = 0.5f;
     Info.ExpireDuration = 3.0f;
+    Info.Hyperlink = FSimpleDelegate::CreateLambda([this]()
+    {
+        OpenDevPortal();
+    });
+    Info.Image = FEosIconStyle::Get().GetBrush("EIKEditor.EIKIcon");
     Info.ButtonDetails.Add(FNotificationButtonInfo(
         LOCTEXT("CancelPackage", "Cancel"),
         LOCTEXT("CancelPackage_Tooltip", "Cancel the packaging process"),
@@ -360,12 +371,15 @@ void FEIKEditorModule::OnPackageAndDeploySelected()
     }
     else
     {
-        if (NotificationItem.IsValid())
+        AsyncTask(ENamedThreads::GameThread, [&]()
         {
-            NotificationItem->SetText(LOCTEXT("Package Failed", "Package Failed"));
-            NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
-            NotificationItem->ExpireAndFadeout();
-        }
+            if (NotificationItem.IsValid())
+            {
+                NotificationItem->SetText(LOCTEXT("Package Failed", "Package Failed"));
+                NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
+                NotificationItem->ExpireAndFadeout();
+            }
+        });
     }
 });
 }
