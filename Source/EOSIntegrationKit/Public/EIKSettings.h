@@ -94,7 +94,7 @@ struct FEOSSettings
 
 UENUM(BlueprintType)
 enum EEIK_AutoLoginType {
-	None 			UMETA(DisplayName="None"),
+	AutoLogin_None 			UMETA(DisplayName="None"),
 	/** Developer Token login will automatically log the user in with the developer token depending upon the standalone number */
 	AutoLogin_DeveloperTool 	UMETA(DisplayName="Developer Tool"),
 	/** Persistent Auth will automatically log the user in with EAS credentials if they have previously logged in */

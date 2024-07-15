@@ -2,6 +2,7 @@
 
 #include "EIKSettings.h"
 
+#include "EOSIntegrationKit.h"
 #include "Algo/Transform.h"
 #include "Misc/CommandLine.h"
 #include "Misc/ConfigCacheIni.h"
@@ -220,63 +221,112 @@ bool UEIKSettings::GetSettingsForArtifact(const FString& ArtifactName, FEOSArtif
 
 bool UEIKSettings::ManualGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings)
 {
-	static TOptional<FString> CachedDefaultArtifactName;
-	static TOptional<TArray<FEOSArtifactSettings>> CachedArtifactSettings;
+    UE_LOG(LogEOSIntegrationKit, Warning, TEXT("ManualGetSettingsForArtifact is deprecated and will be removed in a future release. Please use AutoGetSettingsForArtifact instead."));
+    static TOptional<FString> CachedDefaultArtifactName;
+    static TOptional<TArray<FEOSArtifactSettings>> CachedArtifactSettings;
 
-	if (!CachedDefaultArtifactName.IsSet())
+    if (!CachedDefaultArtifactName.IsSet())
+    {
+        CachedDefaultArtifactName.Emplace();
+
+        GConfig->GetString(INI_SECTION, TEXT("DefaultArtifactName"), *CachedDefaultArtifactName, GEngineIni);
+    }
+
+    if (!CachedArtifactSettings.IsSet())
+    {
+        CachedArtifactSettings.Emplace();
+
+        TArray<FString> Artifacts;
+        GConfig->GetArray(INI_SECTION, TEXT("Artifacts"), Artifacts, GEngineIni);
+        for (const FString& Line : Artifacts)
+        {
+            FEOSArtifactSettings Artifact;
+            Artifact.ParseRawArrayEntry(Line);
+            CachedArtifactSettings->Add(Artifact);
+        }
+    }
+
+    FString ArtifactNameOverride;
+    FString DeploymentIdOverride;
+    FString SandboxIdOverride;
+
+    // Figure out which config object we are loading
+    FParse::Value(FCommandLine::Get(), TEXT("EOSArtifactNameOverride="), ArtifactNameOverride);
+    if (ArtifactNameOverride.IsEmpty())
+    {
+        ArtifactNameOverride = ArtifactName;
+    }
+	if(IsRunningDedicatedServer() && ArtifactNameOverride.IsEmpty())
 	{
-		CachedDefaultArtifactName.Emplace();
-
-		GConfig->GetString(INI_SECTION, TEXT("DefaultArtifactName"), *CachedDefaultArtifactName, GEngineIni);
-	}
-
-	if (!CachedArtifactSettings.IsSet())
-	{
-		CachedArtifactSettings.Emplace();
-
-		TArray<FString> Artifacts;
-		GConfig->GetArray(INI_SECTION, TEXT("Artifacts"), Artifacts, GEngineIni);
-		for (const FString& Line : Artifacts)
+		FString DedicatedServerArtifactName;
+		GConfig->GetString(INI_SECTION, TEXT("DedicatedServerArtifactName"), DedicatedServerArtifactName, GEngineIni);
+		if(!DedicatedServerArtifactName.IsEmpty())
 		{
-			FEOSArtifactSettings Artifact;
-			Artifact.ParseRawArrayEntry(Line);
-			CachedArtifactSettings->Add(Artifact);
+			ArtifactNameOverride = DedicatedServerArtifactName;
 		}
 	}
 
-	FString ArtifactNameOverride;
-	// Figure out which config object we are loading
-	FParse::Value(FCommandLine::Get(), TEXT("EOSArtifactNameOverride="), ArtifactNameOverride);
-	if (ArtifactNameOverride.IsEmpty())
+    // Override DeploymentId and SandboxId
+    if(FParse::Value(FCommandLine::Get(), TEXT("epicdeploymentid="), DeploymentIdOverride))
 	{
-		ArtifactNameOverride = ArtifactName;
+    	UE_LOG(LogEOSIntegrationKit, Log, TEXT("Overriding DeploymentId with %s"), *DeploymentIdOverride);
 	}
+    if(FParse::Value(FCommandLine::Get(), TEXT("epicsandboxid="), SandboxIdOverride))
+    {
+	    UE_LOG(LogEOSIntegrationKit, Log, TEXT("Overriding SandboxId with %s"), *SandboxIdOverride);
+    }
 
-	// Search by name and then default if not found
-	for (const FEOSArtifactSettings& Artifact : *CachedArtifactSettings)
-	{
-		if (Artifact.ArtifactName == ArtifactNameOverride)
-		{
-			OutSettings = Artifact;
-			return true;
-		}
-	}
+    // Search by name and then default if not found
+    for (const FEOSArtifactSettings& Artifact : *CachedArtifactSettings)
+    {
+        if (Artifact.ArtifactName == ArtifactNameOverride)
+        {
+            OutSettings = Artifact;
+            if (!DeploymentIdOverride.IsEmpty())
+            {
+                OutSettings.DeploymentId = DeploymentIdOverride;
+            }
+            if (!SandboxIdOverride.IsEmpty())
+            {
+                OutSettings.SandboxId = SandboxIdOverride;
+            }
+            return true;
+        }
+    }
 
-	for (const FEOSArtifactSettings& Artifact : *CachedArtifactSettings)
-	{
-		if (Artifact.ArtifactName == *CachedDefaultArtifactName)
-		{
-			OutSettings = Artifact;
-			return true;
-		}
-	}
+    for (const FEOSArtifactSettings& Artifact : *CachedArtifactSettings)
+    {
+        if (Artifact.ArtifactName == *CachedDefaultArtifactName)
+        {
+            OutSettings = Artifact;
+            if (!DeploymentIdOverride.IsEmpty())
+            {
+                OutSettings.DeploymentId = DeploymentIdOverride;
+            }
+            if (!SandboxIdOverride.IsEmpty())
+            {
+                OutSettings.SandboxId = SandboxIdOverride;
+            }
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 bool UEIKSettings::AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings)
 {
 	const UEIKSettings* This = GetDefault<UEIKSettings>();
+	FString DeploymentIdOverride;
+	FString SandboxIdOverride;
+	if(FParse::Value(FCommandLine::Get(), TEXT("epicdeploymentid="), DeploymentIdOverride))
+	{
+		UE_LOG(LogEOSIntegrationKit, Log, TEXT("Overriding DeploymentId with %s"), *DeploymentIdOverride);
+	}
+	if(FParse::Value(FCommandLine::Get(), TEXT("epicsandboxid="), SandboxIdOverride))
+	{
+		UE_LOG(LogEOSIntegrationKit, Log, TEXT("Overriding SandboxId with %s"), *SandboxIdOverride);
+	}
 	FString ArtifactNameOverride;
 	// Figure out which config object we are loading
 	FParse::Value(FCommandLine::Get(), TEXT("EOSArtifactNameOverride="), ArtifactNameOverride);
@@ -303,6 +353,14 @@ bool UEIKSettings::AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSA
 		if (Artifact.ArtifactName == ArtifactNameOverride)
 		{
 			OutSettings = Artifact.ToNative();
+			if(!DeploymentIdOverride.IsEmpty())
+			{
+				OutSettings.DeploymentId = DeploymentIdOverride;
+			}
+			if(!SandboxIdOverride.IsEmpty())
+			{
+				OutSettings.SandboxId = SandboxIdOverride;
+			}
 			return true;
 		}
 	}
@@ -311,16 +369,24 @@ bool UEIKSettings::AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSA
 		if (Artifact.ArtifactName == This->DefaultArtifactName)
 		{
 			OutSettings = Artifact.ToNative();
+			if(!DeploymentIdOverride.IsEmpty())
+			{
+				OutSettings.DeploymentId = DeploymentIdOverride;
+			}
+			if(!SandboxIdOverride.IsEmpty())
+			{
+				OutSettings.SandboxId = SandboxIdOverride;
+			}
 			return true;
 		}
 	}
 	if(!ArtifactNameOverride.IsEmpty())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to find artifact settings for %s"), *ArtifactNameOverride);
+		UE_LOG(LogEOSIntegrationKit, Error, TEXT("Failed to find artifact settings for %s"), *ArtifactNameOverride);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to find artifact settings or the default artifact because the name was empty. Please check project settings under EOS Integration Kit"));
+		UE_LOG(LogEOSIntegrationKit, Error, TEXT("Failed to find artifact settings or the default artifact because the name was empty. Please check project settings under EOS Integration Kit"));
 	}
 	return false;
 }
