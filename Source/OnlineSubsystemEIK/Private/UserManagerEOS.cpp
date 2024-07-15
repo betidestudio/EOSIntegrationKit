@@ -11,7 +11,7 @@
 #include "OnlineSubsystemEOS.h"
 #include "OnlineSubsystemEOSPrivate.h"
 #include "SocketSubsystem.h"
-#include "UnrealEngine.h"
+#include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/CommandLine.h"
@@ -1560,7 +1560,29 @@ bool FUserManagerEOS::AutoLogin(int32 LocalUserNum)
 	}
 	UE_LOG(LogEIK, Log, TEXT("AutoLogin: Attempting to auto login user (%d) with auth command line args"), LocalUserNum);
 	FOnlineAccountCredentials Creds(AuthType, LoginId, Password);
-
+	if(AuthType == "exchangecode")
+	{
+		Creds.Type = "eas_+_EIK_LCT_ExchangeCode_+_EIK_ECT_EPIC";
+		Creds.Token = Password;
+		Creds.Id = LoginId;
+	}
+	else if(AuthType == "deviceid")
+	{
+		Creds.Id = "deviceid";
+		Creds.Type = "noeas_+_EIK_ECT_DEVICEID_ACCESS_TOKEN";
+	}
+	else if(AuthType == "persistentauth")
+	{
+		Creds.Type = "eas_+_EIK_LCT_PersistentAuth_+_EIK_ECT_EPIC";
+		Creds.Token = Password;
+		Creds.Id = LoginId;
+	}
+	else if(AuthType == "accountportal")
+	{
+		Creds.Type = "eas_+_EIK_LCT_AccountPortal+_EIK_ECT_EPIC";
+		Creds.Token = Password;
+		Creds.Id = LoginId;
+	}
 	LocalUserNumToLastLoginCredentials.Emplace(LocalUserNum, MakeShared<FOnlineAccountCredentials>(Creds));
 	bAutoLoginAttempted = true;
 	bAutoLoginInProgress = false;
@@ -1623,7 +1645,7 @@ bool FUserManagerEOS::AutoLoginUsingSettings(int32 LocalUserNum)
 	if(EnumPtr && EIKSettings)
 	{
 		UE_LOG(LogEIK, Verbose, TEXT("AutoLogin: Enum found for EEIK_EExternalCredentialType. Starting auto login"));
-		if(EIKSettings->AutoLoginType == EEIK_AutoLoginType::None)
+		if(EIKSettings->AutoLoginType == EEIK_AutoLoginType::AutoLogin_None)
 		{
 			UE_LOG(LogEIK, Display, TEXT("AutoLogin: AutoLoginType is set to None. Skipping auto login"));
 			bAutoLoginAttempted = true;
@@ -1643,7 +1665,7 @@ bool FUserManagerEOS::AutoLoginUsingSettings(int32 LocalUserNum)
 		FOnlineAccountCredentials TempDetails;
 		switch (EIKSettings->AutoLoginType)
 		{
-		case None:
+		case AutoLogin_None:
 			UE_LOG(LogEIK, Warning, TEXT("AutoLogin: AutoLoginType is set to None. Skipping auto login"));
 			return true;
 			break;
