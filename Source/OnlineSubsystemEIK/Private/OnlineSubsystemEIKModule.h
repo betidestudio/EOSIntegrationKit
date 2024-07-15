@@ -50,13 +50,4 @@ private:
 	void RegisterMenus();
 
 	void ConfigureOnlineSubsystemEIK();
-
-	TSharedPtr<class FUICommandList> PluginCommands;
-
-
-
-
-
-private:
-	//TSharedPtr<class FUICommandList> PluginCommands;
 };

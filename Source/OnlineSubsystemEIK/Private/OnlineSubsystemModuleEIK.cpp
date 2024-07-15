@@ -70,7 +70,6 @@ void FOnlineSubsystemEIKModule::StartupModule()
 	FOnlineSubsystemEOS::ModuleInit();
 #endif
 	
-	PluginCommands = MakeShareable(new FUICommandList);
 
 	//ConfigureOnlineSubsystemEIK();
 #if WITH_EDITOR
