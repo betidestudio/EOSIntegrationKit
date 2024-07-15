@@ -29,51 +29,55 @@ class ONLINESUBSYSTEMEIK_API UEIK_EcomSubsystem : public UGameInstanceSubsystem
 
 	//Fetches the entitlement with the given ID.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyEntitlementById")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyEntitlementById(const FEIK_EpicAccountId& LocalUserId, const FString& EntitlementId, FEIK_Ecom_Entitlement& OutEntitlement);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyEntitlementById(FEIK_EpicAccountId LocalUserId, const FString& EntitlementId, FEIK_Ecom_Entitlement& OutEntitlement);
 
 	//Fetches an entitlement from a given index.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyEntitlementByIndex")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyEntitlementByIndex(const FEIK_EpicAccountId& LocalUserId, int32 EntitlementIndex, FEIK_Ecom_Entitlement& OutEntitlement);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyEntitlementByIndex(FEIK_EpicAccountId LocalUserId, int32 EntitlementIndex, FEIK_Ecom_Entitlement& OutEntitlement);
 
 	//Fetches a single entitlement with a given Entitlement Name. The Index is used to access individual entitlements among those with the same Entitlement Name. The Index can be a value from 0 to one less than the result from EOS_Ecom_GetEntitlementsByNameCount.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyEntitlementByNameAndIndex")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyEntitlementByNameAndIndex(const FEIK_EpicAccountId& LocalUserId, const FString& EntitlementName, int32 Index, FEIK_Ecom_Entitlement& OutEntitlement);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyEntitlementByNameAndIndex(FEIK_EpicAccountId LocalUserId, const FString& EntitlementName, int32 Index, FEIK_Ecom_Entitlement& OutEntitlement);
 
 	//Fetches an item with a given ID.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyItemById")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyItemById(const FEIK_EpicAccountId& LocalUserId, const FString& ItemId, FEIK_Ecom_CatalogItem& OutCatalogItem);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyItemById(FEIK_EpicAccountId LocalUserId, const FString& ItemId, FEIK_Ecom_CatalogItem& OutCatalogItem);
 
 	//Fetches an image from a given index.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyItemImageInfoByIndex")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyItemImageInfoByIndex(const FEIK_EpicAccountId& LocalUserId, FEIK_Ecom_CatalogItemId ItemId, int32 ImageInfoIndex, FEIK_Ecom_KeyImageInfo& OutKeyImageInfo);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyItemImageInfoByIndex(FEIK_EpicAccountId LocalUserId, FEIK_Ecom_CatalogItemId ItemId, int32 ImageInfoIndex, FEIK_Ecom_KeyImageInfo& OutKeyImageInfo);
 
 	//Fetches a release from a given index.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyItemReleaseByIndex")
-	TEnumAsByte<EEIK_Result>  EIK_Ecom_CopyItemReleaseByIndex(const FEIK_EpicAccountId& LocalUserId, FEIK_Ecom_CatalogItemId ItemId, int32 ReleaseIndex, FEIK_Ecom_CatalogRelease& OutRelease);
+	TEnumAsByte<EEIK_Result>  EIK_Ecom_CopyItemReleaseByIndex(FEIK_EpicAccountId LocalUserId, FEIK_Ecom_CatalogItemId ItemId, int32 ReleaseIndex, FEIK_Ecom_CatalogRelease& OutRelease);
 
 	//Fetches a redeemed entitlement id from a given index. Only entitlements that were redeemed during the last EOS_Ecom_RedeemEntitlements call can be copied.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyLastRedeemedEntitlementByIndex")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyLastRedeemedEntitlementByIndex(const FEIK_EpicAccountId& LocalUserId, int32 RedeemedEntitlementIndex, FString& OutRedeemedEntitlementId);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyLastRedeemedEntitlementByIndex(FEIK_EpicAccountId LocalUserId, int32 RedeemedEntitlementIndex, FString& OutRedeemedEntitlementId);
 
 	//Fetches an offer with a given ID. The pricing and text are localized to the provided account.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyOfferById")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyOfferById(const FEIK_EpicAccountId& LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId, FEIK_Ecom_CatalogOffer& OutCatalogOffer);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyOfferById(FEIK_EpicAccountId LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId, FEIK_Ecom_CatalogOffer& OutCatalogOffer);
 
 	//Fetches an image from a given index.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyOfferImageInfoByIndex")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyOfferImageInfoByIndex(const FEIK_EpicAccountId& LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId, int32 ImageInfoIndex, FEIK_Ecom_KeyImageInfo& OutKeyImageInfo);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyOfferImageInfoByIndex(FEIK_EpicAccountId LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId, int32 ImageInfoIndex, FEIK_Ecom_KeyImageInfo& OutKeyImageInfo);
 
 	//Fetches an item from a given index.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyOfferItemByIndex")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyOfferItemByIndex(const FEIK_EpicAccountId& LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId, int32 ItemIndex, FEIK_Ecom_CatalogItem& OutCatalogItem);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyOfferItemByIndex(FEIK_EpicAccountId LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId, int32 ItemIndex, FEIK_Ecom_CatalogItem& OutCatalogItem);
+
+	//Fetches an offer from a given index. The pricing and text are localized to the provided account.
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyOfferByIndex")
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyOfferByIndex(FEIK_EpicAccountId LocalUserId, int32 OfferIndex, FEIK_Ecom_CatalogOffer& OutCatalogOffer);
 
 	//Fetches the transaction handle at the given index.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyTransactionById")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyTransactionById(const FEIK_EpicAccountId& LocalUserId, const FString& TransactionId, FEIK_Ecom_HTransaction& OutTransaction);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyTransactionById(FEIK_EpicAccountId LocalUserId, const FString& TransactionId, FEIK_Ecom_HTransaction& OutTransaction);
 
 	//Fetches the transaction handle at the given index.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_CopyTransactionByIndex")
-	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyTransactionByIndex(const FEIK_EpicAccountId& LocalUserId, int32 TransactionIndex, FEIK_Ecom_HTransaction& OutTransaction);
+	TEnumAsByte<EEIK_Result> EIK_Ecom_CopyTransactionByIndex(FEIK_EpicAccountId LocalUserId, int32 TransactionIndex, FEIK_Ecom_HTransaction& OutTransaction);
 
 	//Release the memory associated with an EOS_Ecom_Entitlement structure. This must be called on data retrieved from EOS_Ecom_CopyEntitlementByIndex and EOS_Ecom_CopyEntitlementById.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_Entitlement_Release")
@@ -81,39 +85,39 @@ class ONLINESUBSYSTEMEIK_API UEIK_EcomSubsystem : public UGameInstanceSubsystem
 
 	//Fetch the number of entitlements with the given Entitlement Name that are cached for a given local user.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_GetEntitlementsByNameCount")
-	int32 EIK_Ecom_GetEntitlementsByNameCount(const FEIK_EpicAccountId& LocalUserId, const FEIK_Ecom_EntitlementName& EntitlementName);
+	int32 EIK_Ecom_GetEntitlementsByNameCount(FEIK_EpicAccountId LocalUserId, const FEIK_Ecom_EntitlementName& EntitlementName);
 
 	//Fetch the number of entitlements that are cached for a given local user.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_GetEntitlementsCount")
-	int32 EIK_Ecom_GetEntitlementsCount(const FEIK_EpicAccountId& LocalUserId);
+	int32 EIK_Ecom_GetEntitlementsCount(FEIK_EpicAccountId LocalUserId);
 
 	//Fetch the number of images that are associated with a given cached item for a local user.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_GetItemImageInfoCount")
-	int32 EIK_Ecom_GetItemImageInfoCount(const FEIK_EpicAccountId& LocalUserId, FEIK_Ecom_CatalogItemId ItemId);
+	int32 EIK_Ecom_GetItemImageInfoCount(FEIK_EpicAccountId LocalUserId, FEIK_Ecom_CatalogItemId ItemId);
 
 	//Fetch the number of releases that are associated with a given cached item for a local user.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_GetItemReleaseCount")
-	int32 EIK_Ecom_GetItemReleaseCount(const FEIK_EpicAccountId& LocalUserId, FEIK_Ecom_CatalogItemId ItemId);
+	int32 EIK_Ecom_GetItemReleaseCount(FEIK_EpicAccountId LocalUserId, FEIK_Ecom_CatalogItemId ItemId);
 
 	//Fetch the number of entitlements that were redeemed during the last EOS_Ecom_RedeemEntitlements call.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_GetLastRedeemedEntitlementsCount")
-	int32 EIK_Ecom_GetLastRedeemedEntitlementsCount(const FEIK_EpicAccountId& LocalUserId);
+	int32 EIK_Ecom_GetLastRedeemedEntitlementsCount(FEIK_EpicAccountId LocalUserId);
 
 	//Fetch the number of offers that are cached for a given local user.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_GetOfferCount")
-	int32 EIK_Ecom_GetOfferCount(const FEIK_EpicAccountId& LocalUserId);
+	int32 EIK_Ecom_GetOfferCount(FEIK_EpicAccountId LocalUserId);
 
 	//Fetch the number of images that are associated with a given cached offer for a local user.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_GetOfferImageInfoCount")
-	int32 EIK_Ecom_GetOfferImageInfoCount(const FEIK_EpicAccountId& LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId);
+	int32 EIK_Ecom_GetOfferImageInfoCount(FEIK_EpicAccountId LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId);
 
 	//Fetch the number of items that are associated with a given cached offer for a local user.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_GetOfferItemCount")
-	int32 EIK_Ecom_GetOfferItemCount(const FEIK_EpicAccountId& LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId);
+	int32 EIK_Ecom_GetOfferItemCount(FEIK_EpicAccountId LocalUserId, const FEIK_Ecom_CatalogOfferId & OfferId);
 
 	//Fetch the number of transactions that are cached for a given local user.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_GetTransactionCount")
-	int32 EIK_Ecom_GetTransactionCount(const FEIK_EpicAccountId& LocalUserId);
+	int32 EIK_Ecom_GetTransactionCount(FEIK_EpicAccountId LocalUserId);
 
 	//Release the memory associated with an EOS_Ecom_KeyImageInfo structure. This must be called on data retrieved from EOS_Ecom_CopyItemImageInfoByIndex.
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | SDK Functions | Ecom Interface", DisplayName="EOS_Ecom_KeyImageInfo_Release")

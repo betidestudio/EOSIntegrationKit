@@ -21,7 +21,7 @@ void UEIK_EcomSubsystem::EIK_Ecom_CatalogRelease_Release(FEIK_Ecom_CatalogReleas
 	EOS_Ecom_CatalogRelease_Release(&CatalogRelease.Ref);
 }
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementById(const FEIK_EpicAccountId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementById(FEIK_EpicAccountId LocalUserId,
 	const FString& EntitlementId, FEIK_Ecom_Entitlement& OutEntitlement)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -30,7 +30,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementById(const 
 		{
 			EOS_Ecom_CopyEntitlementByIdOptions CopyEntitlementByIdOptions = { };
 			CopyEntitlementByIdOptions.ApiVersion = EOS_ECOM_COPYENTITLEMENTBYID_API_LATEST;
-			CopyEntitlementByIdOptions.LocalUserId = LocalUserId.Ref;
+			CopyEntitlementByIdOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyEntitlementByIdOptions.EntitlementId = TCHAR_TO_ANSI(*EntitlementId);
 			EOS_Ecom_Entitlement* LocalRef;
 			auto Result = EOS_Ecom_CopyEntitlementById(EOSRef->EcomHandle, &CopyEntitlementByIdOptions, &LocalRef);
@@ -43,7 +43,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementById(const 
 }
 
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementByIndex(const FEIK_EpicAccountId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementByIndex(FEIK_EpicAccountId LocalUserId,
                                                                              int32 EntitlementIndex, FEIK_Ecom_Entitlement& OutEntitlement)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -52,7 +52,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementByIndex(con
 		{
 			EOS_Ecom_CopyEntitlementByIndexOptions CopyEntitlementByIndexOptions = { };
 			CopyEntitlementByIndexOptions.ApiVersion = EOS_ECOM_COPYENTITLEMENTBYINDEX_API_LATEST;
-			CopyEntitlementByIndexOptions.LocalUserId = LocalUserId.Ref;
+			CopyEntitlementByIndexOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyEntitlementByIndexOptions.EntitlementIndex = EntitlementIndex;
 			EOS_Ecom_Entitlement* LocalRef;
 			auto Result = EOS_Ecom_CopyEntitlementByIndex(EOSRef->EcomHandle, &CopyEntitlementByIndexOptions, &LocalRef);
@@ -65,7 +65,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementByIndex(con
 }
 
 TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementByNameAndIndex(
-	const FEIK_EpicAccountId& LocalUserId, const FString& EntitlementName, int32 Index,
+	FEIK_EpicAccountId LocalUserId, const FString& EntitlementName, int32 Index,
 	FEIK_Ecom_Entitlement& OutEntitlement)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -74,7 +74,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementByNameAndIn
 		{
 			EOS_Ecom_CopyEntitlementByNameAndIndexOptions CopyEntitlementByNameAndIndexOptions = { };
 			CopyEntitlementByNameAndIndexOptions.ApiVersion = EOS_ECOM_COPYENTITLEMENTBYNAMEANDINDEX_API_LATEST;
-			CopyEntitlementByNameAndIndexOptions.LocalUserId = LocalUserId.Ref;
+			CopyEntitlementByNameAndIndexOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyEntitlementByNameAndIndexOptions.EntitlementName = TCHAR_TO_ANSI(*EntitlementName);
 			CopyEntitlementByNameAndIndexOptions.Index = Index;
 			EOS_Ecom_Entitlement* LocalRef;
@@ -87,7 +87,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementByNameAndIn
 	return EEIK_Result::EOS_ServiceFailure;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemById(const FEIK_EpicAccountId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemById(FEIK_EpicAccountId LocalUserId,
 	const FString& ItemId, FEIK_Ecom_CatalogItem& OutCatalogItem)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -96,7 +96,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemById(const FEIK_Ep
 		{
 			EOS_Ecom_CopyItemByIdOptions CopyItemByIdOptions = { };
 			CopyItemByIdOptions.ApiVersion = EOS_ECOM_COPYITEMBYID_API_LATEST;
-			CopyItemByIdOptions.LocalUserId = LocalUserId.Ref;
+			CopyItemByIdOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyItemByIdOptions.ItemId = TCHAR_TO_ANSI(*ItemId);
 			EOS_Ecom_CatalogItem* LocalRef;
 			auto Result = EOS_Ecom_CopyItemById(EOSRef->EcomHandle, &CopyItemByIdOptions, &LocalRef);
@@ -108,7 +108,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemById(const FEIK_Ep
 	return EEIK_Result::EOS_ServiceFailure;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemImageInfoByIndex(const FEIK_EpicAccountId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemImageInfoByIndex(FEIK_EpicAccountId LocalUserId,
 	FEIK_Ecom_CatalogItemId ItemId, int32 ImageInfoIndex, FEIK_Ecom_KeyImageInfo& OutKeyImageInfo)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -117,7 +117,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemImageInfoByIndex(c
 		{
 			EOS_Ecom_CopyItemImageInfoByIndexOptions CopyItemImageInfoByIndexOptions = { };
 			CopyItemImageInfoByIndexOptions.ApiVersion = EOS_ECOM_COPYITEMIMAGEINFOBYINDEX_API_LATEST;
-			CopyItemImageInfoByIndexOptions.LocalUserId = LocalUserId.Ref;
+			CopyItemImageInfoByIndexOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyItemImageInfoByIndexOptions.ItemId = ItemId.Ref;
 			CopyItemImageInfoByIndexOptions.ImageInfoIndex = ImageInfoIndex;
 			EOS_Ecom_KeyImageInfo* LocalRef;
@@ -130,7 +130,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemImageInfoByIndex(c
 	return EEIK_Result::EOS_ServiceFailure;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemReleaseByIndex(const FEIK_EpicAccountId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemReleaseByIndex(FEIK_EpicAccountId LocalUserId,
 	FEIK_Ecom_CatalogItemId ItemId, int32 ReleaseIndex, FEIK_Ecom_CatalogRelease& OutRelease)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -139,7 +139,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemReleaseByIndex(con
 		{
 			EOS_Ecom_CopyItemReleaseByIndexOptions CopyItemReleaseByIndexOptions = { };
 			CopyItemReleaseByIndexOptions.ApiVersion = EOS_ECOM_COPYITEMRELEASEBYINDEX_API_LATEST;
-			CopyItemReleaseByIndexOptions.LocalUserId = LocalUserId.Ref;
+			CopyItemReleaseByIndexOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyItemReleaseByIndexOptions.ItemId = ItemId.Ref;
 			CopyItemReleaseByIndexOptions.ReleaseIndex = ReleaseIndex;
 			EOS_Ecom_CatalogRelease* LocalRef;
@@ -153,7 +153,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemReleaseByIndex(con
 }
 
 TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyLastRedeemedEntitlementByIndex(
-	const FEIK_EpicAccountId& LocalUserId, int32 RedeemedEntitlementIndex, FString& OutRedeemedEntitlementId)
+	FEIK_EpicAccountId LocalUserId, int32 RedeemedEntitlementIndex, FString& OutRedeemedEntitlementId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -161,7 +161,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyLastRedeemedEntitlemen
 		{
 			EOS_Ecom_CopyLastRedeemedEntitlementByIndexOptions CopyLastRedeemedEntitlementByIndexOptions = { };
 			CopyLastRedeemedEntitlementByIndexOptions.ApiVersion = EOS_ECOM_COPYLASTREDEEMEDENTITLEMENTBYINDEX_API_LATEST;
-			CopyLastRedeemedEntitlementByIndexOptions.LocalUserId = LocalUserId.Ref;
+			CopyLastRedeemedEntitlementByIndexOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyLastRedeemedEntitlementByIndexOptions.RedeemedEntitlementIndex = RedeemedEntitlementIndex;
 			char OutRedeemedEntitlementIdLocal[EOS_ECOM_ENTITLEMENTID_MAX_LENGTH];
 			int32_t* InOutRedeemedEntitlementIdLength = nullptr;
@@ -174,7 +174,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyLastRedeemedEntitlemen
 	return EEIK_Result::EOS_ServiceFailure;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferById(const FEIK_EpicAccountId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferById(FEIK_EpicAccountId LocalUserId,
 	const FEIK_Ecom_CatalogOfferId& OfferId, FEIK_Ecom_CatalogOffer& OutCatalogOffer)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -183,7 +183,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferById(const FEIK_E
 		{
 			EOS_Ecom_CopyOfferByIdOptions CopyOfferByIdOptions = { };
 			CopyOfferByIdOptions.ApiVersion = EOS_ECOM_COPYOFFERBYID_API_LATEST;
-			CopyOfferByIdOptions.LocalUserId = LocalUserId.Ref;
+			CopyOfferByIdOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyOfferByIdOptions.OfferId = OfferId.CatalogOfferId;
 			EOS_Ecom_CatalogOffer* LocalRef;
 			auto Result = EOS_Ecom_CopyOfferById(EOSRef->EcomHandle, &CopyOfferByIdOptions, &LocalRef);
@@ -195,7 +195,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferById(const FEIK_E
 	return EEIK_Result::EOS_ServiceFailure;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferImageInfoByIndex(const FEIK_EpicAccountId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferImageInfoByIndex(FEIK_EpicAccountId LocalUserId,
 	const FEIK_Ecom_CatalogOfferId& OfferId, int32 ImageInfoIndex, FEIK_Ecom_KeyImageInfo& OutKeyImageInfo)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -204,7 +204,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferImageInfoByIndex(
 		{
 			EOS_Ecom_CopyOfferImageInfoByIndexOptions CopyOfferImageInfoByIndexOptions = { };
 			CopyOfferImageInfoByIndexOptions.ApiVersion = EOS_ECOM_COPYOFFERIMAGEINFOBYINDEX_API_LATEST;
-			CopyOfferImageInfoByIndexOptions.LocalUserId = LocalUserId.Ref;
+			CopyOfferImageInfoByIndexOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyOfferImageInfoByIndexOptions.OfferId = OfferId.CatalogOfferId;
 			CopyOfferImageInfoByIndexOptions.ImageInfoIndex = ImageInfoIndex;
 			EOS_Ecom_KeyImageInfo* LocalRef;
@@ -217,7 +217,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferImageInfoByIndex(
 	return EEIK_Result::EOS_ServiceFailure;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferItemByIndex(const FEIK_EpicAccountId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferItemByIndex(FEIK_EpicAccountId LocalUserId,
 	const FEIK_Ecom_CatalogOfferId& OfferId, int32 ItemIndex, FEIK_Ecom_CatalogItem& OutCatalogItem)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -226,7 +226,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferItemByIndex(const
 		{
 			EOS_Ecom_CopyOfferItemByIndexOptions CopyOfferItemByIndexOptions = { };
 			CopyOfferItemByIndexOptions.ApiVersion = EOS_ECOM_COPYOFFERITEMBYINDEX_API_LATEST;
-			CopyOfferItemByIndexOptions.LocalUserId = LocalUserId.Ref;
+			CopyOfferItemByIndexOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyOfferItemByIndexOptions.OfferId = OfferId.CatalogOfferId;
 			CopyOfferItemByIndexOptions.ItemIndex = ItemIndex;
 			EOS_Ecom_CatalogItem* LocalRef;
@@ -239,8 +239,29 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferItemByIndex(const
 	return EEIK_Result::EOS_ServiceFailure;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionById(const FEIK_EpicAccountId& LocalUserId,
-	const FString& TransactionId, FEIK_Ecom_HTransaction& OutTransaction)
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyOfferByIndex(FEIK_EpicAccountId LocalUserId,
+	int32 OfferIndex, FEIK_Ecom_CatalogOffer& OutCatalogOffer)
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			EOS_Ecom_CopyOfferByIndexOptions CopyOfferByIndexOptions = { };
+			CopyOfferByIndexOptions.ApiVersion = EOS_ECOM_COPYOFFERBYINDEX_API_LATEST;
+			CopyOfferByIndexOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
+			CopyOfferByIndexOptions.OfferIndex = OfferIndex;
+			EOS_Ecom_CatalogOffer* LocalRef;
+			auto Result = EOS_Ecom_CopyOfferByIndex(EOSRef->EcomHandle, &CopyOfferByIndexOptions, &LocalRef);
+			OutCatalogOffer = *LocalRef;
+			return static_cast<EEIK_Result>(Result);
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("EIK_Ecom_CopyOfferByIndex: OnlineSubsystemEIK is not available"));
+	return EEIK_Result::EOS_ServiceFailure;
+}
+
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionById(FEIK_EpicAccountId LocalUserId,
+                                                                          const FString& TransactionId, FEIK_Ecom_HTransaction& OutTransaction)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -248,7 +269,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionById(const 
 		{
 			EOS_Ecom_CopyTransactionByIdOptions CopyTransactionByIdOptions = { };
 			CopyTransactionByIdOptions.ApiVersion = EOS_ECOM_COPYTRANSACTIONBYID_API_LATEST;
-			CopyTransactionByIdOptions.LocalUserId = LocalUserId.Ref;
+			CopyTransactionByIdOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyTransactionByIdOptions.TransactionId = TCHAR_TO_ANSI(*TransactionId);
 			EOS_Ecom_HTransaction LocalRef;
 			auto Result = EOS_Ecom_CopyTransactionById(EOSRef->EcomHandle, &CopyTransactionByIdOptions, &LocalRef);
@@ -260,7 +281,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionById(const 
 	return EEIK_Result::EOS_ServiceFailure;
 }
 
-TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionByIndex(const FEIK_EpicAccountId& LocalUserId,
+TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionByIndex(FEIK_EpicAccountId LocalUserId,
 	int32 TransactionIndex, FEIK_Ecom_HTransaction& OutTransaction)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -269,7 +290,7 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionByIndex(con
 		{
 			EOS_Ecom_CopyTransactionByIndexOptions CopyTransactionByIndexOptions = { };
 			CopyTransactionByIndexOptions.ApiVersion = EOS_ECOM_COPYTRANSACTIONBYINDEX_API_LATEST;
-			CopyTransactionByIndexOptions.LocalUserId = LocalUserId.Ref;
+			CopyTransactionByIndexOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			CopyTransactionByIndexOptions.TransactionIndex = TransactionIndex;
 			EOS_Ecom_HTransaction LocalRef;
 			auto Result = EOS_Ecom_CopyTransactionByIndex(EOSRef->EcomHandle, &CopyTransactionByIndexOptions, &LocalRef);
@@ -286,7 +307,7 @@ void UEIK_EcomSubsystem::EIK_Ecom_Entitlement_Release(FEIK_Ecom_Entitlement Enti
 	EOS_Ecom_Entitlement_Release(&Entitlement.Ref);
 }
 
-int32 UEIK_EcomSubsystem::EIK_Ecom_GetEntitlementsByNameCount(const FEIK_EpicAccountId& LocalUserId,
+int32 UEIK_EcomSubsystem::EIK_Ecom_GetEntitlementsByNameCount(FEIK_EpicAccountId LocalUserId,
 	const FEIK_Ecom_EntitlementName& EntitlementName)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -295,7 +316,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetEntitlementsByNameCount(const FEIK_EpicAcc
 		{
 			EOS_Ecom_GetEntitlementsByNameCountOptions GetEntitlementsByNameCountOptions = { };
 			GetEntitlementsByNameCountOptions.ApiVersion = EOS_ECOM_GETENTITLEMENTSBYNAMECOUNT_API_LATEST;
-			GetEntitlementsByNameCountOptions.LocalUserId = LocalUserId.Ref;
+			GetEntitlementsByNameCountOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			GetEntitlementsByNameCountOptions.EntitlementName = EntitlementName.Ref;
 			return EOS_Ecom_GetEntitlementsByNameCount(EOSRef->EcomHandle, &GetEntitlementsByNameCountOptions);
 		}
@@ -304,7 +325,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetEntitlementsByNameCount(const FEIK_EpicAcc
 	return -1;
 }
 
-int32 UEIK_EcomSubsystem::EIK_Ecom_GetEntitlementsCount(const FEIK_EpicAccountId& LocalUserId)
+int32 UEIK_EcomSubsystem::EIK_Ecom_GetEntitlementsCount(FEIK_EpicAccountId LocalUserId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -312,7 +333,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetEntitlementsCount(const FEIK_EpicAccountId
 		{
 			EOS_Ecom_GetEntitlementsCountOptions GetEntitlementsCountOptions = { };
 			GetEntitlementsCountOptions.ApiVersion = EOS_ECOM_GETENTITLEMENTSCOUNT_API_LATEST;
-			GetEntitlementsCountOptions.LocalUserId = LocalUserId.Ref;
+			GetEntitlementsCountOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			return EOS_Ecom_GetEntitlementsCount(EOSRef->EcomHandle, &GetEntitlementsCountOptions);
 		}
 	}
@@ -320,7 +341,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetEntitlementsCount(const FEIK_EpicAccountId
 	return -1;
 }
 
-int32 UEIK_EcomSubsystem::EIK_Ecom_GetItemImageInfoCount(const FEIK_EpicAccountId& LocalUserId,
+int32 UEIK_EcomSubsystem::EIK_Ecom_GetItemImageInfoCount(FEIK_EpicAccountId LocalUserId,
 	FEIK_Ecom_CatalogItemId ItemId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -329,7 +350,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetItemImageInfoCount(const FEIK_EpicAccountI
 		{
 			EOS_Ecom_GetItemImageInfoCountOptions GetItemImageInfoCountOptions = { };
 			GetItemImageInfoCountOptions.ApiVersion = EOS_ECOM_GETITEMIMAGEINFOCOUNT_API_LATEST;
-			GetItemImageInfoCountOptions.LocalUserId = LocalUserId.Ref;
+			GetItemImageInfoCountOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			GetItemImageInfoCountOptions.ItemId = ItemId.Ref;
 			return EOS_Ecom_GetItemImageInfoCount(EOSRef->EcomHandle, &GetItemImageInfoCountOptions);
 		}
@@ -338,7 +359,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetItemImageInfoCount(const FEIK_EpicAccountI
 	return -1;
 }
 
-int32 UEIK_EcomSubsystem::EIK_Ecom_GetItemReleaseCount(const FEIK_EpicAccountId& LocalUserId,
+int32 UEIK_EcomSubsystem::EIK_Ecom_GetItemReleaseCount(FEIK_EpicAccountId LocalUserId,
 	FEIK_Ecom_CatalogItemId ItemId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -347,7 +368,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetItemReleaseCount(const FEIK_EpicAccountId&
 		{
 			EOS_Ecom_GetItemReleaseCountOptions GetItemReleaseCountOptions = { };
 			GetItemReleaseCountOptions.ApiVersion = EOS_ECOM_GETITEMRELEASECOUNT_API_LATEST;
-			GetItemReleaseCountOptions.LocalUserId = LocalUserId.Ref;
+			GetItemReleaseCountOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			GetItemReleaseCountOptions.ItemId = ItemId.Ref;
 			return EOS_Ecom_GetItemReleaseCount(EOSRef->EcomHandle, &GetItemReleaseCountOptions);
 		}
@@ -356,7 +377,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetItemReleaseCount(const FEIK_EpicAccountId&
 	return -1;
 }
 
-int32 UEIK_EcomSubsystem::EIK_Ecom_GetLastRedeemedEntitlementsCount(const FEIK_EpicAccountId& LocalUserId)
+int32 UEIK_EcomSubsystem::EIK_Ecom_GetLastRedeemedEntitlementsCount(FEIK_EpicAccountId LocalUserId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -364,7 +385,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetLastRedeemedEntitlementsCount(const FEIK_E
 		{
 			EOS_Ecom_GetLastRedeemedEntitlementsCountOptions GetLastRedeemedEntitlementsCountOptions = { };
 			GetLastRedeemedEntitlementsCountOptions.ApiVersion = EOS_ECOM_GETLASTREDEEMEDENTITLEMENTSCOUNT_API_LATEST;
-			GetLastRedeemedEntitlementsCountOptions.LocalUserId = LocalUserId.Ref;
+			GetLastRedeemedEntitlementsCountOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			return EOS_Ecom_GetLastRedeemedEntitlementsCount(EOSRef->EcomHandle, &GetLastRedeemedEntitlementsCountOptions);
 		}
 	}
@@ -372,7 +393,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetLastRedeemedEntitlementsCount(const FEIK_E
 	return -1;
 }
 
-int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferCount(const FEIK_EpicAccountId& LocalUserId)
+int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferCount(FEIK_EpicAccountId LocalUserId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -380,7 +401,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferCount(const FEIK_EpicAccountId& Local
 		{
 			EOS_Ecom_GetOfferCountOptions GetOfferCountOptions = { };
 			GetOfferCountOptions.ApiVersion = EOS_ECOM_GETOFFERCOUNT_API_LATEST;
-			GetOfferCountOptions.LocalUserId = LocalUserId.Ref;
+			GetOfferCountOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			return EOS_Ecom_GetOfferCount(EOSRef->EcomHandle, &GetOfferCountOptions);
 		}
 	}
@@ -388,7 +409,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferCount(const FEIK_EpicAccountId& Local
 	return -1;
 }
 
-int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferImageInfoCount(const FEIK_EpicAccountId& LocalUserId,
+int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferImageInfoCount(FEIK_EpicAccountId LocalUserId,
 	const FEIK_Ecom_CatalogOfferId& OfferId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -397,7 +418,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferImageInfoCount(const FEIK_EpicAccount
 		{
 			EOS_Ecom_GetOfferImageInfoCountOptions GetOfferImageInfoCountOptions = { };
 			GetOfferImageInfoCountOptions.ApiVersion = EOS_ECOM_GETOFFERIMAGEINFOCOUNT_API_LATEST;
-			GetOfferImageInfoCountOptions.LocalUserId = LocalUserId.Ref;
+			GetOfferImageInfoCountOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			GetOfferImageInfoCountOptions.OfferId = OfferId.CatalogOfferId;
 			return EOS_Ecom_GetOfferImageInfoCount(EOSRef->EcomHandle, &GetOfferImageInfoCountOptions);
 		}
@@ -406,7 +427,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferImageInfoCount(const FEIK_EpicAccount
 	return -1;
 }
 
-int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferItemCount(const FEIK_EpicAccountId& LocalUserId,
+int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferItemCount(FEIK_EpicAccountId LocalUserId,
 	const FEIK_Ecom_CatalogOfferId& OfferId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -415,7 +436,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferItemCount(const FEIK_EpicAccountId& L
 		{
 			EOS_Ecom_GetOfferItemCountOptions GetOfferItemCountOptions = { };
 			GetOfferItemCountOptions.ApiVersion = EOS_ECOM_GETOFFERITEMCOUNT_API_LATEST;
-			GetOfferItemCountOptions.LocalUserId = LocalUserId.Ref;
+			GetOfferItemCountOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			GetOfferItemCountOptions.OfferId = OfferId.CatalogOfferId;
 			return EOS_Ecom_GetOfferItemCount(EOSRef->EcomHandle, &GetOfferItemCountOptions);
 		}
@@ -424,7 +445,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetOfferItemCount(const FEIK_EpicAccountId& L
 	return -1;
 }
 
-int32 UEIK_EcomSubsystem::EIK_Ecom_GetTransactionCount(const FEIK_EpicAccountId& LocalUserId)
+int32 UEIK_EcomSubsystem::EIK_Ecom_GetTransactionCount(FEIK_EpicAccountId LocalUserId)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
@@ -432,7 +453,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_GetTransactionCount(const FEIK_EpicAccountId&
 		{
 			EOS_Ecom_GetTransactionCountOptions GetTransactionCountOptions = { };
 			GetTransactionCountOptions.ApiVersion = EOS_ECOM_GETTRANSACTIONCOUNT_API_LATEST;
-			GetTransactionCountOptions.LocalUserId = LocalUserId.Ref;
+			GetTransactionCountOptions.LocalUserId = LocalUserId.EpicAccountId_FromString();
 			return EOS_Ecom_GetTransactionCount(EOSRef->EcomHandle, &GetTransactionCountOptions);
 		}
 	}

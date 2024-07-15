@@ -37,8 +37,15 @@ void UEIK_Ecom_QueryOffers::Activate()
 		{
 			EOS_Ecom_QueryOffersOptions QueryOffersOptions;
 			QueryOffersOptions.ApiVersion = EOS_ECOM_QUERYOFFERS_API_LATEST;
-			QueryOffersOptions.LocalUserId = Var_LocalUserId.Ref;
-			QueryOffersOptions.OverrideCatalogNamespace = TCHAR_TO_ANSI(*Var_OverrideCatalogNamespace);
+			QueryOffersOptions.LocalUserId = Var_LocalUserId.EpicAccountId_FromString();
+			if(Var_OverrideCatalogNamespace.IsEmpty())
+			{
+				QueryOffersOptions.OverrideCatalogNamespace = nullptr;
+			}
+			else
+			{
+				QueryOffersOptions.OverrideCatalogNamespace = TCHAR_TO_ANSI(*Var_OverrideCatalogNamespace);
+			}			
 			EOS_Ecom_QueryOffers(EOSRef->EcomHandle, &QueryOffersOptions, this, &UEIK_Ecom_QueryOffers::OnQueryOffersCallback);
 			return;
 		}
