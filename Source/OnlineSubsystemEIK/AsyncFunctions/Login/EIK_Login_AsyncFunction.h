@@ -6,26 +6,12 @@
 #include "OnlineError.h"
 #include "OnlineSubsystem.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #include "Runtime/CoreOnline/Public/Online/CoreOnline.h"
 #include "EIK_Login_AsyncFunction.generated.h"
 
-UENUM(BlueprintType)
-enum class ELoginTypes : uint8 {
-	AccountPortal       UMETA(DisplayName="Account Portal"),
-	PersistentAuth              UMETA(DisplayName="Persistent Auth"),
-	EpicLauncher        UMETA(DisplayName="Epic Launcher"),
-	DeviceID        UMETA(DisplayName="Device ID"),
-	Google              UMETA(DisplayName="Google"),
-	Steam              UMETA(DisplayName="Steam"),
-	Apple              UMETA(DisplayName="Apple"),
-	Discord              UMETA(DisplayName="Discord"),
-	Oculus              UMETA(DisplayName="Oculus"),
-	OpenID              UMETA(DisplayName="OpenID"),
-	Developer           UMETA(DisplayName="Developer"),
-	None           UMETA(DisplayName="None"),
-};
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponsDelegate, FString, ProductUserID, FString, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponsDelegate, FEIK_ProductUserId, ProductUserID, FString, Error);
 
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_Login_AsyncFunction : public UBlueprintAsyncActionBase
@@ -38,13 +24,7 @@ public:
 	
 	UPROPERTY(BlueprintAssignable)
 	FResponsDelegate OnFail;
-	
-	ELoginTypes LoginMethod;
-	FString Input1;
-	FString Input2;
-	IOnlineSubsystem* AppleSubsystem;
 
-	bool bDelegateCalled = false;
 
 	/*
 	This C++ method logs in a user to an online subsystem using the selected method and sets up a callback function to handle the login response.
@@ -54,15 +34,14 @@ public:
 	Following Methods are coming with upcoming build - Apple, Discord, Oculus, OpenID
 	*/
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Login")
-	static UEIK_Login_AsyncFunction* LoginUsingEIK(ELoginTypes LoginMethod, FString DisplayName, FString Token);
-	
+	static UEIK_Login_AsyncFunction* LoginUsingConnectInterface(TEnumAsByte<EEIK_EExternalCredentialType> LoginMethod = EEIK_EExternalCredentialType::EIK_ECT_DEVICEID_ACCESS_TOKEN , FString DisplayName = "", FString Token = "");
+
+private:
+	EEIK_EExternalCredentialType LoginMethod;
+	FString DisplayName;
+	FString Token;
+	IOnlineSubsystem* AppleSubsystem;
 	virtual void Activate() override;
-
-	void Login();
-
 	void LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId, const FString& Error);
-
-	void LoginWithAppleCallback(TSharedPtr<const FUniqueNetId> UniqueNetId, int I, const FOnlineError& OnlineError);
-	void LoginWithApple();
 	
 };

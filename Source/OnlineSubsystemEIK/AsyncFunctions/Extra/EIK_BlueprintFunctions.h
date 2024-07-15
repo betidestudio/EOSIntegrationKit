@@ -10,6 +10,7 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "VoiceChat.h"
 #include "eos_lobby_types.h"
 #include "eos_lobby.h"
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
@@ -21,7 +22,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnResponseFromSanctions, bool, bWasSuccess);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnResponseFromEpicForAccessToken, bool, bWasSuccess, const FString&, AccessToken);
 
 UENUM(BlueprintType)
-enum class EEOSSanctionType : uint8
+enum EEOSSanctionType
 {
 	IncorrectSanction,
 	CompromisedAccount,
@@ -30,7 +31,7 @@ enum class EEOSSanctionType : uint8
 };
 
 UENUM(BlueprintType)
-enum class EEIK_LoginStatus : uint8
+enum EEIK_LoginStatus
 {
 	/** Player has not logged in or chosen a local profile */
 	NotLoggedIn,
@@ -189,8 +190,56 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
 	static TArray<FName> GetAllCurrentSessionNames(UObject* Context);
+	
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
 	static FString GetProductUserID(UObject* Context);
+
+
+
+
+
+
+	/** Lobby Voice Functions START */
+
+	static IVoiceChatUser* GetLobbyVoiceChat(UObject* Context);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool MuteLobbyVoiceChat(UObject* Context, bool bMute);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool IsLobbyVoiceChatMuted(UObject* Context);
+	
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyOutputMethod(UObject* Context, FString MethodID);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyInputMethod(UObject* Context, FString MethodID);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool BlockLobbyVoiceChatPlayers(UObject* Context, TArray<FString> BlockedPlayers);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool UnblockLobbyVoiceChatPlayers(UObject* Context, TArray<FString> UnblockedPlayers);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static float GetLobbyVoiceChatOutputVolume(UObject* Context);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyVoiceChatOutputVolume(UObject* Context, float Volume);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyVoiceChatInputVolume(UObject* Context, float Volume);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static float GetLobbyVoiceChatInputVolume(UObject* Context);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static bool SetLobbyPlayerVoiceChatVolume(UObject* Context, FString PlayerName, float Volume);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Lobby Voice", meta=( WorldContext = "Context" ))
+	static float GetLobbyPlayerVoiceChatVolume(UObject* Context, FString PlayerName);
+
+	/** Voice Chat Functions END */
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Friends")
 	static bool ShowFriendsList();
@@ -253,11 +302,6 @@ public:
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
 	static FName GetActiveSubsystem();
 
-	// Get the active platform's login type for EOS subsystem.
-	// This function returns the active platform's login type (e.g., Epic, Steam) as an ELoginTypes enum.
-	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
-	static ELoginTypes GetActivePlatformSubsystem();
-
 	// Convert a TArray<uint8> to a FString using Base64 encoding.
 	// This is useful for converting binary data to a human-readable string format.
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra || Conversions")
@@ -301,9 +345,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
 	static bool IsValidSession(FSessionFindStruct Session);
 
-	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Extra")
-	static bool Initialize_EIK_For_Friends(APlayerController* PlayerController);
-
 	UFUNCTION(BlueprintPure, Category="EOS Integration Kit || Extra")
 	static FString GetCurrentPort(AGameModeBase* CurrentGameMode);
 
@@ -313,4 +354,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, DisplayName="Request EOS Access Token", Category="EOS Integration Kit || Extra")
 	static void RequestEOSAccessToken(const FOnResponseFromEpicForAccessToken& Response);
+
+	UFUNCTION(BlueprintCallable, DisplayName="Convert POSIX Time to DateTime", Category="EOS Integration Kit || Extra")
+	static FDateTime ConvertPosixTimeToDateTime(int64 PosixTime);
+
 };

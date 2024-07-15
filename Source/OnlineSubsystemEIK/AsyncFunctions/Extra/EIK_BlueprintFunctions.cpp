@@ -8,6 +8,7 @@
 #include "OnlineSubsystemEOS.h"
 #include "Engine/GameInstance.h"
 #include "Containers/Array.h"
+#include "EIKVoiceChat/Private/Android/AndroidEOSVoiceChatUser.h"
 #include "GameFramework/GameModeBase.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
@@ -162,6 +163,205 @@ FString UEIK_BlueprintFunctions::GetProductUserID(UObject* Context)
 	}
 }
 
+IVoiceChatUser* UEIK_BlueprintFunctions::GetLobbyVoiceChat(UObject* Context)
+{
+	if (Context)
+	{
+		UWorld* World = Context->GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: World is null"));
+			return nullptr;
+		}
+
+		IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+		if (!OnlineSub)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: OnlineSubsystem is null"));
+			return nullptr;
+		}
+
+		FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub);
+		if (!EOSRef)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: EOSRef is null"));
+			return nullptr;
+		}
+
+		IOnlineIdentityPtr IdentityPointerRef = OnlineSub->GetIdentityInterface();
+		if (!IdentityPointerRef.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: IdentityPointerRef is null"));
+			return nullptr;
+		}
+
+		TSharedPtr<const FUniqueNetId> UniquePlayerId = IdentityPointerRef->GetUniquePlayerId(0);
+		if (!UniquePlayerId.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetLobbyVoiceChat: UniquePlayerId is null"));
+			return nullptr;
+		}
+		return EOSRef->GetVoiceChatUserInterface(*UniquePlayerId);
+	}
+	return nullptr;
+}
+
+bool UEIK_BlueprintFunctions::MuteLobbyVoiceChat(UObject* Context, bool bMute)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+		if (!OnlineSub)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::MuteLobbyVoiceChat: OnlineSubsystem is null"));
+			return false;
+		}
+		IOnlineIdentityPtr IdentityPointerRef = OnlineSub->GetIdentityInterface();
+		if (!IdentityPointerRef.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::MuteLobbyVoiceChat: IdentityPointerRef is null"));
+			return false;
+		}
+		GetLobbyVoiceChat(Context)->SetPlayerMuted(*IdentityPointerRef->GetUniquePlayerId(0)->ToString(), bMute);
+		return true;
+	}
+	UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::MuteLobbyVoiceChat: VoiceChatUserInterface is null"));
+	return false;
+}
+
+
+bool UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted(UObject* Context)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+		if (!OnlineSub)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: OnlineSubsystem is null"));
+			return false;
+		}
+		IOnlineIdentityPtr IdentityPointerRef = OnlineSub->GetIdentityInterface();
+		if (!IdentityPointerRef.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: IdentityPointerRef is null"));
+			return false;
+		}
+		UE_LOG(LogEIK, Verbose, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: Checking if player is muted"));
+		return GetLobbyVoiceChat(Context)->IsPlayerMuted(*IdentityPointerRef->GetUniquePlayerId(0)->ToString());
+	}
+	UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: Context is null"));
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyOutputMethod(UObject* Context, FString MethodID)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->SetOutputDeviceId(MethodID);
+		return true;
+	}
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyInputMethod(UObject* Context, FString MethodID)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->SetInputDeviceId(MethodID);
+		return true;
+	}
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::BlockLobbyVoiceChatPlayers(UObject* Context, TArray<FString> BlockedPlayers)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->BlockPlayers(BlockedPlayers);
+		return true;
+	}
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::UnblockLobbyVoiceChatPlayers(UObject* Context, TArray<FString> UnblockedPlayers)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->UnblockPlayers(UnblockedPlayers);
+		return true;
+	}
+	return false;
+}
+
+float UEIK_BlueprintFunctions::GetLobbyVoiceChatOutputVolume(UObject* Context)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		return GetLobbyVoiceChat(Context)->GetAudioOutputVolume();
+	}
+	return -1.0f;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyVoiceChatOutputVolume(UObject* Context, float Volume)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->SetAudioOutputVolume(Volume);
+		return true;
+	}
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyVoiceChatInputVolume(UObject* Context, float Volume)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+		if (!OnlineSub)
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: OnlineSubsystem is null"));
+			return false;
+		}
+		IOnlineIdentityPtr IdentityPointerRef = OnlineSub->GetIdentityInterface();
+		if (!IdentityPointerRef.IsValid())
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsLobbyVoiceChatMuted: IdentityPointerRef is null"));
+			return false;
+		}
+		GetLobbyVoiceChat(Context)->SetAudioInputVolume(Volume);
+		return true;
+	}
+	return false;
+}
+
+float UEIK_BlueprintFunctions::GetLobbyVoiceChatInputVolume(UObject* Context)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		return GetLobbyVoiceChat(Context)->GetAudioInputVolume();
+	}
+	return -1.0f;
+}
+
+bool UEIK_BlueprintFunctions::SetLobbyPlayerVoiceChatVolume(UObject* Context, FString PlayerName, float Volume)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		GetLobbyVoiceChat(Context)->SetPlayerVolume(PlayerName, Volume);
+		return true;
+	}
+	return false;
+}
+
+float UEIK_BlueprintFunctions::GetLobbyPlayerVoiceChatVolume(UObject* Context, FString PlayerName)
+{
+	if(GetLobbyVoiceChat(Context))
+	{
+		return GetLobbyVoiceChat(Context)->GetPlayerVolume(PlayerName);
+	}
+	return -1.0f;
+}
+
 bool UEIK_BlueprintFunctions::ShowFriendsList()
 {
 	const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get(); // Get the Online Subsystem
@@ -215,9 +415,7 @@ bool UEIK_BlueprintFunctions::AcceptSessionInvite(FString InviteId, FString Loca
 		{
 			EOS_ProductUserId LocalProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*LocalUserId));
 			EOS_ProductUserId InviterProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*InviterUserId));
-			FTCHARToUTF8 Convert(InviteId);
-			const char* InviteIdChar = Convert.Get();
-			EOSRef->SessionInterfacePtr->OnLobbyInviteAccepted(InviteIdChar, LocalProductUserId, InviterProductUserId);
+			EOSRef->SessionInterfacePtr->OnLobbyInviteAccepted(TCHAR_TO_ANSI(*InviteId), LocalProductUserId, InviterProductUserId);
 			return true;
 		}
 	}
@@ -231,12 +429,10 @@ bool UEIK_BlueprintFunctions::RejectSessionInvite(FString InviteId, FString Loca
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
 			EOS_ProductUserId LocalProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*LocalUserId));
-			FTCHARToUTF8 Convert(InviteId);
-			const char* InviteIdChar = Convert.Get();
 			EOS_Lobby_RejectInviteOptions RejectOptions;
 			RejectOptions.ApiVersion = EOS_LOBBY_REJECTINVITE_API_LATEST;
 			RejectOptions.LocalUserId = LocalProductUserId;
-			RejectOptions.InviteId = InviteIdChar;
+			RejectOptions.InviteId = TCHAR_TO_ANSI(*InviteId);
 			EOS_Lobby_RejectInvite(EOSRef->SessionInterfacePtr->LobbyHandle, &RejectOptions, nullptr, nullptr);
 			return true;
 		}
@@ -410,21 +606,6 @@ FName UEIK_BlueprintFunctions::GetActiveSubsystem()
 	return FName();
 }
 
-ELoginTypes UEIK_BlueprintFunctions::GetActivePlatformSubsystem()
-{
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::GetByPlatform(false))
-	{
-		if(SubsystemRef->GetSubsystemName() == TEXT("STEAM"))
-		{
-			return ELoginTypes::Steam;
-		}
-		else if(SubsystemRef->GetSubsystemName() == TEXT("GOOGLEPLAY"))
-		{
-			return ELoginTypes::Google;
-		}
-	}
-	return ELoginTypes::None;
-}
 
 FString UEIK_BlueprintFunctions::ByteArrayToString(const TArray<uint8>& DataToConvert)
 {
@@ -517,15 +698,6 @@ bool UEIK_BlueprintFunctions::IsValidSession(FSessionFindStruct Session)
 	if(Session.SessionResult.OnlineResult.Session.NumOpenPublicConnections > 0 || Session.SessionResult.OnlineResult.Session.NumOpenPrivateConnections > 0)
 	{
 		return true;
-	}
-	return false;
-}
-
-bool UEIK_BlueprintFunctions::Initialize_EIK_For_Friends(APlayerController* PlayerController)
-{
-	if (UEIK_Subsystem* EIK_Subsystem = PlayerController->GetGameInstance()->GetSubsystem<UEIK_Subsystem>())
-	{
-		return EIK_Subsystem->InitializeEIK();
 	}
 	return false;
 }
@@ -653,4 +825,9 @@ void UEIK_BlueprintFunctions::RequestEOSAccessToken(const FOnResponseFromEpicFor
 		}
 	});
 	HttpRequest->ProcessRequest();
+}
+
+FDateTime UEIK_BlueprintFunctions::ConvertPosixTimeToDateTime(int64 PosixTime)
+{
+	return FDateTime::FromUnixTimestamp(PosixTime);
 }

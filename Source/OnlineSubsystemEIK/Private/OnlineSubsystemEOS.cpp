@@ -262,7 +262,6 @@ bool FOnlineSubsystemEOS::PlatformCreate()
 		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS::PlatformCreate() failed to init EOS platform"));
 		return false;
 	}
-
 	return true;
 }
 
@@ -279,7 +278,7 @@ bool FOnlineSubsystemEOS::Init()
 	// Check for being launched by EGS
 	bWasLaunchedByEGS = FParse::Param(FCommandLine::Get(), TEXT("EpicPortal"));
 	FEOSSettings EOSSettings = UEIKSettings::GetSettings();
-	if (!IsRunningDedicatedServer() && IsRunningGame() && !bWasLaunchedByEGS && EOSSettings.bShouldEnforceBeingLaunchedByEGS)
+	if (!IsRunningDedicatedServer() && IsRunningGame() && !bWasLaunchedByEGS && EOSSettings.bUseLauncherChecks)
 	{
 		FString ArtifactName;
 		FParse::Value(FCommandLine::Get(), TEXT("EpicApp="), ArtifactName);
@@ -311,7 +310,7 @@ bool FOnlineSubsystemEOS::Init()
 	AntiCheatClientHandle = EOS_Platform_GetAntiCheatClientInterface(*EOSPlatformHandle);
 	if (AntiCheatClientHandle == nullptr)
 	{
-		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to init EOS platform, couldn't get anti cheat client handle. This is expected if you are not using Easy Anti Cheat."));
+		UE_LOG(LogEIK, Log, TEXT("FOnlineSubsystemEOS: failed to init EOS platform, couldn't get anti cheat client handle. This is expected if you are not using Easy Anti Cheat."));
 	}
 	SanctionsHandle = EOS_Platform_GetSanctionsInterface(*EOSPlatformHandle);
 	if(SanctionsHandle == nullptr)
@@ -326,7 +325,7 @@ bool FOnlineSubsystemEOS::Init()
 	AntiCheatServerHandle = EOS_Platform_GetAntiCheatServerInterface(*EOSPlatformHandle);
 	if (AntiCheatServerHandle == nullptr)
 	{
-		UE_LOG_ONLINE(Error, TEXT("FOnlineSubsystemEOS: failed to init EOS platform, couldn't get anti cheat server handle. This is expected if you are not using Easy Anti Cheat."));
+		UE_LOG(LogEIK, Log, TEXT("FOnlineSubsystemEOS: failed to init EOS platform, couldn't get anti cheat server handle. This is expected if you are not using Easy Anti Cheat."));
 	}
 	UserInfoHandle = EOS_Platform_GetUserInfoInterface(*EOSPlatformHandle);
 	if (UserInfoHandle == nullptr)
@@ -503,8 +502,8 @@ bool FOnlineSubsystemEOS::Tick(float DeltaTime)
 	}
 
 	SessionInterfacePtr->Tick(DeltaTime);
+	UserManager->Tick(DeltaTime);
 	FOnlineSubsystemImpl::Tick(DeltaTime);
-
 	return true;
 }
 

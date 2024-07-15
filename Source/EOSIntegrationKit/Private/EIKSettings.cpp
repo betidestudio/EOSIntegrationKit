@@ -2,6 +2,7 @@
 
 #include "EIKSettings.h"
 
+#include "EOSIntegrationKit.h"
 #include "Algo/Transform.h"
 #include "Misc/CommandLine.h"
 #include "Misc/ConfigCacheIni.h"
@@ -155,7 +156,7 @@ const FEOSSettings& UEIKSettings::ManualGetSettings()
 		GConfig->GetBool(INI_SECTION, TEXT("bEnableOverlay"), CachedSettings->bEnableOverlay, GEngineIni);
 		GConfig->GetBool(INI_SECTION, TEXT("bEnableSocialOverlay"), CachedSettings->bEnableSocialOverlay, GEngineIni);
 		GConfig->GetBool(INI_SECTION, TEXT("bEnableEditorOverlay"), CachedSettings->bEnableEditorOverlay, GEngineIni);
-		GConfig->GetBool(INI_SECTION, TEXT("bShouldEnforceBeingLaunchedByEGS"), CachedSettings->bShouldEnforceBeingLaunchedByEGS, GEngineIni);
+		GConfig->GetBool(INI_SECTION, TEXT("bUseLauncherChecks"), CachedSettings->bUseLauncherChecks, GEngineIni);
 		GConfig->GetBool(INI_SECTION, TEXT("bUseEAS"), CachedSettings->bUseEAS, GEngineIni);
 		GConfig->GetBool(INI_SECTION, TEXT("bUseEOSConnect"), CachedSettings->bUseEOSConnect, GEngineIni);
 		GConfig->GetBool(INI_SECTION, TEXT("bUseEOSSessions"), CachedSettings->bUseEOSSessions, GEngineIni);
@@ -180,9 +181,11 @@ FEOSSettings UEIKSettings::ToNative() const
 	Native.TickBudgetInMilliseconds = TickBudgetInMilliseconds;
 	Native.TitleStorageReadChunkLength = TitleStorageReadChunkLength;
 	Native.bEnableOverlay = bEnableOverlay;
+	Native.DedicatedServerArtifactName = DedicatedServerArtifactName;
+	Native.VoiceArtifactName = VoiceArtifactName;
 	Native.bEnableSocialOverlay = bEnableSocialOverlay;
 	Native.bEnableEditorOverlay = bEnableEditorOverlay;
-	Native.bShouldEnforceBeingLaunchedByEGS = bShouldEnforceBeingLaunchedByEGS;
+	Native.bUseLauncherChecks = bUseLauncherChecks;
 	Native.bUseEAS = bUseEAS;
 	Native.bUseEOSConnect = bUseEOSConnect;
 	Native.bUseEOSSessions = bUseEOSSessions;
@@ -218,75 +221,146 @@ bool UEIKSettings::GetSettingsForArtifact(const FString& ArtifactName, FEOSArtif
 
 bool UEIKSettings::ManualGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings)
 {
-	static TOptional<FString> CachedDefaultArtifactName;
-	static TOptional<TArray<FEOSArtifactSettings>> CachedArtifactSettings;
+    UE_LOG(LogEOSIntegrationKit, Warning, TEXT("ManualGetSettingsForArtifact is deprecated and will be removed in a future release. Please use AutoGetSettingsForArtifact instead."));
+    static TOptional<FString> CachedDefaultArtifactName;
+    static TOptional<TArray<FEOSArtifactSettings>> CachedArtifactSettings;
 
-	if (!CachedDefaultArtifactName.IsSet())
+    if (!CachedDefaultArtifactName.IsSet())
+    {
+        CachedDefaultArtifactName.Emplace();
+
+        GConfig->GetString(INI_SECTION, TEXT("DefaultArtifactName"), *CachedDefaultArtifactName, GEngineIni);
+    }
+
+    if (!CachedArtifactSettings.IsSet())
+    {
+        CachedArtifactSettings.Emplace();
+
+        TArray<FString> Artifacts;
+        GConfig->GetArray(INI_SECTION, TEXT("Artifacts"), Artifacts, GEngineIni);
+        for (const FString& Line : Artifacts)
+        {
+            FEOSArtifactSettings Artifact;
+            Artifact.ParseRawArrayEntry(Line);
+            CachedArtifactSettings->Add(Artifact);
+        }
+    }
+
+    FString ArtifactNameOverride;
+    FString DeploymentIdOverride;
+    FString SandboxIdOverride;
+
+    // Figure out which config object we are loading
+    FParse::Value(FCommandLine::Get(), TEXT("EOSArtifactNameOverride="), ArtifactNameOverride);
+    if (ArtifactNameOverride.IsEmpty())
+    {
+        ArtifactNameOverride = ArtifactName;
+    }
+	if(IsRunningDedicatedServer() && ArtifactNameOverride.IsEmpty())
 	{
-		CachedDefaultArtifactName.Emplace();
-
-		GConfig->GetString(INI_SECTION, TEXT("DefaultArtifactName"), *CachedDefaultArtifactName, GEngineIni);
-	}
-
-	if (!CachedArtifactSettings.IsSet())
-	{
-		CachedArtifactSettings.Emplace();
-
-		TArray<FString> Artifacts;
-		GConfig->GetArray(INI_SECTION, TEXT("Artifacts"), Artifacts, GEngineIni);
-		for (const FString& Line : Artifacts)
+		FString DedicatedServerArtifactName;
+		GConfig->GetString(INI_SECTION, TEXT("DedicatedServerArtifactName"), DedicatedServerArtifactName, GEngineIni);
+		if(!DedicatedServerArtifactName.IsEmpty())
 		{
-			FEOSArtifactSettings Artifact;
-			Artifact.ParseRawArrayEntry(Line);
-			CachedArtifactSettings->Add(Artifact);
+			ArtifactNameOverride = DedicatedServerArtifactName;
 		}
 	}
 
-	FString ArtifactNameOverride;
-	// Figure out which config object we are loading
-	FParse::Value(FCommandLine::Get(), TEXT("EOSArtifactNameOverride="), ArtifactNameOverride);
-	if (ArtifactNameOverride.IsEmpty())
+    // Override DeploymentId and SandboxId
+    if(FParse::Value(FCommandLine::Get(), TEXT("epicdeploymentid="), DeploymentIdOverride))
 	{
-		ArtifactNameOverride = ArtifactName;
+    	UE_LOG(LogEOSIntegrationKit, Log, TEXT("Overriding DeploymentId with %s"), *DeploymentIdOverride);
 	}
+    if(FParse::Value(FCommandLine::Get(), TEXT("epicsandboxid="), SandboxIdOverride))
+    {
+	    UE_LOG(LogEOSIntegrationKit, Log, TEXT("Overriding SandboxId with %s"), *SandboxIdOverride);
+    }
 
-	// Search by name and then default if not found
-	for (const FEOSArtifactSettings& Artifact : *CachedArtifactSettings)
-	{
-		if (Artifact.ArtifactName == ArtifactNameOverride)
-		{
-			OutSettings = Artifact;
-			return true;
-		}
-	}
+    // Search by name and then default if not found
+    for (const FEOSArtifactSettings& Artifact : *CachedArtifactSettings)
+    {
+        if (Artifact.ArtifactName == ArtifactNameOverride)
+        {
+            OutSettings = Artifact;
+            if (!DeploymentIdOverride.IsEmpty())
+            {
+                OutSettings.DeploymentId = DeploymentIdOverride;
+            }
+            if (!SandboxIdOverride.IsEmpty())
+            {
+                OutSettings.SandboxId = SandboxIdOverride;
+            }
+            return true;
+        }
+    }
 
-	for (const FEOSArtifactSettings& Artifact : *CachedArtifactSettings)
-	{
-		if (Artifact.ArtifactName == *CachedDefaultArtifactName)
-		{
-			OutSettings = Artifact;
-			return true;
-		}
-	}
+    for (const FEOSArtifactSettings& Artifact : *CachedArtifactSettings)
+    {
+        if (Artifact.ArtifactName == *CachedDefaultArtifactName)
+        {
+            OutSettings = Artifact;
+            if (!DeploymentIdOverride.IsEmpty())
+            {
+                OutSettings.DeploymentId = DeploymentIdOverride;
+            }
+            if (!SandboxIdOverride.IsEmpty())
+            {
+                OutSettings.SandboxId = SandboxIdOverride;
+            }
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 bool UEIKSettings::AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSArtifactSettings& OutSettings)
 {
 	const UEIKSettings* This = GetDefault<UEIKSettings>();
+	FString DeploymentIdOverride;
+	FString SandboxIdOverride;
+	if(FParse::Value(FCommandLine::Get(), TEXT("epicdeploymentid="), DeploymentIdOverride))
+	{
+		UE_LOG(LogEOSIntegrationKit, Log, TEXT("Overriding DeploymentId with %s"), *DeploymentIdOverride);
+	}
+	if(FParse::Value(FCommandLine::Get(), TEXT("epicsandboxid="), SandboxIdOverride))
+	{
+		UE_LOG(LogEOSIntegrationKit, Log, TEXT("Overriding SandboxId with %s"), *SandboxIdOverride);
+	}
 	FString ArtifactNameOverride;
 	// Figure out which config object we are loading
 	FParse::Value(FCommandLine::Get(), TEXT("EOSArtifactNameOverride="), ArtifactNameOverride);
 	if (ArtifactNameOverride.IsEmpty())
 	{
-		ArtifactNameOverride = ArtifactName;
+		if(IsRunningDedicatedServer())
+		{
+			if(!This->DedicatedServerArtifactName.IsEmpty())
+			{
+				ArtifactNameOverride = This->DedicatedServerArtifactName;
+			}
+			else
+			{
+				ArtifactNameOverride = ArtifactName;
+			}
+		}
+		else
+		{
+			ArtifactNameOverride = ArtifactName;
+		}
 	}
 	for (const FEArtifactSettings& Artifact : This->Artifacts)
 	{
 		if (Artifact.ArtifactName == ArtifactNameOverride)
 		{
 			OutSettings = Artifact.ToNative();
+			if(!DeploymentIdOverride.IsEmpty())
+			{
+				OutSettings.DeploymentId = DeploymentIdOverride;
+			}
+			if(!SandboxIdOverride.IsEmpty())
+			{
+				OutSettings.SandboxId = SandboxIdOverride;
+			}
 			return true;
 		}
 	}
@@ -295,99 +369,53 @@ bool UEIKSettings::AutoGetSettingsForArtifact(const FString& ArtifactName, FEOSA
 		if (Artifact.ArtifactName == This->DefaultArtifactName)
 		{
 			OutSettings = Artifact.ToNative();
+			if(!DeploymentIdOverride.IsEmpty())
+			{
+				OutSettings.DeploymentId = DeploymentIdOverride;
+			}
+			if(!SandboxIdOverride.IsEmpty())
+			{
+				OutSettings.SandboxId = SandboxIdOverride;
+			}
 			return true;
 		}
 	}
-	UE_LOG(LogTemp, Error, TEXT("UEIKSettings::AutoGetSettingsForArtifact() failed due to missing config object specified. Check your project settings"));
+	if(!ArtifactNameOverride.IsEmpty())
+	{
+		UE_LOG(LogEOSIntegrationKit, Error, TEXT("Failed to find artifact settings for %s"), *ArtifactNameOverride);
+	}
+	else
+	{
+		UE_LOG(LogEOSIntegrationKit, Error, TEXT("Failed to find artifact settings or the default artifact because the name was empty. Please check project settings under EOS Integration Kit"));
+	}
 	return false;
 }
 
 #if WITH_EDITOR
 void UEIKSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
+	FString EngineIniPath = FPaths::ProjectConfigDir() / TEXT("DefaultEngine.ini");
+	{
+		/*FEOSArtifactSettings OutSettings;
+		if(!PlatformSpecificArtifactName.IsEmpty() && GetSettingsForArtifact(PlatformSpecificArtifactName, OutSettings))
+		{
+			ClientId = OutSettings.ClientId;
+			ClientSecret = OutSettings.ClientSecret;
+			ProductId = OutSettings.ProductId;
+			SandboxId = OutSettings.SandboxId;
+			DeploymentId = OutSettings.DeploymentId;
+			SaveConfig();
+			if(GConfig)
+			{
+				GConfig->Flush(false, EngineIniPath);
+			}
+		}*/
+	}
 	if (PropertyChangedEvent.Property == nullptr)
 	{
 		Super::PostEditChangeProperty(PropertyChangedEvent);
 		return;
-	}
-
-	{
-		FEOSArtifactSettings OutSettings;
-		if(!AndroidArtifactName.IsEmpty() && GetSettingsForArtifact(AndroidArtifactName, OutSettings))
-		{
-			AndroidClientId = OutSettings.ClientId;
-			AndroidClientSecret = OutSettings.ClientSecret;
-			AndroidProductId = OutSettings.ProductId;
-			AndroidSandboxId = OutSettings.SandboxId;
-			AndroidDeploymentId = OutSettings.DeploymentId;
-		}
-	}
-	{
-		FEOSArtifactSettings OutSettings;
-		if(!IOSArtifactName.IsEmpty() && GetSettingsForArtifact(IOSArtifactName, OutSettings))
-		{
-			IOSClientId = OutSettings.ClientId;
-			IOSClientSecret = OutSettings.ClientSecret;
-			IOSProductId = OutSettings.ProductId;
-			IOSSandboxId = OutSettings.SandboxId;
-			IOSDeploymentId = OutSettings.DeploymentId;
-		}
-	}
-	
-if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
-{
-    FString authType;
-
-    switch (AutoLoginType)
-    {
-        case EAutoLoginTypes::None:
-            authType = TEXT("none");
-            break;
-        case EAutoLoginTypes::AccountPortal:
-            authType = TEXT("accountportal");
-            break;
-        case EAutoLoginTypes::PersistentAuth:
-            authType = TEXT("persistentauth");
-            break;
-        case EAutoLoginTypes::DeviceID:
-            authType = TEXT("deviceid");
-            break;
-        default:
-            break;
-    }
-
-    FString IniPath = FPaths::ProjectConfigDir() / TEXT("WindowsEditor/EditorPerProjectUserSettings.ini");
-    FConfigCacheIni::LoadGlobalIniFile(IniPath, TEXT("EditorPerProjectUserSettings"));
-
-    // Get the current value of AdditionalLaunchParameters
-    FString LaunchParameters;
-    GConfig->GetString(TEXT("/Script/UnrealEd.LevelEditorPlaySettings"), TEXT("AdditionalLaunchParameters"), LaunchParameters, IniPath);
-
-    // Check if -auth_type parameter already exists
-    FString AuthTypeParam = FString::Printf(TEXT("-auth_type="));
-    bool bAuthTypeParamExists = LaunchParameters.Contains(AuthTypeParam);
-
-    if (bAuthTypeParamExists)
-    {
-        // If -auth_type parameter already exists, update its value
-        LaunchParameters.ReplaceInline(*AuthTypeParam, *FString::Printf(TEXT("-AUTH_TYPE=%s"), *authType));
-    }
-    else
-    {
-        // If -auth_type parameter doesn't exist, append it to the existing launch parameters
-        LaunchParameters += FString::Printf(TEXT(" -AUTH_TYPE=%s"), *authType);
-    }
-
-    // Set the modified AdditionalLaunchParameters
-    GConfig->SetString(TEXT("/Script/UnrealEd.LevelEditorPlaySettings"), TEXT("AdditionalLaunchParameters"), *LaunchParameters, IniPath);
-
-	GConfig->Flush(false, IniPath);
-
-	FConfigCacheIni::LoadGlobalIniFile(IniPath, TEXT("EditorPerProjectUserSettings")); // Reload the ini file after flushing
-
-}
-
-	
+	}	
 
 	// Turning off the overlay in general turns off the social overlay too
 	if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("bEnableOverlay")))
@@ -417,10 +445,6 @@ if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 		{
 			if (!Artifact.ClientId.IsEmpty())
 			{
-				if(Artifact.ArtifactName == AndroidArtifactName || Artifact.ArtifactName == IOSArtifactName)
-				{
-					
-				}
 				if (!Artifact.ClientId.StartsWith(TEXT("xyz")))
 				{
 					FMessageDialog::Open(EAppMsgType::Ok,
@@ -469,7 +493,6 @@ if (PropertyChangedEvent.Property->GetFName() == FName(TEXT("AutoLoginType")))
 	{
 		if(bAutomaticallySetupEIK)
 		{
-			FString EngineIniPath = FPaths::ProjectConfigDir() / TEXT("DefaultEngine.ini");
 			FString EngineIniText;
 			if (FFileHelper::LoadFileToString(EngineIniText, *EngineIniPath))
 			{

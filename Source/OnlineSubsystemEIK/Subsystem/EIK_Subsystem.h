@@ -329,13 +329,7 @@ class ONLINESUBSYSTEMEIK_API UEIK_Subsystem : public UGameInstanceSubsystem
 	
 public:
 	UEIK_Subsystem();
-
-	static void EOS_CALL OnSessionInviteReceivedCallback(const EOS_Sessions_SessionInviteReceivedCallbackInfo* Data);
-
-	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Login")
-	bool InitializeEIK();
-
-
+	
 	//Switch to Async Nodes
 	// This C++ method logs in a user to an online subsystem using their device ID and sets up a callback function to handle the login response.
 	// Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/authentication/with-device-id
@@ -451,18 +445,6 @@ public:
 	//This is a C++ method definition for getting the auth token of a player from an online subsystem.
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Friend")
 	bool ShowFriendUserInterface();
-
-	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Friend")
-	FBP_FriendInviteRecievedDelegate OnInviteRecieved;
-
-	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Friend")
-	FBP_FriendInviteRecievedDelegate OnInviteAccepted;
-	
-	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Friend")
-	FBP_FriendInviteRecievedDelegate OnInviteRejected;
-
-	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit || Session")
-	FBP_SessionInviteRecievedDelegate OnSessionInviteReceived;
 
 	//Stat Functions
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit || Statistics")

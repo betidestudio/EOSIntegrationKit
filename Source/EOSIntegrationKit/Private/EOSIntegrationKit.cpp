@@ -7,6 +7,8 @@
 #include "Runtime/Launch/Resources/Version.h"
 #define LOCTEXT_NAMESPACE "FEOSIntegrationKitModule"
 
+
+DEFINE_LOG_CATEGORY(LogEOSIntegrationKit);
 void FEOSIntegrationKitModule::StartupModule()
 {
     ConfigureOnlineSubsystemEIK();
@@ -40,77 +42,124 @@ void FEOSIntegrationKitModule::StartupModule()
 
 void FEOSIntegrationKitModule::ConfigureOnlineSubsystemEIK() const
 {
-    ConfigureDedicatedServerConfigEIK();
     FString EngineIniPath = FPaths::ProjectConfigDir() / TEXT("DefaultEngine.ini");
     FString EngineIniText;
+
     if (FFileHelper::LoadFileToString(EngineIniText, *EngineIniPath))
     {
-        if (EngineIniText.Contains(TEXT("bAutomaticallySetupEIK=False")))
+        FString SectionName = TEXT("/Script/EOSIntegrationKit.EIKSettings");
+        FString KeyName = TEXT("bAutomaticallySetupEIK");
+        bool bAutomaticallySetupEIK = false;
+        // Read the value from the ini file
+        if (GConfig->GetBool(*SectionName, *KeyName, bAutomaticallySetupEIK, GEngineIni) && bAutomaticallySetupEIK)
         {
-            return;
-        }
-        bool bConfigChanged = false;
+            UE_LOG(LogEOSIntegrationKit, Log, TEXT("Automatically setting up OnlineSubsystemEIK"));
+            bool bConfigChanged = false;
 
-        // Check if [OnlineSubsystemEIK] section exists and add it if not
-        if (!EngineIniText.Contains(TEXT("[OnlineSubsystemEIK]")))
-        {
-            EngineIniText += TEXT("\n[OnlineSubsystemEIK]\nbEnabled=true\n");
-            bConfigChanged = true;
-        }
-
-        // Update [OnlineSubsystem] section
-        if (!EngineIniText.Contains(TEXT("[OnlineSubsystem]")))
-        {
-            EngineIniText += TEXT("\n[OnlineSubsystem]\nDefaultPlatformService=EIK\n");
-            bConfigChanged = true;
-        }
-
-        // Update [/Script/OnlineSubsystemEIK.NetDriverEIK] section
-        if (!EngineIniText.Contains(TEXT("[/Script/OnlineSubsystemEIK.NetDriverEIK]")))
-        {
-        	FString Comment = TEXT("\n;EIK Comment: You do not need to worry about this setting as we dynamically set it in Travel URL depending upon if we are using Listen Server or Dedicated Server\n");
-        	EngineIniText += Comment;
-            EngineIniText += TEXT("[/Script/OnlineSubsystemEIK.NetDriverEIK]\nbIsUsingP2PSockets=true\n");
-            bConfigChanged = true;
-        }
-
-        // Update [/Script/Engine.GameEngine] section
-        if (!EngineIniText.Contains(TEXT("[/Script/Engine.GameEngine]")))
-        {
-            EngineIniText += TEXT("\n[/Script/Engine.GameEngine]\n");
-
-            // Update NetDriverDefinitions in [/Script/Engine.GameEngine] section
-            FString NetDriverDefinitions = FString::Printf(
-                TEXT("!NetDriverDefinitions=ClearArray\n+NetDriverDefinitions=(DefName=\"GameNetDriver\",DriverClassName=\"OnlineSubsystemEIK.NetDriverEIK\",DriverClassNameFallback=\"OnlineSubsystemUtils.IpNetDriver\")\n")
-            );
-            EngineIniText += NetDriverDefinitions;
-            
-            bConfigChanged = true;
-        }
-
-        // Save the modified text back to the DefaultEngine.ini file if any changes were made
-        if (bConfigChanged)
-        {
-            if (FFileHelper::SaveStringToFile(EngineIniText, *EngineIniPath))
+            // Check if [OnlineSubsystemEIK] section exists and add it if not
+            if (!EngineIniText.Contains(TEXT("[OnlineSubsystemEIK]")))
             {
-                UE_LOG(LogTemp, Warning, TEXT("OnlineSubsystemEIK configuration added/updated in DefaultEngine.ini"));
+                EngineIniText += TEXT("\n[OnlineSubsystemEIK]\nbEnabled=true\n");
+                bConfigChanged = true;
+            }
+
+            // Update [OnlineSubsystem] section
+            FString OnlineSubsystemSection = TEXT("[OnlineSubsystem]");
+            if (EngineIniText.Contains(OnlineSubsystemSection))
+            {
+                // Find the existing DefaultPlatformService entry and update it if needed
+                int32 SectionStart = EngineIniText.Find(OnlineSubsystemSection);
+                int32 SectionEnd = EngineIniText.Find(TEXT("\n["), ESearchCase::IgnoreCase, ESearchDir::FromStart, SectionStart + 1);
+
+                if (SectionEnd == INDEX_NONE)
+                {
+                    SectionEnd = EngineIniText.Len();
+                }
+
+                FString OnlineSubsystemContent = EngineIniText.Mid(SectionStart, SectionEnd - SectionStart);
+                if (!OnlineSubsystemContent.Contains(TEXT("DefaultPlatformService=EIK")))
+                {
+                    int32 DefaultPlatformServiceIndex = OnlineSubsystemContent.Find(TEXT("DefaultPlatformService="));
+                    if (DefaultPlatformServiceIndex != INDEX_NONE)
+                    {
+                        // Replace the existing DefaultPlatformService value
+                        int32 LineEndIndex = OnlineSubsystemContent.Find(TEXT("\n"), ESearchCase::IgnoreCase, ESearchDir::FromStart, DefaultPlatformServiceIndex);
+                        if (LineEndIndex == INDEX_NONE)
+                        {
+                            LineEndIndex = OnlineSubsystemContent.Len();
+                        }
+
+                        FString ExistingLine = OnlineSubsystemContent.Mid(DefaultPlatformServiceIndex, LineEndIndex - DefaultPlatformServiceIndex);
+                        OnlineSubsystemContent.ReplaceInline(*ExistingLine, TEXT("DefaultPlatformService=EIK"));
+                    }
+                    else
+                    {
+                        // Add the DefaultPlatformService setting
+                        OnlineSubsystemContent += TEXT("\nDefaultPlatformService=EIK");
+                    }
+                    EngineIniText.ReplaceInline(*EngineIniText.Mid(SectionStart, SectionEnd - SectionStart), *OnlineSubsystemContent);
+                    bConfigChanged = true;
+                }
             }
             else
             {
-                UE_LOG(LogTemp, Error, TEXT("Failed to save modified DefaultEngine.ini"));
+                // Add the [OnlineSubsystem] section
+                EngineIniText += TEXT("\n[OnlineSubsystem]\nDefaultPlatformService=EIK\n");
+                bConfigChanged = true;
+            }
+
+            // Update [/Script/OnlineSubsystemEIK.NetDriverEIK] section
+            if (!EngineIniText.Contains(TEXT("[/Script/OnlineSubsystemEIK.NetDriverEIK]")))
+            {
+                FString Comment = TEXT("\n;EIK Comment: You do not need to worry about this setting as we dynamically set it in Travel URL depending upon if we are using Listen Server or Dedicated Server\n");
+                EngineIniText += Comment;
+                EngineIniText += TEXT("[/Script/OnlineSubsystemEIK.NetDriverEIK]\nbIsUsingP2PSockets=true\n");
+                bConfigChanged = true;
+            }
+
+            // Update [/Script/Engine.GameEngine] section
+            if (!EngineIniText.Contains(TEXT("[/Script/Engine.GameEngine]")))
+            {
+                EngineIniText += TEXT("\n[/Script/Engine.GameEngine]\n");
+
+                // Update NetDriverDefinitions in [/Script/Engine.GameEngine] section
+                FString NetDriverDefinitions = FString::Printf(
+                    TEXT("!NetDriverDefinitions=ClearArray\n+NetDriverDefinitions=(DefName=\"GameNetDriver\",DriverClassName=\"OnlineSubsystemEIK.NetDriverEIK\",DriverClassNameFallback=\"OnlineSubsystemUtils.IpNetDriver\")\n")
+                );
+                EngineIniText += NetDriverDefinitions;
+
+                bConfigChanged = true;
+            }
+
+            // Save the modified text back to the DefaultEngine.ini file if any changes were made
+            if (bConfigChanged)
+            {
+                if (FFileHelper::SaveStringToFile(EngineIniText, *EngineIniPath))
+                {
+                    UE_LOG(LogEOSIntegrationKit, Log, TEXT("OnlineSubsystemEIK configuration added/updated in DefaultEngine.ini"));
+                }
+                else
+                {
+                    UE_LOG(LogEOSIntegrationKit, Error, TEXT("Failed to save modified DefaultEngine.ini"));
+                }
+            }
+            else
+            {
+                UE_LOG(LogEOSIntegrationKit, Log, TEXT("OnlineSubsystemEIK configuration already exists in DefaultEngine.ini"));
             }
         }
         else
         {
-            UE_LOG(LogTemp, Warning, TEXT("OnlineSubsystemEIK configuration already exists in DefaultEngine.ini"));
+            UE_LOG(LogEOSIntegrationKit, Log, TEXT("Automatically setting up OnlineSubsystemEIK is disabled"));
         }
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("Failed to load DefaultEngine.ini"));
+        UE_LOG(LogEOSIntegrationKit, Log, TEXT("Failed to load DefaultEngine.ini"));
     }
-    
 }
+
+
 
 void FEOSIntegrationKitModule::ConfigureDedicatedServerConfigEIK()
 {

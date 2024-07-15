@@ -62,8 +62,9 @@ public:
 	virtual void LogFriendsInfo(const EOS_EpicAccountId LoggedInAccount, int32 Indent = 0) const = 0;
 	virtual void LogConnectInfo(const EOS_ProductUserId LoggedInAccount, int32 Indent = 0) const = 0;
 
-protected:
 	EOS_HPlatform PlatformHandle;
+protected:
+	//EOS_HPlatform PlatformHandle;
 };
 
 using IEOSPlatformHandlePtr = TSharedPtr<IEOSPlatformHandle, ESPMode::ThreadSafe>;

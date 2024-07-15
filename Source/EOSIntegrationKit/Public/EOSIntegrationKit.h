@@ -4,6 +4,7 @@
 #include "Interfaces/IPluginManager.h"
 #include "Modules/ModuleManager.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogEOSIntegrationKit, Log, All);
 class FEOSIntegrationKitModule : public IModuleInterface
 {
 public:

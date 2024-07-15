@@ -80,14 +80,13 @@ bool UEVIK_Functions::IsVoiceChatConnected(const UObject* WorldContextObject)
 
 void UEVIK_Functions::LoginEOSVoiceChat(const UObject* WorldContextObject, FString PlayerName, const FEIKResultDelegate& Result)
 {
-	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	
-	if (World)
+	// Remove spaces from PlayerName
+	PlayerName = PlayerName.Replace(TEXT(" "), TEXT(""));
+	if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
-			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
-			if (LocalVoiceSubsystem)
+			if (UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>())
 			{
 				if(LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
 				{
@@ -110,10 +109,12 @@ void UEVIK_Functions::LoginEOSVoiceChat(const UObject* WorldContextObject, FStri
 						}
 					}
 					));
+					return;
 				}	
 			}
 		}
 	}
+	Result.ExecuteIfBound(false, EEVIKResultCodes::Failed);
 }
 
 void UEVIK_Functions::LogoutEOSVoiceChat(const UObject* WorldContextObject, FString PlayerName,
@@ -328,7 +329,7 @@ void UEVIK_Functions::EOSRoomToken(FString VoiceRoomName, FString PlayerName, FS
 									continue;
 
 								auto& Object = Element->AsObject();
-								TokenString = Object->TryGetField(FString("token"))->AsString();
+								TokenString = Object->TryGetField(TEXT("token"))->AsString();
 								UE_LOG(LogTemp, Warning, TEXT("Token -> %s"), *TokenString);
 							}
 						}

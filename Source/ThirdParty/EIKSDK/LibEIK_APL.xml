@@ -11,7 +11,7 @@
 			<setBool result="bSupported" value="true"/>
 		</isArch>
     
-    <setStringFromProperty result="ClientId" ini="Engine" section="/Script/EOSIntegrationKit.EIKSettings" property="AndroidSandboxId" default="xyza7891naMfZYKiUr8eb7A0rLHpsnDa"/>
+    <setStringFromProperty result="ClientId" ini="Engine" section="/Script/EOSIntegrationKit.EIKSettings" property="ClientId" default="xyza7891naMfZYKiUr8eb7A0rLHpsnDa"/>
     <log text="Android Using ClientId: $S(ClientId)"/>
 	</init>
 
@@ -82,15 +82,15 @@
   </baseBuildGradleAdditions>
 
   <gradleProperties>
-      <insertValue value="ProductId=&quot;$S(AndroidProductId)&quot;"></insertValue>
+      <insertValue value="ProductId=&quot;$S(ProductId)&quot;"></insertValue>
       <insertNewline />
-      <insertValue value="SandboxId=&quot;$S(AndroidSandboxId)&quot;"></insertValue>
+      <insertValue value="SandboxId=&quot;$S(SandboxId)&quot;"></insertValue>
       <insertNewline />
-      <insertValue value="DeploymentId=&quot;$S(AndroidDeploymentId)&quot;"></insertValue>
+      <insertValue value="DeploymentId=&quot;$S(DeploymentId)&quot;"></insertValue>
       <insertNewline />
-      <insertValue value="ClientId=&quot;$S(AndroidClientId)&quot;"></insertValue>
+      <insertValue value="ClientId=&quot;$S(ClientId)&quot;"></insertValue>
       <insertNewline />
-      <insertValue value="ClientSecret=&quot;$S(AndroidClientSecret)&quot;"></insertValue>
+      <insertValue value="ClientSecret=&quot;$S(ClientSecret)&quot;"></insertValue>
       <insertNewline />
       <insert>
           android.useAndroidX=true

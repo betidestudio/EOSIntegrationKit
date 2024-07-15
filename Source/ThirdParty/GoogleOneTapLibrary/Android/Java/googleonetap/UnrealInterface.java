@@ -60,13 +60,13 @@ public class UnrealInterface
                             @Override
                             public void onSuccess(BeginSignInResult beginSignInResult) {
                                 Log.d(TAG,"onSuccess : "+beginSignInResult.getPendingIntent().getIntentSender().toString());
-
                                 try {
                                     parentActivity.startIntentSenderForResult(
                                             beginSignInResult.getPendingIntent().getIntentSender(), REQ_ONE_TAP,
                                             null, 0, 0, 0);
                                 } catch (IntentSender.SendIntentException e) {
                                     e.printStackTrace();
+                                    OnGoogleCallback(0, "", "", "", e.toString());
                                 }
                             }
                         })
@@ -74,6 +74,7 @@ public class UnrealInterface
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Log.d(TAG,"onFailure : "+e.toString());
+                                OnGoogleCallback(0, "", "", "", e.toString());
                             }
                         });
             }

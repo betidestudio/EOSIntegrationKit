@@ -62,7 +62,7 @@ public:
 	FString DeploymentId;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Artifact Settings")
-	FString EncryptionKey;
+	FString EncryptionKey = TEXT("9B86F278E855EE69855A5CAE0B1AD04166A143FD98CF96EC71AA4409F9B301C3");
 
 	FEOSArtifactSettings ToNative() const;
 };
@@ -74,12 +74,14 @@ struct FEOSSettings
 	FString ReturnLevelName;
 	FString CacheDir;
 	FString DefaultArtifactName;
+	FString VoiceArtifactName;
+	FString DedicatedServerArtifactName;
 	int32 TickBudgetInMilliseconds;
 	int32 TitleStorageReadChunkLength;
 	bool bEnableOverlay;
 	bool bEnableSocialOverlay;
 	bool bEnableEditorOverlay;
-	bool bShouldEnforceBeingLaunchedByEGS;
+	bool bUseLauncherChecks;
 	bool bUseEAS;
 	bool bUseEOSConnect;
 	bool bUseEOSSessions;
@@ -91,11 +93,78 @@ struct FEOSSettings
 };
 
 UENUM(BlueprintType)
-enum class EAutoLoginTypes : uint8 {
-	None 			UMETA(DisplayName="None"),
-	AccountPortal       UMETA(DisplayName="Account Portal"),
-	PersistentAuth              UMETA(DisplayName="Persistent Auth"),
-	DeviceID        UMETA(DisplayName="Device ID"),
+enum EEIK_AutoLoginType {
+	AutoLogin_None 			UMETA(DisplayName="None"),
+	/** Developer Token login will automatically log the user in with the developer token depending upon the standalone number */
+	AutoLogin_DeveloperTool 	UMETA(DisplayName="Developer Tool"),
+	/** Persistent Auth will automatically log the user in with EAS credentials if they have previously logged in */
+	AutoLogin_PersistentAuth 	UMETA(DisplayName="Persistent Auth"),
+	/** Device ID login will automatically log the user in with the device ID */
+	AutoLogin_DeviceIdLogin 	UMETA(DisplayName="Device ID Login"),
+	/** Account Portal login will automatically log the user in with the Epic Account Portal */
+	AutoLogin_AccountPortalLogin 	UMETA(DisplayName="Account Portal Login"),
+	/** Platform login will automatically log the user in with the platform's login system */
+	AutoLogin_PlatformLogin 	UMETA(DisplayName="Platform Login"),
+	/** Steam login will automatically log the user in with the Steam login system */
+	AutoLogin_SteamLogin 	UMETA(DisplayName="Steam Login"),
+	/** (NOT ACTIVE ATM) PSN login will automatically log the user in with the PSN login system */
+	AutoLogin_PSNLogin 	UMETA(DisplayName="PSN Login"),
+	/** Google login will automatically log the user in with the Google login system but only works on Android */
+	AutoLogin_GoogleLogin 	UMETA(DisplayName="Google Login"),
+	/** Apple login will automatically log the user in with the Apple login system but only works on iOS */
+	AutoLogin_AppleLogin 	UMETA(DisplayName="Apple Login"),
+	
+};
+
+UENUM(BlueprintType)
+enum EEIK_FallbackForAutoLoginType
+{
+	/** No fallback */
+	Fallback_None UMETA(DisplayName="None"),
+	/** Use the device id login */
+	Fallback_DeviceIdLogin UMETA(DisplayName="Device ID Login"),
+	/** Use the Epic Account Portal login */
+	Fallback_AccountPortalLogin UMETA(DisplayName="Account Portal Login")
+};
+
+UENUM(BlueprintType)
+enum EEIK_LoginFlags_LocalForSettings
+{
+	T_EOS_AS_NoFlags = 0 UMETA(DisplayName = "No Flags"),
+	/** Permissions to see your account ID, display name, and language */
+	EOS_AS_BasicProfile = 0x1 UMETA(DisplayName = "Basic Profile"),
+	/** Permissions to see a list of your friends who use this application */
+	EOS_AS_FriendsList = 0x2 UMETA(DisplayName = "Friends List"),
+	/** Permissions to set your online presence and see presence of your friends */
+	EOS_AS_Presence = 0x4 UMETA(DisplayName = "Presence"),
+	/** Permissions to manage the Epic friends list. This scope is restricted to Epic first party products, and attempting to use it will result in authentication failures. */
+	EOS_AS_FriendsManagement = 0x8 UMETA(DisplayName = "Friends Management"),
+	/** Permissions to see email in the response when fetching information for a user. This scope is restricted to Epic first party products, and attempting to use it will result in authentication failures. */
+	EOS_AS_Email = 0x10 UMETA(DisplayName = "Email"),
+	/** Permissions to see your country */
+	EOS_AS_Country = 0x20 UMETA(DisplayName = "Country"),
+};
+
+UENUM(BlueprintType)
+enum EEIK_BuildConfiguration
+{
+	/** Unknown build configuration. */
+	EIK_UnknownBuild = 0 UMETA(DisplayName = "Unknown"),
+
+	/** Debug build. */
+	EIK_Debug = 1 UMETA(DisplayName = "Debug"),
+
+	/** DebugGame build. */
+	EIK_DebugGame = 2 UMETA(DisplayName = "DebugGame"),
+
+	/** Development build. */
+	EIK_Development = 3 UMETA(DisplayName = "Development"),
+
+	/** Shipping build. */
+	EIK_Shipping = 4 UMETA(DisplayName = "Shipping"),
+
+	/** Test build. */
+	EIK_Test = 5 UMETA(DisplayName = "Test"),
 };
 
 UCLASS(Config=Engine, DefaultConfig)
@@ -106,56 +175,54 @@ class EOSINTEGRATIONKIT_API UEIKSettings :
 
 public:
 
+
 	/** This will automatically setup EOS Integration Kit.
 	 *
 	 * Restart the editor after changing this value.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK  Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
 	bool bAutomaticallySetupEIK;
+	/** If set to true, on every launch of the editor, the developer tool will be launched. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
+	bool bAutoLaunchDevTool = false;
 	/** An organization is the highest level in the Epic Online Services (EOS) product management ecosystem. It encompasses all the products and the associated members, such as a publisher or game studio. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
 	FString OrganizationName;
 	/** Products are games or other software projects that contain sandboxes and deployments within EOS. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
 	FString ProductName;
-	/** Auto-Logins the player into the game. Can be used for testing or games with only 1 type of login */
-	EAutoLoginTypes AutoLoginType;
-	/** This will request the country code from the EOS SDK and login */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
-	bool bUseCountryScope;	
-	/** This will show the advanced logs for the EOS SDK and EOS Integration Kit functions*/
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Specific Settings")
-	bool bShowAdvancedLogs;
 
-	/** Select which level which leave party button in social overlay will return to. Leave empty to return to defult game map. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EIK Level Settings")
-	FString ReturnLevelName;
+	
+	/** Auto-Logins the player into the game. Can be used for testing or games with only 1 type of login */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
+	TEnumAsByte<EEIK_AutoLoginType> AutoLoginType;
+
+	/** If the AutoLoginType fails, this will be used as a fallback */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
+	TEnumAsByte<EEIK_FallbackForAutoLoginType> FallbackForAutoLoginType;
+
+	/** If true, the Auth Interface will be used to login the user, inshort, the user will be logged in using the Epic Account Services */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
+	bool bUse_EAS_ForAutoLogin = false;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
+	FString DeveloperToolUrl = TEXT("localhost:6300");
+	
+	/** LoginFlags help define what permissions the user has when they login. */ 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings")
+	TArray<TEnumAsByte<EEIK_LoginFlags_LocalForSettings>> LoginFlags = {EEIK_LoginFlags_LocalForSettings::EOS_AS_BasicProfile, EEIK_LoginFlags_LocalForSettings::EOS_AS_FriendsList, EEIK_LoginFlags_LocalForSettings::EOS_AS_Presence};
 
 	/*Your api key found in Game Services -> Player Ticketing -> [Show Api Key]*/
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Support Tickets")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings|Player Ticketing Settings")
 	FString ApiKey;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString ClientId;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString ClientSecret;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString ProductId;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString SandboxId;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EIK Android/IOS Settings")
-	FString DeploymentId;
+	
 	/**
 	 * The directory any PDS/TDS files are cached into. This is per artifact e.g.:
 	 *
 	 * <UserDir>/<ArtifactId>/<CacheDir>
 	*/
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Title Storage Settings")
 	FString CacheDir = TEXT("CacheDir");
 
 	/** Used to throttle how much time EOS ticking can take */
@@ -163,27 +230,31 @@ public:
 	int32 TickBudgetInMilliseconds = 0;
 
 	/** Set to true to enable the overlay (ecom features) */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Overlay Settings")
 	bool bEnableOverlay = false;
 
 	/** Set to true to enable the social overlay (friends, invites, etc.) */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Overlay Settings")
 	bool bEnableSocialOverlay = false;
 
+	/** Select which level which leave party button in social overlay will return to. Leave empty to return to defult game map. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings|Overlay Settings")
+	FString ReturnLevelName;
+
 	/** Set to true to enable the overlay when running in the editor */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings|Overlay Settings")
 	bool bEnableEditorOverlay = false;
 
 	/** Set to true to enable the social overlay (friends, invites, etc.) */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings", DisplayName="Require Being Launched by the Epic Games Store")
-	bool bShouldEnforceBeingLaunchedByEGS = false;
+	bool bUseLauncherChecks = false;
 
 	/** Tag combinations for paged queries in title file enumerations, separate tags within groups using `+` */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Title Storage Settings")
 	TArray<FString> TitleStorageTags;
 
 	/** Chunk size used when reading a title file */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Title Storage Settings")
 	int32 TitleStorageReadChunkLength = 0;
 
 	/** Used when launched from a store other than EGS or when the specified artifact name was not present */
@@ -192,50 +263,79 @@ public:
 
 	/** Artifact settings to be used for voice operations */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings")
-	FString VoiceArtifactName = TEXT("VoiceArtifact");
+	FString VoiceArtifactName = TEXT("DefaultArtifact");
 
-	/** Artifact settings to be used for Android */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidArtifactName = TEXT("AndroidArtifact");
+	/** Artifact settings to be used for Dedicated Servers. If empty, the default artifact will be used  but Dedicated Server usually require the policy to not have User Required */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings")
+	FString DedicatedServerArtifactName = TEXT("DefaultArtifact");
 
 	/** Artifact settings to be used for IOS */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString IOSArtifactName = TEXT("IOSArtifact");
+	FString PlatformSpecificArtifactName = TEXT("DefaultArtifact");
 
 	/** Per artifact SDK settings. A game might have a FooStaging, FooQA, and public Foo artifact */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings")
 	TArray<FEArtifactSettings> Artifacts;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidProductId;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString ProductId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidClientSecret;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString ClientSecret;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidDeploymentId;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString DeploymentId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidSandboxId;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString SandboxId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific")
-	FString AndroidClientId;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
+	FString ClientId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSProductId;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy", DisplayName="Build Configuration")
+	TEnumAsByte<EEIK_BuildConfiguration> OneClick_BuildConfiguration;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSClientSecret;
+	/** Use the Organization ID string that was provided along with your credentials. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Organization Id")
+	FString OneClick_OrganizationId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSDeploymentId;
+	/** Use the Product ID string that was provided along with your credentials. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Product Id")
+	FString OneClick_ProductId;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSSandboxId;
+	/** Use the Artifact ID string that was provided along with your credentials. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Artifact Id")
+	FString OneClick_ArtifactId;
+	
+	/*BuildPatchTool uses a unique Client ID and Client Secret, separate from any EOS Client IDs your game may use. Refer to the Build Patch Tool Credentials section of your Product Settings in Dev Portal to obtain the correct Client ID and Secret. Clients listed under SDK Credentials will not function with the BuildPatchTool.*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Client Id")
+	FString OneClick_ClientId;
+	
+	/*BuildPatchTool uses a unique Client ID and Client Secret, separate from any EOS Client IDs your game may use. Refer to the Build Patch Tool Credentials section of your Product Settings in Dev Portal to obtain the correct Client ID and Secret. Clients listed under SDK Credentials will not function with the BuildPatchTool.*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Credentials", DisplayName="Client Secret")
+	FString OneClick_ClientSecret;
 
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|IOS")
-	FString IOSClientId;	
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="Cloud Dir")
+	FString OneClick_CloudDirOverride;
+	/** The commandline to send to the app on launch. This can be set to “” when no additional arguments are needed. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="Args Override")
+	FString OneClick_ArgsOverride;
 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="App Launch Override")
+	FString OneClick_AppLaunchOverride;
+	
+
+	/** Please leave this empty unless you really want to override the build version. We assign the build version automatically based on the timestamp of the build and the game version. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="Build Version Override")
+	FString OneClick_BuildVersionOverride;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="App Args Override")
+	FString OneClick_AppArgsOverride;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy|Build Patch Tool Parameters", DisplayName="Build Root Override")
+	FString OneClick_BuildRootOverride;
+
+	
 	/** Set to true to have Epic Accounts used (friends list will be unified with the default platform) */
 	UPROPERTY()
 	bool bUseEAS = false;

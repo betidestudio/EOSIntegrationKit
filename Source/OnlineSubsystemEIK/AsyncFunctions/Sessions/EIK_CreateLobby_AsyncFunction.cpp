@@ -3,6 +3,9 @@
 
 #include "EIK_CreateLobby_AsyncFunction.h"
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
+#include "OnlineSubsystemUtils.h"
 #include "Online/OnlineSessionNames.h"
 
 void UEIK_CreateLobby_AsyncFunction::Activate()
@@ -37,6 +40,12 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 			SessionCreationInfo.bAllowJoinInProgress = Var_CreateLobbySettings.bAllowJoinInProgress;
 			SessionCreationInfo.SessionIdOverride = Var_CreateLobbySettings.LobbyIDOverride;
 			SessionCreationInfo.Set(SETTING_HOST_MIGRATION, Var_CreateLobbySettings.bSupportHostMigration, EOnlineDataAdvertisementType::ViaOnlineService);
+			{
+				FOnlineSessionSetting LocalVNameSetting;
+				LocalVNameSetting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
+				LocalVNameSetting.Data = *VSessionName.ToString();
+				SessionCreationInfo.Set(FName(TEXT("SessionName")), LocalVNameSetting);
+			}
 			//SessionCreationInfo.Set(SEARCH_KEYWORDS, VSessionName, EOnlineDataAdvertisementType::ViaOnlineService);
 			for (auto& Settings_SingleValue : SessionSettings)
 			{

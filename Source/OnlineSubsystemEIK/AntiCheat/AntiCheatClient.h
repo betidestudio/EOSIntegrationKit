@@ -9,6 +9,7 @@
 #include "EIKSettings.h"
 #include "eos_anticheatcommon_types.h"
 #include "OnlineSubsystem.h"
+#include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "AntiCheatClient.generated.h"
 
@@ -41,9 +42,8 @@ public:
 	{
 		if(const UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
 		{
-			if(EIKSettings->bShowAdvancedLogs)
 			{
-				UE_LOG(LogOnline,Warning, TEXT("EIK: %s"), *Log);
+				UE_LOG(LogEIK,Warning, TEXT("EIK: %s"), *Log);
 			}
 		}
 	}

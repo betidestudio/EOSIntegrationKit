@@ -6,6 +6,7 @@
 #include "EIKSettings.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemEOS.h"
+#include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 bool UAntiCheatServer::IsAntiCheatServerAvailable(const UObject* WorldContextObject)
 {
@@ -26,9 +27,8 @@ void UAntiCheatServer::PrintAdvancedLogs(FString Log)
 {
 	if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
 	{
-		if(EIKSettings->bShowAdvancedLogs)
 		{
-			UE_LOG(LogOnline,Warning, TEXT("EIK: %s"), *Log);
+			UE_LOG(LogEIK,Warning, TEXT("EIK: %s"), *Log);
 		}
 	}
 }

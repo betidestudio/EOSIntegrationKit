@@ -63,7 +63,7 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			TArray<FSanctionsStruct> SanctionsArray;
+			TArray<FEIK_Sanctions_PlayerSanction> SanctionsArray;
 			EOS_Sanctions_GetPlayerSanctionCountOptions SanctionsCountOptions;
 			SanctionsCountOptions.ApiVersion = EOS_SANCTIONS_GETPLAYERSANCTIONCOUNT_API_LATEST;
 			SanctionsCountOptions.TargetUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*Var_TargetProductUserID));
@@ -86,12 +86,8 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 				{
 					if (OutSanction[i])
 					{
-						FSanctionsStruct SanctionStruct;
-						SanctionStruct.Action = FString(OutSanction[i]->Action);
-						SanctionStruct.ReferenceId = FString(OutSanction[i]->ReferenceId);
-						SanctionStruct.TimeExpires = FDateTime::FromUnixTimestamp(OutSanction[i]->TimeExpires);
-						SanctionStruct.TimePlaced = FDateTime::FromUnixTimestamp(OutSanction[i]->TimePlaced);
-						SanctionsArray.Add(SanctionStruct);
+						FEIK_Sanctions_PlayerSanction LocalTempRef = *OutSanction[i];
+						SanctionsArray.Add(LocalTempRef);
 					}
 				}
 				for(int32 i=0; i < (int32)SanctionsCount;i++)
@@ -122,7 +118,7 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 
 void UEIK_SanctionsAsyncFunction::FireFailure()
 {
-	Failure.Broadcast(TArray<FSanctionsStruct>());
+	Failure.Broadcast(TArray<FEIK_Sanctions_PlayerSanction>());
 	SetReadyToDestroy();
 	MarkAsGarbage();
 }

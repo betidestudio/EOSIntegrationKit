@@ -2,6 +2,7 @@
 
 using UnrealBuildTool;
 using System.IO;
+using EpicGames.Core;
 
 public class OnlineSubsystemEIK : ModuleRules
 {
@@ -44,7 +45,21 @@ public class OnlineSubsystemEIK : ModuleRules
 		PrivateDefinitions.Add("USE_XBL_XSTS_TOKEN=" + (bUseXblXstsToken ? "1" : "0"));
 		PrivateDefinitions.Add("USE_PSN_ID_TOKEN=" + (bUsePsnIdToken ? "1" : "0"));
 		PrivateDefinitions.Add("ADD_USER_LOGIN_INFO=" + (bAddUserLoginInfo ? "1" : "0"));
-		
+		bool bSupportOculusPlatform = false;
+		ConfigHierarchy PlatformGameConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Engine, DirectoryReference.FromFile(Target.ProjectFile), UnrealTargetPlatform.Android);
+		if (!PlatformGameConfig.GetBool("OnlineSubsystemOculus", "bEnabled", out bSupportOculusPlatform))
+		{
+			bSupportOculusPlatform = false;
+		}
+		if (bSupportOculusPlatform)
+		{
+			PublicDefinitions.Add("SUPPORTOCULUSPLATFORM=1");
+		}
+		else
+		{
+			PublicDefinitions.Add("SUPPORTOCULUSPLATFORM=0");
+		}
+
 		if (Target.Platform == UnrealTargetPlatform.Android)
 		{
 			PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
