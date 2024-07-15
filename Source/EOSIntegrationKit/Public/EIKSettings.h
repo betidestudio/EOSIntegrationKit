@@ -237,13 +237,14 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Overlay Settings")
 	bool bEnableSocialOverlay = false;
 
+	/** Set to true to enable the overlay when running in the editor */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings|Overlay Settings")
+	bool bEnableEditorOverlay = false;
+	
 	/** Select which level which leave party button in social overlay will return to. Leave empty to return to defult game map. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings|Overlay Settings")
 	FString ReturnLevelName;
 
-	/** Set to true to enable the overlay when running in the editor */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "EOS Settings|Overlay Settings")
-	bool bEnableEditorOverlay = false;
 
 	/** Set to true to enable the social overlay (friends, invites, etc.) */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings", DisplayName="Require Being Launched by the Epic Games Store")
