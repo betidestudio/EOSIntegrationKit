@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Betide Studio. All Rights Reserved.
+﻿ // Copyright (c) 2024 Betide Studio. All Rights Reserved.
 
 #include "EIKEditor.h"
 #include "ToolMenus.h"
@@ -266,11 +266,6 @@ void FEIKEditorModule::OnPackageAndDeploySelected()
     Info.bFireAndForget = false;
     Info.FadeOutDuration = 0.5f;
     Info.ExpireDuration = 3.0f;
-    Info.Hyperlink = FSimpleDelegate::CreateLambda([this]()
-    {
-        OpenDevPortal();
-    });
-    Info.Image = FEosIconStyle::Get().GetBrush("EIKEditor.EIKIcon");
     Info.ButtonDetails.Add(FNotificationButtonInfo(
         LOCTEXT("CancelPackage", "Cancel"),
         LOCTEXT("CancelPackage_Tooltip", "Cancel the packaging process"),

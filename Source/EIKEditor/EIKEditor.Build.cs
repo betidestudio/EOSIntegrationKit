@@ -28,7 +28,6 @@ public class EIKEditor : ModuleRules
                 "UnrealEd", 
                 "LauncherServices",
                 "EOSIntegrationKit",
-                // ... add private dependencies that you statically link with here ...
             }
         );
     }
