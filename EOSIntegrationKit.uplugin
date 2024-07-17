@@ -91,9 +91,7 @@
 			"Type": "Editor",
 			"LoadingPhase": "Default",
 			"PlatformAllowList": [
-				"Win64"
-			],
-			"BlacklistPlatforms": [
+				"Win64",
 				"Mac",
 				"Linux"
 			]
