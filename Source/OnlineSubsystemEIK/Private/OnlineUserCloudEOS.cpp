@@ -554,7 +554,9 @@ bool FOnlineUserCloudEOS::WriteUserFile(const FUniqueNetId& UserId, const FStrin
 		PRAGMA_DISABLE_DEPRECATION_WARNINGS
 			TriggerOnWriteUserFileProgressDelegates(Data->BytesTransferred, *SharedUserId, FileName);
 		PRAGMA_ENABLE_DEPRECATION_WARNINGS
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 4
 			TriggerOnWriteUserFileProgress64Delegates(Data->BytesTransferred, *SharedUserId, FileName);
+#endif
 		});
 
 	CallbackObj->CallbackLambda = [this, SharedUserId, FileName](const EOS_PlayerDataStorage_WriteFileCallbackInfo* Data)

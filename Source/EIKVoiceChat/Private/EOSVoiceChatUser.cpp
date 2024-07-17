@@ -3,7 +3,6 @@
 #include "EOSVoiceChatUser.h"
 #include "UObject/UObjectIterator.h"
 #include "EIKVoiceChat/Subsystem/EIK_Voice_Subsystem.h"
-#include "Engine.h"
 #if WITH_EOS_RTC
 #include "HAL/IConsoleManager.h"
 #include "Stats/Stats.h"
