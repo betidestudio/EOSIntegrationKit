@@ -254,6 +254,7 @@ TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
 
 void FEIKEditorModule::OnPackageAndDeploySelected()
 {
+#if PLATFORM_WINDOWS
     UEIKSettings* Settings = GetMutableDefault<UEIKSettings>();
     FEOSArtifactSettings ArtifactSettings;
     if (Settings->OneClick_ArtifactId.IsEmpty() || Settings->OneClick_ClientId.IsEmpty() || Settings->OneClick_ClientSecret.IsEmpty() || Settings->OneClick_OrganizationId.IsEmpty() || Settings->OneClick_ProductId.IsEmpty() || Settings->OneClick_CloudDirOverride.IsEmpty())
@@ -377,6 +378,9 @@ void FEIKEditorModule::OnPackageAndDeploySelected()
         });
     }
 });
+#else
+    FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("PlatformNotSupported", "Platform not supported"));
+#endif
 }
 
 
