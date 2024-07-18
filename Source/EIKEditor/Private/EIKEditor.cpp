@@ -233,7 +233,7 @@ TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
     FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Documentation"),
     FUIAction(FExecuteAction::CreateLambda([]
     {
-        UKismetSystemLibrary::LaunchURL("eik-new.betide.studio");
+        UKismetSystemLibrary::LaunchURL("eik.betide.studio");
     }))
 );
 
