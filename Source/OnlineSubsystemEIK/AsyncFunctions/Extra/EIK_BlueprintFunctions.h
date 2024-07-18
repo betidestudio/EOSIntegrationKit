@@ -358,4 +358,7 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Convert POSIX Time to DateTime", Category="EOS Integration Kit || Extra")
 	static FDateTime ConvertPosixTimeToDateTime(int64 PosixTime);
 
+	UFUNCTION(BlueprintCallable, DisplayName="Get Resolved Connect String", Category="EOS Integration Kit || Extra")
+	static FString GetResolvedConnectString(FName SessionName);
+
 };

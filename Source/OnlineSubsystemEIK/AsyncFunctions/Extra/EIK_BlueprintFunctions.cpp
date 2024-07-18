@@ -831,3 +831,17 @@ FDateTime UEIK_BlueprintFunctions::ConvertPosixTimeToDateTime(int64 PosixTime)
 {
 	return FDateTime::FromUnixTimestamp(PosixTime);
 }
+
+FString UEIK_BlueprintFunctions::GetResolvedConnectString(FName SessionName)
+{
+	if (const IOnlineSubsystem* SubsystemRef = IOnlineSubsystem::Get())
+	{
+		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+		{
+			FString ConnectString;
+			SessionPtrRef->GetResolvedConnectString(SessionName, ConnectString);
+			return ConnectString;
+		}
+	}
+	return FString();
+}
