@@ -2181,6 +2181,7 @@ struct FEIK_Lobby_LocalRTCOptions
 	* must be received with EOS_RTCAudio_AddNotifyAudioBeforeRender and rendered manually. The default is EOS_FALSE if this struct is not
 	* specified.
 	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
 	bool bUseManualAudioOutput;
 	
 	/**
@@ -2189,6 +2190,7 @@ struct FEIK_Lobby_LocalRTCOptions
 	 * It must be manually unmuted with a call to EOS_RTCAudio_UpdateSending. If manual audio output is enabled, this value is ignored.
 	 * The default value is EOS_FALSE if this struct is not specified.
 	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
 	bool bLocalAudioDeviceInputStartsMuted;
 
 	FEIK_Lobby_LocalRTCOptions(): Flags(0), bUseManualAudioInput(false), bUseManualAudioOutput(false), bLocalAudioDeviceInputStartsMuted(false)
