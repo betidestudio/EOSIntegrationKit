@@ -23,11 +23,12 @@
 UEIK_Subsystem::UEIK_Subsystem()
 {
 	// Add the delegate to the online subsystem
-	IOnlineSessionPtr SessionInt = Online::GetSessionInterface(GetWorld());
-	if (SessionInt.IsValid())
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
 	{
-		UE_LOG(LogEIK, Log, TEXT("Binding OnSessionUserInviteAcceptedDelegate_Handle"));
-		SessionInt->AddOnSessionUserInviteAcceptedDelegate_Handle(OnSessionUserInviteAcceptedDelegate);
+		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
+		{
+			SessionPtrRef->AddOnSessionUserInviteAcceptedDelegate_Handle(FOnSessionUserInviteAcceptedDelegate::CreateUObject(this, &UEIK_Subsystem::FuncEK_OnSessionUserInviteAccepted));
+		}
 	}
 }
 
@@ -1220,7 +1221,7 @@ void UEIK_Subsystem::OnFriendInviteAcceptedDestroySession(FName Name, bool bArg)
 {
 }
 
-void UEIK_Subsystem::OnSessionUserInviteAccepted(const bool bWasSuccessful, const int32 ControllerId,
+void UEIK_Subsystem::OnSessionUserInviteAccepted12(const bool bWasSuccessful, const int32 ControllerId,
                                                  FUniqueNetIdPtr UserId, const FOnlineSessionSearchResult& InviteResult)
 {
 	if (bWasSuccessful)
@@ -1242,6 +1243,14 @@ void UEIK_Subsystem::OnSessionUserInviteAccepted(const bool bWasSuccessful, cons
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to accept invitation to join session"));
 	} 
+}
+
+void UEIK_Subsystem::FuncEK_OnSessionUserInviteAccepted(bool bArg, int I, TSharedPtr<const FUniqueNetId> UniqueNetId,
+	const FOnlineSessionSearchResult& OnlineSessionSearchResult)
+{
+	FBlueprintSessionResult Result;
+	Result.OnlineResult = OnlineSessionSearchResult;
+	OnSessionUserInviteAccepted.Broadcast(bArg, Result);
 }
 
 //Callback Functions

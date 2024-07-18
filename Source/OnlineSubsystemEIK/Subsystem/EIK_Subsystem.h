@@ -322,6 +322,8 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FBP_TitleFileList_Callback, bool, bWasSuccess
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FBP_HostMigration_Callback, bool, bLocalHost, const FString&, PromotedMember, const FString&, JoinAddress);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBP_FriendInviteRecievedDelegate, const FEIKUniqueNetId&, LocalUserId, const FEIKUniqueNetId&, InvitedUserId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FBP_SessionInviteRecievedDelegate, const FString&, SessionInfo, const FString&, LocalProductId, const FString&, InvitedProductId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_OnSessionUserInviteAccepted, bool, bWasSuccesfull, const FBlueprintSessionResult&, AcceptedSession);
+
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_Subsystem : public UGameInstanceSubsystem
 {
@@ -553,8 +555,14 @@ public:
 	FBP_GetTitleFile_Callback GetTitleFile_CallbackBP;
 
 	FOnSessionUserInviteAcceptedDelegate OnSessionUserInviteAcceptedDelegate;
+	
+	UPROPERTY(BlueprintAssignable, DisplayName="On Session User Invite Accepted")
+	FEIK_OnSessionUserInviteAccepted OnSessionUserInviteAccepted;
+	
+	
 	void OnFriendInviteAcceptedDestroySession(FName Name, bool bArg);
-	void OnSessionUserInviteAccepted(const bool bWasSuccessful, const int32 ControllerId, FUniqueNetIdPtr UserId, const FOnlineSessionSearchResult& InviteResult);
+	void OnSessionUserInviteAccepted12(const bool bWasSuccessful, const int32 ControllerId, FUniqueNetIdPtr UserId, const FOnlineSessionSearchResult& InviteResult);
+	void FuncEK_OnSessionUserInviteAccepted(bool bArg, int I, TSharedPtr<const FUniqueNetId> UniqueNetId, const FOnlineSessionSearchResult& OnlineSessionSearchResult);
 
 
 	// This is a C++ variable for storing a reference to an online session search.
