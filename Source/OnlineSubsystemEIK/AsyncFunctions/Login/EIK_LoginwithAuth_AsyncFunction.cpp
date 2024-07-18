@@ -22,7 +22,7 @@ void UEIK_LoginwithAuth_AsyncFunction::Activate()
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{
-			UE_LOG(LogEIK, Verbose, TEXT("LoginUsingConnectInterface: Subsystem and Identity Interface is valid and proceeding with login."));
+			UE_LOG(LogEIK, Verbose, TEXT("LoginUsingAuthInterface: Subsystem and Identity Interface is valid and proceeding with login."));
 			FString EGS_Token;
 			FOnlineAccountCredentials AccountDetails;
 			AccountDetails.Id = Var_Id;
@@ -33,7 +33,7 @@ void UEIK_LoginwithAuth_AsyncFunction::Activate()
 			return;
 		}
 	}
-	UE_LOG(LogEIK, Error, TEXT("LoginUsingConnectInterface: Subsystem or Identity Interface is not valid"));
+	UE_LOG(LogEIK, Error, TEXT("LoginUsingAuthInterface: Subsystem or Identity Interface is not valid"));
 	OnFailure.Broadcast(FEIK_EpicAccountId(),FEIK_ProductUserId(), "Subsystem or Identity Interface is not valid");
 	SetReadyToDestroy();
 	MarkAsGarbage();
@@ -46,28 +46,28 @@ void UEIK_LoginwithAuth_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bW
 	{
 		if(UserId.IsValid())
 		{
-			UE_LOG(LogEIK, Verbose, TEXT("LoginUsingConnectInterface: Login was successful. UserID: %s"), *UserId.ToString());
+			UE_LOG(LogEIK, Verbose, TEXT("LoginUsingAuthInterface: Login was successful. UserID: %s"), *UserId.ToString());
 			FString EpicId, ProductId;
 			if(UserId.ToString().Split(TEXT("|"), &EpicId, &ProductId))
 			{
-				UE_LOG(LogEIK, Verbose, TEXT("LoginUsingConnectInterface: Login was successful. EpicID: %s, ProductID: %s"), *EpicId, *ProductId);
+				UE_LOG(LogEIK, Verbose, TEXT("LoginUsingAuthInterface: Login was successful. EpicID: %s, ProductID: %s"), *EpicId, *ProductId);
 				OnSuccess.Broadcast(EOS_EpicAccountId_FromString(TCHAR_TO_ANSI(*EpicId)), EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*ProductId)), "");
 			}
 			else
 			{
-				UE_LOG(LogEIK, Error, TEXT("LoginUsingConnectInterface: Login was successful but UserID is not valid"));
+				UE_LOG(LogEIK, Error, TEXT("LoginUsingAuthInterface: Login was successful but UserID is not valid"));
 				OnFailure.Broadcast(FEIK_EpicAccountId(), FEIK_ProductUserId(), "UserID is not valid");
 			}
 		}
 		else
 		{
-			UE_LOG(LogEIK, Error, TEXT("LoginUsingConnectInterface: Login was successful but UserID is not valid"));
+			UE_LOG(LogEIK, Error, TEXT("LoginUsingAuthInterface: Login was successful but UserID is not valid"));
 			OnFailure.Broadcast(FEIK_EpicAccountId(), FEIK_ProductUserId(), "UserID is not valid");
 		}
 	}
 	else
 	{
-		UE_LOG(LogEIK, Error, TEXT("LoginUsingConnectInterface: Login failed. Error: %s"), *Error);
+		UE_LOG(LogEIK, Error, TEXT("LoginUsingAuthInterface: Login failed. Error: %s"), *Error);
 		OnFailure.Broadcast(FEIK_EpicAccountId(), FEIK_ProductUserId(), Error);
 	}
 	SetReadyToDestroy();
