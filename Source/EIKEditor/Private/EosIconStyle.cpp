@@ -29,7 +29,7 @@ void FEosIconStyle::Shutdown()
 
 FName FEosIconStyle::GetStyleSetName()
 {
-	static FName StyleSetName(TEXT("SteamStyle"));
+	static FName StyleSetName(TEXT("EIKStyle"));
 	return StyleSetName;
 }
 
@@ -39,10 +39,10 @@ const FVector2D Icon20x20(20.0f, 20.0f);
 
 TSharedRef< FSlateStyleSet > FEosIconStyle::Create()
 {
-	TSharedRef< FSlateStyleSet > Style = MakeShareable(new FSlateStyleSet("SteamStyle"));
+	TSharedRef< FSlateStyleSet > Style = MakeShareable(new FSlateStyleSet("EIKStyle"));
 	Style->SetContentRoot(IPluginManager::Get().FindPlugin("EosIntegrationKit")->GetBaseDir() / TEXT("Resources"));
 
-	Style->Set("Steam.PluginAction", new IMAGE_BRUSH(TEXT("NewButtonIcon"), Icon20x20));
+	Style->Set("EIK.PluginAction", new IMAGE_BRUSH(TEXT("NewButtonIcon"), Icon20x20));
 	return Style;
 }
 
