@@ -777,3 +777,50 @@ bool UEVIK_Functions::SetInputMethods(const UObject* WorldContextObject, FString
 	}
 	return false;
 }
+
+bool UEVIK_Functions::IsPlayerTalking(const UObject* WorldContextObject, FString PlayerName)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+
+	if (World)
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
+		{
+			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
+			if (LocalVoiceSubsystem)
+			{
+				if (LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
+				{
+					return LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->IsPlayerTalking(PlayerName);
+					
+				}
+			}
+		}
+	}
+	return false;
+}
+
+void UEVIK_Functions::MuteInputDevice(const UObject* WorldContextObject, bool Mute, bool &bWasSuccess)
+{
+	bWasSuccess = false;
+
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+
+	if (World)
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
+		{
+			UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>();
+			if (LocalVoiceSubsystem)
+			{
+				if (LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
+				{
+					LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->SetAudioInputDeviceMuted(Mute);
+					bWasSuccess = true;
+					return;
+				}
+			}
+		}
+	}
+	return;
+}
