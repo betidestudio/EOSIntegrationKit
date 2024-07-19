@@ -23,16 +23,7 @@ bool UAntiCheatServer::IsAntiCheatServerAvailable(const UObject* WorldContextObj
 	return false;
 }
 
-void UAntiCheatServer::PrintAdvancedLogs(FString Log)
-{
-	if(UEIKSettings* EIKSettings = GetMutableDefault<UEIKSettings>())
-	{
-		{
-			UE_LOG(LogEIK,Warning, TEXT("EIK: %s"), *Log);
-		}
-	}
-}
-bool UAntiCheatServer::RegisterAntiCheatServer(FString ClientProductID)
+bool UAntiCheatServer::RegisterAntiCheatServer(FString ServerName, FString ClientProductID)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
 	{
@@ -53,8 +44,7 @@ bool UAntiCheatServer::RegisterAntiCheatServer(FString ClientProductID)
 				EOS_AntiCheatServer_BeginSessionOptions Options = {};
 				Options.ApiVersion = EOS_ANTICHEATSERVER_BEGINSESSION_API_LATEST;
 				Options.RegisterTimeoutSeconds = EOS_ANTICHEATSERVER_BEGINSESSION_MAX_REGISTERTIMEOUT;
-				const FString LocalServerName = "GameSession";
-				Options.ServerName = TCHAR_TO_UTF8(*LocalServerName);
+				Options.ServerName = TCHAR_TO_UTF8(*ServerName);
 				Options.bEnableGameplayData = EOS_FALSE;
 #if UE_SERVER
 				Options.LocalUserId = nullptr;
@@ -64,16 +54,17 @@ bool UAntiCheatServer::RegisterAntiCheatServer(FString ClientProductID)
 				const EOS_EResult Result = EOS_AntiCheatServer_BeginSession(EOSRef->AntiCheatServerHandle, &Options);
 				if(Result == EOS_EResult::EOS_Success)
 				{
+					UE_LOG(LogEIK, Log, TEXT("RegisterAntiCheatServer-> Success"));
 					return true;
 				}
-				PrintAdvancedLogs(FString::Printf(TEXT("RegisterAntiCheatServer-> %hs"), EOS_EResult_ToString(Result)));
+				UE_LOG(LogEIK, Log, TEXT("RegisterAntiCheatServer-> %hs"), EOS_EResult_ToString(Result));
 				return false;
 			}
 		}
-		PrintAdvancedLogs(FString::Printf(TEXT("RegisterAntiCheatServer-> FOnlineSubsystemEOS is null")));
+		UE_LOG(LogEIK, Warning, TEXT("RegisterAntiCheatServer-> FOnlineSubsystemEOS is null"));
 		return false;
 	}
-	PrintAdvancedLogs(FString::Printf(TEXT("RegisterAntiCheatServer-> IOnlineSubsystem is null")));
+	UE_LOG(LogEIK, Warning, TEXT("RegisterAntiCheatServer-> IOnlineSubsystem is null"));
 	return false;
 }
 
@@ -92,15 +83,16 @@ bool UAntiCheatServer::RegisterClientForAntiCheat(FString ClientProductID, APlay
 			const EOS_EResult Result = EOS_AntiCheatServer_RegisterClient(EOSRef->AntiCheatServerHandle, &Options);
 			if(Result == EOS_EResult::EOS_Success)
 			{
+				UE_LOG(LogEIK, Log, TEXT("RegisterClientForAntiCheat-> Success"));
 				return true;
 			}
-			PrintAdvancedLogs(FString::Printf(TEXT("RegisterClientForAntiCheat-> %hs"), EOS_EResult_ToString(Result)));
+			UE_LOG(LogEIK, Warning, TEXT("RegisterClientForAntiCheat-> %hs"), EOS_EResult_ToString(Result));
 			return false;
 		}
-		PrintAdvancedLogs(FString::Printf(TEXT("RegisterClientForAntiCheat-> FOnlineSubsystemEOS is null")));
+		UE_LOG(LogEIK, Warning, TEXT("RegisterClientForAntiCheat-> FOnlineSubsystemEOS is null"));
 		return false;
 	}
-	PrintAdvancedLogs(FString::Printf(TEXT("RegisterClientForAntiCheat-> IOnlineSubsystem is null")));
+	UE_LOG(LogEIK, Warning, TEXT("RegisterClientForAntiCheat-> IOnlineSubsystem is null"));
 	return false;
 }
 
@@ -118,15 +110,16 @@ bool UAntiCheatServer::RecievedMessageFromClient(APlayerController* Controller,c
 			const EOS_EResult Result = EOS_AntiCheatServer_ReceiveMessageFromClient(EOSRef->AntiCheatServerHandle, &Options);
 			if(Result == EOS_EResult::EOS_Success)
 			{
+				UE_LOG(LogEIK, Log, TEXT("RecievedMessageFromClient-> Success"));
 				return true;
 			}
-			PrintAdvancedLogs(FString::Printf(TEXT("RecievedMessageFromClient-> %hs"), EOS_EResult_ToString(Result)));
+			UE_LOG(LogEIK, Log, TEXT("RecievedMessageFromClient-> %hs"), EOS_EResult_ToString(Result));
 			return false;
 		}
-		PrintAdvancedLogs(FString::Printf(TEXT("RecievedMessageFromClient-> FOnlineSubsystemEOS is null")));
+		UE_LOG(LogEIK, Warning, TEXT("RecievedMessageFromClient-> FOnlineSubsystemEOS is null"));
 		return false;
 	}
-	PrintAdvancedLogs(FString::Printf(TEXT("RecievedMessageFromClient-> IOnlineSubsystem is null")));
+	UE_LOG(LogEIK, Warning, TEXT("RecievedMessageFromClient-> IOnlineSubsystem is null"));
 	return false;
 }
 
@@ -140,7 +133,7 @@ void UAntiCheatServer::OnMessageToClientCb(const EOS_AntiCheatCommon_OnMessageTo
 	}
 	else
 	{
-		UE_LOG(LogTemp,Verbose, TEXT("OnMessageToClientCb-> AntiCheatServer is null"));
+		UE_LOG(LogEIK,Verbose, TEXT("OnMessageToClientCb-> AntiCheatServer is null"));
 	}
 }
 
@@ -152,6 +145,6 @@ void UAntiCheatServer::OnClientActionRequiredCb(const EOS_AntiCheatCommon_OnClie
 	}
 	else
 	{
-		UE_LOG(LogTemp,Verbose, TEXT("OnClientActionRequiredCb-> AntiCheatServer is null"));
+		UE_LOG(LogEIK,Verbose, TEXT("OnClientActionRequiredCb-> AntiCheatServer is null"));
 	}
 }
