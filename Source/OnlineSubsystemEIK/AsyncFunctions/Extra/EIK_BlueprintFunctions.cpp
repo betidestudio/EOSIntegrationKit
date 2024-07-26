@@ -840,6 +840,10 @@ FString UEIK_BlueprintFunctions::GetResolvedConnectString(FName SessionName)
 		{
 			FString ConnectString;
 			SessionPtrRef->GetResolvedConnectString(SessionName, ConnectString);
+			if(ConnectString.Contains(":GameSession:97"))
+			{
+				ConnectString = ConnectString.Replace(TEXT(":GameSession:97"), TEXT(":GameNetDriver:26"));
+			}
 			return ConnectString;
 		}
 	}
