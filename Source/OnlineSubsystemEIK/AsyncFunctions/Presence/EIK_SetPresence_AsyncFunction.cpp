@@ -6,6 +6,7 @@
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlinePresenceInterface.h"
 #include "Online/OnlineSessionNames.h"
+#include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 
 void UEIK_SetPresence_AsyncFunction::Activate()
 {
@@ -18,41 +19,48 @@ void UEIK_SetPresence_AsyncFunction::SetPresence()
 {
 	if (IOnlineSubsystem* SubsystemRef = Online::GetSubsystem(this->GetWorld()))
 	{
-		//Updating Presence
-		IOnlineSubsystem* Subsystem = Online::GetSubsystem(this->GetWorld());
-		IOnlineIdentityPtr Identity = Subsystem->GetIdentityInterface();
-		IOnlinePresencePtr Presence = Subsystem->GetPresenceInterface();
-		FOnlineUserPresenceStatus Status;
-
-		//Switch On Presence Status
-		switch (PresenceStatus)
+		if(IOnlineIdentityPtr Identity = SubsystemRef->GetIdentityInterface())
 		{
-		case EPresenceStatus::PR_Online:
-			Status.State = EOnlinePresenceState::Online;
-			UE_LOG(LogTemp, Log, TEXT("Presence Set To Online"));
-			break;
-		case EPresenceStatus::PR_Offline:
-			UE_LOG(LogTemp, Error, TEXT("Cant Change Presence To Offline When User Is Playing"));
-			break;
-		case EPresenceStatus::PR_Away:
-			Status.State = EOnlinePresenceState::Away;
-			UE_LOG(LogTemp, Error, TEXT("Presence Set To Away"));
-			break;
-		case EPresenceStatus::PR_ExtendedAway:
-			Status.State = EOnlinePresenceState::ExtendedAway;
-			UE_LOG(LogTemp, Error, TEXT("Presence Set To ExtendedAway"));
-			break;
-		case EPresenceStatus::PR_DoNotDisturb:
-			Status.State = EOnlinePresenceState::DoNotDisturb;
-			UE_LOG(LogTemp, Error, TEXT("Presence Set To DoNotDisturb"));
-			break;
+			if(IOnlinePresencePtr Presence = SubsystemRef->GetPresenceInterface())
+			{
+				if(!Identity->GetUniquePlayerId(0).IsValid())
+				{
+					UE_LOG(LogEIK, Error, TEXT("Identity is not valid to set presence"));
+					OnFaliure.Broadcast("", PresenceStatus);
+					SetReadyToDestroy();
+					MarkAsGarbage();
+					return;
+				}
+				FOnlineUserPresenceStatus Status;
+				switch (PresenceStatus)
+				{
+				case EPresenceStatus::PR_Online:
+					Status.State = EOnlinePresenceState::Online;
+					break;
+				case EPresenceStatus::PR_Offline:
+					break;
+				case EPresenceStatus::PR_Away:
+					Status.State = EOnlinePresenceState::Away;
+					break;
+				case EPresenceStatus::PR_ExtendedAway:
+					Status.State = EOnlinePresenceState::ExtendedAway;
+					break;
+				case EPresenceStatus::PR_DoNotDisturb:
+					Status.State = EOnlinePresenceState::DoNotDisturb;
+					break;
+				}
+				FString RichPresenceStatus = RichPresence;
+				Status.StatusStr = RichPresenceStatus;
+				UE_LOG(LogEIK, Log, TEXT("Setting Presence to %s"), *RichPresenceStatus);
+		
+				Presence->SetPresence(*Identity->GetUniquePlayerId(0).Get(), Status, IOnlinePresence::FOnPresenceTaskCompleteDelegate::CreateUObject(this, &UEIK_SetPresence_AsyncFunction::OnSetPresenceCompleted));
+				return;
+			}
 		}
-
-		FString RichPresenceStatus = RichPresence;
-		Status.StatusStr = RichPresenceStatus;
-		UE_LOG(LogTemp, Warning, TEXT("Presence Updated With Status: %s"), *RichPresenceStatus);
-		Presence->SetPresence(*Identity->GetUniquePlayerId(0).Get(), Status, IOnlinePresence::FOnPresenceTaskCompleteDelegate::CreateUObject(this, &UEIK_SetPresence_AsyncFunction::OnSetPresenceCompleted));
 	}
+	OnFaliure.Broadcast("", PresenceStatus);
+	SetReadyToDestroy();
+	MarkAsGarbage();
 }
 
 void UEIK_SetPresence_AsyncFunction::OnSetPresenceCompleted(const class FUniqueNetId& UserId, const bool bWasSuccessful)
@@ -61,11 +69,13 @@ void UEIK_SetPresence_AsyncFunction::OnSetPresenceCompleted(const class FUniqueN
 	{
 		OnSuccess.Broadcast(RichPresence, PresenceStatus);
 		SetReadyToDestroy();
-MarkAsGarbage();
+		MarkAsGarbage();
 	}
 	else
 	{
 		OnFaliure.Broadcast("", PresenceStatus);
+		SetReadyToDestroy();
+		MarkAsGarbage();
 	}
 }
 
