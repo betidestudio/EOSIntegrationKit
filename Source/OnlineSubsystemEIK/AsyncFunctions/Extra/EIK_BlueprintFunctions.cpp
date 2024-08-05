@@ -6,6 +6,7 @@
 #include "HttpModule.h"
 #include "OnlineSessionEOS.h"
 #include "OnlineSubsystemEOS.h"
+#include "UserManagerEOS.h"
 #include "Engine/GameInstance.h"
 #include "Containers/Array.h"
 #include "EIKVoiceChat/Private/Android/AndroidEOSVoiceChatUser.h"
@@ -848,4 +849,36 @@ FString UEIK_BlueprintFunctions::GetResolvedConnectString(FName SessionName)
 		}
 	}
 	return FString();
+}
+
+bool UEIK_BlueprintFunctions::GetAutoLoginAttemptedStatus()
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			if(EOSRef->UserManager)
+			{
+				return EOSRef->UserManager->bAutoLoginAttempted;
+			}
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetAutoLoginAttemptedStatus: OnlineSubsystem is null"));
+	return false;
+}
+
+bool UEIK_BlueprintFunctions::GetAutoLoginInProgressStatus()
+{
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			if(EOSRef->UserManager)
+			{
+				return EOSRef->UserManager->bAutoLoginInProgress;
+			}
+		}
+	}
+	UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetAutoLoginInProgressStatus: OnlineSubsystem is null"));
+	return false;
 }

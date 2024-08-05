@@ -361,4 +361,10 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Get Resolved Connect String", Category="EOS Integration Kit || Extra")
 	static FString GetResolvedConnectString(FName SessionName);
 
+	UFUNCTION(BlueprintCallable, DisplayName="Get AutoLogin Attempted Status", Category="EOS Integration Kit || Extra")
+	static bool GetAutoLoginAttemptedStatus();
+
+	UFUNCTION(BlueprintCallable, DisplayName="Get AutoLogin In Progress Status", Category="EOS Integration Kit || Extra")
+	static bool GetAutoLoginInProgressStatus();
+
 };
