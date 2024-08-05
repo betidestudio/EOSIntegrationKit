@@ -1688,6 +1688,7 @@ bool FUserManagerEOS::AutoLoginUsingSettings(int32 LocalUserNum)
 			TempDetails.Type = "eas_+_EIK_LCT_PersistentAuth_+_EIK_ECT_EPIC";
 			Login(0,TempDetails);
 			bAutoLoginAttempted = true;
+			bAutoLoginInProgress = true;
 			return true;
 			break;
 		case AutoLogin_DeviceIdLogin:
