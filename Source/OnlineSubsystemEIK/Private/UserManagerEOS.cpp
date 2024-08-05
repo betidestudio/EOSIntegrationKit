@@ -1707,6 +1707,8 @@ bool FUserManagerEOS::AutoLoginUsingSettings(int32 LocalUserNum)
 			return true;
 			break;
 		case AutoLogin_PlatformLogin:
+			bAutoLoginAttempted = true;
+			bAutoLoginInProgress = false;
 			break;
 /*		case AutoLogin_OculusLogin:
 #if SUPPORTOCULUSPLATFORM
