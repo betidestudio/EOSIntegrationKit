@@ -26,6 +26,8 @@ void UEIK_CreateParty::Activate()
 			{
 				UE_LOG(LogEIK, Warning, TEXT("You must be logged in to create a party."));
 				OnFailure.Broadcast();
+				SetReadyToDestroy();
+				MarkAsGarbage();
 				return;
 			}
 		}
@@ -65,10 +67,14 @@ void UEIK_CreateParty::Activate()
 		}
 		UE_LOG(LogEIK, Warning, TEXT("Failed to create party session because the session interface is not valid."));
 		OnFailure.Broadcast();
+		SetReadyToDestroy();
+		MarkAsGarbage();
 		return;
 	}
 	UE_LOG(LogEIK, Warning, TEXT("Failed to create party session because the subsystem is not valid."));
 	OnFailure.Broadcast();
+	SetReadyToDestroy();
+	MarkAsGarbage();
 }
 
 void UEIK_CreateParty::OnCreatePartyCompleted(FName SessionName, bool bWasSuccessful)
@@ -83,4 +89,6 @@ void UEIK_CreateParty::OnCreatePartyCompleted(FName SessionName, bool bWasSucces
 		UE_LOG(LogEIK, Warning, TEXT("Failed to create party session."));
 		OnFailure.Broadcast();
 	}
+	SetReadyToDestroy();
+	MarkAsGarbage();
 }
