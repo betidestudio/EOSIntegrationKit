@@ -2905,6 +2905,41 @@ bool FOnlineSessionEOS::SendSessionInviteToFriends(const FUniqueNetId& LocalUser
 	return true;
 }
 
+bool FOnlineSessionEOS::GetConnectStringFromSessionInfoForBeacon(TSharedPtr<FOnlineSessionInfoEOS>& SessionInfo,
+	FString& ConnectInfo, int32 PortOverride)
+{
+	if(!SessionInfo.IsValid() || !SessionInfo->HostAddr.IsValid())
+	{
+		return false;
+	}
+	if (SessionInfo->EOSAddress.Len() > 0)
+	{
+		ConnectInfo = SessionInfo->EOSAddress;
+
+		int32 PortColonIndex;
+		if (ConnectInfo.FindLastChar(TEXT(':'), PortColonIndex))
+		{
+			const FString InfoWithoutPort = ConnectInfo.Mid(0, PortColonIndex);
+			const FString BeaconSession(TEXT("BeaconSession"));
+			const uint8 TypeHashChannelID = GetTypeHash(BeaconSession);
+
+			int32 ChannelColonIndex;
+			if (InfoWithoutPort.FindLastChar(TEXT(':'), ChannelColonIndex))
+			{
+				FString InfoWithoutChannel = InfoWithoutPort.Mid(0, ChannelColonIndex);
+
+				ConnectInfo = FString::Printf(TEXT("%s:%s:%d"), *InfoWithoutChannel, *BeaconSession, TypeHashChannelID);
+				return true;
+			}
+		}
+	}
+	else
+	{
+		ConnectInfo = SessionInfo->HostAddr->ToString(true);
+	}
+	return true;
+}
+
 bool FOnlineSessionEOS::PingSearchResults(const FOnlineSessionSearchResult& SearchResult)
 {
 	return false;
@@ -2945,7 +2980,7 @@ bool FOnlineSessionEOS::GetResolvedConnectString(FName SessionName, FString& Con
 		if (PortType == NAME_BeaconPort)
 		{
 			int32 BeaconListenPort = GetBeaconPortFromSessionSettings(Session->SessionSettings);
-			bSuccess = GetConnectStringFromSessionInfo(SessionInfo, ConnectInfo, BeaconListenPort);
+			bSuccess = GetConnectStringFromSessionInfoForBeacon(SessionInfo, ConnectInfo, BeaconListenPort);
 		}
 		else if (PortType == NAME_GamePort)
 		{
@@ -2977,7 +3012,7 @@ bool FOnlineSessionEOS::GetResolvedConnectString(const FOnlineSessionSearchResul
 		if (PortType == NAME_BeaconPort)
 		{
 			int32 BeaconListenPort = GetBeaconPortFromSessionSettings(SearchResult.Session.SessionSettings);
-			bSuccess = GetConnectStringFromSessionInfo(SessionInfo, ConnectInfo, BeaconListenPort);
+			bSuccess = GetConnectStringFromSessionInfoForBeacon(SessionInfo, ConnectInfo, BeaconListenPort);
 
 		}
 		else if (PortType == NAME_GamePort)

@@ -31,13 +31,12 @@ bool UNetDriverEIKBase::IsAvailable() const
 
 bool UNetDriverEIKBase::InitBase(bool bInitAsClient, FNetworkNotify* InNotify, const FURL& URL, bool bReuseAddressAndPort, FString& Error)
 {
-	//NetDriverName = NAME_GameNetDriver;
+	
 	if (bIsPassthrough)
 	{
 		UE_LOG(LogTemp, Verbose, TEXT("Running as pass-through"));
 		return Super::InitBase(bInitAsClient, InNotify, URL, bReuseAddressAndPort, Error);
 	}
-
 	if (!UNetDriver::InitBase(bInitAsClient, InNotify, URL, bReuseAddressAndPort, Error))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to init driver base"));
