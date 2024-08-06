@@ -2150,11 +2150,11 @@ UENUM(BlueprintType)
 enum EEIK_ELobbyPermissionLevel
 {
 	/** Anyone can find this lobby as long as it isn't full */
-	EIK_LPL_PublicAdvertised = 0 UMETA(DisplayName = "PublicAdvertised"),
+	EIK_LPL_PublicAdvertised = 0 UMETA(DisplayName = "Public Advertised"),
 	/** Players who have access to presence can see this lobby */
-	EIK_LPL_JoinViaPresence = 1 UMETA(DisplayName = "JoinViaPresence"),
+	EIK_LPL_JoinViaPresence = 1 UMETA(DisplayName = "Join Via Presence"),
 	/** Only players with invites registered can see this lobby */
-	EIK_LPL_InviteOnly = 2 UMETA(DisplayName = "InviteOnly"),
+	EIK_LPL_InviteOnly = 2 UMETA(DisplayName = "Invite Only"),
 };
 
 /**

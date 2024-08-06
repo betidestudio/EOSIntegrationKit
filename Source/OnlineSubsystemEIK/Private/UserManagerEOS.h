@@ -273,8 +273,7 @@ public:
 
 	
 
-	//Custom Function
-	//void LoginWithDeviceID(const FOnlineAccountCredentials& AccountCredentials);
+	//Custom Functions
 	void CreateDeviceID(const FOnlineAccountCredentials& AccountCredentials);
 	void CreateConnectID(EOS_ContinuanceToken ContinuanceToken, const FOnlineAccountCredentials& AccountCredentials);
 	void DeleteDeviceID(const FOnlineAccountCredentials& AccountCredentials);

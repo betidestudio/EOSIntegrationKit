@@ -24,18 +24,12 @@ void UEIK_JoinSession_AsyncFunction::Activate()
 
 void UEIK_JoinSession_AsyncFunction::JoinSession()
 {
-	FName SubsystemToUse = "EIK";
-	if(bVar_bLanSession)
-	{
-		SubsystemToUse = NULL_SUBSYSTEM;
-	}
-	const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(), SubsystemToUse);
-	if(SubsystemRef)
+	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(), "EIK"))
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
  			SessionPtrRef->OnJoinSessionCompleteDelegates.AddUObject(this, &UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted);
-			SessionPtrRef->JoinSession(0, Var_SessionName,Var_SessionToJoin.SessionResult.OnlineResult);
+			SessionPtrRef->JoinSession(0, Var_SessionName, Var_SessionToJoin.SessionResult.OnlineResult);
 		}
 		else
 		{
@@ -65,6 +59,15 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 {
 	if (bDelegateCalled)
 	{
+		return;
+	}
+	if(Var_SessionToJoin.SessionSettings.Contains("IsPartySession") && Var_SessionToJoin.SessionSettings["IsPartySession"].BoolValue)
+	{
+		UE_LOG(LogEIK, Log, TEXT("EIK: Successfully joined party session"));
+		OnSuccess.Broadcast(EEIKJoinResult::Success, "");
+		bDelegateCalled = true;
+		SetReadyToDestroy();
+		MarkAsGarbage();
 		return;
 	}
 	if (Result == EOnJoinSessionCompleteResult::Success)

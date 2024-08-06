@@ -6,12 +6,12 @@
 #include "OnlineSubsystemEOS.h"
 #include "OnlineSubsystemUtils.h"
 
-UEIK_CreateParty* UEIK_CreateParty::EIK_CreateParty(TEnumAsByte<EEIK_ELobbyPermissionLevel> PermissionLevel,
-                                                    int32 MaxPartyMembers)
+UEIK_CreateParty* UEIK_CreateParty::EIK_CreateParty(int32 MaxPublicPartyMembers,
+	FEIK_PartyExtraSettings ExtraPartySettings)
 {
 	UEIK_CreateParty* PartyCreateParty = NewObject<UEIK_CreateParty>();
-	PartyCreateParty->Var_PermissionLevel = PermissionLevel;
-	PartyCreateParty->Var_MaxPartyMembers = MaxPartyMembers;
+	PartyCreateParty->Var_MaxPublicPartyMembers = MaxPublicPartyMembers;
+	PartyCreateParty->Var_CreatePartySettings = ExtraPartySettings;
 	return PartyCreateParty;
 }
 
@@ -37,12 +37,12 @@ void UEIK_CreateParty::Activate()
 			SessionCreationInfo.bIsDedicated = false;
 			SessionCreationInfo.bAllowInvites = true;
 			SessionCreationInfo.bIsLANMatch = false;
-			SessionCreationInfo.NumPublicConnections = Var_MaxPartyMembers;
-			SessionCreationInfo.NumPrivateConnections = 0;
+			SessionCreationInfo.NumPublicConnections = Var_MaxPublicPartyMembers;
+			SessionCreationInfo.NumPrivateConnections = Var_CreatePartySettings.MaxPrivatePartyMembers;
 			SessionCreationInfo.bUseLobbiesIfAvailable = true;
-			SessionCreationInfo.bUseLobbiesVoiceChatIfAvailable = Var_bUseVoiceChat;
-			SessionCreationInfo.bUsesPresence = Var_bUsePresence;
-			SessionCreationInfo.bAllowJoinViaPresence = Var_bUsePresence;
+			SessionCreationInfo.bUseLobbiesVoiceChatIfAvailable = Var_CreatePartySettings.bUseVoiceChat;
+			SessionCreationInfo.bUsesPresence = Var_CreatePartySettings.bUsePresence;
+			SessionCreationInfo.bAllowJoinViaPresence = Var_CreatePartySettings.bUsePresence;
 			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = false;
 			SessionCreationInfo.bShouldAdvertise = true;
 			SessionCreationInfo.bAllowJoinInProgress = true;
@@ -50,7 +50,7 @@ void UEIK_CreateParty::Activate()
 			{
 				FOnlineSessionSetting LocalVNameSetting;
 				LocalVNameSetting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
-				LocalVNameSetting.Data = *Var_SessionName.ToString();
+				LocalVNameSetting.Data = *Var_CreatePartySettings.SessionName.ToString();
 				SessionCreationInfo.Set(FName(TEXT("SessionName")), LocalVNameSetting);
 			}
 			{
@@ -59,10 +59,10 @@ void UEIK_CreateParty::Activate()
 				FVariantData PartyData;
 				PartyData.SetValue(true);
 				Setting.Data = PartyData;
-				SessionCreationInfo.Set(FName(TEXT("IsParty")), Setting);
+				SessionCreationInfo.Set(FName(TEXT("IsPartySession")), Setting);
 			}
 			SessionPtrRef->OnCreateSessionCompleteDelegates.AddUObject(this, &UEIK_CreateParty::OnCreatePartyCompleted);
-			SessionPtrRef->CreateSession(0,Var_SessionName,SessionCreationInfo);
+			SessionPtrRef->CreateSession(0, Var_CreatePartySettings.SessionName, SessionCreationInfo);
 			return;
 		}
 		UE_LOG(LogEIK, Warning, TEXT("Failed to create party session because the session interface is not valid."));

@@ -7,6 +7,25 @@
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #include "EIK_CreateParty.generated.h"
 
+USTRUCT(BlueprintType)
+struct FEIK_PartyExtraSettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Party")
+	FName SessionName = "PartySession";
+
+	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Party")
+	int32 MaxPrivatePartyMembers = 0;
+
+	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Party")
+	bool bUsePresence = true;
+
+	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit || Party")
+	bool bUseVoiceChat = true;
+	
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEIK_CreatePartyComplete);
 
 UCLASS()
@@ -17,7 +36,7 @@ class ONLINESUBSYSTEMEIK_API UEIK_CreateParty : public UBlueprintAsyncActionBase
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Party", DisplayName="Create EIK Party")
-	static UEIK_CreateParty* EIK_CreateParty(TEnumAsByte<EEIK_ELobbyPermissionLevel> PermissionLevel, int32 MaxPartyMembers);
+	static UEIK_CreateParty* EIK_CreateParty(int32 MaxPublicPartyMembers, FEIK_PartyExtraSettings ExtraPartySettings);
 
 	UPROPERTY(BlueprintAssignable)
 	FEIK_CreatePartyComplete OnSuccess;
@@ -26,11 +45,8 @@ public:
 	FEIK_CreatePartyComplete OnFailure;
 	
 private:
-	int32 Var_MaxPartyMembers;
-	FName Var_SessionName;
-	bool Var_bUsePresence;
-	bool Var_bUseVoiceChat;
-	TEnumAsByte<EEIK_ELobbyPermissionLevel> Var_PermissionLevel;
+	FEIK_PartyExtraSettings Var_CreatePartySettings;
+	int32 Var_MaxPublicPartyMembers;
 	virtual void Activate() override;
 	void OnCreatePartyCompleted(FName SessionName, bool bWasSuccessful);
 };

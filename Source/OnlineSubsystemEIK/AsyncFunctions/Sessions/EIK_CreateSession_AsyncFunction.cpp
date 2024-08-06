@@ -56,6 +56,12 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 				LocalbEnforceSanctions.Data = ExtraSettings.bEnforceSanctions;
 				SessionCreationInfo.Set(FName(TEXT("SANCTIONENABLED")), LocalbEnforceSanctions);
 			}
+			{
+				FOnlineSessionSetting bPartySession;
+				bPartySession.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
+				bPartySession.Data = false;
+				SessionCreationInfo.Set(FName(TEXT("IsPartySession")), bPartySession);
+			}
 			SessionCreationInfo.Settings.Add( FName(TEXT("REGIONINFO")), FOnlineSessionSetting(UEnum::GetValueAsString(ExtraSettings.Region), EOnlineDataAdvertisementType::ViaOnlineService));
 			if(DedicatedServerSettings.bIsDedicatedServer)
 			{

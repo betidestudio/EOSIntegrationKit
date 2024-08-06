@@ -195,10 +195,6 @@ public:
 	static FString GetProductUserID(UObject* Context);
 
 
-
-
-
-
 	/** Lobby Voice Functions START */
 
 	static IVoiceChatUser* GetLobbyVoiceChat(UObject* Context);
