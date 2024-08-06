@@ -116,8 +116,7 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifyLobbyInviteAccepted(FEIK_Notific
 	}
 }
 
-FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyInviteReceived(
-	FEIK_Lobby_OnLobbyInviteReceivedCallback Callback)
+FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyInviteReceived(FEIK_Lobby_OnLobbyInviteReceivedCallback Callback)
 {
 	OnLobbyInviteReceived = Callback;
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
@@ -130,9 +129,10 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyInviteReceived(
 			{
 				if (UEIK_LobbySubsystem* CallbackObj = static_cast<UEIK_LobbySubsystem*>(Data->ClientData))
 				{
-					AsyncTask(ENamedThreads::GameThread, [CallbackObj, Data]()
+					auto Param = *Data;
+					AsyncTask(ENamedThreads::GameThread, [CallbackObj, Param]()
 					{
-						CallbackObj->OnLobbyInviteReceived.ExecuteIfBound(Data->LocalUserId, Data->TargetUserId, Data->InviteId);
+						CallbackObj->OnLobbyInviteReceived.ExecuteIfBound(Param.LocalUserId, Param.TargetUserId, ANSI_TO_TCHAR(Param.InviteId));
 					});
 				}
 			});
