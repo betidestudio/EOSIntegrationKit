@@ -226,21 +226,15 @@ ISocketSubsystem* UNetDriverEIKBase::GetSocketSubsystem()
 {
 	if (bIsPassthrough)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Getting passthrough socket subsystem"));
 		return ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
 	}
-	else
-	{
-		UWorld* CurrentWorld = FindWorld();
-		FSocketSubsystemEIK* DefaultSocketSubsystem = static_cast<FSocketSubsystemEIK*>(ISocketSubsystem::Get(EOS_SOCKETSUBSYSTEM));
-		return DefaultSocketSubsystem->GetSocketSubsystemForWorld(CurrentWorld);
-	}
+	UWorld* CurrentWorld = FindWorld();
+	FSocketSubsystemEIK* DefaultSocketSubsystem = static_cast<FSocketSubsystemEIK*>(ISocketSubsystem::Get(EOS_SOCKETSUBSYSTEM));
+	return DefaultSocketSubsystem->GetSocketSubsystemForWorld(CurrentWorld);
 }
 
 void UNetDriverEIKBase::Shutdown()
 {
-	UE_LOG(LogTemp, Verbose, TEXT("Shutting down NetDriver"));
-
 	Super::Shutdown();
 
 	// Kill our P2P sessions now, instead of when garbage collection kicks in later

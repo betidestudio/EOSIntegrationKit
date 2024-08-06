@@ -16,12 +16,7 @@ void UEIK_CreateLobby_AsyncFunction::Activate()
 
 void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 {
-	FName SubsystemToUse = "EIK";
-	if(Var_CreateLobbySettings.bIsLanMatch)
-	{
-		SubsystemToUse = NULL_SUBSYSTEM;
-	}
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(),SubsystemToUse))
+	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(), "EIK"))
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{

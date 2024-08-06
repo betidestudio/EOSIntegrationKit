@@ -15,12 +15,7 @@ void UEIK_CreateSession_AsyncFunction::Activate()
 
 void UEIK_CreateSession_AsyncFunction::CreateSession()
 {
-	FName SubsystemToUse = "EIK";
-	if(ExtraSettings.bIsLanMatch)
-	{
-		SubsystemToUse = NULL_SUBSYSTEM;
-	}
-	if(IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(),SubsystemToUse))
+	if(IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(), "EIK"))
 	{
 		if(IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
