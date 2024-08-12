@@ -51,13 +51,12 @@ public:
 		bool bLanSession = false);
 
 	FSessionFindStruct Var_SessionToJoin;
+	
 	UPROPERTY()
 	UObject* Var_WorldContextObject;
 
 
 	void Activate() override;
-
 	void JoinSession();
-	bool bVar_bLanSession;
 	void OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 };

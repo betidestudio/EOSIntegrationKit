@@ -16,12 +16,7 @@ void UEIK_CreateLobby_AsyncFunction::Activate()
 
 void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 {
-	FName SubsystemToUse = "EIK";
-	if(Var_CreateLobbySettings.bIsLanMatch)
-	{
-		SubsystemToUse = NULL_SUBSYSTEM;
-	}
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(),SubsystemToUse))
+	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(), "EIK"))
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
@@ -46,7 +41,12 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 				LocalVNameSetting.Data = *VSessionName.ToString();
 				SessionCreationInfo.Set(FName(TEXT("SessionName")), LocalVNameSetting);
 			}
-			//SessionCreationInfo.Set(SEARCH_KEYWORDS, VSessionName, EOnlineDataAdvertisementType::ViaOnlineService);
+			{
+				FOnlineSessionSetting bPartySession;
+				bPartySession.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
+				bPartySession.Data = false;
+				SessionCreationInfo.Set(FName(TEXT("IsPartySession")), bPartySession);
+			}
 			for (auto& Settings_SingleValue : SessionSettings)
 			{
 				if (Settings_SingleValue.Key.Len() == 0)

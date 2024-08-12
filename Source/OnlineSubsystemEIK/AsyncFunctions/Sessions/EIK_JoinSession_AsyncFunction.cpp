@@ -12,7 +12,6 @@ UEIK_JoinSession_AsyncFunction* UEIK_JoinSession_AsyncFunction::JoinEIKSessions(
 	Ueik_JoinSessionObject->Var_SessionToJoin = SessionToJoin;
 	Ueik_JoinSessionObject->Var_SessionName = SessionName;
 	Ueik_JoinSessionObject->Var_WorldContextObject = WorldContextObject;
-	Ueik_JoinSessionObject->bVar_bLanSession = bLanSession;
 	return Ueik_JoinSessionObject;
 }
 
@@ -24,18 +23,12 @@ void UEIK_JoinSession_AsyncFunction::Activate()
 
 void UEIK_JoinSession_AsyncFunction::JoinSession()
 {
-	FName SubsystemToUse = "EIK";
-	if(bVar_bLanSession)
-	{
-		SubsystemToUse = NULL_SUBSYSTEM;
-	}
-	const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(), SubsystemToUse);
-	if(SubsystemRef)
+	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(), "EIK"))
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
  			SessionPtrRef->OnJoinSessionCompleteDelegates.AddUObject(this, &UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted);
-			SessionPtrRef->JoinSession(0, Var_SessionName,Var_SessionToJoin.SessionResult.OnlineResult);
+			SessionPtrRef->JoinSession(0, Var_SessionName, Var_SessionToJoin.SessionResult.OnlineResult);
 		}
 		else
 		{
@@ -65,6 +58,15 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 {
 	if (bDelegateCalled)
 	{
+		return;
+	}
+	if(Var_SessionToJoin.SessionSettings.Contains("IsPartySession") && Var_SessionToJoin.SessionSettings["IsPartySession"].BoolValue)
+	{
+		UE_LOG(LogEIK, Log, TEXT("EIK: Successfully joined party session"));
+		OnSuccess.Broadcast(EEIKJoinResult::Success, "");
+		bDelegateCalled = true;
+		SetReadyToDestroy();
+		MarkAsGarbage();
 		return;
 	}
 	if (Result == EOnJoinSessionCompleteResult::Success)
@@ -97,7 +99,7 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 						OnSuccess.Broadcast(EEIKJoinResult::Success, JoinAddress);
 						bDelegateCalled = true;
 						SetReadyToDestroy();
-MarkAsGarbage();
+						MarkAsGarbage();
 						return;
 					}
 					else
@@ -106,7 +108,7 @@ MarkAsGarbage();
 						OnFail.Broadcast(EEIKJoinResult::CouldNotRetrieveAddress, FString());
 						bDelegateCalled = true;
 						SetReadyToDestroy();
-MarkAsGarbage();
+						MarkAsGarbage();
 						return;
 					}
 				}
@@ -117,7 +119,7 @@ MarkAsGarbage();
 			OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+			MarkAsGarbage();
 			return;
 		}
 	}
@@ -125,25 +127,24 @@ MarkAsGarbage();
 	{
 		switch (Result)
 		{
-			case EOnJoinSessionCompleteResult::SessionIsFull:
-				OnFail.Broadcast(EEIKJoinResult::SessionIsFull, FString());
-				break;
-			case EOnJoinSessionCompleteResult::SessionDoesNotExist:
-				OnFail.Broadcast(EEIKJoinResult::SessionDoesNotExist, FString());
-				break;
-			case EOnJoinSessionCompleteResult::CouldNotRetrieveAddress:
-				OnFail.Broadcast(EEIKJoinResult::CouldNotRetrieveAddress, FString());
-				break;
-			case EOnJoinSessionCompleteResult::AlreadyInSession:
-				OnFail.Broadcast(EEIKJoinResult::AlreadyInSession, FString());
-				break;
-			default:
-				OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
+		case EOnJoinSessionCompleteResult::SessionIsFull:
+			OnFail.Broadcast(EEIKJoinResult::SessionIsFull, FString());
+			break;
+		case EOnJoinSessionCompleteResult::SessionDoesNotExist:
+			OnFail.Broadcast(EEIKJoinResult::SessionDoesNotExist, FString());
+			break;
+		case EOnJoinSessionCompleteResult::CouldNotRetrieveAddress:
+			OnFail.Broadcast(EEIKJoinResult::CouldNotRetrieveAddress, FString());
+			break;
+		case EOnJoinSessionCompleteResult::AlreadyInSession:
+			OnFail.Broadcast(EEIKJoinResult::AlreadyInSession, FString());
+			break;
+		default:
+			OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 		}
 		SetReadyToDestroy();
-MarkAsGarbage();
+		MarkAsGarbage();
 		bDelegateCalled = true;
 	}
 }
-
 

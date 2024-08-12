@@ -6,7 +6,7 @@
 #include "Online/OnlineSessionNames.h"
 
 UEIK_FindSessions_AsyncFunction* UEIK_FindSessions_AsyncFunction::FindEIKSessions(
-	TMap<FString, FEIKAttribute> SessionSettings, EMatchType MatchType, int32 MaxResults, ERegionInfo RegionToSearch, bool bLanSearch)
+	TMap<FString, FEIKAttribute> SessionSettings, EMatchType MatchType, int32 MaxResults, ERegionInfo RegionToSearch, bool bLanSearch, bool bIncludePartySessions)
 
 {
 	UEIK_FindSessions_AsyncFunction* Ueik_FindSessionObject= NewObject<UEIK_FindSessions_AsyncFunction>();
@@ -15,6 +15,7 @@ UEIK_FindSessions_AsyncFunction* UEIK_FindSessions_AsyncFunction::FindEIKSession
 	Ueik_FindSessionObject->SessionSettings = SessionSettings;
 	Ueik_FindSessionObject->B_bLanSearch = bLanSearch;
 	Ueik_FindSessionObject->I_MaxResults = MaxResults;
+	Ueik_FindSessionObject->bIncludePartySessions = bIncludePartySessions;
 	return Ueik_FindSessionObject;
 }
 
@@ -26,12 +27,7 @@ void UEIK_FindSessions_AsyncFunction::Activate()
 
 void UEIK_FindSessions_AsyncFunction::FindSession()
 {
-	FName SubsystemToUse = "EIK";
-	if(B_bLanSearch)
-	{
-		SubsystemToUse = NULL_SUBSYSTEM;
-	}
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get(SubsystemToUse))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
@@ -48,6 +44,10 @@ void UEIK_FindSessions_AsyncFunction::FindSession()
 			else
 			{
 				SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
+				if(!bIncludePartySessions)
+				{
+					SessionSearch->QuerySettings.Set("IsPartySession", false, EOnlineComparisonOp::Equals);
+				}
 			}
 			if (!SessionSettings.IsEmpty()) {
 				for (auto& Settings_SingleValue : SessionSettings) {
@@ -137,7 +137,6 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 							if(It.Key().ToString() == "SessionName")
 							{
 								LocalStruct.SessionName = It.Value().Data.ToString();
-								//We will not return on this key so that it is added to the settings
 							}
 							const FName& SettingName = It.Key();
 							const FOnlineSessionSetting& Setting = It.Value();

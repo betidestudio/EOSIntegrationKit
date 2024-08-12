@@ -1688,6 +1688,7 @@ bool FUserManagerEOS::AutoLoginUsingSettings(int32 LocalUserNum)
 			TempDetails.Type = "eas_+_EIK_LCT_PersistentAuth_+_EIK_ECT_EPIC";
 			Login(0,TempDetails);
 			bAutoLoginAttempted = true;
+			bAutoLoginInProgress = true;
 			return true;
 			break;
 		case AutoLogin_DeviceIdLogin:
@@ -1706,6 +1707,8 @@ bool FUserManagerEOS::AutoLoginUsingSettings(int32 LocalUserNum)
 			return true;
 			break;
 		case AutoLogin_PlatformLogin:
+			bAutoLoginAttempted = true;
+			bAutoLoginInProgress = false;
 			break;
 /*		case AutoLogin_OculusLogin:
 #if SUPPORTOCULUSPLATFORM
@@ -2160,20 +2163,23 @@ void FUserManagerEOS::ResolveUniqueNetIds(const TArray<EOS_ProductUserId>& Produ
 	for (const EOS_ProductUserId& ProductUserId : ProductUserIds)
 	{
 		EOS_EpicAccountId EpicAccountId;
-
+		UE_LOG(LogEIK, Warning, TEXT("[FUserManagerEOS::ResolveUniqueNetIds] Resolving Product User Id (%s)."), *LexToString(ProductUserId));
 		// We check first if the Product User Id has already been queried, which would allow us to retrieve its Epic Account Id directly
 		if (GetEpicAccountIdFromProductUserId(ProductUserId, EpicAccountId))
 		{
+			UE_LOG(LogEIK, Warning, TEXT("[FUserManagerEOS::ResolveUniqueNetIds] Found Epic Account Id for Product User Id (%s)."), *LexToString(ProductUserId));
 			const FUniqueNetIdEOSRef UniqueNetId = FUniqueNetIdEOSRegistry::FindOrAdd(EpicAccountId, ProductUserId).ToSharedRef();
 
 			ResolvedUniqueNetIds.Add(ProductUserId, UniqueNetId);
 		}
 		else
 		{
+			UE_LOG(LogEIK, Warning, TEXT("[FUserManagerEOS::ResolveUniqueNetIds] Epic Account Id not found for Product User Id (%s)."), *LexToString(ProductUserId));
 			// If that's not the case, we'll have to query them first
 			ProductUserIdsToResolve.Add(ProductUserId);
 		}
 	}
+	
 
 	if (!ProductUserIdsToResolve.IsEmpty())
 	{

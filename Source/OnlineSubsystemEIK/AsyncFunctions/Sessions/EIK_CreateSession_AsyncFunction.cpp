@@ -15,12 +15,7 @@ void UEIK_CreateSession_AsyncFunction::Activate()
 
 void UEIK_CreateSession_AsyncFunction::CreateSession()
 {
-	FName SubsystemToUse = "EIK";
-	if(ExtraSettings.bIsLanMatch)
-	{
-		SubsystemToUse = NULL_SUBSYSTEM;
-	}
-	if(IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(),SubsystemToUse))
+	if(IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(this->GetWorld(), "EIK"))
 	{
 		if(IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 		{
@@ -55,6 +50,12 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 				LocalbEnforceSanctions.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
 				LocalbEnforceSanctions.Data = ExtraSettings.bEnforceSanctions;
 				SessionCreationInfo.Set(FName(TEXT("SANCTIONENABLED")), LocalbEnforceSanctions);
+			}
+			{
+				FOnlineSessionSetting bPartySession;
+				bPartySession.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
+				bPartySession.Data = false;
+				SessionCreationInfo.Set(FName(TEXT("IsPartySession")), bPartySession);
 			}
 			SessionCreationInfo.Settings.Add( FName(TEXT("REGIONINFO")), FOnlineSessionSetting(UEnum::GetValueAsString(ExtraSettings.Region), EOnlineDataAdvertisementType::ViaOnlineService));
 			if(DedicatedServerSettings.bIsDedicatedServer)
