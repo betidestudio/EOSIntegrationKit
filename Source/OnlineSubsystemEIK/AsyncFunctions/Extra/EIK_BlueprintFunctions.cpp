@@ -77,6 +77,11 @@ FEIK_CurrentSessionInfo UEIK_BlueprintFunctions::GetCurrentSessionInfo(UObject* 
 		{
 			if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 			{
+				if(!SessionPtrRef->GetNamedSession(SessionName))
+				{
+					UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetCurrentSessionInfo: Session not found"));
+					return FEIK_CurrentSessionInfo();
+				}
 				FEIK_CurrentSessionInfo SessionInfo(*SessionPtrRef->GetNamedSession(SessionName));
 				return SessionInfo;
 			}
