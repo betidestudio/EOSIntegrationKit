@@ -3,6 +3,8 @@
 #include "EOSVoiceChatUser.h"
 #include "UObject/UObjectIterator.h"
 #include "EIKVoiceChat/Subsystem/EIK_Voice_Subsystem.h"
+#include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerState.h"
 #if WITH_EOS_RTC
 #include "HAL/IConsoleManager.h"
 #include "Stats/Stats.h"
@@ -2384,32 +2386,52 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 			const FString ChannelName = UTF8_TO_TCHAR(CallbackInfo->RoomName);
 			if(GEngine)
 			{
-				if (const UWorld* World = GEngine->GetWorldContexts()[0].World())
+				if (const UWorld* World = GEngine->GetWorldContexts().Last().World())
 				{
 					if (const UGameInstance* GameInstance = World->GetGameInstance())
 					{
 						if (UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>())
 						{
-							if(LocalVoiceSubsystem->bIsPositionalVoiceChatUsed && LocalVoiceSubsystem->PlayerListVar.IsValidIndex(0))
+							if(LocalVoiceSubsystem->bIsPositionalVoiceChatUsed)
 							{
 								AActor* SpeakerActor = nullptr;
 								AActor* ListenerActor = nullptr;
-								for(int i=0; i<LocalVoiceSubsystem->PlayerListVar.Num(); i++)
+								TArray<TObjectPtr<APlayerState>> PlayerArray;
+								if(AGameStateBase* GameState = World->GetGameState())
 								{
-									EOS_ProductUserId ProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*LocalVoiceSubsystem->PlayerListVar[i].PlayerEOSVoiceChatName));
-									if(ProductUserId == nullptr)
+									PlayerArray = GameState->PlayerArray;
+								}
+								if(PlayerArray.Num() > 0)
+								{
+									for(int i=0; i<PlayerArray.Num(); i++)
 									{
-										continue;
-									}
-									if(ProductUserId == CallbackInfo->ParticipantId)
-									{
-										SpeakerActor = LocalVoiceSubsystem->PlayerListVar[i].PlayerActor;
-									}
-									if(ProductUserId == CallbackInfo->LocalUserId)
-									{
-										ListenerActor = LocalVoiceSubsystem->PlayerListVar[i].PlayerActor;
-									}
-
+										if(APlayerState* PlayerState = PlayerArray[i].Get())
+										{
+											if(PlayerState->GetPawn())
+											{
+												const TSharedPtr<const FUniqueNetId> EIK_NetID = PlayerState->GetUniqueId().GetUniqueNetId();
+												if(EIK_NetID.IsValid())
+												{
+													FString ProductId = EIK_NetID->ToString();
+													if(ProductId.Contains("|"))
+													{
+														TArray<FString> ProductIdArray;
+														ProductId.ParseIntoArray(ProductIdArray, TEXT("|"), true);
+														ProductId = ProductIdArray[1];
+													}
+													EOS_ProductUserId ProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*ProductId));
+													if(ProductUserId == CallbackInfo->ParticipantId)
+													{
+														SpeakerActor = PlayerState->GetPawn();
+													}
+													if(ProductUserId == CallbackInfo->LocalUserId)
+													{
+														ListenerActor = PlayerState->GetPawn();
+													}
+												}
+											}
+										}
+									}								
 								}
 								if(ListenerActor && SpeakerActor)
 								{
@@ -2459,8 +2481,24 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 								}
 							}
 						}
+						else
+						{
+							UE_LOG(LogTemp,Warning,TEXT("Voice Subsystem is not found"));
+						}
+					}
+					else
+					{
+						UE_LOG(LogTemp,Warning,TEXT("GameInstance is not found"));
 					}
 				}
+				else
+				{
+					UE_LOG(LogTemp,Warning,TEXT("World is not found"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp,Warning,TEXT("GEngine is not found"));
 			}
 			FScopeLock Lock(&BeforeRecvAudioRenderedLock);
 			OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence, ChannelName, PlayerName);
