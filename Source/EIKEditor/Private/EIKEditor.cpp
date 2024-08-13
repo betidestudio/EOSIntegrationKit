@@ -11,6 +11,7 @@
 #include "ILauncherServicesModule.h"
 #include "ITargetDeviceServicesModule.h"
 #include "EosIconStyle.h"
+#include "ISettingsModule.h"
 #include "Interfaces/IPluginManager.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/InteractiveProcess.h"
@@ -226,6 +227,16 @@ TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
     );
 
     MenuBuilder.BeginSection(NAME_None, LOCTEXT("PluginInfoHeader", "Plugin Info"));
+
+    MenuBuilder.AddMenuEntry(
+        LOCTEXT("Settings", "Settings"),
+        LOCTEXT("Settings_Tooltip", "Open the plugin settings"),
+        FSlateIcon(FAppStyle::GetAppStyleSetName(), "SourceControl.Actions.ChangeSettings"),
+        FUIAction(FExecuteAction::CreateLambda([]
+        {
+            FModuleManager::LoadModuleChecked<ISettingsModule>("Settings").ShowViewer("Project", "Game", "Online Subsystem EIK");
+        }))
+        );
 
     MenuBuilder.AddMenuEntry(
     LOCTEXT("Documentation", "Documentation"),
