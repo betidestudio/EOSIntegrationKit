@@ -20,7 +20,7 @@ void UEIK_GetAchievement_AsyncFunction::Activate()
 
 void UEIK_GetAchievement_AsyncFunction::GetAchievements()
 {
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 	{
 		if(const IOnlineAchievementsPtr AchievementsPtrRef = SubsystemRef->GetAchievementsInterface())
 		{
@@ -66,7 +66,7 @@ void UEIK_GetAchievement_AsyncFunction::OnAchievementsCompleted(const FUniqueNet
 {
 	if(bWasSuccess)
 	{
-		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 		{
 			if(const IOnlineAchievementsPtr AchievementsPtrRef = SubsystemRef->GetAchievementsInterface())
 			{

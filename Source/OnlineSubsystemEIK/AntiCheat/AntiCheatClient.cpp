@@ -8,7 +8,7 @@
 
 bool UAntiCheatClient::IsAntiCheatClientAvailable(const UObject* WorldContextObject)
 {
-	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
@@ -23,7 +23,7 @@ bool UAntiCheatClient::IsAntiCheatClientAvailable(const UObject* WorldContextObj
 
 bool UAntiCheatClient::RegisterAntiCheatClient(FString ClientProductID)
 {
-	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
@@ -56,7 +56,7 @@ bool UAntiCheatClient::RegisterAntiCheatClient(FString ClientProductID)
 
 bool UAntiCheatClient::RecievedMessageFromServer(const TArray<uint8>& Message)
 {
-	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{

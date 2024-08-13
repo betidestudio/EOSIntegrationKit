@@ -10,7 +10,7 @@
 
 bool UAntiCheatServer::IsAntiCheatServerAvailable(const UObject* WorldContextObject)
 {
-	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
@@ -25,7 +25,7 @@ bool UAntiCheatServer::IsAntiCheatServerAvailable(const UObject* WorldContextObj
 
 bool UAntiCheatServer::RegisterAntiCheatServer(FString ServerName, FString ClientProductID)
 {
-	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
@@ -70,7 +70,7 @@ bool UAntiCheatServer::RegisterAntiCheatServer(FString ServerName, FString Clien
 
 bool UAntiCheatServer::RegisterClientForAntiCheat(FString ClientProductID, APlayerController* ControllerRef, TEnumAsByte<EUserPlatform> UserPlatform, TEnumAsByte<EEOS_ClientType> ClientType)
 {
-	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
@@ -98,7 +98,7 @@ bool UAntiCheatServer::RegisterClientForAntiCheat(FString ClientProductID, APlay
 
 bool UAntiCheatServer::RecievedMessageFromClient(APlayerController* Controller,const TArray<uint8>& Message)
 {
-	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get())
+	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{

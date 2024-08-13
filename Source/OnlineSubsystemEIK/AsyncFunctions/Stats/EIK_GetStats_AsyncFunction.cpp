@@ -22,7 +22,7 @@ void UEIK_GetStats_AsyncFunction::Activate()
 
 void UEIK_GetStats_AsyncFunction::GetStats()
 {
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{

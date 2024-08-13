@@ -22,7 +22,7 @@ void UEIK_GetAchievementDetails_AsyncFunction::Activate()
 
 void UEIK_GetAchievementDetails_AsyncFunction::GetAchievementDescription()
 {
-	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 	{
 		if(const IOnlineAchievementsPtr AchievementsPtrRef = SubsystemRef->GetAchievementsInterface())
 		{
@@ -67,7 +67,7 @@ void UEIK_GetAchievementDetails_AsyncFunction::OnAchievementDescriptionCompleted
 {
 	if(bWasSuccess)
 	{
-		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get())
+		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 		{
 			if(const IOnlineAchievementsPtr AchievementsPtrRef = SubsystemRef->GetAchievementsInterface())
 			{
