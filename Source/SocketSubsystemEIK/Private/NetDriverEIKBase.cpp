@@ -31,7 +31,6 @@ bool UNetDriverEIKBase::IsAvailable() const
 
 bool UNetDriverEIKBase::InitBase(bool bInitAsClient, FNetworkNotify* InNotify, const FURL& URL, bool bReuseAddressAndPort, FString& Error)
 {
-	
 	if (bIsPassthrough)
 	{
 		UE_LOG(LogTemp, Verbose, TEXT("Running as pass-through"));
@@ -42,6 +41,7 @@ bool UNetDriverEIKBase::InitBase(bool bInitAsClient, FNetworkNotify* InNotify, c
 		UE_LOG(LogTemp, Warning, TEXT("Failed to init driver base"));
 		return false;
 	}
+	
 
 	FSocketSubsystemEIK* const SocketSubsystem = static_cast<FSocketSubsystemEIK*>(GetSocketSubsystem());
 	if (!SocketSubsystem)
@@ -152,6 +152,22 @@ bool UNetDriverEIKBase::InitConnect(FNetworkNotify* InNotify, const FURL& Connec
 
 bool UNetDriverEIKBase::InitListen(FNetworkNotify* InNotify, FURL& LocalURL, bool bReuseAddressAndPort, FString& Error)
 {
+	UE_LOG(LogTemp, Verbose, TEXT("InitListen with Old LocalURL = (%s)"), *LocalURL.ToString());
+	FString LocalStringUrl = LocalURL.ToString();
+	//Remove :Port from the URL
+	TArray<FString> ConnectStringArray;
+	if(LocalStringUrl.ParseIntoArray(ConnectStringArray, TEXT("/"), true) > 1)
+	{
+		if(ConnectStringArray[0].Contains(TEXT(":")))
+		{
+			UE_LOG(LogTemp, Verbose, TEXT("InitListen with ConnectStringArray[0] = (%s)"), *ConnectStringArray[0]);
+			LocalStringUrl.RemoveFromStart(ConnectStringArray[0]);
+		}
+		LocalStringUrl.RemoveFromStart(ConnectStringArray[0]);
+	}
+	UE_LOG(LogTemp, Verbose, TEXT("InitListen with New LocalU5rtRL = (%s)"), *LocalStringUrl);
+	FURL ConnectURL = FURL(nullptr, *LocalStringUrl, TRAVEL_Absolute);
+	LocalURL = ConnectURL;
 	UE_LOG(LogTemp, Verbose, TEXT("InitListen with LocalURL = (%s)"), *LocalURL.ToString());
 	if (!bIsUsingP2PSockets || !IsAvailable() || LocalURL.HasOption(TEXT("bIsLanMatch")) || LocalURL.HasOption(TEXT("bUseIPSockets")))
 	{
@@ -191,32 +207,18 @@ bool UNetDriverEIKBase::InitListen(FNetworkNotify* InNotify, FURL& LocalURL, boo
 	
 	// Check if a Beacon Host already exists
 	bool bBeaconHostExists = false;
-    for (TActorIterator<AOnlineBeaconHost> It(TWorld); It; ++It)
-	{
-		if (*It)
-		{
-			bBeaconHostExists = true;
-			break;
-		}
-	}
+    if(GEngine->FindNamedNetDriver(TWorld, NAME_BeaconNetDriver) != nullptr)
+    {
+    	bBeaconHostExists = true;
+    }
 
-	/* Initialize Beacon Host if it doesn't already exist
+	// Initialize Beacon Host if it doesn't already exist
 	if (!bBeaconHostExists)
 	{
-        AOnlineBeaconHost* BeaconHost = TWorld->SpawnActor<AOnlineBeaconHost>();
-		if (BeaconHost)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Spawned Beacon Host"));
-			BeaconHost->SetNetDriverName(NAME_BeaconNetDriver);
-			BeaconHost->InitHost();
-			BeaconHost->PauseBeaconRequests(false);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to spawn Beacon Host"));
-		}
+		UE_LOG(LogTemp, Warning, TEXT("Creating Beacon Host"));
+		GEngine->CreateNamedNetDriver(TWorld, NAME_BeaconNetDriver, NAME_BeaconNetDriver);
 	}
-	*/
+	
 
 	return true;
 }

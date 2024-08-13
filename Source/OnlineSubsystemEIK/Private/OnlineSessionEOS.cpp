@@ -2815,7 +2815,7 @@ bool FOnlineSessionEOS::SendLobbyInvite(FName SessionName, EOS_ProductUserId Sen
 			UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::SendLobbyInvite] SendInvite not successful. Finished with EOS_EResult %s"), ANSI_TO_TCHAR(EOS_EResult_ToString(Data->ResultCode)));
 		}
 	};
-
+	
 	EOS_Lobby_SendInvite(LobbyHandle, &SendInviteOptions, CallbackObj, CallbackObj->GetCallbackPtr());
 
 	return true;
@@ -2920,15 +2920,15 @@ bool FOnlineSessionEOS::GetConnectStringFromSessionInfoForBeacon(TSharedPtr<FOnl
 		if (ConnectInfo.FindLastChar(TEXT(':'), PortColonIndex))
 		{
 			const FString InfoWithoutPort = ConnectInfo.Mid(0, PortColonIndex);
-			const FString BeaconSession(TEXT("BeaconSession"));
-			const uint8 TypeHashChannelID = GetTypeHash(BeaconSession);
+			const FString BeaconNetDriver(TEXT("BeaconNetDriver"));
+			const uint8 TypeHashChannelID = GetTypeHash(BeaconNetDriver);
 
 			int32 ChannelColonIndex;
 			if (InfoWithoutPort.FindLastChar(TEXT(':'), ChannelColonIndex))
 			{
 				FString InfoWithoutChannel = InfoWithoutPort.Mid(0, ChannelColonIndex);
 
-				ConnectInfo = FString::Printf(TEXT("%s:%s:%d"), *InfoWithoutChannel, *BeaconSession, TypeHashChannelID);
+				ConnectInfo = FString::Printf(TEXT("%s:%s:%d"), *InfoWithoutChannel, *BeaconNetDriver, TypeHashChannelID);
 				return true;
 			}
 		}
