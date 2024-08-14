@@ -107,6 +107,6 @@
 			"Enabled": true
 		}
 	],
-	"IsBetaVersion": true,
+	"IsBetaVersion": false,
 	"IsExperimentalVersion": false
 }
