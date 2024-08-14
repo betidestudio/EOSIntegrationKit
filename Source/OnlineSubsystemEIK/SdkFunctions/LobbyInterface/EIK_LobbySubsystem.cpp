@@ -22,10 +22,7 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyJoinLobbyAccepted(FE
 			{
 				if (UEIK_LobbySubsystem* CallbackObj = static_cast<UEIK_LobbySubsystem*>(Data->ClientData))
 				{
-					AsyncTask(ENamedThreads::GameThread, [CallbackObj, Data]()
-					{
 						CallbackObj->OnJoinLobbyAccepted.ExecuteIfBound(Data->LocalUserId, Data->UiEventId);
-					});
 				}
 			});
 		}
@@ -58,10 +55,7 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLeaveLobbyRequested(
 			{
 				if (UEIK_LobbySubsystem* CallbackObj = static_cast<UEIK_LobbySubsystem*>(Data->ClientData))
 				{
-					AsyncTask(ENamedThreads::GameThread, [CallbackObj, Data]()
-					{
 						CallbackObj->OnLeaveLobbyRequested.ExecuteIfBound(Data->LocalUserId, Data->LobbyId);
-					});
 				}
 			});
 		}
@@ -94,10 +88,7 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyInviteAccepted(
 			{
 				if (UEIK_LobbySubsystem* CallbackObj = static_cast<UEIK_LobbySubsystem*>(Data->ClientData))
 				{
-					AsyncTask(ENamedThreads::GameThread, [CallbackObj, Data]()
-					{
 						CallbackObj->OnLobbyInviteAccepted.ExecuteIfBound(Data->LocalUserId, Data->TargetUserId, Data->LobbyId, Data->InviteId);
-					});
 				}
 			});
 		}
@@ -129,11 +120,7 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyInviteReceived(
 			{
 				if (UEIK_LobbySubsystem* CallbackObj = static_cast<UEIK_LobbySubsystem*>(Data->ClientData))
 				{
-					auto Param = *Data;
-					AsyncTask(ENamedThreads::GameThread, [CallbackObj, Param]()
-					{
-						CallbackObj->OnLobbyInviteReceived.ExecuteIfBound(Param.LocalUserId, Param.TargetUserId, ANSI_TO_TCHAR(Param.InviteId));
-					});
+					CallbackObj->OnLobbyInviteReceived.ExecuteIfBound(Data->LocalUserId, Data->TargetUserId, StringCast<TCHAR>(Data->InviteId).Get());
 				}
 			});
 		}
