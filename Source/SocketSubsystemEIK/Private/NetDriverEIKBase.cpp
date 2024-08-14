@@ -279,7 +279,6 @@ UWorld* UNetDriverEIKBase::FindWorld() const
 
 	if(!MyWorld)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("NetDriverEIKBase::FindWorld - No world found, checking all worlds"));
 		if (GEngine != nullptr)
 		{
 			for (const auto &WorldContext : GEngine->GetWorldContexts())
