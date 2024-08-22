@@ -24,7 +24,7 @@ void UEIK_Presence_SetPresence::Activate()
 		{
 			EOS_Presence_SetPresenceOptions Options = {};
 			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
-			Options.PresenceModificationHandle = *Var_PresenceModificationHandle.Ref;
+			Options.PresenceModificationHandle = Var_PresenceModificationHandle.Ref;
 			EOS_Presence_SetPresence(EOSRef->PresenceHandle, &Options, this, &UEIK_Presence_SetPresence::Internal_OnSetPresenceComplete);
 			return;
 		}

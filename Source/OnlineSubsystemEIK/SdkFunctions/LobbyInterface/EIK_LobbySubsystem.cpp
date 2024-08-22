@@ -3,6 +3,7 @@
 
 #include "EIK_LobbySubsystem.h"
 
+#include "EIKSettings.h"
 #include "eos_lobby.h"
 #include "OnlineSessionEOS.h"
 #include "OnlineSubsystemEOS.h"
@@ -232,7 +233,8 @@ void UEIK_LobbySubsystem::EIK_Lobby_RemoveNotifySendLobbyNativeInviteRequested(F
 
 void UEIK_LobbySubsystem::EIK_Lobby_Attribute_Release(const FEIK_Lobby_Attribute& Attribute)
 {
-	EOS_Lobby_Attribute_Release(Attribute.Ref);
+	EOS_Lobby_Attribute Attr = Attribute.Ref;
+	EOS_Lobby_Attribute_Release(&Attr);
 }
 
 TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CopyLobbyDetailsHandle(FEIK_LobbyId LobbyId,
@@ -248,7 +250,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CopyLobbyDetailsHandle(F
 			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			EOS_HLobbyDetails Handle = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_CopyLobbyDetailsHandle(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &Handle));
-			OutLobbyDetailsHandle = &Handle;
+			OutLobbyDetailsHandle = Handle;
 			return Result;
 		}
 	}
@@ -267,7 +269,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CopyLobbyDetailsHandleBy
 			Options.InviteId = TCHAR_TO_ANSI(*InviteId);
 			EOS_HLobbyDetails Handle = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_CopyLobbyDetailsHandleByInviteId(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &Handle));
-			OutLobbyDetailsHandle = &Handle;
+			OutLobbyDetailsHandle = Handle;
 			return Result;
 		}
 	}
@@ -287,7 +289,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CopyLobbyDetailsHandleBy
 			Options.UiEventId = UiEventId.Ref;
 			EOS_HLobbyDetails Handle = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_CopyLobbyDetailsHandleByUiEventId(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &Handle));
-			OutLobbyDetailsHandle = &Handle;
+			OutLobbyDetailsHandle = Handle;
 			return Result;
 		}
 	}
@@ -307,7 +309,11 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CreateLobbySearch(int32 
 			Options.MaxResults = MaxResults;
 			EOS_HLobbySearch Handle = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_CreateLobbySearch(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &Handle));
-			OutLobbySearchHandle = &Handle;
+			if(Result != EEIK_Result::EOS_Success)
+			{
+				return Result;
+			}
+			OutLobbySearchHandle = Handle;
 			return Result;
 		}
 	}
@@ -468,8 +474,12 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyAttributeByIn
 			Options.ApiVersion = EOS_LOBBYDETAILS_COPYATTRIBUTEBYINDEX_API_LATEST;
 			Options.AttrIndex = AttrIndex;
 			EOS_Lobby_Attribute* Attribute = nullptr;
-			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyAttributeByIndex(*LobbyDetailsHandle.Ref, &Options, &Attribute));
-			OutAttribute = Attribute;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyAttributeByIndex(LobbyDetailsHandle.Ref, &Options, &Attribute));
+			if(Result != EEIK_Result::EOS_Success)
+			{
+				return Result;
+			}
+			OutAttribute = *Attribute;
 			return Result;
 		}
 	}
@@ -487,8 +497,12 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyAttributeByKe
 			Options.ApiVersion = EOS_LOBBYDETAILS_COPYATTRIBUTEBYKEY_API_LATEST;
 			Options.AttrKey = TCHAR_TO_ANSI(*AttrKey);
 			EOS_Lobby_Attribute* Attribute = nullptr;
-			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyAttributeByKey(*LobbyDetailsHandle.Ref, &Options, &Attribute));
-			OutAttribute = Attribute;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyAttributeByKey(LobbyDetailsHandle.Ref, &Options, &Attribute));
+			if(Result != EEIK_Result::EOS_Success)
+			{
+				return Result;
+			}
+			OutAttribute = *Attribute;
 			return Result;
 		}
 	}
@@ -499,16 +513,25 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyAttributeByKe
 TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyInfo(FEIK_HLobbyDetails LobbyDetailsHandle,
 	FEIK_LobbyDetailsInfo& OutLobbyDetailsInfo)
 {
+	if(!LobbyDetailsHandle.Ref)
+	{
+		UE_LOG(LogEIK, Error, TEXT("EIK_LobbyDetails_CopyInfo: LobbyDetailsHandle is not valid"));
+		return EEIK_Result::EOS_NotFound;
+	}
 	FEIK_LobbyDetailsInfo Info = {};
 	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyDetails_CopyInfoOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_COPYINFO_API_LATEST;
-			EOS_LobbyDetails_Info* Info1 = nullptr;
-			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyInfo(*LobbyDetailsHandle.Ref, &Options, &Info1));
-			Info = *Info1;
-			OutLobbyDetailsInfo = Info;
+			EOS_LobbyDetails_Info* Info1 = NULL;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyInfo(LobbyDetailsHandle.Ref, &Options, &Info1));
+			if(Result != EEIK_Result::EOS_Success)
+			{
+				UE_LOG(LogEIK, Error, TEXT("EIK_LobbyDetails_CopyInfo: Failed to copy info"));
+				return Result;
+			}
+			OutLobbyDetailsInfo = *Info1;
 			return Result;
 		}
 	}
@@ -528,8 +551,12 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyMemberAttribu
 			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			Options.AttrIndex = AttrIndex;
 			EOS_Lobby_Attribute* Attribute = nullptr;
-			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberAttributeByIndex(*LobbyDetailsHandle.Ref, &Options, &Attribute));
-			OutAttribute = Attribute;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberAttributeByIndex(LobbyDetailsHandle.Ref, &Options, &Attribute));
+			if(Result != EEIK_Result::EOS_Success)
+			{
+				return Result;
+			}
+			OutAttribute = *Attribute;
 			return Result;
 		}
 	}
@@ -549,8 +576,12 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyMemberAttribu
 			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			Options.AttrKey = TCHAR_TO_ANSI(*AttrKey);
 			EOS_Lobby_Attribute* Attribute = nullptr;
-			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberAttributeByKey(*LobbyDetailsHandle.Ref, &Options, &Attribute));
-			OutAttribute = Attribute;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberAttributeByKey(LobbyDetailsHandle.Ref, &Options, &Attribute));
+			if(Result != EEIK_Result::EOS_Success)
+			{
+				return Result;
+			}
+			OutAttribute = *Attribute;
 			return Result;
 		}
 	}
@@ -569,7 +600,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyMemberInfo(FE
 			Options.ApiVersion = EOS_LOBBYDETAILS_COPYMEMBERINFO_API_LATEST;
 			Options.TargetUserId = TargetUserId.GetValueAsEosType();
 			EOS_LobbyDetails_MemberInfo* Info1 = nullptr;
-			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberInfo(*LobbyDetailsHandle.Ref, &Options, &Info1));
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberInfo(LobbyDetailsHandle.Ref, &Options, &Info1));
 			Info = *Info1;
 			OutMemberInfo = Info;
 			return Result;
@@ -586,7 +617,7 @@ int32 UEIK_LobbySubsystem::EIK_LobbyDetails_GetAttributeCount(FEIK_HLobbyDetails
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyDetails_GetAttributeCountOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_GETATTRIBUTECOUNT_API_LATEST;
-			return EOS_LobbyDetails_GetAttributeCount(*LobbyDetailsHandle.Ref, &Options);
+			return EOS_LobbyDetails_GetAttributeCount(LobbyDetailsHandle.Ref, &Options);
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("EIK_LobbyDetails_GetAttributeCount: OnlineSubsystemEOS is not valid"));
@@ -601,7 +632,7 @@ FEIK_ProductUserId UEIK_LobbySubsystem::EIK_LobbyDetails_GetLobbyOwner(FEIK_HLob
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyDetails_GetLobbyOwnerOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_GETLOBBYOWNER_API_LATEST;
-			ProductUserId = EOS_LobbyDetails_GetLobbyOwner(*LobbyDetailsHandle.Ref, &Options);
+			ProductUserId = EOS_LobbyDetails_GetLobbyOwner(LobbyDetailsHandle.Ref, &Options);
 		}
 	}
 	return ProductUserId;
@@ -616,7 +647,7 @@ int32 UEIK_LobbySubsystem::EIK_LobbyDetails_GetMemberAttributeCount(FEIK_HLobbyD
 			EOS_LobbyDetails_GetMemberAttributeCountOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_GETMEMBERATTRIBUTECOUNT_API_LATEST;
 			Options.TargetUserId = TargetUserId.GetValueAsEosType();
-			return EOS_LobbyDetails_GetMemberAttributeCount(*LobbyDetailsHandle.Ref, &Options);
+			return EOS_LobbyDetails_GetMemberAttributeCount(LobbyDetailsHandle.Ref, &Options);
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("EIK_LobbyDetails_GetMemberAttributeCount: OnlineSubsystemEOS is not valid"));
@@ -633,7 +664,7 @@ FEIK_ProductUserId UEIK_LobbySubsystem::EIK_LobbyDetails_GetMemberByIndex(FEIK_H
 			EOS_LobbyDetails_GetMemberByIndexOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_GETMEMBERBYINDEX_API_LATEST;
 			Options.MemberIndex = MemberIndex;
-			ProductUserId = EOS_LobbyDetails_GetMemberByIndex(*LobbyDetailsHandle.Ref, &Options);
+			ProductUserId = EOS_LobbyDetails_GetMemberByIndex(LobbyDetailsHandle.Ref, &Options);
 		}
 	}
 	return ProductUserId;
@@ -646,7 +677,7 @@ int32 UEIK_LobbySubsystem::EIK_LobbyDetails_GetMemberCount(FEIK_HLobbyDetails Lo
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyDetails_GetMemberCountOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_GETMEMBERCOUNT_API_LATEST;
-			return EOS_LobbyDetails_GetMemberCount(*LobbyDetailsHandle.Ref, &Options);
+			return EOS_LobbyDetails_GetMemberCount(LobbyDetailsHandle.Ref, &Options);
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("EIK_LobbyDetails_GetMemberCount: OnlineSubsystemEOS is not valid"));
@@ -678,7 +709,7 @@ void UEIK_LobbySubsystem::EIK_LobbyDetails_Release(FEIK_HLobbyDetails LobbyDetai
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_LobbyDetails_Release(*LobbyDetailsHandle.Ref);
+			EOS_LobbyDetails_Release(LobbyDetailsHandle.Ref);
 		}
 	}
 }
@@ -869,8 +900,8 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbySearch_CopySearchResultBy
 			EOS_LobbySearch_CopySearchResultByIndexOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYSEARCH_COPYSEARCHRESULTBYINDEX_API_LATEST;
 			Options.LobbyIndex = LobbyIndex;
-			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbySearch_CopySearchResultByIndex(*LobbySearchHandle.Ref, &Options, &Handle));
-			OutLobbyDetailsHandle = &Handle;
+			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbySearch_CopySearchResultByIndex(LobbySearchHandle.Ref, &Options, &Handle));
+			OutLobbyDetailsHandle = Handle;
 			return Result;
 		}
 	}
@@ -886,7 +917,7 @@ int32 UEIK_LobbySubsystem::EIK_LobbySearch_GetSearchResultCount(FEIK_HLobbySearc
 		{
 			EOS_LobbySearch_GetSearchResultCountOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYSEARCH_GETSEARCHRESULTCOUNT_API_LATEST;
-			return EOS_LobbySearch_GetSearchResultCount(*LobbySearchHandle.Ref, &Options);
+			return EOS_LobbySearch_GetSearchResultCount(LobbySearchHandle.Ref, &Options);
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("EIK_LobbySearch_GetSearchResultCount: OnlineSubsystemEOS is not valid"));
@@ -899,7 +930,7 @@ void UEIK_LobbySubsystem::EIK_LobbySearch_Release(FEIK_HLobbySearch LobbySearchH
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_LobbySearch_Release(*LobbySearchHandle.Ref);
+			EOS_LobbySearch_Release(LobbySearchHandle.Ref);
 		}
 	}
 	
@@ -916,7 +947,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbySearch_RemoveParameter(FE
 			Options.ApiVersion = EOS_LOBBYSEARCH_REMOVEPARAMETER_API_LATEST;
 			Options.ComparisonOp = static_cast<EOS_EComparisonOp>(ComparisonOp.GetValue());
 			Options.Key = TCHAR_TO_ANSI(*Key);
-			return static_cast<EEIK_Result>(EOS_LobbySearch_RemoveParameter(*LobbySearchHandle.Ref, &Options));
+			return static_cast<EEIK_Result>(EOS_LobbySearch_RemoveParameter(LobbySearchHandle.Ref, &Options));
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("EIK_LobbySearch_RemoveParameter: OnlineSubsystemEOS is not valid"));
@@ -933,7 +964,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbySearch_SetLobbyId(FEIK_HL
 			EOS_LobbySearch_SetLobbyIdOptions LocalOptions = {};
 			LocalOptions.ApiVersion = EOS_LOBBYSEARCH_SETLOBBYID_API_LATEST;
 			LocalOptions.LobbyId = Options.Ref;
-			return static_cast<EEIK_Result>(EOS_LobbySearch_SetLobbyId(*LobbySearchHandle.Ref, &LocalOptions));
+			return static_cast<EEIK_Result>(EOS_LobbySearch_SetLobbyId(LobbySearchHandle.Ref, &LocalOptions));
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("EIK_LobbySearch_SetLobbyId: OnlineSubsystemEOS is not valid"));
@@ -950,7 +981,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbySearch_SetMaxResults(FEIK
 			EOS_LobbySearch_SetMaxResultsOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYSEARCH_SETMAXRESULTS_API_LATEST;
 			Options.MaxResults = MaxResults;
-			return static_cast<EEIK_Result>(EOS_LobbySearch_SetMaxResults(*LobbySearchHandle.Ref, &Options));
+			return static_cast<EEIK_Result>(EOS_LobbySearch_SetMaxResults(LobbySearchHandle.Ref, &Options));
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("EIK_LobbySearch_SetMaxResults: OnlineSubsystemEOS is not valid"));
@@ -968,7 +999,7 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbySearch_SetParameter(FEIK_
 			Options.ApiVersion = EOS_LOBBYSEARCH_SETPARAMETER_API_LATEST;
 			Options.ComparisonOp = static_cast<EOS_EComparisonOp>(ComparisonOp.GetValue());
 			Options.Parameter = &Parameter.Ref;
-			return static_cast<EEIK_Result>(EOS_LobbySearch_SetParameter(*LobbySearchHandle.Ref, &Options));
+			return static_cast<EEIK_Result>(EOS_LobbySearch_SetParameter(LobbySearchHandle.Ref, &Options));
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("EIK_LobbySearch_SetParameter: OnlineSubsystemEOS is not valid"));
@@ -985,7 +1016,7 @@ FEIK_ProductUserId Options)
 			EOS_LobbySearch_SetTargetUserIdOptions LocalOptions = {};
 			LocalOptions.ApiVersion = EOS_LOBBYSEARCH_SETTARGETUSERID_API_LATEST;
 			LocalOptions.TargetUserId = Options.GetValueAsEosType();
-			return static_cast<EEIK_Result>(EOS_LobbySearch_SetTargetUserId(*LobbySearchHandle.Ref, &LocalOptions));
+			return static_cast<EEIK_Result>(EOS_LobbySearch_SetTargetUserId(LobbySearchHandle.Ref, &LocalOptions));
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("EIK_LobbySearch_SetTargetUserId: OnlineSubsystemEOS is not valid"));

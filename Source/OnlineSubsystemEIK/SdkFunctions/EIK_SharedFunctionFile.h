@@ -31,6 +31,7 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_ui_types.h"
 #include "eos_userinfo.h"
 #include "eos_userinfo_types.h"
+#include "eos_sessions_types.h"
 THIRD_PARTY_INCLUDES_END
 #include "UObject/Object.h"
 #include "EIK_SharedFunctionFile.generated.h"
@@ -1657,17 +1658,17 @@ struct FEIK_Ecom_HTransaction
 {
 	GENERATED_BODY()
 
-	EOS_Ecom_HTransaction* Ref;
+	EOS_Ecom_HTransaction Ref;
 	
 	FEIK_Ecom_HTransaction(): Ref(nullptr)
 	{
 	}
 
-	FEIK_Ecom_HTransaction(EOS_Ecom_HTransaction* InHTransaction)
+	FEIK_Ecom_HTransaction(EOS_Ecom_HTransaction InHTransaction)
 	{
 		Ref = InHTransaction;
 	}
-	EOS_Ecom_HTransaction* GetReference()
+	EOS_Ecom_HTransaction GetReference()
 	{
 		return Ref;
 	}
@@ -2079,17 +2080,16 @@ struct FEIK_Lobby_Attribute
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
 	TEnumAsByte<EEIK_ELobbyAttributeVisibility> Visibility;
 	
-	EOS_Lobby_Attribute* Ref;
-	FEIK_Lobby_Attribute(): Visibility()
+	EOS_Lobby_Attribute Ref;
+	FEIK_Lobby_Attribute(): Visibility(), Ref()
 	{
-		Ref = nullptr;
 	}
 
-	FEIK_Lobby_Attribute(EOS_Lobby_Attribute* InLobbyAttribute)
+	FEIK_Lobby_Attribute(EOS_Lobby_Attribute InLobbyAttribute)
 	{
 		Ref = InLobbyAttribute;
-		Data = *InLobbyAttribute->Data;
-		Visibility = static_cast<EEIK_ELobbyAttributeVisibility>(InLobbyAttribute->Visibility);
+		Data = *InLobbyAttribute.Data;
+		Visibility = static_cast<EEIK_ELobbyAttributeVisibility>(InLobbyAttribute.Visibility);
 	}
 };
 
@@ -2098,12 +2098,12 @@ struct FEIK_HLobbySearch
 {
 	GENERATED_BODY()
 
-	EOS_HLobbySearch* Ref;
+	EOS_HLobbySearch Ref;
 
 	FEIK_HLobbySearch(): Ref(nullptr)
 	{
 	}
-	FEIK_HLobbySearch(EOS_HLobbySearch* InHLobbySearch)
+	FEIK_HLobbySearch(EOS_HLobbySearch InHLobbySearch)
 	{
 		Ref = InHLobbySearch;
 	}
@@ -2133,12 +2133,12 @@ struct FEIK_HLobbyDetails
 {
 	GENERATED_BODY()
 
-	EOS_HLobbyDetails* Ref;
+	EOS_HLobbyDetails Ref;
 
 	FEIK_HLobbyDetails(): Ref(nullptr)
 	{
 	}
-	FEIK_HLobbyDetails(EOS_HLobbyDetails* InHLobbyDetails)
+	FEIK_HLobbyDetails(EOS_HLobbyDetails InHLobbyDetails)
 	{
 		Ref = InHLobbyDetails;
 	}
@@ -2474,23 +2474,16 @@ struct FEIK_Presence_DataRecord
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
 	FString Value;
 	
-	EOS_Presence_DataRecord* Ref;
-	FEIK_Presence_DataRecord(): Key(), Value(), Ref(nullptr)
+	EOS_Presence_DataRecord Ref;
+	FEIK_Presence_DataRecord(): Key(), Value(), Ref()
 	{
 	}
 
-	FEIK_Presence_DataRecord(EOS_Presence_DataRecord* InPresenceDataRecord)
-	{
-		Ref = InPresenceDataRecord;
-		Key = UTF8_TO_TCHAR(InPresenceDataRecord->Key);
-		Value = UTF8_TO_TCHAR(InPresenceDataRecord->Value);
-	}
 	FEIK_Presence_DataRecord(EOS_Presence_DataRecord InPresenceDataRecord)
 	{
-		EOS_Presence_DataRecord* InPresenceDataRecordPtr = &InPresenceDataRecord;
-		Ref = InPresenceDataRecordPtr;
-		Key = FString(UTF8_TO_TCHAR(InPresenceDataRecord.Key));
-		Value = FString(UTF8_TO_TCHAR(InPresenceDataRecord.Value));
+		Ref = InPresenceDataRecord;
+		Key = UTF8_TO_TCHAR(InPresenceDataRecord.Key);
+		Value = UTF8_TO_TCHAR(InPresenceDataRecord.Value);
 	}
 };
 
@@ -2576,12 +2569,12 @@ struct FEIK_HPresenceModification
 {
 	GENERATED_BODY()
 
-	EOS_HPresenceModification* Ref;
+	EOS_HPresenceModification Ref;
 
 	FEIK_HPresenceModification(): Ref(nullptr)
 	{
 	}
-	FEIK_HPresenceModification(EOS_HPresenceModification* InHPresenceModification)
+	FEIK_HPresenceModification(EOS_HPresenceModification InHPresenceModification)
 	{
 		Ref = InHPresenceModification;
 	}
@@ -2596,16 +2589,16 @@ struct FEIK_PresenceModification_DataRecordId
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Presence Interface")
 	FString Key;
 
-	EOS_PresenceModification_DataRecordId* Ref;
+	EOS_PresenceModification_DataRecordId Ref;
 
 	FEIK_PresenceModification_DataRecordId(): Key(), Ref()
 	{
 	}
 
-	FEIK_PresenceModification_DataRecordId(EOS_PresenceModification_DataRecordId* InPresenceModificationDataRecordId)
+	FEIK_PresenceModification_DataRecordId(EOS_PresenceModification_DataRecordId InPresenceModificationDataRecordId)
 	{
 		Ref = InPresenceModificationDataRecordId;
-		Key = FString(UTF8_TO_TCHAR(InPresenceModificationDataRecordId->Key));
+		Key = FString(UTF8_TO_TCHAR(InPresenceModificationDataRecordId.Key));
 	}
 };
 
@@ -2885,12 +2878,12 @@ struct FEIK_HActiveSession
 {
 	GENERATED_BODY()
 
-	EOS_HActiveSession* Ref;
+	EOS_HActiveSession Ref;
 
 	FEIK_HActiveSession(): Ref(nullptr)
 	{
 	}
-	FEIK_HActiveSession(EOS_HActiveSession* InHActiveSession)
+	FEIK_HActiveSession(EOS_HActiveSession InHActiveSession)
 	{
 		Ref = InHActiveSession;
 	}
@@ -2901,12 +2894,12 @@ struct FEIK_HSessionDetails
 {
 	GENERATED_BODY()
 
-	EOS_HSessionDetails* Ref;
+	EOS_HSessionDetails Ref;
 
-	FEIK_HSessionDetails(): Ref(nullptr)
+	FEIK_HSessionDetails(): Ref()
 	{
 	}
-	FEIK_HSessionDetails(EOS_HSessionDetails* InHSessionDetails)
+	FEIK_HSessionDetails(EOS_HSessionDetails InHSessionDetails)
 	{
 		Ref = InHSessionDetails;
 	}

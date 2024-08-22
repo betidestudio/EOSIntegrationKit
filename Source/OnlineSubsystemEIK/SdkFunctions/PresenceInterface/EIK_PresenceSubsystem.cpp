@@ -91,7 +91,10 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_Presence_CreatePresenceModi
 			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			EOS_HPresenceModification PresenceModificationHandle = nullptr;
 			auto Result = EOS_Presence_CreatePresenceModification(EOSRef->PresenceHandle, &Options, &PresenceModificationHandle);
-			OutPresenceModificationHandle = &PresenceModificationHandle;
+			if(Result == EOS_EResult::EOS_Success)
+			{
+				OutPresenceModificationHandle = PresenceModificationHandle;
+			}
 			return static_cast<EEIK_Result>(Result);
 		}
 	}
@@ -180,8 +183,8 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_PresenceModification_Delete
 			EOS_PresenceModification_DeleteDataOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCEMODIFICATION_DELETEDATA_API_LATEST;
 			Options.RecordsCount = Count;
-			Options.Records = Data.Ref;
-			auto Result = EOS_PresenceModification_DeleteData(*PresenceModificationHandle.Ref, &Options);
+			Options.Records = &Data.Ref;
+			auto Result = EOS_PresenceModification_DeleteData(PresenceModificationHandle.Ref, &Options);
 			return static_cast<EEIK_Result>(Result);
 		}
 	}
@@ -191,7 +194,7 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_PresenceModification_Delete
 
 void UEIK_PresenceSubsystem::EIK_PresenceModification_Release(FEIK_HPresenceModification PresenceModificationHandle)
 {
-	EOS_PresenceModification_Release(*PresenceModificationHandle.Ref);
+	EOS_PresenceModification_Release(PresenceModificationHandle.Ref);
 }
 
 TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_PresenceModification_SetData(
@@ -204,8 +207,8 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_PresenceModification_SetDat
 			EOS_PresenceModification_SetDataOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCEMODIFICATION_SETDATA_API_LATEST;
 			Options.RecordsCount = Count;
-			Options.Records = Data.Ref;
-			auto Result = EOS_PresenceModification_SetData(*PresenceModificationHandle.Ref, &Options);
+			Options.Records = &Data.Ref;
+			auto Result = EOS_PresenceModification_SetData(PresenceModificationHandle.Ref, &Options);
 			return static_cast<EEIK_Result>(Result);
 		}
 	}
@@ -223,7 +226,7 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_PresenceModification_SetJoi
 			EOS_PresenceModification_SetJoinInfoOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCEMODIFICATION_SETJOININFO_API_LATEST;
 			Options.JoinInfo = TCHAR_TO_ANSI(*JoinInfo);
-			auto Result = EOS_PresenceModification_SetJoinInfo(*PresenceModificationHandle.Ref, &Options);
+			auto Result = EOS_PresenceModification_SetJoinInfo(PresenceModificationHandle.Ref, &Options);
 			return static_cast<EEIK_Result>(Result);
 		}
 	}
@@ -241,7 +244,7 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_PresenceModification_SetRaw
 			EOS_PresenceModification_SetRawRichTextOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCEMODIFICATION_SETRAWRICHTEXT_API_LATEST;
 			Options.RichText = TCHAR_TO_ANSI(*RichText);
-			auto Result = EOS_PresenceModification_SetRawRichText(*PresenceModificationHandle.Ref, &Options);
+			auto Result = EOS_PresenceModification_SetRawRichText(PresenceModificationHandle.Ref, &Options);
 			return static_cast<EEIK_Result>(Result);
 		}
 	}
@@ -259,7 +262,7 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_PresenceModification_SetSta
 			EOS_PresenceModification_SetStatusOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCEMODIFICATION_SETSTATUS_API_LATEST;
 			Options.Status = static_cast<EOS_Presence_EStatus>(Status.GetValue());
-			auto Result = EOS_PresenceModification_SetStatus(*PresenceModificationHandle.Ref, &Options);
+			auto Result = EOS_PresenceModification_SetStatus(PresenceModificationHandle.Ref, &Options);
 			return static_cast<EEIK_Result>(Result);
 		}
 	}

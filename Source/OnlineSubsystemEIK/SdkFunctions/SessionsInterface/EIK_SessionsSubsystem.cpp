@@ -20,7 +20,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_ActiveSession_CopyInfo(FEIK
 			EOS_ActiveSession_CopyInfoOptions Options;
 			Options.ApiVersion = EOS_ACTIVESESSION_COPYINFO_API_LATEST;
 			EOS_ActiveSession_Info* Result = nullptr;
-			auto ReturnResult = EOS_ActiveSession_CopyInfo(*Handle.Ref, &Options, &Result);
+			auto ReturnResult = EOS_ActiveSession_CopyInfo(Handle.Ref, &Options, &Result);
 			if (ReturnResult == EOS_EResult::EOS_Success)
 			{
 				OutActiveSessionInfo = *Result;
@@ -48,7 +48,7 @@ FEIK_ProductUserId UEIK_SessionsSubsystem::EIK_ActiveSession_GetRegisteredPlayer
 			EOS_ActiveSession_GetRegisteredPlayerByIndexOptions Options;
 			Options.ApiVersion = EOS_ACTIVESESSION_GETREGISTEREDPLAYERBYINDEX_API_LATEST;
 			Options.PlayerIndex = PlayerIndex;
-			return  EOS_ActiveSession_GetRegisteredPlayerByIndex(*Handle.Ref, &Options);
+			return  EOS_ActiveSession_GetRegisteredPlayerByIndex(Handle.Ref, &Options);
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("UEIK_SessionsSubsystem::EIK_ActiveSession_GetRegisteredPlayerByIndex: Unable to get EOS subsystem."));
@@ -62,7 +62,7 @@ void UEIK_SessionsSubsystem::EIK_ActiveSession_Release(FEIK_HActiveSession Handl
 		UE_LOG(LogEIK, Error, TEXT("UEIK_SessionsSubsystem: Invalid Handle."));
 		return;
 	}
-	EOS_ActiveSession_Release(*Handle.Ref);
+	EOS_ActiveSession_Release(Handle.Ref);
 }
 
 TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionDetails_CopyInfo(FEIK_HSessionDetails Handle,
@@ -80,7 +80,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionDetails_CopyInfo(FEI
 			EOS_SessionDetails_CopyInfoOptions Options;
 			Options.ApiVersion = EOS_SESSIONDETAILS_COPYINFO_API_LATEST;
 			EOS_SessionDetails_Info* Result = nullptr;
-			auto ReturnResult = EOS_SessionDetails_CopyInfo(*Handle.Ref, &Options, &Result);
+			auto ReturnResult = EOS_SessionDetails_CopyInfo(Handle.Ref, &Options, &Result);
 			if (ReturnResult == EOS_EResult::EOS_Success)
 			{
 				OutSessionInfo = *Result;
@@ -109,7 +109,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionDetails_CopySessionA
 			Options.ApiVersion = EOS_SESSIONDETAILS_COPYSESSIONATTRIBUTEBYINDEX_API_LATEST;
 			Options.AttrIndex = AttrIndex;
 			EOS_SessionDetails_Attribute* Result = nullptr;
-			auto ReturnResult = EOS_SessionDetails_CopySessionAttributeByIndex(*Handle.Ref, &Options, &Result);
+			auto ReturnResult = EOS_SessionDetails_CopySessionAttributeByIndex(Handle.Ref, &Options, &Result);
 			if (ReturnResult == EOS_EResult::EOS_Success)
 			{
 				OutSessionAttribute = *Result;
@@ -138,7 +138,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionDetails_CopySessionA
 			Options.ApiVersion = EOS_SESSIONDETAILS_COPYSESSIONATTRIBUTEBYKEY_API_LATEST;
 			Options.AttrKey = TCHAR_TO_ANSI(*AttrKey);
 			EOS_SessionDetails_Attribute* Result = nullptr;
-			auto ReturnResult = EOS_SessionDetails_CopySessionAttributeByKey(*Handle.Ref, &Options, &Result);
+			auto ReturnResult = EOS_SessionDetails_CopySessionAttributeByKey(Handle.Ref, &Options, &Result);
 			if (ReturnResult == EOS_EResult::EOS_Success)
 			{
 				OutSessionAttribute = *Result;
@@ -164,7 +164,7 @@ int32 UEIK_SessionsSubsystem::EIK_SessionDetails_GetSessionAttributeCount(FEIK_H
 		{
 			EOS_SessionDetails_GetSessionAttributeCountOptions Options;
 			Options.ApiVersion = EOS_SESSIONDETAILS_GETSESSIONATTRIBUTECOUNT_API_LATEST;
-			return EOS_SessionDetails_GetSessionAttributeCount(*Handle.Ref, &Options);
+			return EOS_SessionDetails_GetSessionAttributeCount(Handle.Ref, &Options);
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("UEIK_SessionsSubsystem::EIK_SessionDetails_GetSessionAttributeCount: Unable to get EOS subsystem."));
@@ -568,7 +568,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_CopyActiveSessionH
 			auto ReturnResult = EOS_Sessions_CopyActiveSessionHandle(EOSRef->SessionsHandle, &Options, &LocalHandle);
 			if (ReturnResult == EOS_EResult::EOS_Success)
 			{
-				OutActiveSessionHandle = &LocalHandle;
+				OutActiveSessionHandle = LocalHandle;
 			}
 			return static_cast<EEIK_Result>(ReturnResult);
 		}
@@ -596,7 +596,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_CopySessionHandleB
 			auto ReturnResult = EOS_Sessions_CopySessionHandleByInviteId(EOSRef->SessionsHandle, &Options, &LocalHandle);
 			if (ReturnResult == EOS_EResult::EOS_Success)
 			{
-				OutSessionHandle = &LocalHandle;
+				OutSessionHandle = LocalHandle;
 			}
 			return static_cast<EEIK_Result>(ReturnResult);
 		}
@@ -624,7 +624,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_CopySessionHandleB
 			auto ReturnResult = EOS_Sessions_CopySessionHandleByUiEventId(EOSRef->SessionsHandle, &Options, &LocalHandle);
 			if (ReturnResult == EOS_EResult::EOS_Success)
 			{
-				OutSessionHandle = &LocalHandle;
+				OutSessionHandle = LocalHandle;
 			}
 			return static_cast<EEIK_Result>(ReturnResult);
 		}
@@ -652,7 +652,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_CopySessionHandleF
 			auto ReturnResult = EOS_Sessions_CopySessionHandleForPresence(EOSRef->SessionsHandle, &Options, &LocalHandle);
 			if (ReturnResult == EOS_EResult::EOS_Success)
 			{
-				OutSessionHandle = &LocalHandle;
+				OutSessionHandle = LocalHandle;
 			}
 			return static_cast<EEIK_Result>(ReturnResult);
 		}
@@ -917,7 +917,7 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionSearch_CopySearchRes
 			auto ReturnResult = EOS_SessionSearch_CopySearchResultByIndex(*Handle.Ref, &Options, &LocalHandle);
 			if (ReturnResult == EOS_EResult::EOS_Success)
 			{
-				OutSessionHandle = &LocalHandle;
+				OutSessionHandle = LocalHandle;
 			}
 			return static_cast<EEIK_Result>(ReturnResult);
 		}

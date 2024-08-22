@@ -273,7 +273,10 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionById(FEIK_E
 			CopyTransactionByIdOptions.TransactionId = TCHAR_TO_ANSI(*TransactionId);
 			EOS_Ecom_HTransaction LocalRef;
 			auto Result = EOS_Ecom_CopyTransactionById(EOSRef->EcomHandle, &CopyTransactionByIdOptions, &LocalRef);
-			OutTransaction = &LocalRef;
+			if(Result == EOS_EResult::EOS_Success)
+			{
+				OutTransaction = LocalRef;
+			}
 			return static_cast<EEIK_Result>(Result);
 		}
 	}
@@ -294,7 +297,10 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionByIndex(FEI
 			CopyTransactionByIndexOptions.TransactionIndex = TransactionIndex;
 			EOS_Ecom_HTransaction LocalRef;
 			auto Result = EOS_Ecom_CopyTransactionByIndex(EOSRef->EcomHandle, &CopyTransactionByIndexOptions, &LocalRef);
-			OutTransaction = &LocalRef;
+			if(Result == EOS_EResult::EOS_Success)
+			{
+				OutTransaction = LocalRef;
+			}
 			return static_cast<EEIK_Result>(Result);
 		}
 	}
@@ -482,8 +488,11 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_Transaction_CopyEntitlemen
 			CopyEntitlementByIndexOptions.ApiVersion = EOS_ECOM_TRANSACTION_COPYENTITLEMENTBYINDEX_API_LATEST;
 			CopyEntitlementByIndexOptions.EntitlementIndex = EntitlementIndex;
 			EOS_Ecom_Entitlement* LocalRef;
-			auto Result = EOS_Ecom_Transaction_CopyEntitlementByIndex(*Transaction.Ref, &CopyEntitlementByIndexOptions, &LocalRef);
-			OutEntitlement = FEIK_Ecom_Entitlement(*LocalRef);
+			auto Result = EOS_Ecom_Transaction_CopyEntitlementByIndex(Transaction.Ref, &CopyEntitlementByIndexOptions, &LocalRef);
+			if(Result == EOS_EResult::EOS_Success)
+			{
+				OutEntitlement = FEIK_Ecom_Entitlement(*LocalRef);
+			}
 			return static_cast<EEIK_Result>(Result);
 		}
 	}
@@ -500,7 +509,7 @@ int32 UEIK_EcomSubsystem::EIK_Ecom_Transaction_GetEntitlementsCount(FEIK_Ecom_HT
 	}
 	EOS_Ecom_Transaction_GetEntitlementsCountOptions GetEntitlementsCountOptions = { };
 	GetEntitlementsCountOptions.ApiVersion = EOS_ECOM_TRANSACTION_GETENTITLEMENTSCOUNT_API_LATEST;
-	return EOS_Ecom_Transaction_GetEntitlementsCount(*Transaction.Ref, &GetEntitlementsCountOptions);
+	return EOS_Ecom_Transaction_GetEntitlementsCount(Transaction.Ref, &GetEntitlementsCountOptions);
 }
 
 FString UEIK_EcomSubsystem::EIK_Ecom_Transaction_GetTransactionId(FEIK_Ecom_HTransaction Transaction)
@@ -512,11 +521,11 @@ FString UEIK_EcomSubsystem::EIK_Ecom_Transaction_GetTransactionId(FEIK_Ecom_HTra
 	}
 	char* OutBuffer = nullptr;
 	int32_t* InOutBufferLength = nullptr;
-	auto Result = EOS_Ecom_Transaction_GetTransactionId(*Transaction.Ref, OutBuffer, InOutBufferLength);
+	auto Result = EOS_Ecom_Transaction_GetTransactionId(Transaction.Ref, OutBuffer, InOutBufferLength);
 	if(Result == EOS_EResult::EOS_Success)
 	{
 		FString OutString = FString(OutBuffer);
-		EOS_Ecom_Transaction_Release(*Transaction.Ref);
+		EOS_Ecom_Transaction_Release(Transaction.Ref);
 		return OutString;
 	}
 	return "";
