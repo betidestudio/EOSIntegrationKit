@@ -21,10 +21,7 @@ void UEIK_Friends_AcceptInvite::OnAcceptInviteCallback(const EOS_Friends_AcceptI
 {
 	if (UEIK_Friends_AcceptInvite* Node = static_cast<UEIK_Friends_AcceptInvite*>(Data->ClientData))
 	{
-		AsyncTask(ENamedThreads::GameThread, [Node, Data]()
-		{
-			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId, Data->TargetUserId);
-		});
+		Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId, Data->TargetUserId);
 		Node->SetReadyToDestroy();
 		Node->MarkAsGarbage();
 	}

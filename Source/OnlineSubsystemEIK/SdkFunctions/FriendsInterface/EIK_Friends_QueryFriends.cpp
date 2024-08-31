@@ -18,10 +18,7 @@ void UEIK_Friends_QueryFriends::OnQueryFriendsCallback(const EOS_Friends_QueryFr
 {
 	if (UEIK_Friends_QueryFriends* Node = static_cast<UEIK_Friends_QueryFriends*>(Data->ClientData))
 	{
-		AsyncTask(ENamedThreads::GameThread, [Node, Data]()
-		{
-			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
-		});
+		Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
 		Node->SetReadyToDestroy();
 		Node->MarkAsGarbage();
 	}
