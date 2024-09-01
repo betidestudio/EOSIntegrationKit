@@ -81,10 +81,20 @@ bool UNetDriverEIKBase::InitBase(bool bInitAsClient, FNetworkNotify* InNotify, c
 
 	// Store our local address and set our port
 	TSharedRef<FInternetAddrEOS> EOSLocalAddress = StaticCastSharedRef<FInternetAddrEOS>(LocalAddress);
-	// Because some platforms remap ports, we will use the ID of the name of the net driver to be our channel
-	EOSLocalAddress->SetChannel(GetTypeHash(NetDriverName.ToString()));
-	// Set our net driver name so we don't accept connections across net driver types
-	EOSLocalAddress->SetSocketName(NetDriverName.ToString());
+	if(IsBeaconDriver())
+	{
+		//Till we have a better solution, we will use a hardcoded port for the beacon driver
+		EOSLocalAddress->SetSocketName(TEXT("BeaconSession"));
+		// We will also use a hardcoded channel for the beacon driver
+		EOSLocalAddress->SetChannel(71);
+	}
+	else
+	{
+		// Because some platforms remap ports, we will use the ID of the name of the net driver to be our channel
+		EOSLocalAddress->SetChannel(GetTypeHash(NetDriverName.ToString()));
+		// Set our net driver name so we don't accept connections across net driver types
+		EOSLocalAddress->SetSocketName(NetDriverName.ToString());
+	}
 
 	static_cast<FSocketEOS*>(GetSocket())->SetLocalAddress(*EOSLocalAddress);
 
@@ -263,6 +273,28 @@ int UNetDriverEIKBase::GetClientPort()
 	// Starting range of dynamic/private/ephemeral ports
 	return 49152;
 }
+
+bool UNetDriverEIKBase::IsBeaconDriver() const
+{
+	if (!GEngine) return false;
+
+	for (const auto &WorldContext : GEngine->GetWorldContexts())
+	{
+		if (UWorld *ItWorld = WorldContext.World())
+		{
+			for (AOnlineBeacon* Beacon : TActorRange<AOnlineBeacon>(ItWorld))
+			{
+				if (Beacon->GetNetDriver() == this)
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+	
 
 UWorld* UNetDriverEIKBase::FindWorld() const
 {

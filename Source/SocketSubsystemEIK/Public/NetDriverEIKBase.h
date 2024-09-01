@@ -24,6 +24,7 @@ public:
 	virtual ISocketSubsystem* GetSocketSubsystem() override;
 	virtual void Shutdown() override;
 	virtual int GetClientPort() override;
+	bool IsBeaconDriver() const;
 //~ End UNetDriver Interface
 
 	UWorld* FindWorld() const;
