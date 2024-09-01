@@ -29,7 +29,7 @@ public:
 	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/
 	For Input Parameters, please refer to the documentation link above.
 	*/
-	UFUNCTION(BlueprintCallable, DisplayName="Find EIK Sessions",meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
+	UFUNCTION(BlueprintCallable, DisplayName="Find EIK Sessions",meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm=SessionSettings), Category="EOS Integration Kit || Sessions")
 	static UEIK_FindSessions_AsyncFunction* FindEIKSessions(TMap<FString, FEIKAttribute> SessionSettings, EMatchType MatchType = EMatchType::MT_Lobby, int32 MaxResults = 15, ERegionInfo RegionToSearch = ERegionInfo::RE_NoSelection, bool bLanSearch = false, bool bIncludePartySessions = false);
 
 

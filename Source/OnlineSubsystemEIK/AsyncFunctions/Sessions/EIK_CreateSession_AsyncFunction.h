@@ -89,7 +89,7 @@ public:
 	Documentation link: https://betide-studio.gitbook.io/eos-integration-kit/sessions/
 	For Input Parameters, please refer to the documentation link above.
 	*/
-	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Session", meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
+	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Session", meta = (BlueprintInternalUseOnly = "true",AutoCreateRefTerm=SessionSettings), Category="EOS Integration Kit || Sessions")
 	static UEIK_CreateSession_AsyncFunction* CreateEIKSession(
         TMap<FString, FEIKAttribute> SessionSettings,
         FName SessionName = "GameSession",

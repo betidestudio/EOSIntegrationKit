@@ -31,7 +31,6 @@ bool UNetDriverEIKBase::IsAvailable() const
 
 bool UNetDriverEIKBase::InitBase(bool bInitAsClient, FNetworkNotify* InNotify, const FURL& URL, bool bReuseAddressAndPort, FString& Error)
 {
-	
 	if (bIsPassthrough)
 	{
 		UE_LOG(LogTemp, Verbose, TEXT("Running as pass-through"));
