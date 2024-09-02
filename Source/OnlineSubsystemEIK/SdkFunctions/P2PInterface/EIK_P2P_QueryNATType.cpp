@@ -35,10 +35,7 @@ void UEIK_P2P_QueryNATType::EOS_P2P_QueryNATType_Callback(const EOS_P2P_OnQueryN
 {
 	if(UEIK_P2P_QueryNATType* ThisNode = static_cast<UEIK_P2P_QueryNATType*>(Data->ClientData))
 	{
-		AsyncTask(ENamedThreads::GameThread, [ThisNode, Data]()
-		{
-			ThisNode->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), static_cast<EEIK_ENATType>(Data->NATType));
-		});
+		ThisNode->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), static_cast<EEIK_ENATType>(Data->NATType));
 		ThisNode->SetReadyToDestroy();
 		ThisNode->MarkAsGarbage();
 	}

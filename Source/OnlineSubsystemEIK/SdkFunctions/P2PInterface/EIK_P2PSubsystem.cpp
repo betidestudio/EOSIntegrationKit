@@ -48,11 +48,7 @@ const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyIncomingPacketQueu
 			{
 				if(UEIK_P2PSubsystem* Subsystem = static_cast<UEIK_P2PSubsystem*>(Data->ClientData))
 				{
-					AsyncTask(ENamedThreads::GameThread, [Subsystem, Data]()
-					{
-						FEIK_P2P_OnIncomingPacketQueueFullInfo Info = *Data;
-						Subsystem->OnIncomingPacketQueueFull.ExecuteIfBound(Info);
-					});
+						Subsystem->OnIncomingPacketQueueFull.ExecuteIfBound(*Data);
 				}
 			});
 		}
@@ -80,14 +76,11 @@ const FEIK_NotificationId UEIK_P2PSubsystem::EIK_P2P_AddNotifyPeerConnectionClos
 			{
 				if(UEIK_P2PSubsystem* Subsystem = static_cast<UEIK_P2PSubsystem*>(Data->ClientData))
 				{
-					AsyncTask(ENamedThreads::GameThread, [Subsystem, Data]()
-					{
-						FEIK_ProductUserId LocalUserId = Data->LocalUserId;
-						FEIK_ProductUserId RemoteUserId = Data->RemoteUserId;
-						FEIK_P2P_SocketId SocketId = *Data->SocketId;
-						TEnumAsByte<EEIK_EConnectionClosedReason> Reason = static_cast<EEIK_EConnectionClosedReason>(Data->Reason);
-						Subsystem->OnPeerConnectionClosed.ExecuteIfBound(LocalUserId, RemoteUserId, SocketId, Reason);
-					});
+					FEIK_ProductUserId LocalUserId = Data->LocalUserId;
+					FEIK_ProductUserId RemoteUserId = Data->RemoteUserId;
+					FEIK_P2P_SocketId SocketId = *Data->SocketId;
+					TEnumAsByte<EEIK_EConnectionClosedReason> Reason = static_cast<EEIK_EConnectionClosedReason>(Data->Reason);
+					Subsystem->OnPeerConnectionClosed.ExecuteIfBound(LocalUserId, RemoteUserId, SocketId, Reason);
 				}
 			});
 		}
