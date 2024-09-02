@@ -89,7 +89,7 @@ FEIK_NotificationId UEIK_LobbySubsystem::EIK_Lobby_AddNotifyLobbyInviteAccepted(
 			{
 				if (UEIK_LobbySubsystem* CallbackObj = static_cast<UEIK_LobbySubsystem*>(Data->ClientData))
 				{
-						CallbackObj->OnLobbyInviteAccepted.ExecuteIfBound(Data->LocalUserId, Data->TargetUserId, Data->LobbyId, Data->InviteId);
+					CallbackObj->OnLobbyInviteAccepted.ExecuteIfBound(Data->LocalUserId, Data->TargetUserId, Data->LobbyId, Data->InviteId);
 				}
 			});
 		}
