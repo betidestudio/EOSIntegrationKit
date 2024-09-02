@@ -883,3 +883,12 @@ bool UEIK_BlueprintFunctions::GetAutoLoginInProgressStatus()
 	UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetAutoLoginInProgressStatus: OnlineSubsystem is null"));
 	return false;
 }
+
+FString UEIK_BlueprintFunctions::GetEnvironmentVariable(const FString& EnvVariableName)
+{
+	if(EnvVariableName.IsEmpty())
+	{
+		return FString();
+	}
+	return FPlatformMisc::GetEnvironmentVariable(*EnvVariableName);
+}

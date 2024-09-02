@@ -363,4 +363,7 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Get AutoLogin In Progress Status", Category="EOS Integration Kit || Extra")
 	static bool GetAutoLoginInProgressStatus();
 
+	UFUNCTION(BlueprintCallable, DisplayName="Get Environment Variable", Category="EOS Integration Kit || Extra")
+	static FString GetEnvironmentVariable(const FString& EnvVariableName);
+
 };
