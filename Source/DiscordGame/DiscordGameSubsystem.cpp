@@ -38,7 +38,7 @@ void UDiscordGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	}
 	else
 	{
-		UE_LOG(LogDiscord, Error, TEXT("SDK load failed, disabling subsystem"));
+		UE_LOG(LogDiscord, Log, TEXT("SDK load failed, disabling Discord subsystem"));
 	}
 }
 
