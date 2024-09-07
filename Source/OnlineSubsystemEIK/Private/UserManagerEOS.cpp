@@ -1274,7 +1274,9 @@ void FUserManagerEOS::RefreshConnectLogin(int32 LocalUserNum)
 		return;
 	}
 
-	if(LocalUserNumToLastLoginCredentials[0]->Type == TEXT("deviceid"))
+	UE_LOG(LogTemp, Log, TEXT("RefreshConnectLogin(%d) for credential type %s"), LocalUserNum, *LocalUserNumToLastLoginCredentials[0]->Type);
+
+	if(LocalUserNumToLastLoginCredentials[0]->Type.Contains(TEXT("DEVICEID"), ESearchCase::IgnoreCase))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Refresh Connect Login for Device ID"));
 		LoginViaConnectInterface(*LocalUserNumToLastLoginCredentials[0]);
