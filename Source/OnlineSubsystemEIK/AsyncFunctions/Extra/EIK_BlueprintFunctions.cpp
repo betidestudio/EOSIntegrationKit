@@ -460,8 +460,14 @@ bool UEIK_BlueprintFunctions::StartSession(FName SessionName)
 
 bool UEIK_BlueprintFunctions::RegisterPlayer(FName SessionName,FEIKUniqueNetId PlayerId, bool bWasInvited)
 {
+	if(!PlayerId.IsValid())
+	{
+		UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::RegisterPlayer: PlayerId is not valid"));
+		return false;
+	}
 	if(!PlayerId.UniqueNetId.IsValid())
 	{
+		UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::RegisterPlayer: PlayerId.UniqueNetId is not valid"));
 		return false;
 	}
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
@@ -479,6 +485,17 @@ bool UEIK_BlueprintFunctions::RegisterPlayer(FName SessionName,FEIKUniqueNetId P
 
 bool UEIK_BlueprintFunctions::UnRegisterPlayer(FName SessionName, FEIKUniqueNetId PlayerId)
 {
+	if(!PlayerId.IsValid())
+	{
+		UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::UnRegisterPlayer: PlayerId is not valid"));
+		return false;
+	}
+	if(!PlayerId.UniqueNetId.IsValid())
+	{
+		UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::UnRegisterPlayer: PlayerId.UniqueNetId is not valid"));
+		return false;
+	}
+	
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
@@ -513,6 +530,16 @@ bool UEIK_BlueprintFunctions::EndSession(FName SessionName)
 
 bool UEIK_BlueprintFunctions::IsInSession(FName SessionName,FEIKUniqueNetId PlayerId)
 {
+	if(!PlayerId.IsValid())
+	{
+		UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsInSession: PlayerId is not valid"));
+		return false;
+	}
+	if(!PlayerId.UniqueNetId.IsValid())
+	{
+		UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::IsInSession: PlayerId.UniqueNetId is not valid"));
+		return false;
+	}
 	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 	{
 		if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
