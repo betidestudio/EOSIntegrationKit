@@ -90,6 +90,72 @@ public:
 		return false;
 #endif
 	}
+
+	UFUNCTION(BlueprintCallable, Category = "Discord")
+	FString GetDiscordDisplayName()
+	{
+#if EIKDISCORDACTIVE
+		if(IsDiscordRunning() && IsDiscordSDKLoaded())
+		{
+			discord::User CurrentUser;
+			auto Rsult = DiscordCore().UserManager().GetCurrentUser(&CurrentUser);
+			if(Rsult == discord::Result::Ok)
+			{
+				return UTF8_TO_TCHAR(CurrentUser.GetUsername());
+			}
+			return TEXT("Failed to get Discord User");
+		}
+		return TEXT("Discord is not running");
+#else
+		UE_LOG(LogDiscord, Error, TEXT("Failed to get Discord Auth Token due to error: %d"), static_cast<int32>(Rsult));
+		return TEXT("Discord setup files are not included in the project");
+#endif
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "Discord")
+	int64 GetDiscordUserId()
+	{
+#if EIKDISCORDACTIVE
+		if(IsDiscordRunning() && IsDiscordSDKLoaded())
+		{
+			discord::User CurrentUser;
+			auto Rsult = DiscordCore().UserManager().GetCurrentUser(&CurrentUser);
+			if(Rsult == discord::Result::Ok)
+			{
+				return CurrentUser.GetId();
+			}
+			UE_LOG(LogDiscord, Error, TEXT("Failed to get Discord Auth Token due to error: %d"), static_cast<int32>(Rsult));
+			return -1;
+		}
+		return -1;
+#else
+		return -1;
+#endif
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "Discord")
+	void GetDiscordAvatarUrl(FString& Hash, FString& URL)
+	{
+#if EIKDISCORDACTIVE
+		if(IsDiscordRunning() && IsDiscordSDKLoaded())
+		{
+			discord::User CurrentUser;
+			auto Rsult = DiscordCore().UserManager().GetCurrentUser(&CurrentUser);
+			if(Rsult == discord::Result::Ok)
+			{
+				Hash =  UTF8_TO_TCHAR(CurrentUser.GetAvatar());
+				URL = FString::Printf(TEXT("https://cdn.discordapp.com/avatars/%lld/%s.png"), CurrentUser.GetId(), *Hash);
+				return;
+			}
+			UE_LOG(LogDiscord, Error, TEXT("Failed to get Discord Auth Token due to error: %d"), static_cast<int32>(Rsult));
+			return;
+		}
+		return;
+#else
+		UE_LOG(LogDiscord, Error, TEXT("Discord setup files are not included in the project"));
+		return;
+#endif
+	}
 #if EIKDISCORDACTIVE
 
 	/**

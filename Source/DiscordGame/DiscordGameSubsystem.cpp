@@ -63,6 +63,10 @@ void UDiscordGameSubsystem::NativeOnDiscordCoreCreated()
 		const FString Message (UTF8_TO_TCHAR(RawMessage));
 		NativeOnDiscordLogMessage(Level, Message);
 	});
+	DiscordCorePtr->UserManager().OnCurrentUserUpdate.Connect([this]()
+	{
+		UE_LOG(LogDiscord, Log, TEXT("Current User Updated"));
+	});
 
 	// In case we get disconnected and we need to try to reconnect,
 	// make sure we'll log any future connection errors.
@@ -200,6 +204,7 @@ bool UDiscordGameSubsystem::Tick(float DeltaTime)
 
 void UDiscordGameSubsystem::TryCreateDiscordCore(float DeltaTime)
 {
+	UE_LOG(LogDiscord, Log, TEXT("Attempting to create Discord Core"));
 #if EIKDISCORDACTIVE
 	RetryWaitRemaining -= DeltaTime;
 
