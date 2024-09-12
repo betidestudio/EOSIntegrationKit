@@ -107,7 +107,6 @@ public:
 		}
 		return TEXT("Discord is not running");
 #else
-		UE_LOG(LogDiscord, Error, TEXT("Failed to get Discord Auth Token due to error: %d"), static_cast<int32>(Rsult));
 		return TEXT("Discord setup files are not included in the project");
 #endif
 	}
