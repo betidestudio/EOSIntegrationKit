@@ -2384,6 +2384,7 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 			const bool bIsSilence = false;
 			const FString PlayerName = LexToString(CallbackInfo->ParticipantId);
 			const FString ChannelName = UTF8_TO_TCHAR(CallbackInfo->RoomName);
+			UE_LOG(LogTemp,Warning,TEXT("ChannelName: %s"), *ChannelName);
 			if(GEngine)
 			{
 				if (const UWorld* World = GEngine->GetWorldContexts().Last().World())
@@ -2392,7 +2393,19 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 					{
 						if (UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>())
 						{
-							if(LocalVoiceSubsystem->bIsPositionalVoiceChatUsed)
+							bool bIsPositionalVoiceChatUsedForThisChannel = false;
+							float LocalMaxDistance = 2000.f;
+							for(auto LocalSelection: LocalVoiceSubsystem->Var_PositionalVoiceChatData)
+							{
+								if(LocalSelection.ChannelName == ChannelName)
+								{
+									bIsPositionalVoiceChatUsedForThisChannel = true;
+									LocalMaxDistance = LocalSelection.MaxHearingDistance;
+									break;
+								}
+							}
+							
+							if(LocalVoiceSubsystem->Var_IsPositionalVoiceChatUsed && (LocalVoiceSubsystem->Var_ApplyPositionalVoiceChatOnAllChannels || bIsPositionalVoiceChatUsedForThisChannel))
 							{
 								AActor* SpeakerActor = nullptr;
 								AActor* ListenerActor = nullptr;
@@ -2436,19 +2449,9 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 								if(ListenerActor && SpeakerActor)
 								{
 									const FVector PlayerLocation = ListenerActor->GetActorLocation();
-									FVector AudioSourceLocation;
-										
-									if(LocalVoiceSubsystem->bUseDebugPoint)
-									{
-										AudioSourceLocation = LocalVoiceSubsystem->DebugPointLocation;
-									}
-									else
-									{
-										AudioSourceLocation = SpeakerActor->GetActorLocation();
-									}
-																				
+									const FVector AudioSourceLocation = SpeakerActor->GetActorLocation();								
 									const float Distance = FVector::Dist(PlayerLocation, AudioSourceLocation);
-									float VolumeMultiplier = FMath::Clamp(1.f - (Distance / LocalVoiceSubsystem->MaxHearingDistance), 0.f, 1.f);
+									float VolumeMultiplier = FMath::Clamp(1.f - (Distance / LocalMaxDistance), 0.f, 1.f);
 									float VolumeForceMultiplier = 1.f;
 									if(LocalVoiceSubsystem->bUseOutputVolumeWithPositionalChat && LocalVoiceSubsystem->bUseOutputVolume)
 									{
@@ -2457,7 +2460,7 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 									VolumeMultiplier = VolumeMultiplier * VolumeForceMultiplier;
 									if(LocalVoiceSubsystem->bUseDebugPoint)
 									{
-										UE_LOG(LogTemp,Warning,TEXT("Positional Volume Scale: %f"), VolumeMultiplier);
+										UE_LOG(LogTemp, Warning,TEXT("Positional Volume Scale: %f"), VolumeMultiplier);
 									}
 									for (int i = 0; i < Samples.Num(); i++)
 									{

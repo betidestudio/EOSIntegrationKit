@@ -64,6 +64,19 @@ public:
 	
 };
 
+
+USTRUCT(BlueprintType)
+struct FEIK_PositionalVoiceChat
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EOS Integration Kit|Voice Chat")
+	FString ChannelName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EOS Integration Kit|Voice Chat")
+	float MaxHearingDistance;	
+};
+
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FEIKResultDelegate, bool, bWasSuccess, EEVIKResultCodes, Result);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FEIKRoomTokenResultDelegate, bool, bWasSuccess, FString, RoomData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_OnPlayerAdded, FString, ChannelName, FString, PlayerName);
@@ -87,11 +100,16 @@ public:
 	UFUNCTION(Category="EOS Integration Kit|Voice Chat")
 	void EVIK_Local_Connect(const FEIKResultDelegate& ResultDelegate);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category="EOS Integration Kit|Voice Chat")
-	void SetupPlayerList(const TArray<FEVIKPlayerList>& PlayerList);
+	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit|Voice Chat")
+	void UpdatePositionalVoiceChat(bool UsePositionalVoiceChat, TArray<FEIK_PositionalVoiceChat> PositionalVoiceChatData, bool bApplyPositionalVoiceChatOnAllChannels);
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit|Voice Chat")
-	void UpdatePositionalVoiceChat(bool UsePositionalVoiceChat, float FMaxHearingDistance, bool V_bUseDebugPoint, FVector V_DebugPointLocation);
+	void SetDebugForPositionalVoiceChat(bool bEnableDebug);
+	
+	//void UpdatePositionalVoiceChat(bool UsePositionalVoiceChat, float FMaxHearingDistance, bool V_bUseDebugPoint, FVector V_DebugPointLocation);
+
+	//UFUNCTION(BlueprintCallable, Category="EOS Integration Kit|Voice Chat")
+
 
 	UFUNCTION(BlueprintCallable, Category="EOS Integration Kit|Voice Chat")
 	void ForceUpdateOutputVolume(bool bUseThisVolume, bool bUseWithPositionalChat,float Volume);
@@ -102,9 +120,6 @@ public:
 	
 	IVoiceChat* EVIK_VoiceChat;
 
-	UPROPERTY(ReplicatedUsing= PlayerListUpdated)
-	TArray<FEVIKPlayerList> PlayerListVar;
-
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Voice Chat")
 	FEIK_OnPlayerRemoved OnPlayerRemoved;
 
@@ -114,11 +129,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Voice Chat")
 	FEIK_OnChannelExited OnChannelExited;
 
-	bool bIsPositionalVoiceChatUsed = false;
+	bool Var_IsPositionalVoiceChatUsed = false;
+	TArray<FEIK_PositionalVoiceChat> Var_PositionalVoiceChatData;
+	bool Var_ApplyPositionalVoiceChatOnAllChannels = false;
 	bool bUseDebugPoint = false;
-	FVector DebugPointLocation;
 
-	float MaxHearingDistance;
 	float OutputVolume = 1.0f;
 	bool bUseOutputVolume = false;
 	bool bUseOutputVolumeWithPositionalChat = false;
