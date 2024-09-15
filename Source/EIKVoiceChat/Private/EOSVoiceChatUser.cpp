@@ -2456,7 +2456,11 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 									// first we need to acquire the new component
 
 									UEIKVoiceChatSynthComponent* VoiceChatSynthComponent = SpeakerActor->FindComponentByClass<UEIKVoiceChatSynthComponent>();
+									if (IsValid(VoiceChatSynthComponent))
+									{
 									VoiceChatSynthComponent->WriteSamples(Samples);
+									}
+									// ELSE we can add one using some default setting from
 
 
 									const float Distance = FVector::Dist(PlayerLocation, AudioSourceLocation);
