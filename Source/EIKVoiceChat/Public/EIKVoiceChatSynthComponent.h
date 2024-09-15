@@ -50,6 +50,6 @@ protected:
 		AvailableSamples += Samples.Num();
 	}
 
-	uint32 AvailableSamples = 0;
+	int32 AvailableSamples = 0;
 
 };
