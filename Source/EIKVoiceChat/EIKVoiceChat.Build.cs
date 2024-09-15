@@ -16,7 +16,8 @@ namespace UnrealBuildTool.Rules
 			PublicDependencyModuleNames.AddRange(
 				new string[]
 				{
-					"Json"
+					"Json",
+					"AudioExtensions"
 				}
 			);
 
@@ -39,7 +40,10 @@ namespace UnrealBuildTool.Rules
                     "StructUtils",
                     "HTTP", 
                     "EOSIntegrationKit",
-                }
+					"Synthesis",
+					"SignalProcessing",
+					"AudioMixer",
+				}
 			);
 
 			if(Target.Platform == UnrealTargetPlatform.IOS)

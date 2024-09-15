@@ -27,6 +27,7 @@
 #include "eos_rtc.h"
 #include "eos_rtc_audio.h"
 #include "eos_sdk.h"
+#include "EIKVoiceChatSynthComponent.h"
 
 
 #define EOS_VOICE_TODO 0
@@ -2449,7 +2450,15 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 								if(ListenerActor && SpeakerActor)
 								{
 									const FVector PlayerLocation = ListenerActor->GetActorLocation();
-									const FVector AudioSourceLocation = SpeakerActor->GetActorLocation();								
+									const FVector AudioSourceLocation = SpeakerActor->GetActorLocation();
+
+									// BEGIN AMIR TESTS FOR POSITIONAL VOICE CHAT
+									// first we need to acquire the new component
+
+									UEIKVoiceChatSynthComponent* VoiceChatSynthComponent = SpeakerActor->FindComponentByClass<UEIKVoiceChatSynthComponent>();
+									VoiceChatSynthComponent->WriteSamples(Samples);
+
+
 									const float Distance = FVector::Dist(PlayerLocation, AudioSourceLocation);
 									float VolumeMultiplier = FMath::Clamp(1.f - (Distance / LocalMaxDistance), 0.f, 1.f);
 									float VolumeForceMultiplier = 1.f;
@@ -2504,7 +2513,8 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 				UE_LOG(LogTemp,Warning,TEXT("GEngine is not found"));
 			}
 			FScopeLock Lock(&BeforeRecvAudioRenderedLock);
-			OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence, ChannelName, PlayerName);
+			// AMIR: disable this for now just to test
+			//OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence, ChannelName, PlayerName);
 		}
 		else
 		{
