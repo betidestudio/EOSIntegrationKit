@@ -47,26 +47,6 @@ void UEIK_Voice_Subsystem::EVIK_Local_Connect(const FEIKResultDelegate& ResultDe
 	}	
 }
 
-void UEIK_Voice_Subsystem::UpdatePositionalVoiceChat(bool UsePositionalVoiceChat,
-	TArray<FEIK_PositionalVoiceChat> PositionalVoiceChatData, bool bApplyPositionalVoiceChatOnAllChannels)
-{
-	Var_PositionalVoiceChatData = PositionalVoiceChatData;
-	Var_IsPositionalVoiceChatUsed = UsePositionalVoiceChat;
-	Var_ApplyPositionalVoiceChatOnAllChannels = bApplyPositionalVoiceChatOnAllChannels;
-	
-}
-
-void UEIK_Voice_Subsystem::SetDebugForPositionalVoiceChat(bool bEnableDebug)
-{
-	bUseDebugPoint = bEnableDebug;
-}
-
-void UEIK_Voice_Subsystem::ForceUpdateOutputVolume(bool bUseThisVolume, bool bUseWithPositionalChat, float Volume)
-{
-	bUseOutputVolume = bUseThisVolume;
-	bUseOutputVolumeWithPositionalChat = bUseWithPositionalChat;
-	OutputVolume = FMath::Clamp(Volume, 0.0f, 1.0f);
-}
 
 void UEIK_Voice_Subsystem::PlayerListUpdated()
 {

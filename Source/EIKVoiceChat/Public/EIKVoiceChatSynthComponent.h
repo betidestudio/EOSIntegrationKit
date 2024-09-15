@@ -52,4 +52,13 @@ protected:
 
 	int32 AvailableSamples = 0;
 
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EOS Integration Kit|Voice Settings")
+	TArray<FString> SupportedRooms;
+
+	// This component will be used for ALL rooms, regardless of added values in SupportedRooms
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EOS Integration Kit|Voice Settings")
+	bool bUseGlobalRoom = false;
+
 };

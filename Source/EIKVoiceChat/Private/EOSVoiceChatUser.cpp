@@ -2380,154 +2380,73 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 		if (Buffer->Frames)
 		{
 			TArrayView<int16> Samples = MakeArrayView(Buffer->Frames, Buffer->FramesCount * Buffer->Channels);
-
 			// TODO EOS doesn't tell us if it's silence or not, maybe need to compare all the samples to some threshold?
 			const bool bIsSilence = false;
 			const FString PlayerName = LexToString(CallbackInfo->ParticipantId);
 			const FString ChannelName = UTF8_TO_TCHAR(CallbackInfo->RoomName);
-			UE_LOG(LogTemp,Warning,TEXT("ChannelName: %s"), *ChannelName);
-			if(GEngine)
+			if(IsValid(GEngine))
 			{
 				if (const UWorld* World = GEngine->GetWorldContexts().Last().World())
 				{
-					if (const UGameInstance* GameInstance = World->GetGameInstance())
+					AActor* SpeakerActor = nullptr;
+					TArray<TObjectPtr<APlayerState>> PlayerArray;
+					if(AGameStateBase* GameState = World->GetGameState())
 					{
-						if (UEIK_Voice_Subsystem* LocalVoiceSubsystem = GameInstance->GetSubsystem<UEIK_Voice_Subsystem>())
+						PlayerArray = GameState->PlayerArray;
+					}
+					if(PlayerArray.Num() > 0)
+					{
+						for(int i=0; i<PlayerArray.Num(); i++)
 						{
-							bool bIsPositionalVoiceChatUsedForThisChannel = false;
-							float LocalMaxDistance = 2000.f;
-							for(auto LocalSelection: LocalVoiceSubsystem->Var_PositionalVoiceChatData)
+							if(APlayerState* PlayerState = PlayerArray[i].Get())
 							{
-								if(LocalSelection.ChannelName == ChannelName)
+								if(PlayerState->GetPawn())
 								{
-									bIsPositionalVoiceChatUsedForThisChannel = true;
-									LocalMaxDistance = LocalSelection.MaxHearingDistance;
-									break;
-								}
-							}
-							
-							if(LocalVoiceSubsystem->Var_IsPositionalVoiceChatUsed && (LocalVoiceSubsystem->Var_ApplyPositionalVoiceChatOnAllChannels || bIsPositionalVoiceChatUsedForThisChannel))
-							{
-								AActor* SpeakerActor = nullptr;
-								AActor* ListenerActor = nullptr;
-								TArray<TObjectPtr<APlayerState>> PlayerArray;
-								if(AGameStateBase* GameState = World->GetGameState())
-								{
-									PlayerArray = GameState->PlayerArray;
-								}
-								if(PlayerArray.Num() > 0)
-								{
-									for(int i=0; i<PlayerArray.Num(); i++)
+									const TSharedPtr<const FUniqueNetId> EIK_NetID = PlayerState->GetUniqueId().GetUniqueNetId();
+									if(EIK_NetID.IsValid())
 									{
-										if(APlayerState* PlayerState = PlayerArray[i].Get())
+										FString ProductId = EIK_NetID->ToString();
+										if(ProductId.Contains("|"))
 										{
-											if(PlayerState->GetPawn())
-											{
-												const TSharedPtr<const FUniqueNetId> EIK_NetID = PlayerState->GetUniqueId().GetUniqueNetId();
-												if(EIK_NetID.IsValid())
-												{
-													FString ProductId = EIK_NetID->ToString();
-													if(ProductId.Contains("|"))
-													{
-														TArray<FString> ProductIdArray;
-														ProductId.ParseIntoArray(ProductIdArray, TEXT("|"), true);
-														ProductId = ProductIdArray[1];
-													}
-													EOS_ProductUserId ProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*ProductId));
-													if(ProductUserId == CallbackInfo->ParticipantId)
-													{
-														SpeakerActor = PlayerState->GetPawn();
-													}
-													if(ProductUserId == CallbackInfo->LocalUserId)
-													{
-														ListenerActor = PlayerState->GetPawn();
-													}
-												}
-											}
+											TArray<FString> ProductIdArray;
+											ProductId.ParseIntoArray(ProductIdArray, TEXT("|"), true);
+											ProductId = ProductIdArray[1];
 										}
-									}								
-								}
-								if(ListenerActor && SpeakerActor)
-								{
-									const FVector PlayerLocation = ListenerActor->GetActorLocation();
-									const FVector AudioSourceLocation = SpeakerActor->GetActorLocation();
-
-									// BEGIN AMIR TESTS FOR POSITIONAL VOICE CHAT
-									// first we need to acquire the new component
-
-									UEIKVoiceChatSynthComponent* VoiceChatSynthComponent = SpeakerActor->FindComponentByClass<UEIKVoiceChatSynthComponent>();
-									if (IsValid(VoiceChatSynthComponent))
-									{
-									VoiceChatSynthComponent->WriteSamples(Samples);
-									}
-									// ELSE we can add one using some default setting from
-
-
-									const float Distance = FVector::Dist(PlayerLocation, AudioSourceLocation);
-									float VolumeMultiplier = FMath::Clamp(1.f - (Distance / LocalMaxDistance), 0.f, 1.f);
-									float VolumeForceMultiplier = 1.f;
-									if(LocalVoiceSubsystem->bUseOutputVolumeWithPositionalChat && LocalVoiceSubsystem->bUseOutputVolume)
-									{
-										VolumeForceMultiplier = LocalVoiceSubsystem->OutputVolume;
-									}
-									VolumeMultiplier = VolumeMultiplier * VolumeForceMultiplier;
-									if(LocalVoiceSubsystem->bUseDebugPoint)
-									{
-										UE_LOG(LogTemp, Warning,TEXT("Positional Volume Scale: %f"), VolumeMultiplier);
-									}
-									for (int i = 0; i < Samples.Num(); i++)
-									{
-										// Apply volume attenuation
-										Samples[i] *= VolumeMultiplier;
+										EOS_ProductUserId ProductUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*ProductId));
+										if(ProductUserId == CallbackInfo->ParticipantId)
+										{
+											SpeakerActor = PlayerState->GetPawn();
+										}
 									}
 								}
 							}
-							else
-							{
-								if(LocalVoiceSubsystem->bUseOutputVolume)
-								{
-									for (int i = 0; i < Samples.Num(); i++)
-									{
-										float VolumeForceMultiplier = LocalVoiceSubsystem->OutputVolume;
-										// Apply volume attenuation
-										Samples[i] *= VolumeForceMultiplier;
-										// Apply spatialization
-										// TODO: Implement spatialization algorithm
-									}
-								}
-							}
-						}
-						else
-						{
-							UE_LOG(LogTemp,Warning,TEXT("Voice Subsystem is not found"));
-						}
+						}								
 					}
-					else
+					if(SpeakerActor)
 					{
-						UE_LOG(LogTemp,Warning,TEXT("GameInstance is not found"));
+						TArray<UEIKVoiceChatSynthComponent*> VoiceChatSynthComponents;
+						SpeakerActor->GetComponents<UEIKVoiceChatSynthComponent>(VoiceChatSynthComponents);
+						if(VoiceChatSynthComponents.Num() > 0)
+						{
+							for(auto VoiceChatSynthComponent : VoiceChatSynthComponents)
+							{
+								if (IsValid(VoiceChatSynthComponent) && (VoiceChatSynthComponent->SupportedRooms.Contains(ChannelName) || VoiceChatSynthComponent->bUseGlobalRoom))
+								{
+									VoiceChatSynthComponent->WriteSamples(Samples);
+									return;
+								}
+							}
+						}
 					}
 				}
-				else
-				{
-					UE_LOG(LogTemp,Warning,TEXT("World is not found"));
-				}
-			}
-			else
-			{
-				UE_LOG(LogTemp,Warning,TEXT("GEngine is not found"));
 			}
 			FScopeLock Lock(&BeforeRecvAudioRenderedLock);
-			// AMIR: disable this for now just to test
-			//OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence, ChannelName, PlayerName);
+			OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence, ChannelName, PlayerName);
 		}
 		else
 		{
-			EOSVOICECHATUSER_LOG(Warning, TEXT("OnChannelAudioBeforeRender Error Frames=nullptr"));
+			UE_LOG(LogTemp,Warning,TEXT("GEngine is not found"));
 		}
-	}
-	else
-	{
-		EOSVOICECHATUSER_LOG(Warning, TEXT("OnChannelAudioBeforeRender Error Buffer=nullptr"));
 	}
 }
 
