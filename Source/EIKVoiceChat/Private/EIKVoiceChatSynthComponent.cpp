@@ -32,7 +32,7 @@ int32 UEIKVoiceChatSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSam
 	else
 	{
 
-		if (WriteIndex > MinLatencySamples)
+		if (AvailableSamples > MinLatencySamples)
 		{
 			bIsReadyToStream = true;
 		}
