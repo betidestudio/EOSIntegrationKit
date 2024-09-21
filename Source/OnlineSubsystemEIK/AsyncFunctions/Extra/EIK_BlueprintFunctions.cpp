@@ -669,6 +669,7 @@ FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueID(const APlayerController
 	// ROSE CHANGE BEGIN: Avoid Crashes when no/no valid PlayerController is passed
 	if(!PlayerController)
 	{
+		bIsValid = false;
 		return FEIKUniqueNetId();
 	}
 	// ROSE CHANGE END
