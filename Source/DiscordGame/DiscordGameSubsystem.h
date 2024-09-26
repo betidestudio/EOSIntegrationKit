@@ -81,7 +81,7 @@ public:
 	 *
 	 * @return TRUE if we have a connection to Discord, else FALSE
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Discord")
 	bool IsDiscordRunning() const
 	{
 #if EIKDISCORDACTIVE
@@ -174,7 +174,7 @@ public:
 	}
 #endif
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Discord")
 	bool IsClientIdValid() const { return ClientId != 0; }
 
 protected:
@@ -239,7 +239,7 @@ protected:
 	 * To get your own Application ID:
 	 * @see https://discord.com/developers/applications
 	 */
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Discord")
 	uint64 ClientId {0};
 
 #if EIKDISCORDACTIVE
@@ -261,7 +261,7 @@ protected:
 	 * Set this too high and it will take unreasonably long for the game to connect
 	 * to Discord if/when Discord starts after the game.
 	 */
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Discord")
 	float CreateRetryTime;
 
 private:
