@@ -38,15 +38,19 @@ void UGoogleLogin_SLK::GoogleLoginLocal()
 {
 #if PLATFORM_ANDROID
 	//AndroidJNICallUtils::CallStaticVoidMethod(UnrealInterface, "InitInterface", "(Landroid/app/Activity;Ljava/lang/String;)V", FJavaWrapper::GameActivityThis, AndroidJNIConvertor::GetJavaString(ClientID));
-	AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity,"AndroidThunkJava_GoogleSubsystem_Init", "(Ljava/lang/String;)V", AndroidJNIConvertor::GetJavaString(Var_ClientID));
-	AndroidJNICallUtils::CallStaticVoidMethod(UnrealInterface, "SignIn", "()V");
+	
+	//AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity,"AndroidThunkJava_GoogleSubsystem_Init", "(Ljava/lang/String;)V", AndroidJNIConvertor::GetJavaString(Var_ClientID));
+	//AndroidJNICallUtils::CallStaticVoidMethod(UnrealInterface, "SignIn", "()V");
+
+	AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity,"AndroidThunkJava_GoogleSubsystem_Init", "()V");
+	AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity, "AndroidThunkJava_GoogleSubsystem_SignIn", "(Ljava/lang/String;)V", AndroidJNIConvertor::GetJavaString(Var_ClientID));
 	return;
 #endif
 	UGoogleLogin_SLK::staticInstance.Get()->Failure.Broadcast("", "Google Login Failed to initialise");
 }
 
 #if PLATFORM_ANDROID
-JNI_METHOD void Java_com_example_googleonetap_UnrealInterface_OnGoogleCallback(JNIEnv* env, jclass clazz, jint status, jstring email, jstring username, jstring idToken, jstring error)
+JNI_METHOD void Java_com_example_unrealcredentialmanager_UnrealCredentialManager_OnCredentialManagerCallback(JNIEnv* env, jclass clazz, jint status, jstring email, jstring username, jstring idToken, jstring error)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnGoogleCallback"));
 	int32 lstatus = static_cast<int32>(status);

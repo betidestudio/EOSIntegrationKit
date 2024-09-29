@@ -39,8 +39,12 @@
   <proguardAdditions>
     <insert>
 		-dontwarn androidx.**
-      -keep class androidx.** { *; }
-      -keep interface androidx.** { *; }
+      	-keep class androidx.** { *; }
+      	-keep interface androidx.** { *; }
+		-if class androidx.credentials.CredentialManager
+		-keep class androidx.credentials.playservices.** {
+			*;
+		}
     </insert>
   </proguardAdditions>
 
@@ -125,6 +129,10 @@
 		dependencies 
 		{	
 			implementation ('com.google.android.gms:play-services-auth:20.7.0')
+
+			implementation "androidx.credentials:credentials:1.2.2"
+			implementation "androidx.credentials:credentials-play-services-auth:1.2.2"
+			implementation "com.google.android.libraries.identity.googleid:googleid:1.1.1"
 		}
 						
         </insert>
@@ -143,19 +151,27 @@
 
   <gameActivityImportAdditions>
     <insert>
-	import com.example.googleonetap.UnrealInterface;
+		import com.example.googleonetap.UnrealInterface;
+		import com.example.unrealcredentialmanager.UnrealCredentialManager;
     </insert>
   </gameActivityImportAdditions>
 
   <gameActivityClassAdditions>
     <insert>
-	UnrealInterface  UEGoogleInterface;
-	public void AndroidThunkJava_GoogleSubsystem_Init(String clientID)
-    {
-		Log.debug("AndroidThunkJava_GoogleSubsystem_Init");
-		UEGoogleInterface = new UnrealInterface();
-		UEGoogleInterface.InitInterface(this,clientID);
-    }
+		//UnrealInterface  UEGoogleInterface;
+		UnrealCredentialManager UEGoogleCredManager;
+		public void AndroidThunkJava_GoogleSubsystem_Init()
+		{
+			Log.debug("AndroidThunkJava_GoogleSubsystem_Init");
+			//UEGoogleInterface = new UnrealInterface();
+			//UEGoogleInterface.InitInterface(this,clientID);
+			UEGoogleCredManager = new UnrealCredentialManager();
+			UEGoogleCredManager.InitCredentialManager(this);
+		}
+		public void AndroidThunkJava_GoogleSubsystem_SignIn(String clientID)
+		{
+			UEGoogleCredManager.SignIn(clientID);
+		}
     </insert>
   </gameActivityClassAdditions>
   
@@ -166,10 +182,10 @@
 
   <gameActivityOnActivityResultAdditions> 
 	<insert>  
-	if(UEGoogleInterface != null)
+	/*if(UEGoogleInterface != null)
 	{
 		UEGoogleInterface.OnActivityResult(requestCode,resultCode,data);
-	}
+	}*/
 	</insert>   
   </gameActivityOnActivityResultAdditions>
   
