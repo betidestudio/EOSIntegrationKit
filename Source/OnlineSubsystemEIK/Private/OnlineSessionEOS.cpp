@@ -3868,6 +3868,20 @@ uint32 FOnlineSessionEOS::JoinLobbySession(int32 PlayerNum, FNamedOnlineSession*
 			JoinLobbyOptions.LocalUserId = EOSSubsystem->UserManager->GetLocalProductUserId(PlayerNum);
 			JoinLobbyOptions.bPresenceEnabled = Session->SessionSettings.bUsesPresence;
 
+			if(!Session->SessionInfo->GetSessionId().IsValid())
+			{
+				UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::JoinLobbySession] SessionId not valid"));
+				TriggerOnJoinSessionCompleteDelegates(Session->SessionName, EOnJoinSessionCompleteResult::SessionDoesNotExist);
+				return ONLINE_FAIL;
+			}		
+			
+			if(!LobbySearchResultsCache.Contains(Session->SessionInfo->GetSessionId().ToString()))
+			{
+				UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::JoinLobbySession] SessionId not found in cache"));
+				TriggerOnJoinSessionCompleteDelegates(Session->SessionName, EOnJoinSessionCompleteResult::SessionDoesNotExist);
+				return ONLINE_FAIL;
+			}
+
  			TSharedRef<FLobbyDetailsEOS> LobbyDetails = LobbySearchResultsCache[Session->SessionInfo->GetSessionId().ToString()];
  			JoinLobbyOptions.LobbyDetailsHandle = LobbyDetails->LobbyDetailsHandle;
 
