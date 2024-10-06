@@ -101,9 +101,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "PostDefault",
 			"PlatformAllowList": [
-				"Win64",
-				"Mac",
-				"Linux"
+				"Win64"
 			]
 		}
 	],
@@ -114,6 +112,10 @@
 		},
 		{
 			"Name": "StructUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "Synthesis",
 			"Enabled": true
 		}
 	],

@@ -1,6 +1,8 @@
 // Copyright (c) 2024 xist.gg
 
 #include "DiscordGame.h"
+#include "Misc/Paths.h"
+#include "Windows/WindowsPlatformProcess.h"
 #include "Modules/ModuleManager.h"
 #include "Interfaces/IPluginManager.h"  // IWYU pragma: keep
 
