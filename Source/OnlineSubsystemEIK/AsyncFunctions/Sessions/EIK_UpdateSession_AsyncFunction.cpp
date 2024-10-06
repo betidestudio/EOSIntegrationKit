@@ -5,8 +5,7 @@
 
 UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSessions(UObject* WorldContextObject,
 	TMap<FString, FEIKAttribute> SessionSettings, FName SessionName, bool bShouldAdvertise, bool bAllowJoinInProgress,
-	bool bAllowInvites, bool bUsesPresence, bool bIsLANMatch, bool bIsDedicatedServer, bool bIsUseLobbiesIfAvailable,
-	bool bIsUseLobbiesVoiceChatIfAvailable, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections)
+	bool bAllowInvites, bool bUsesPresence, bool bIsLANMatch, bool bIsDedicatedServer, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections)
 {
 	UEIK_UpdateSession_AsyncFunction* UpdateSession = NewObject<UEIK_UpdateSession_AsyncFunction>();
 	UpdateSession->Var_WorldContextObject = WorldContextObject;
@@ -20,8 +19,6 @@ UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSes
 	UpdateSession->Var_NumberOfPrivateConnections = NumberOfPrivateConnections;
 	UpdateSession->Var_bIsLANMatch = bIsLANMatch;
 	UpdateSession->Var_bIsDedicatedServer = bIsDedicatedServer;
-	UpdateSession->Var_bIsUseLobbiesIfAvailable = bIsUseLobbiesIfAvailable;
-	UpdateSession->Var_bIsUseLobbiesVoiceChatIfAvailable = bIsUseLobbiesVoiceChatIfAvailable;
 	return UpdateSession;
 }
 
@@ -56,8 +53,6 @@ void UEIK_UpdateSession_AsyncFunction::Activate()
 			SessionSettings.NumPrivateConnections = Var_NumberOfPrivateConnections;
 			SessionSettings.bIsLANMatch = Var_bIsLANMatch;
 			SessionSettings.bIsDedicated = Var_bIsDedicatedServer;
-			SessionSettings.bUseLobbiesIfAvailable = Var_bIsUseLobbiesIfAvailable;
-			SessionSettings.bUseLobbiesVoiceChatIfAvailable = Var_bIsUseLobbiesVoiceChatIfAvailable;
 			for (auto& Settings_SingleValue : Var_SessionSettings)
 			{
 				if (Settings_SingleValue.Key.Len() == 0)
