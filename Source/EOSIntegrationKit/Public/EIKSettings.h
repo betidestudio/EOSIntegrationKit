@@ -293,6 +293,12 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
 	FString ClientId;
 
+	/** GoogleSignIn iOS Settings **/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|iOS|GoogleSignIn")
+	FString Google_ClientId;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|iOS|GoogleSignIn")
+	FString Google_ReverseClientId;
+
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="One Click Deploy", DisplayName="Build Configuration")
 	TEnumAsByte<EEIK_BuildConfiguration> OneClick_BuildConfiguration;
 
