@@ -83,7 +83,7 @@ void UEIK_GetAchievementDetails_AsyncFunction::OnAchievementDescriptionCompleted
 				LocalAchievementDescription.UnlockTime = CachedAchievements.UnlockTime;
 				OnSuccess.Broadcast(LocalAchievementDescription);
 				SetReadyToDestroy();
-MarkAsGarbage();
+				MarkAsGarbage();
 				return;
 			}
 		}

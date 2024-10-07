@@ -3675,7 +3675,10 @@ void FOnlineSessionEOS::RemovePlayerFromSession(int32 LocalUserNum, FName Sessio
 	if (Session)
 	{
 		const FUniqueNetIdEOS& TargetPlayerEOSId = FUniqueNetIdEOS::Cast(TargetPlayerId);
-
+		if(!Session->SessionInfo->GetSessionId().IsValid())
+		{
+			UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::RemovePlayerFromSession] Session %s has an invalid session id."), *SessionName.ToString());
+		}
 		EOS_Lobby_KickMemberOptions KickMemberOptions = {};
 		KickMemberOptions.ApiVersion = EOS_LOBBY_KICKMEMBER_API_LATEST;
 		const FTCHARToUTF8 Utf8LobbyId(*Session->SessionInfo->GetSessionId().ToString());
@@ -3867,6 +3870,20 @@ uint32 FOnlineSessionEOS::JoinLobbySession(int32 PlayerNum, FNamedOnlineSession*
 			JoinLobbyOptions.ApiVersion = EOS_LOBBY_JOINLOBBY_API_LATEST;
 			JoinLobbyOptions.LocalUserId = EOSSubsystem->UserManager->GetLocalProductUserId(PlayerNum);
 			JoinLobbyOptions.bPresenceEnabled = Session->SessionSettings.bUsesPresence;
+
+			if(!Session->SessionInfo->GetSessionId().IsValid())
+			{
+				UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::JoinLobbySession] SessionId not valid"));
+				TriggerOnJoinSessionCompleteDelegates(Session->SessionName, EOnJoinSessionCompleteResult::SessionDoesNotExist);
+				return ONLINE_FAIL;
+			}		
+			
+			if(!LobbySearchResultsCache.Contains(Session->SessionInfo->GetSessionId().ToString()))
+			{
+				UE_LOG_ONLINE_SESSION(Warning, TEXT("[FOnlineSessionEOS::JoinLobbySession] SessionId not found in cache"));
+				TriggerOnJoinSessionCompleteDelegates(Session->SessionName, EOnJoinSessionCompleteResult::SessionDoesNotExist);
+				return ONLINE_FAIL;
+			}
 
  			TSharedRef<FLobbyDetailsEOS> LobbyDetails = LobbySearchResultsCache[Session->SessionInfo->GetSessionId().ToString()];
  			JoinLobbyOptions.LobbyDetailsHandle = LobbyDetails->LobbyDetailsHandle;
