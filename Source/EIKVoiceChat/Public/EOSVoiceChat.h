@@ -49,6 +49,10 @@ using IEOSPlatformHandlePtr = TSharedPtr<class IEOSPlatformHandle, ESPMode::Thre
 typedef TSharedPtr<class FEOSVoiceChat, ESPMode::ThreadSafe> FEOSVoiceChatPtr;
 typedef TSharedPtr<class FEOSVoiceChatUser, ESPMode::ThreadSafe> FEOSVoiceChatUserPtr;
 typedef TSharedRef<class FEOSVoiceChatUser, ESPMode::ThreadSafe> FEOSVoiceChatUserRef;
+#if ENGINE_MAJOR_VERSION != 5
+typedef TWeakPtr<class FEOSVoiceChat, ESPMode::ThreadSafe> FEOSVoiceChatWeakPtr;
+typedef TWeakPtr<class FEOSVoiceChatUser, ESPMode::ThreadSafe> FEOSVoiceChatUserWeakPtr;
+#endif
 
 class FEOSVoiceChat : public TSharedFromThis<FEOSVoiceChat, ESPMode::ThreadSafe>, public IVoiceChat
 {
@@ -73,7 +77,9 @@ public:
 	virtual IVoiceChatUser* CreateUser() override;
 	virtual void ReleaseUser(IVoiceChatUser* VoiceChatUser) override;
 	// ~End IVoiceChat Interface
-
+#if ENGINE_MAJOR_VERSION != 5
+	FEOSVoiceChatWeakPtr CreateWeakThis();
+#endif
 	// ~Begin IVoiceChatUser Interface
 	virtual void SetSetting(const FString& Name, const FString& Value) override;
 	virtual FString GetSetting(const FString& Name) override;
@@ -118,8 +124,13 @@ public:
 	virtual FOnVoiceChatPlayerTalkingUpdatedDelegate& OnVoiceChatPlayerTalkingUpdated() override;
 	virtual void SetPlayerMuted(const FString& PlayerName, bool bMuted) override;
 	virtual bool IsPlayerMuted(const FString& PlayerName) const override;
+#if ENGINE_MAJOR_VERSION == 5
 	virtual void SetChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName, bool bMuted) override;
 	virtual bool IsChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName) const override;
+#else
+	virtual void SetChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName, bool bMuted);
+	virtual bool IsChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName) const;
+#endif
 	virtual FOnVoiceChatPlayerMuteUpdatedDelegate& OnVoiceChatPlayerMuteUpdated() override;
 	virtual void SetPlayerVolume(const FString& PlayerName, float Volume) override;
 	virtual float GetPlayerVolume(const FString& PlayerName) const override;
@@ -129,7 +140,7 @@ public:
 #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
 	virtual void TransmitToSpecificChannels(const TSet<FString>& ChannelNames) override;
 	virtual TSet<FString> GetTransmitChannels() const override;
-#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1
+#else
 	virtual void TransmitToSpecificChannel(const FString& ChannelName) override;
 	virtual FString GetTransmitChannel() const override;
 #endif

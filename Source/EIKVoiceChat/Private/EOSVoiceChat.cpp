@@ -310,6 +310,13 @@ IVoiceChatUser* FEOSVoiceChat::CreateUser()
 	return &User.Get();
 }
 
+#if ENGINE_MAJOR_VERSION != 5
+FEOSVoiceChatWeakPtr FEOSVoiceChat::CreateWeakThis()
+{
+	return FEOSVoiceChatWeakPtr(AsShared());
+}
+#endif
+
 void FEOSVoiceChat::ReleaseUser(IVoiceChatUser* User)
 {
 	if (User)
@@ -319,7 +326,11 @@ void FEOSVoiceChat::ReleaseUser(IVoiceChatUser* User)
 			&& User->IsLoggedIn())
 		{
 			UE_LOG(LogEOSVoiceChat, Log, TEXT("ReleaseUser User=[%p] Logging out"), User);
+#if ENGINE_MAJOR_VERSION == 5
 			User->Logout(FOnVoiceChatLogoutCompleteDelegate::CreateLambda([this, WeakThis = AsWeak(), User](const FString& PlayerName, const FVoiceChatResult& Result)
+#else
+			User->Logout(FOnVoiceChatLogoutCompleteDelegate::CreateLambda([this, WeakThis = CreateWeakThis(), User](const FString& PlayerName, const FVoiceChatResult& Result)
+#endif
 			{
 				CHECKPIN();
 
@@ -732,7 +743,8 @@ TSet<FString> FEOSVoiceChat::GetTransmitChannels() const
 	return GetVoiceChatUser().GetTransmitChannels();
 }
 
-#elif ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >=1
+#else
+
 void FEOSVoiceChat::TransmitToSpecificChannel(const FString& ChannelName)
 {
 	GetVoiceChatUser().TransmitToSpecificChannel(ChannelName);
@@ -855,7 +867,11 @@ void FEOSVoiceChat::OnAudioDevicesChangedStatic(const EOS_RTCAudio_AudioDevicesC
 
 void FEOSVoiceChat::OnAudioDevicesChanged()
 {
+#if ENGINE_MAJOR_VERSION == 5
 	InitSession.EosAudioDevicePool->RefreshAudioDevices(FEOSAudioDevicePool::FOnAudioDevicePoolRefreshAudioDevicesCompleteDelegate::CreateLambda([WeakThis = AsWeak()](const FVoiceChatResult& Result) -> void
+#else
+	InitSession.EosAudioDevicePool->RefreshAudioDevices(FEOSAudioDevicePool::FOnAudioDevicePoolRefreshAudioDevicesCompleteDelegate::CreateLambda([WeakThis = CreateWeakThis()](const FVoiceChatResult& Result) -> void
+#endif
 	{
 		CHECKPIN();
 
