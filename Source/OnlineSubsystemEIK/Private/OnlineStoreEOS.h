@@ -3,7 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#if ENGINE_MAJOR_VERSION == 5
 #include "Online/CoreOnline.h"
+#else
+#include "UObject/CoreOnline.h"
+#endif
 #include "Interfaces/OnlineStoreInterfaceV2.h"
 #include "Interfaces/OnlinePurchaseInterface.h"
 #include "OnlineSubsystemEOSTypes.h"
@@ -36,7 +40,9 @@ public:
 // Begin IOnlinePurchase
 	virtual bool IsAllowedToPurchase(const FUniqueNetId& UserId) override { return true; }
 	virtual void Checkout(const FUniqueNetId& UserId, const FPurchaseCheckoutRequest& CheckoutRequest, const FOnPurchaseCheckoutComplete& Delegate) override;
+#if ENGINE_MAJOR_VERSION == 5
 	virtual void Checkout(const FUniqueNetId& UserId, const FPurchaseCheckoutRequest& CheckoutRequest, const FOnPurchaseReceiptlessCheckoutComplete& Delegate) override;
+#endif
 	virtual void FinalizePurchase(const FUniqueNetId& UserId, const FString& ReceiptId) override;
 	virtual void RedeemCode(const FUniqueNetId& UserId, const FRedeemCodeRequest& RedeemCodeRequest, const FOnPurchaseRedeemCodeComplete& Delegate) override;
 	virtual void QueryReceipts(const FUniqueNetId& UserId, bool bRestoreReceipts, const FOnQueryReceiptsComplete& Delegate) override;
