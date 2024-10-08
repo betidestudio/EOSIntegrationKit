@@ -24,7 +24,11 @@ void UEIK_Auth_VerifyUserAuth::OnVerifyUserAuthCallback(const EOS_Auth_VerifyUse
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -46,5 +50,9 @@ void UEIK_Auth_VerifyUserAuth::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to verify user auth either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

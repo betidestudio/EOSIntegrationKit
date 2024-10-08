@@ -38,7 +38,11 @@ void UEIK_Auth_LinkAccount::Activate()
 	Info.ResultCode = EEIK_Result::EOS_NotFound;
 	OnCallback.Broadcast(Info);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Auth_LinkAccount::OnLinkAccountCallback(const EOS_Auth_LinkAccountCallbackInfo* Data)
@@ -51,6 +55,10 @@ void UEIK_Auth_LinkAccount::OnLinkAccountCallback(const EOS_Auth_LinkAccountCall
 			Node->OnCallback.Broadcast(Data);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
