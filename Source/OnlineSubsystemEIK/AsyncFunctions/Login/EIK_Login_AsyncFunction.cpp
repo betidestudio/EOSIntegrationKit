@@ -43,7 +43,11 @@ void UEIK_Login_AsyncFunction::Activate()
 	UE_LOG(LogEIK, Error, TEXT("LoginUsingConnectInterface: Subsystem or Identity Interface is not valid"));
 	OnFail.Broadcast(FEIK_ProductUserId(), "Subsystem or Identity Interface is not valid");
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Login_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bWasSuccess, const FUniqueNetId& UserId,
@@ -68,5 +72,9 @@ void UEIK_Login_AsyncFunction::LoginCallback(int32 LocalUserNum, bool bWasSucces
 		OnFail.Broadcast(FEIK_ProductUserId(), Error);
 	}
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

@@ -7,7 +7,11 @@
 #include "OnlineSubsystem.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
-#include "Runtime/CoreOnline/Public/Online/CoreOnline.h"
+#if ENGINE_MAJOR_VERSION >= 5
+#include "Online/CoreOnline.h"
+#else
+#include "UObject/CoreOnline.h"
+#endif
 #include "EIK_Login_AsyncFunction.generated.h"
 
 

@@ -30,7 +30,11 @@ void UEIK_LobbySearch_Find::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to find lobby either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_LobbySearch_Find::OnFindComplete(const EOS_LobbySearch_FindCallbackInfo* Data)
@@ -41,7 +45,11 @@ void UEIK_LobbySearch_Find::OnFindComplete(const EOS_LobbySearch_FindCallbackInf
 		{
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 			Node->SetReadyToDestroy();
-			Node->MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+Node->MarkAsGarbage();
+#else
+Node->MarkPendingKill();
+#endif
 		});
 	}
 }
