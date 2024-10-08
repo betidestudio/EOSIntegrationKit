@@ -7,6 +7,7 @@
 #include "Containers/Ticker.h"
 #include "Containers/UnrealString.h"
 #include "IEOSSDKManager.h"
+#include "Launch\Resources\Version.h"
 #include "Misc/CoreMisc.h"
 
 #if defined(EOS_PLATFORM_BASE_FILE_NAME)
