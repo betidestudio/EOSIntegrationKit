@@ -95,9 +95,13 @@ private:
 	TArray<FInternetAddrEOS> ClosedRemotes;
 
 #if WITH_EOS_SDK
+#if ENGINE_MAJOR_VERSION == 5
 	typedef TEIKGlobalCallback<EOS_P2P_OnIncomingConnectionRequestCallback, EOS_P2P_OnIncomingConnectionRequestInfo, FCallbackBase> FConnectNotifyCallback;
 	typedef TEIKGlobalCallback<EOS_P2P_OnRemoteConnectionClosedCallback, EOS_P2P_OnRemoteConnectionClosedInfo, FCallbackBase> FClosedNotifyCallback;
-
+#else
+	typedef TEIKGlobalCallback<EOS_P2P_OnIncomingConnectionRequestCallback, EOS_P2P_OnIncomingConnectionRequestInfo> FConnectNotifyCallback;
+	typedef TEIKGlobalCallback<EOS_P2P_OnRemoteConnectionClosedCallback, EOS_P2P_OnRemoteConnectionClosedInfo> FClosedNotifyCallback;
+#endif
 	FConnectNotifyCallback* ConnectNotifyCallback;
 	EOS_NotificationId ConnectNotifyId;
 
