@@ -23,7 +23,11 @@ void UEIK_Ecom_Checkout::OnCheckoutCallback(const EOS_Ecom_CheckoutCallbackInfo*
 			Node->OnCallback.Broadcast(Data);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -42,5 +46,9 @@ void UEIK_Ecom_Checkout::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to checkout item either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(FEIK_Ecom_CheckoutCallbackInfo());
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

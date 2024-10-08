@@ -25,7 +25,11 @@ void UEIK_Ecom_QueryOwnershipBySandboxIds::OnQueryOwnershipBySandboxIdsCallback(
 			Node->OnCallback.Broadcast(*Data);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -44,5 +48,9 @@ void UEIK_Ecom_QueryOwnershipBySandboxIds::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to query ownership by sandbox ids either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(FEIK_Ecom_QueryOwnershipBySandboxIdsCallbackInfo());
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

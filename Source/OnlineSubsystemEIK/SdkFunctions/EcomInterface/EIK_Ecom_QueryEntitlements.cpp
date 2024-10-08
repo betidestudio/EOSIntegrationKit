@@ -24,7 +24,11 @@ void UEIK_Ecom_QueryEntitlements::OnQueryEntitlementsCallback(const EOS_Ecom_Que
 			Node->OnCallback.Broadcast(Data->LocalUserId, static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -43,5 +47,9 @@ void UEIK_Ecom_QueryEntitlements::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to query entitlements either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(FEIK_EpicAccountId(), EEIK_Result::EOS_ServiceFailure);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

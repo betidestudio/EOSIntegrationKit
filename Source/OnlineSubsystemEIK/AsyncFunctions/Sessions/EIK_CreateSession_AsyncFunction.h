@@ -92,8 +92,8 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Session", meta = (BlueprintInternalUseOnly = "true",AutoCreateRefTerm=SessionSettings), Category="EOS Integration Kit || Sessions")
 	static UEIK_CreateSession_AsyncFunction* CreateEIKSession(
         TMap<FString, FEIKAttribute> SessionSettings,
-        FName SessionName = "GameSession",
-		int32 NumberOfPublicConnections = 15,
-		FDedicatedServerSettings DedicatedServerSettings = FDedicatedServerSettings(), 
-		FCreateSessionExtraSettings ExtraSettings = FCreateSessionExtraSettings() 
+        FName SessionName,
+		int32 NumberOfPublicConnections ,
+		FDedicatedServerSettings DedicatedServerSettings, 
+		FCreateSessionExtraSettings ExtraSettings
 	);};

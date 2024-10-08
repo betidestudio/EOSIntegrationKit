@@ -32,7 +32,7 @@ public:
 	 *For Input Parameters, please refer to the documentation link above.
 	 */
 	UFUNCTION(BlueprintCallable, DisplayName="Destroy EIK Session",meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
-	static UEIK_DestroySession_AsyncFunction* DestroyEIKSessions(FName SessionName = "GameSession",FEIKUniqueNetId PlayerId = FEIKUniqueNetId());
+	static UEIK_DestroySession_AsyncFunction* DestroyEIKSessions(FName SessionName,FEIKUniqueNetId PlayerId);
 
 
 	virtual void Activate() override;

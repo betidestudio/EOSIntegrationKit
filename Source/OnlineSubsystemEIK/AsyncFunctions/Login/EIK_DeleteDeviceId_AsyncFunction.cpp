@@ -27,7 +27,11 @@ void UEIK_DeleteDeviceId_AsyncFunction::OnDeleteDeviceIdComplete(const EOS_Conne
 		This->OnFailure.Broadcast();	
 	}
 	This->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	This->MarkAsGarbage();
+#else
+	This->MarkPendingKill();
+#endif
 }
 
 void UEIK_DeleteDeviceId_AsyncFunction::Activate()
@@ -44,13 +48,21 @@ void UEIK_DeleteDeviceId_AsyncFunction::Activate()
 		{
 			OnFailure.Broadcast();
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
 	{
 		OnFailure.Broadcast();
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
