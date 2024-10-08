@@ -37,7 +37,6 @@ namespace UnrealBuildTool.Rules
                     "EIKShared",
                     "EIKSDK",
 					"Engine",
-                    "StructUtils",
                     "HTTP", 
                     "EOSIntegrationKit",
 					"Synthesis",

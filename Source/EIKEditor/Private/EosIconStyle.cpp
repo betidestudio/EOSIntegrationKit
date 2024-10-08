@@ -5,9 +5,14 @@
 #include "Styling/SlateStyleRegistry.h"
 #include "Slate/SlateGameResources.h"
 #include "Interfaces/IPluginManager.h"
-#include "Styling/SlateStyleMacros.h"
 
 #define RootToContentDir Style->RootToContentDir
+
+#if ENGINE_MAJOR_VERSION == 4
+#define IMAGE_BRUSH( RelativePath, ... ) FSlateImageBrush( FPaths::ProjectContentDir() / "UI" / RelativePath + TEXT(".png"), __VA_ARGS__)
+#else
+#include "Styling/SlateStyleMacros.h"
+#endif
 
 TSharedPtr<FSlateStyleSet> FEosIconStyle::StyleInstance = nullptr;
 
