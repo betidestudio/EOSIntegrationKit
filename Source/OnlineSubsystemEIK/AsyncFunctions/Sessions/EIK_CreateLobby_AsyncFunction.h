@@ -92,7 +92,7 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Lobby",meta = (BlueprintInternalUseOnly = "true",AutoCreateRefTerm=SessionSettings), Category="EOS Integration Kit || Sessions")
 	static UEIK_CreateLobby_AsyncFunction* CreateEIKLobby(
 		TMap<FString, FEIKAttribute> SessionSettings,
-		FName SessionName = "GameSession",
-		int32 NumberOfPublicConnections = 10,
-		FCreateLobbySettings ExtraSettings = FCreateLobbySettings());
+		FName SessionName,
+		int32 NumberOfPublicConnections,
+		FCreateLobbySettings ExtraSettings);
 };

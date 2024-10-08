@@ -28,7 +28,11 @@ void UEIK_CreateDeviceId_AsyncFunction::Activate()
 				UE_LOG(LogTemp, Error, TEXT("Failed to create device id, DeviceModel is empty."));
 				OnCallback.Broadcast(EEIK_Result::EOS_InvalidCredentials);
 				SetReadyToDestroy();
-				MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 				return;
 			}
 			CreateDeviceIdOptions.DeviceModel = TCHAR_TO_ANSI(*Var_DeviceModel);
@@ -39,7 +43,11 @@ void UEIK_CreateDeviceId_AsyncFunction::Activate()
 	UE_LOG(LogTemp, Error, TEXT("Failed to create device id either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotConfigured);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_CreateDeviceId_AsyncFunction::OnCreateDeviceIdCallback(const EOS_Connect_CreateDeviceIdCallbackInfo* Data)
@@ -52,6 +60,10 @@ void UEIK_CreateDeviceId_AsyncFunction::OnCreateDeviceIdCallback(const EOS_Conne
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
