@@ -73,8 +73,11 @@ struct FQueryLeaderboardForUsersContext
 		ReadObject->Rows.Add(Row);
 	}
 };
-
+#if ENGINE_MAJOR_VERSION == 5
 typedef TEOSCallback<EOS_Leaderboards_OnQueryLeaderboardUserScoresCompleteCallback, EOS_Leaderboards_OnQueryLeaderboardUserScoresCompleteCallbackInfo, FOnlineLeaderboardsEOS> FQueryLeaderboardForUsersCallback;
+#else
+typedef TEOSCallback<EOS_Leaderboards_OnQueryLeaderboardUserScoresCompleteCallback, EOS_Leaderboards_OnQueryLeaderboardUserScoresCompleteCallbackInfo> FQueryLeaderboardForUsersCallback;
+#endif
 
 bool FOnlineLeaderboardsEOS::ReadLeaderboards(const TArray<FUniqueNetIdRef>& Players, FOnlineLeaderboardReadRef& ReadObject)
 {
@@ -115,8 +118,11 @@ bool FOnlineLeaderboardsEOS::ReadLeaderboards(const TArray<FUniqueNetIdRef>& Pla
 	}
 
 	TSharedPtr<FQueryLeaderboardForUsersContext> QueryContext = MakeShared<FQueryLeaderboardForUsersContext>(Players, ReadObject);
-
+#if ENGINE_MAJOR_VERSION == 5
 	FQueryLeaderboardForUsersCallback* CallbackObj = new FQueryLeaderboardForUsersCallback(FOnlineLeaderboardsEOSWeakPtr(AsShared()));
+#else
+	FQueryLeaderboardForUsersCallback* CallbackObj = new FQueryLeaderboardForUsersCallback();
+#endif
 	CallbackObj->CallbackLambda = [this, QueryContext](const EOS_Leaderboards_OnQueryLeaderboardUserScoresCompleteCallbackInfo* Data)
 	{
 		bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success;
@@ -228,8 +234,11 @@ bool FOnlineLeaderboardsEOS::ReadLeaderboardsForFriends(int32 LocalUserNum, FOnl
 	return ReadLeaderboards(Players, ReadObject);
 }
 
+#if ENGINE_MAJOR_VERSION == 5
 typedef TEOSCallback<EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallback, EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo, FOnlineLeaderboardsEOS> FQueryLeaderboardCallback;
-
+#else
+typedef TEOSCallback<EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallback, EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo> FQueryLeaderboardCallback;
+#endif
 bool FOnlineLeaderboardsEOS::ReadLeaderboardsAroundRank(int32 Rank, uint32 Range, FOnlineLeaderboardReadRef& ReadObject)
 {
 	if (Rank > EOS_MAX_NUM_RANKINGS)
@@ -252,8 +261,11 @@ bool FOnlineLeaderboardsEOS::ReadLeaderboardsAroundRank(int32 Rank, uint32 Range
 	Options.LeaderboardId = LeaderboardId;
 	Options.LocalUserId = EOSSubsystem->UserManager->GetLocalProductUserId(0);
 	FCStringAnsi::Strncpy(LeaderboardId, TCHAR_TO_UTF8(*ReadObject->LeaderboardName.ToString()), EOS_OSS_STRING_BUFFER_LENGTH);
-
+#if ENGINE_MAJOR_VERSION == 5
 	FQueryLeaderboardCallback* CallbackObj = new FQueryLeaderboardCallback(FOnlineLeaderboardsEOSWeakPtr(AsShared()));
+#else
+	FQueryLeaderboardCallback* CallbackObj = new FQueryLeaderboardCallback();
+#endif
 	FOnlineLeaderboardReadRef LambdaReadObject = ReadObject;
 	CallbackObj->CallbackLambda = [this, LambdaReadObject, StartIndex, EndIndex](const EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo* Data)
 	{
