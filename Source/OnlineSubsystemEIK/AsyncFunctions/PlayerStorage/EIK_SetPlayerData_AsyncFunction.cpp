@@ -24,7 +24,7 @@ void UEIK_SetPlayerData_AsyncFunction::Activate()
 
 void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 {
-	if(!DataToSave.IsEmpty())
+	if(!DataToSave.Num() == 0)
 	{
 		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get() )
 		{
@@ -43,7 +43,11 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 						bDelegateCalled = true;
 						OnFail.Broadcast();
 						SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 					}
 				}
 			}
@@ -54,7 +58,11 @@ MarkAsGarbage();
 					bDelegateCalled = true;
 					OnFail.Broadcast();
 					SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -65,7 +73,11 @@ MarkAsGarbage();
 				bDelegateCalled = true;
 				OnFail.Broadcast();
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -76,7 +88,11 @@ MarkAsGarbage();
 			bDelegateCalled = true;
 			OnFail.Broadcast();
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
@@ -91,7 +107,11 @@ void UEIK_SetPlayerData_AsyncFunction::OnWriteFileComplete(bool bSuccess, const 
 			bDelegateCalled = true;
 			OnSuccess.Broadcast();
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -101,7 +121,11 @@ MarkAsGarbage();
 			bDelegateCalled = true;
 			OnFail.Broadcast();
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }

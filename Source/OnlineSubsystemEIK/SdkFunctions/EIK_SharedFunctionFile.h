@@ -873,7 +873,7 @@ struct FEIK_Achievements_PlayerAchievement
 	FString AchievementId;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
-	double Progress;
+	float Progress;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Achievements Interface")
 	int64 UnlockTime;
@@ -2039,7 +2039,7 @@ struct FEIK_Lobby_AttributeData
 	bool bValueAsBool;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
-	double ValueAsDouble;
+	float ValueAsDouble;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Lobby Interface")
 	TEnumAsByte<EEIK_EAttributeType> ValueType;
@@ -2932,7 +2932,7 @@ struct FEIK_Sessions_AttributeData
 	bool bValueAsBool;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
-	double ValueAsDouble;
+	float ValueAsDouble;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "EOS Integration Kit | SDK Functions | Sessions Interface")
 	TEnumAsByte<EEIK_EAttributeType> ValueType;

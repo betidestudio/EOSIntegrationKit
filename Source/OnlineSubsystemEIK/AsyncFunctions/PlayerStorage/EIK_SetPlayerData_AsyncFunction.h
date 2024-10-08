@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#if ENGINE_MAJOR_VERSION == 5
 #include "Online/CoreOnline.h"
+#else
+#include "UObject/CoreOnline.h"
+#endif
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_SetPlayerData_AsyncFunction.generated.h"
 

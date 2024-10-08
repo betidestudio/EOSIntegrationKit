@@ -24,7 +24,11 @@ void UEIK_SetStats_AsyncFunction::OnEUpdateStatsCompleted(const FOnlineError& Re
 			OnSuccess.Broadcast();
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -34,7 +38,11 @@ MarkAsGarbage();
 			OnFail.Broadcast();
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	return;
@@ -67,7 +75,11 @@ void UEIK_SetStats_AsyncFunction::SetEIKStatsLocal()
 					OnFail.Broadcast();
 					bDelegateCalled = true;
 					SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -78,7 +90,11 @@ MarkAsGarbage();
 				OnFail.Broadcast();
 				bDelegateCalled = true;
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -89,7 +105,11 @@ MarkAsGarbage();
 			OnFail.Broadcast();
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }

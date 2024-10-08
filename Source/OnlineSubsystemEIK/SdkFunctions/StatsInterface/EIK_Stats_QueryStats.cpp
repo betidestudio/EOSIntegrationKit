@@ -3,6 +3,7 @@
 
 #include "EIK_Stats_QueryStats.h"
 
+#include "Async/Async.h"
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 UEIK_Stats_QueryStats* UEIK_Stats_QueryStats::EIK_Stats_QueryStats(FEIK_ProductUserId LocalUserId,
@@ -26,7 +27,11 @@ void UEIK_Stats_QueryStats::Internal_OnStatsQueryStatsComplete(const EOS_Stats_O
 			Node->OnCallback.Broadcast(Node->Var_LocalUserId, static_cast<EEIK_Result>(Data->ResultCode), Node->Var_TargetUserId);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -58,5 +63,9 @@ void UEIK_Stats_QueryStats::Activate()
 	UE_LOG(LogEIK, Error, TEXT("UEIK_Stats_QueryStats::Activate: Failed to get EOS subsystem"));
 	OnCallback.Broadcast(Var_LocalUserId, EEIK_Result::EOS_NotFound, Var_TargetUserId);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

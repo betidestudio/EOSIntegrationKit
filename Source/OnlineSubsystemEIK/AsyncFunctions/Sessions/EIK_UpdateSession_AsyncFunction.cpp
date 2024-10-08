@@ -34,7 +34,11 @@ void UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete(FName Name, bool 
 		OnFailure.Broadcast();
 	}
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_UpdateSession_AsyncFunction::Activate()
@@ -72,13 +76,21 @@ void UEIK_UpdateSession_AsyncFunction::Activate()
 		{
 			OnFailure.Broadcast();
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
 	{
 		OnFailure.Broadcast();
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }

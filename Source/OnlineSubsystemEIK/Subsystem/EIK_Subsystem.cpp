@@ -289,7 +289,7 @@ void UEIK_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap
 			{
 				SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
 			}
-			if (!Search_Settings.IsEmpty()) {
+			if (Search_Settings.Num()>0) {
 				for (auto& Settings_SingleValue : Search_Settings) {
 					if (Settings_SingleValue.Key.Len() == 0) {
 						continue;
@@ -771,7 +771,7 @@ void UEIK_Subsystem::SetPlayerData(const FBP_WriteFile_Callback& Result, FString
 	{
 		TArray<uint8> LocalArray;
 		UGameplayStatics::SaveGameToMemory(SavedGame,LocalArray);
-		if(!LocalArray.IsEmpty())
+		if(!LocalArray.Num() == 0)
 		{
 			if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get() )
 			{
@@ -1172,7 +1172,7 @@ void UEIK_Subsystem::OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID
 					TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
 					TArray<uint8> FileContents;
 					CloudPointerRef->GetFileContents(*UserIDRef,FileName,FileContents);
-					if(!FileContents.IsEmpty())
+					if(FileContents.Num()>0)
 					{
 						USaveGame* LocalSaveGame = UGameplayStatics::LoadGameFromMemory(FileContents);
 						GetFile_CallbackBP.ExecuteIfBound(true, LocalSaveGame);
