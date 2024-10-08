@@ -24,7 +24,11 @@ void UEIK_GetAppleAuthToken_AsyncFunction::OnLoginComplete(int LocalUserNum, boo
 					UE_LOG(LogEIK, Display, TEXT("Apple Auth Token found"));
 					OnSuccess.Broadcast(Identity->GetAuthToken(0));
 					SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 					return;
 				}
 			}
@@ -33,7 +37,11 @@ void UEIK_GetAppleAuthToken_AsyncFunction::OnLoginComplete(int LocalUserNum, boo
 	UE_LOG(LogEIK, Error, TEXT("Failed to get Apple Auth Token due to login failure : %s"), *Error);
 	OnFailure.Broadcast(TEXT(""));
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_GetAppleAuthToken_AsyncFunction::Activate()
@@ -53,11 +61,19 @@ void UEIK_GetAppleAuthToken_AsyncFunction::Activate()
 			UE_LOG(LogEIK, Display, TEXT("Apple Auth Token found"));
 			OnSuccess.Broadcast(Identity->GetAuthToken(0));
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	UE_LOG(LogEIK, Error, TEXT("Failed to get Apple Auth Token due to missing OnlineSubsystem or IdentityInterface"));
 	OnFailure.Broadcast(TEXT(""));
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

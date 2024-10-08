@@ -37,7 +37,11 @@ void UEIK_GetDiscordAuthToken_AsyncFunction::Activate()
 								OnFailure.Broadcast("",TEXT("Failed to get Discord Auth Token"));
 							}
 							SetReadyToDestroy();
-							MarkAsGarbage();
+							#if ENGINE_MAJOR_VERSION == 5
+	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 						});
 						return;
 					}
@@ -66,10 +70,18 @@ void UEIK_GetDiscordAuthToken_AsyncFunction::Activate()
 		OnFailure.Broadcast("", "GEngine is null");
 	}
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 #else
 	OnFailure.Broadcast("", "Discord setup files are not included in the project");
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 #endif
 }
