@@ -90,7 +90,11 @@ void UEVIK_Functions::LoginEOSVoiceChat(const UObject* WorldContextObject, FStri
 			{
 				if(LocalVoiceSubsystem->EVIK_Local_GetVoiceChat())
 				{
+#if ENGINE_MAJOR_VERSION == 5
 					const FPlatformUserId PlatformUserId = FPlatformMisc::GetPlatformUserForUserIndex(0);
+#else
+					const FPlatformUserId PlatformUserId = PLATFORMUSERID_NONE;
+#endif
 					LocalVoiceSubsystem->EVIK_Local_GetVoiceChat()->Login(PlatformUserId, PlayerName, "", FOnVoiceChatLoginCompleteDelegate::CreateLambda([Result](const FString& PlayerName, const FVoiceChatResult& Result1)
 					{
 						if(Result1.IsSuccess())
