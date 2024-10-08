@@ -2,9 +2,10 @@
 
 using UnrealBuildTool;
 using System.IO;
-using EpicGames.Core;
 #if !UE_5_0_OR_LATER
 using Tools.DotNETCommon;
+#else
+using EpicGames.Core;
 #endif
 public class OnlineSubsystemEIK : ModuleRules
 {
