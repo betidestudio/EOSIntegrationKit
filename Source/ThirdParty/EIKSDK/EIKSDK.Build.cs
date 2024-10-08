@@ -191,6 +191,7 @@ public class EIKSDK : ModuleRules
 		} 
 		else if (Target.Platform == UnrealTargetPlatform.Android)
 		{
+#if !UE_5_0_OR_LATER
 			if (Target.Architecture == "arm64-v8a")
 			{
 				Console.WriteLine("Adding EOS SDK for arm64-v8a");
@@ -206,6 +207,23 @@ public class EIKSDK : ModuleRules
 				Console.WriteLine("Adding EOS SDK for x86_64");
 				PublicAdditionalLibraries.Add(Path.Combine(SDKBinariesDir, "x86_64", "libEOSSDK.so"));
 			}
+#else
+			if (Target.Architectures.Contains(UnrealArch.Arm64))
+			{
+				Console.WriteLine("Adding EOS SDK for arm64-v8a");
+				PublicAdditionalLibraries.Add(Path.Combine(SDKBinariesDir, "arm64-v8a", "libEOSSDK.so"));
+			}
+			if (Target.Architectures.Contains(UnrealArch.Arm64ec))
+			{
+				Console.WriteLine("Adding EOS SDK for armeabi-v7a");
+				PublicAdditionalLibraries.Add(Path.Combine(SDKBinariesDir, "armeabi-v7a", "libEOSSDK.so"));
+			}
+			if (Target.Architectures.Contains(UnrealArch.X64))
+			{
+				Console.WriteLine("Adding EOS SDK for x86_64");
+				PublicAdditionalLibraries.Add(Path.Combine(SDKBinariesDir, "x86_64", "libEOSSDK.so"));
+			}
+#endif
 			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(SDKBaseDir, "LibEIK_APL.xml"));
 		}
 	}

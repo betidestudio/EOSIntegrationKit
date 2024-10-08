@@ -2,8 +2,10 @@
 
 using UnrealBuildTool;
 using System.IO;
+using EpicGames.Core;
+#if !UE_5_0_OR_LATER
 using Tools.DotNETCommon;
-
+#endif
 public class OnlineSubsystemEIK : ModuleRules
 {
 	public OnlineSubsystemEIK(ReadOnlyTargetRules Target) : base(Target)
