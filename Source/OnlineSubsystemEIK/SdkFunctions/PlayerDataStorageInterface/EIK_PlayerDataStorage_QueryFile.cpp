@@ -30,7 +30,11 @@ void UEIK_PlayerDataStorage_QueryFile::Activate()
 	UE_LOG(LogEIK, Error, TEXT("EIK_PlayerDataStorage_QueryFile: OnlineSubsystemEOS is not valid"));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, FEIK_ProductUserId());
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_PlayerDataStorage_QueryFile::EOS_PlayerDataStorage_OnQueryFileComplete(const EOS_PlayerDataStorage_QueryFileCallbackInfo* Data)
@@ -41,7 +45,11 @@ void UEIK_PlayerDataStorage_QueryFile::EOS_PlayerDataStorage_OnQueryFileComplete
 		{
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
 			Node->SetReadyToDestroy();
-			Node->MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+Node->MarkAsGarbage();
+#else
+Node->MarkPendingKill();
+#endif
 		});
 	}
 }

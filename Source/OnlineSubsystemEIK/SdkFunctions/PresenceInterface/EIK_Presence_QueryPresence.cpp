@@ -33,7 +33,11 @@ void UEIK_Presence_QueryPresence::Activate()
 	UE_LOG(LogEIK, Error, TEXT("UEIK_Presence_QueryPresence::Activate: Unable to get EOS SDK"));
 	OnCallback.Broadcast(Var_LocalUserId, Var_TargetUserId, EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Presence_QueryPresence::Internal_OnQueryPresenceComplete(const EOS_Presence_QueryPresenceCallbackInfo* Data)
@@ -45,7 +49,11 @@ void UEIK_Presence_QueryPresence::Internal_OnQueryPresenceComplete(const EOS_Pre
 		{
 			PresenceQuery->OnCallback.Broadcast(PresenceQuery->Var_LocalUserId, PresenceQuery->Var_TargetUserId, static_cast<EEIK_Result>(Data->ResultCode));
 			PresenceQuery->SetReadyToDestroy();
-			PresenceQuery->MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+PresenceQuery->MarkAsGarbage();
+#else
+PresenceQuery->MarkPendingKill();
+#endif
 		});
 	}
 }

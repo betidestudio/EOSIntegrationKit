@@ -3,6 +3,7 @@
 
 #include "EIK_Sanctions_CreatePlayerSanctionAppeal.h"
 
+#include "Async/Async.h"
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 UEIK_Sanctions_CreatePlayerSanctionAppeal* UEIK_Sanctions_CreatePlayerSanctionAppeal::EIK_Sanctions_CreatePlayerSanctionAppeal(FEIK_ProductUserId LocalUserId, const TEnumAsByte<EEIK_ESanctionAppealReason>& AppealReason, const FString& ReferenceId)
@@ -33,7 +34,11 @@ void UEIK_Sanctions_CreatePlayerSanctionAppeal::Activate()
 	UE_LOG(LogEIK, Error, TEXT("UEIK_Sanctions_CreatePlayerSanctionAppeal::Activate: Unable to get EOS SDK"));
 	OnCallback.Broadcast(Var_LocalUserId, EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Sanctions_CreatePlayerSanctionAppeal::Internal_OnCreatePlayerSanctionAppealComplete(
@@ -45,7 +50,11 @@ void UEIK_Sanctions_CreatePlayerSanctionAppeal::Internal_OnCreatePlayerSanctionA
 		{
 			Node->OnCallback.Broadcast(Node->Var_LocalUserId, static_cast<EEIK_Result>(Data->ResultCode));
 			Node->SetReadyToDestroy();
-			Node->MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+Node->MarkAsGarbage();
+#else
+Node->MarkPendingKill();
+#endif
 		});
 	}
 }
