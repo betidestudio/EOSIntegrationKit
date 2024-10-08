@@ -2,7 +2,7 @@
 
 using UnrealBuildTool;
 using System.IO;
-using EpicGames.Core;
+using Tools.DotNETCommon;
 
 public class OnlineSubsystemEIK : ModuleRules
 {
@@ -19,14 +19,12 @@ public class OnlineSubsystemEIK : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[] {
 				"Core",
-				"CoreOnline",
 				"CoreUObject",
 				"Engine",
 				"EIKSDK",
 				"EIKShared",
 				"EIKVoiceChat",
 				"Json",
-				"OnlineBase",
 				"OnlineSubsystem",
 				"Sockets",
 				"VoiceChat",
@@ -71,7 +69,6 @@ public class OnlineSubsystemEIK : ModuleRules
 				new string[] {
 					"UnrealEd",
 					"ToolMenus",
-					"EditorFramework"
 				}
 			);
 		}
