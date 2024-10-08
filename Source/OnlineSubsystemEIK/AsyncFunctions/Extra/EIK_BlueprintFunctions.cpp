@@ -666,7 +666,18 @@ TArray<uint8> UEIK_BlueprintFunctions::StringToByteArray(const FString& DataToCo
 
 FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueID(const APlayerController* PlayerController, bool& bIsValid)
 {
-	if(const APlayerState* PlayerState = PlayerController->PlayerState; !PlayerState)
+	if(!PlayerController)
+	{
+		bIsValid = false;
+		return FEIKUniqueNetId();
+	}
+	if(!PlayerController->PlayerState)
+	{
+		bIsValid = false;
+		return FEIKUniqueNetId();
+	}	
+	const APlayerState* PlayerState = PlayerController->PlayerState;
+	if(!PlayerState)
 	{
 		bIsValid = false;
 	}
