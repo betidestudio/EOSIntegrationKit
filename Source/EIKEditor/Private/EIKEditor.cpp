@@ -119,7 +119,11 @@ void FEIKEditorModule::RegisterMenuExtensions()
     FToolMenuOwnerScoped OwnerScoped(this);
  
     // Extend the "ModesToolBar" section of the main toolbar
+#if ENGINE_MAJOR_VERSION == 5
+    UToolMenu* ToolbarMenu = UToolMenus::Get()->ExtendMenu("LevelEditor.LevelEditorToolBar.PlayToolBar");
+#else
     UToolMenu* ToolbarMenu = UToolMenus::Get()->ExtendMenu("LevelEditor.LevelEditorToolBar");
+#endif
     if (!ToolbarMenu)
     {
         UE_LOG(LogTemp, Warning, TEXT("ToolbarMenu not found!"));
