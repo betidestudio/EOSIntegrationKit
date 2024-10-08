@@ -11,7 +11,9 @@
 #include "EOSSharedTypes.h"
 #include "Engine/Engine.h"
 
+#if ENGINE_MAJOR_VERSION >= 5
 #include UE_INLINE_GENERATED_CPP_BY_NAME(NetDriverEIKBase)
+#endif
 
 bool UNetDriverEIKBase::IsAvailable() const
 {
