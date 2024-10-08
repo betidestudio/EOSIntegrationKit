@@ -40,6 +40,9 @@ public class OnlineSubsystemEIK : ModuleRules
 				"EOSIntegrationKit",
 			}
 		);
+		#if UE_5_0_OR_LATER
+		PrivateDependencyModuleNames.AddRange(new string[] { "CoreOnline", "Core", "Sockets" , "OnlineBase"});
+		#endif
 
 		
 		PrivateDefinitions.Add("USE_XBL_XSTS_TOKEN=" + (bUseXblXstsToken ? "1" : "0"));

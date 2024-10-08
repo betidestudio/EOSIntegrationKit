@@ -1106,8 +1106,8 @@ void FUserManagerEOS::LoginViaExternalAuth(int32 LocalUserNum)
 		FOnGetLinkedAccountAuthTokenCompleteDelegate::CreateLambda([this](int32 LocalUserNum, bool bWasSuccessful, const FExternalAuthToken& AuthToken)
 		{
 			if (FUserManagerEOSPtr StrongThis = AsShared())
+			{
 #endif
-				{
 				if (!bWasSuccessful || !AuthToken.IsValid())
 				{
 					UE_LOG_ONLINE(Warning, TEXT("Unable to Login() user (%d) due to an empty platform auth token"), LocalUserNum);
@@ -1247,8 +1247,8 @@ bool FUserManagerEOS::ConnectLoginNoEAS(int32 LocalUserNum)
 	FOnGetLinkedAccountAuthTokenCompleteDelegate::CreateLambda([this](int32 LocalUserNum, bool bWasSuccessful, const FExternalAuthToken& AuthToken)
 		{
 			if (FUserManagerEOSPtr StrongThis = AsShared())
+			{
 #endif
-				{
 				if (!bWasSuccessful || !AuthToken.IsValid())
 				{
 					const FString ErrorString = FString::Printf(TEXT("ConnectLoginNoEAS(%d) failed due to the platform OSS giving an empty auth token"), LocalUserNum);

@@ -487,13 +487,16 @@ private:
 	{
 		check(IsInGameThread());
 #if ENGINE_MAJOR_VERSION == 5
+		TEOSCallbackWithNested1* CallbackThis = (TEOSCallbackWithNested1*)Data->ClientData;
+		check(CallbackThis);
 		if (!CallbackThis->Owner.IsValid())
 		{
 			return Nested1ReturnType();
 		}
-#endif
+#else
 		TEOSCallbackWithNested1* CallbackThis = (TEOSCallbackWithNested1*)Data->ClientData;
 		check(CallbackThis);
+#endif
 
 		check(CallbackThis->CallbackLambda);
 		return CallbackThis->Nested1CallbackLambda(Data);

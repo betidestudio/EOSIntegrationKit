@@ -1633,8 +1633,11 @@ struct FSessionStartOptions :
 		ApiVersion = EOS_SESSIONS_STARTSESSION_API_LATEST;
 	}
 };
-
+#if ENGINE_MAJOR_VERSION == 5
+typedef TEOSCallback<EOS_Sessions_OnStartSessionCallback, EOS_Sessions_StartSessionCallbackInfo, FOnlineSessionEOS> FStartSessionCallback;
+#else
 typedef TEOSCallback<EOS_Sessions_OnStartSessionCallback, EOS_Sessions_StartSessionCallbackInfo> FStartSessionCallback;
+#endif
 
 uint32 FOnlineSessionEOS::StartEOSSession(FNamedOnlineSession* Session)
 {

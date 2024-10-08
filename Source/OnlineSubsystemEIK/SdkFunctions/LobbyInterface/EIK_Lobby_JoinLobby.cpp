@@ -23,7 +23,11 @@ void UEIK_Lobby_JoinLobby::OnJoinLobbyComplete(const EOS_Lobby_JoinLobbyCallback
 		{
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LobbyId);
 			Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
+			Node->MarkAsGarbage();
+#else
 			Node->MarkPendingKill();
+#endif
 		});
 	}
 }
