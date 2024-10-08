@@ -3,7 +3,9 @@
 
 #include "EIK_FindSessions_AsyncFunction.h"
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
+#if ENGINE_MAJOR_VERSION == 5
 #include "Online/OnlineSessionNames.h"
+#endif
 
 UEIK_FindSessions_AsyncFunction* UEIK_FindSessions_AsyncFunction::FindEIKSessions(
 	TMap<FString, FEIKAttribute> SessionSettings, EMatchType MatchType, int32 MaxResults, ERegionInfo RegionToSearch, bool bLanSearch, bool bIncludePartySessions)
@@ -49,7 +51,7 @@ void UEIK_FindSessions_AsyncFunction::FindSession()
 					SessionSearch->QuerySettings.Set("IsPartySession", false, EOnlineComparisonOp::Equals);
 				}
 			}
-			if (!SessionSettings.IsEmpty()) {
+			if (SessionSettings.Num() > 0) {
 				for (auto& Settings_SingleValue : SessionSettings) {
 					if (Settings_SingleValue.Key.IsEmpty()) {
 						continue;
@@ -84,7 +86,11 @@ void UEIK_FindSessions_AsyncFunction::FindSession()
 			}
 			OnFail.Broadcast(TArray<FSessionFindStruct>());
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -95,7 +101,11 @@ void UEIK_FindSessions_AsyncFunction::FindSession()
 		}
 		OnFail.Broadcast(TArray<FSessionFindStruct>());
 		SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
 
@@ -110,7 +120,11 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 		OnFail.Broadcast(TArray<FSessionFindStruct>());
 		bDelegateCalled = true;
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 	else
 	{
@@ -164,7 +178,11 @@ void UEIK_FindSessions_AsyncFunction::OnFindSessionCompleted(bool bWasSuccess)
 			bDelegateCalled = true;
 			OnSuccess.Broadcast(SessionResult_Array);
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
