@@ -48,7 +48,11 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 						bDelegateCalled = true;
 						OnFail.Broadcast(false,0, TArray<uint8>());
 						SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 						return;
 					}
 				}
@@ -64,7 +68,11 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 					bDelegateCalled = true;
 					OnFail.Broadcast(false, 0,TArray<uint8>());
 					SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -75,7 +83,11 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 				bDelegateCalled = true;
 				OnFail.Broadcast(false, 0, TArray<uint8>());
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -86,7 +98,11 @@ void UEIK_GetTitleData_AsyncFunction::GetTitleData()
 			bDelegateCalled = true;
 			OnFail.Broadcast(false, 0,TArray<uint8>());
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
@@ -104,14 +120,18 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 					TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
 					TArray<uint8> FileContents;
 					TitleFilePointerRef->GetFileContents(V_FileName, FileContents);
-					if (!FileContents.IsEmpty())
+					if (FileContents.Num() > 0)
 					{
 						if (!bDelegateCalled)
 						{
 							bDelegateCalled = true;
 							OnSuccess.Broadcast(true,0, FileContents);
 							SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 							MarkAsGarbage();
+#else
+							MarkPendingKill();
+#endif
 						}
 					}
 					else
@@ -121,7 +141,11 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 							bDelegateCalled = true;
 							OnFail.Broadcast(false, 0,TArray<uint8>());
 							SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 							MarkAsGarbage();
+#else
+							MarkPendingKill();
+#endif
 						}
 					}
 				}
@@ -132,7 +156,11 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 						bDelegateCalled = true;
 						OnFail.Broadcast(false, 0,TArray<uint8>());
 						SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 					}
 				}
 			}
@@ -143,7 +171,11 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 					bDelegateCalled = true;
 					OnFail.Broadcast(false,0, TArray<uint8>());
 					SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -154,7 +186,11 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 				bDelegateCalled = true;
 				OnFail.Broadcast(false, 0,TArray<uint8>());
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -165,7 +201,11 @@ void UEIK_GetTitleData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FSt
 			bDelegateCalled = true;
 			OnFail.Broadcast(false,0, TArray<uint8>());
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }

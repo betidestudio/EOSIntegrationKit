@@ -17,13 +17,21 @@ void UEIK_InviteFriend_AsyncFunction::OnInviteComplete(int32 LocalUserNum, bool 
 	{
 		OnSuccess.Broadcast("");
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 	else
 	{
 		OnFailure.Broadcast(ErrorStr);
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
 
@@ -36,19 +44,31 @@ void UEIK_InviteFriend_AsyncFunction::Activate()
 		{
 			FriendsInterface->SendInvite(0,*Var_FriendId.GetUniqueNetId(),"",FOnSendInviteComplete::CreateUObject(this, &UEIK_InviteFriend_AsyncFunction::OnInviteComplete));
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 		else
 		{
 			// Failed to get Friends Interface
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
 	{
 		// Failed to get Subsystem
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }

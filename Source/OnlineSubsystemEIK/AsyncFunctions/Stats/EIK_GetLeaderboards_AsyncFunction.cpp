@@ -39,7 +39,11 @@ void UEIK_GetLeaderboards_AsyncFunction::GetLeaderboardLocal()
 						OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 						bDelegateCalled = true;
 						SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 					}
 				}
 			}
@@ -50,7 +54,11 @@ MarkAsGarbage();
 					OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 					bDelegateCalled = true;
 					SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -61,7 +69,11 @@ MarkAsGarbage();
 				OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -72,7 +84,11 @@ MarkAsGarbage();
 			OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
@@ -99,7 +115,11 @@ void UEIK_GetLeaderboards_AsyncFunction::OnGetLeaderboardCompleted(bool bWasSucc
 			OnSuccess.Broadcast(Result);
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -109,7 +129,11 @@ MarkAsGarbage();
 			OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }

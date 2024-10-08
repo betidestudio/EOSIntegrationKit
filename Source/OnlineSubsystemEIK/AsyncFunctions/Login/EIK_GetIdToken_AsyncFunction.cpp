@@ -50,14 +50,22 @@ void UEIK_GetIdToken_AsyncFunction::GetAuthToken()
                     EOS_Auth_IdToken_Release(Var_IdToken);
 
                     SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
                     MarkAsGarbage();
+#else
+                    MarkPendingKill();
+#endif
                 }
                 else
                 {
                     // Broadcast failure event
                     Failure.Broadcast(FEIKCopyAuthToken());
                     SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
                     MarkAsGarbage();
+#else
+                    MarkPendingKill();
+#endif
                 }
             }
             else
@@ -65,7 +73,11 @@ void UEIK_GetIdToken_AsyncFunction::GetAuthToken()
                 // Broadcast failure event
                 Failure.Broadcast(FEIKCopyAuthToken());
                 SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
                 MarkAsGarbage();
+#else
+                MarkPendingKill();
+#endif
             }
         }
         else
@@ -73,7 +85,11 @@ void UEIK_GetIdToken_AsyncFunction::GetAuthToken()
             // Broadcast failure event
             Failure.Broadcast(FEIKCopyAuthToken());
             SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
             MarkAsGarbage();
+#else
+            MarkPendingKill();
+#endif
         }
     }
     else
@@ -81,7 +97,11 @@ void UEIK_GetIdToken_AsyncFunction::GetAuthToken()
         // Broadcast failure event
         Failure.Broadcast(FEIKCopyAuthToken());
         SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
         MarkAsGarbage();
+#else
+        MarkPendingKill();
+#endif
     }
 }
 

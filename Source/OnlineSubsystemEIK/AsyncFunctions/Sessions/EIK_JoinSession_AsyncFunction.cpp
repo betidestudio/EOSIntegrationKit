@@ -39,7 +39,11 @@ void UEIK_JoinSession_AsyncFunction::JoinSession()
 			OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -51,7 +55,11 @@ void UEIK_JoinSession_AsyncFunction::JoinSession()
 		OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 		bDelegateCalled = true;
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
 void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
@@ -66,7 +74,11 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 		OnSuccess.Broadcast(EEIKJoinResult::Success, "");
 		bDelegateCalled = true;
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 		return;
 	}
 	if (Result == EOnJoinSessionCompleteResult::Success)
@@ -99,7 +111,11 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 						OnSuccess.Broadcast(EEIKJoinResult::Success, JoinAddress);
 						bDelegateCalled = true;
 						SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 						return;
 					}
 					else
@@ -108,7 +124,11 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 						OnFail.Broadcast(EEIKJoinResult::CouldNotRetrieveAddress, FString());
 						bDelegateCalled = true;
 						SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 						return;
 					}
 				}
@@ -119,7 +139,11 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 			OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 			return;
 		}
 	}
@@ -143,7 +167,11 @@ void UEIK_JoinSession_AsyncFunction::OnJoinSessionCompleted(FName SessionName, E
 			OnFail.Broadcast(EEIKJoinResult::UnknownError, FString());
 		}
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 		bDelegateCalled = true;
 	}
 }

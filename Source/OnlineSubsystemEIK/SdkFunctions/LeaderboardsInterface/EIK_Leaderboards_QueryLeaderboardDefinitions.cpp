@@ -24,7 +24,11 @@ void UEIK_Leaderboards_QueryLeaderboardDefinitions::OnQueryLeaderboardDefinition
 		{
 			CallbackObj->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 			CallbackObj->SetReadyToDestroy();
-			CallbackObj->MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+CallbackObj->MarkAsGarbage();
+#else
+CallbackObj->MarkPendingKill();
+#endif
 		});
 	}
 }
@@ -44,5 +48,9 @@ void UEIK_Leaderboards_QueryLeaderboardDefinitions::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to query leaderboard definitions either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

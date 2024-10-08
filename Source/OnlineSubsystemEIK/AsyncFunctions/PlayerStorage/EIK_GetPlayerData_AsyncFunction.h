@@ -3,7 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#if ENGINE_MAJOR_VERSION == 5
 #include "Online/CoreOnline.h"
+#else
+#include "UObject/CoreOnline.h"
+#endif
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_GetPlayerData_AsyncFunction.generated.h"
 
