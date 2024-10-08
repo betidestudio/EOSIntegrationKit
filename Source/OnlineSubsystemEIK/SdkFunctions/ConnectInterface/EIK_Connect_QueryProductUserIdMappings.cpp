@@ -27,7 +27,11 @@ void UEIK_Connect_QueryProductUserIdMappings::OnQueryProductUserIdMappingsCallba
 			Proxy->OnCallback.Broadcast(FEIK_ProductUserId(Data->LocalUserId), static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Proxy->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Proxy->MarkAsGarbage();
+#else
+		Proxy->MarkPendingKill();
+#endif
 	}
 }
 
@@ -55,5 +59,9 @@ void UEIK_Connect_QueryProductUserIdMappings::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to query product user id mappings either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(FEIK_ProductUserId(), EEIK_Result::EOS_ServiceFailure);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

@@ -27,7 +27,11 @@ void UEIK_Connect_TransferDeviceIdAccount::OnTransferDeviceIdAccountCallback(
 			Proxy->OnCallback.Broadcast(FEIK_ProductUserId(Data->LocalUserId), static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Proxy->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Proxy->MarkAsGarbage();
+#else
+		Proxy->MarkPendingKill();
+#endif
 	}
 }
 

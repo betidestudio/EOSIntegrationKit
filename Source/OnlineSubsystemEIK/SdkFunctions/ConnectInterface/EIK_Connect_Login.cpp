@@ -25,7 +25,11 @@ void UEIK_Connect_Login::OnLoginCallback(const EOS_Connect_LoginCallbackInfo* Da
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId, Data->ContinuanceToken);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -49,5 +53,9 @@ void UEIK_Connect_Login::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to login user either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, FEIK_ProductUserId(), FEIK_ContinuanceToken());
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
