@@ -3,8 +3,10 @@
 
 #include "EIK_Sessions_JoinSession.h"
 
+#include "Async/Async.h"
+
 UEIK_Sessions_JoinSession* UEIK_Sessions_JoinSession::EIK_Sessions_JoinSession(FString SessionName,
-	FEIK_ProductUserId LocalUserId, FEIK_HSessionDetails SessionHandle, bool bPresenceEnabled)
+                                                                               FEIK_ProductUserId LocalUserId, FEIK_HSessionDetails SessionHandle, bool bPresenceEnabled)
 {
 	UEIK_Sessions_JoinSession* Node = NewObject<UEIK_Sessions_JoinSession>();
 	Node->Var_SessionName = SessionName;
@@ -34,7 +36,11 @@ void UEIK_Sessions_JoinSession::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to join session either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Sessions_JoinSession::OnJoinSessionCallback(const EOS_Sessions_JoinSessionCallbackInfo* Data)
@@ -46,6 +52,10 @@ void UEIK_Sessions_JoinSession::OnJoinSessionCallback(const EOS_Sessions_JoinSes
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

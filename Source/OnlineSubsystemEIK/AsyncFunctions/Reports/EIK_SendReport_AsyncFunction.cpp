@@ -127,7 +127,11 @@ void UEIK_SendReport_AsyncFunction::ResultFaliure()
 {
 	Failure.Broadcast();
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 // Function to handle success cases
@@ -135,7 +139,11 @@ void UEIK_SendReport_AsyncFunction::ResultSuccess()
 {
 	Success.Broadcast();
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 // Function to activate the asynchronous function

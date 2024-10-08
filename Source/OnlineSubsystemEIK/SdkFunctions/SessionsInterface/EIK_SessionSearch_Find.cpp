@@ -3,8 +3,10 @@
 
 #include "EIK_SessionSearch_Find.h"
 
+#include "Async/Async.h"
+
 UEIK_SessionSearch_Find* UEIK_SessionSearch_Find::EIK_SessionSearch_Find(FEIK_HSessionSearch SessionSearchHandle,
-	FEIK_ProductUserId LocalUserId)
+                                                                         FEIK_ProductUserId LocalUserId)
 {
 	UEIK_SessionSearch_Find* Node = NewObject<UEIK_SessionSearch_Find>();
 	Node->Var_SessionSearchHandle = SessionSearchHandle;
@@ -24,7 +26,11 @@ void UEIK_SessionSearch_Find::Activate()
 				UE_LOG(LogEIK, Error, TEXT("Failed to find session because SessionSearchHandle is not valid."));
 				OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 				SetReadyToDestroy();
-				MarkAsGarbage();
+				#if ENGINE_MAJOR_VERSION == 5
+	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 				return;
 			}
 			EOS_SessionSearch_FindOptions SessionSearchFindOptions = { };
@@ -37,7 +43,11 @@ void UEIK_SessionSearch_Find::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to find session either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 void UEIK_SessionSearch_Find::OnSessionSearch_FindCallback(const EOS_SessionSearch_FindCallbackInfo* Data)
 {
@@ -48,6 +58,10 @@ void UEIK_SessionSearch_Find::OnSessionSearch_FindCallback(const EOS_SessionSear
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

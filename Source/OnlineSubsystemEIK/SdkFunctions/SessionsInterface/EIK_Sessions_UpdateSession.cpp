@@ -3,6 +3,8 @@
 
 #include "EIK_Sessions_UpdateSession.h"
 
+#include "Async/Async.h"
+
 UEIK_Sessions_UpdateSession* UEIK_Sessions_UpdateSession::EIK_Sessions_UpdateSession(
 	FEIK_HSessionModification SessionModificationHandle)
 {
@@ -28,7 +30,11 @@ void UEIK_Sessions_UpdateSession::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to update session either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, "", "");
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Sessions_UpdateSession::OnUpdateSessionCallback(const EOS_Sessions_UpdateSessionCallbackInfo* Data)
@@ -40,6 +46,10 @@ void UEIK_Sessions_UpdateSession::OnUpdateSessionCallback(const EOS_Sessions_Upd
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->SessionName, Data->SessionId);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

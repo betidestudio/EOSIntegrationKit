@@ -27,7 +27,11 @@ void UEIK_Sessions_QueryInvites::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to query invites either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, FEIK_ProductUserId());
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Sessions_QueryInvites::OnQueryInvitesCallback(const EOS_Sessions_QueryInvitesCallbackInfo* Data)
@@ -39,6 +43,10 @@ void UEIK_Sessions_QueryInvites::OnQueryInvitesCallback(const EOS_Sessions_Query
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

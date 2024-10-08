@@ -3,6 +3,8 @@
 
 #include "EIK_Sessions_StartSession.h"
 
+#include "Async/Async.h"
+
 UEIK_Sessions_StartSession* UEIK_Sessions_StartSession::EIK_Sessions_StartSession(FString SessionName)
 {
 	UEIK_Sessions_StartSession* Node = NewObject<UEIK_Sessions_StartSession>();
@@ -27,7 +29,11 @@ void UEIK_Sessions_StartSession::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to start session either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Sessions_StartSession::OnStartSessionCallback(const EOS_Sessions_StartSessionCallbackInfo* Data)
@@ -39,6 +45,10 @@ void UEIK_Sessions_StartSession::OnStartSessionCallback(const EOS_Sessions_Start
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
