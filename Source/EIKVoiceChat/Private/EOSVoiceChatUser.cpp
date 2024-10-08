@@ -86,7 +86,11 @@ namespace
 		}
 	}
 
+#if ENGINE_MAJOR_VERSION ==5
 	using FAudioBeforeSendCallback = TEIKGlobalCallback<EOS_RTCAudio_OnAudioBeforeSendCallback, EOS_RTCAudio_AudioBeforeSendCallbackInfo, FEOSVoiceChatUser>;
+#else
+	using FAudioBeforeSendCallback = TEIKGlobalCallback<EOS_RTCAudio_OnAudioBeforeSendCallback, EOS_RTCAudio_AudioBeforeSendCallbackInfo>;
+#endif
 }
 
 static TAutoConsoleVariable<bool> CVarFakeAudioInputEnabled(
@@ -818,7 +822,7 @@ void FEOSVoiceChatUser::TransmitToSpecificChannels(const TSet<FString>& ChannelN
 	}
 }
 
-#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
+#else
 void FEOSVoiceChatUser::TransmitToSpecificChannel(const FString& Channel)
 {
 	if (TransmitState.Mode != EVoiceChatTransmitMode::Channel ||
@@ -845,7 +849,7 @@ TSet<FString> FEOSVoiceChatUser::GetTransmitChannels() const
 	}
 	return TSet<FString>();
 }
-#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
+#else
 FString FEOSVoiceChatUser::GetTransmitChannel() const
 {
 	FString TransmitChannel;
@@ -1348,8 +1352,12 @@ void FEOSVoiceChatUser::ApplySendingOptions(FChannelSession& ChannelSession)
 	const bool bCanTransmitToChannel = TransmitState.Mode == EVoiceChatTransmitMode::All ||
 		(TransmitState.Mode == EVoiceChatTransmitMode::Channel && TransmitState.ChannelName == ChannelSession.ChannelName);
 #endif
-	ChannelSession.DesiredSendingState.bAudioEnabled = bCanTransmitToChannel && !AudioInputOptions.bMuted && !ChannelSession.bIsNotListening;
 
+#if ENGINE_MAJOR_VERSION == 5
+	ChannelSession.DesiredSendingState.bAudioEnabled = bCanTransmitToChannel && !AudioInputOptions.bMuted && !ChannelSession.bIsNotListening;
+#else
+	ChannelSession.DesiredSendingState.bAudioEnabled = !AudioInputOptions.bMuted && !ChannelSession.bIsNotListening;
+#endif
 	const FTCHARToUTF8 Utf8RoomName(*ChannelSession.ChannelName);
 		
 	EOS_RTCAudio_UpdateSendingOptions UpdateSendingOptions = {};
@@ -1391,7 +1399,27 @@ void FEOSVoiceChatUser::UnbindLoginCallbacks()
 		LoginSession.OnLobbyChannelConnectionChangedNotificationId = EOS_INVALID_NOTIFICATIONID;
 	}
 }
-
+#if ENGINE_MAJOR_VERSION == 5
+#else
+void FEOSVoiceChatUser::OnChannelAudioBeforeSendStatic(const EOS_RTCAudio_AudioBeforeSendCallbackInfo* Data)
+{
+	if (Data)
+	{
+		if (FEOSVoiceChatUser* EosVoiceChatPtr = static_cast<FEOSVoiceChatUser*>(Data->ClientData))
+		{
+			EosVoiceChatPtr->OnChannelAudioBeforeSend(Data);
+		}
+		else
+		{
+			UE_LOG(LogEOSVoiceChat, Warning, TEXT("OnChannelAudioBeforeSendStatic Error EosVoiceChatPtr=nullptr"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogEOSVoiceChat, Warning, TEXT("OnChannelAudioBeforeSendStatic Error CallbackInfo=nullptr"));
+	}
+}
+#endif
 void FEOSVoiceChatUser::BindChannelCallbacks(FChannelSession& ChannelSession)
 {
 	EOSVOICECHATUSER_LOG(Log, TEXT("BindChannelCallbacks ChannelName=[%s]"), *ChannelSession.ChannelName);
@@ -1449,21 +1477,26 @@ void FEOSVoiceChatUser::BindChannelCallbacks(FChannelSession& ChannelSession)
 		static_assert(EOS_RTCAUDIO_ADDNOTIFYAUDIOBEFORESEND_API_LATEST == 1, "EOS_RTC_AddNotifyAudioBeforeSendOptions updated, check new fields");
 		AudioBeforeSendOptions.LocalUserId = LoginSession.LocalUserProductUserId;
 		AudioBeforeSendOptions.RoomName = Utf8RoomName.Get();
-
+#if ENGINE_MAJOR_VERSION == 5
 		// Protect against callbacks occurring after this object is destroyed, by wrapping in a TEIKGlobalCallback. This can occur when LeaveRoom during Logout fails.
 		TUniquePtr<FAudioBeforeSendCallback> Callback = MakeUnique<FAudioBeforeSendCallback>(AsWeak());
 		Callback->CallbackLambda = [this](const EOS_RTCAudio_AudioBeforeSendCallbackInfo* Data) { OnChannelAudioBeforeSend(Data); };
 		Callback->bIsGameThreadCallback = false;
 
 		ChannelSession.OnAudioBeforeSendNotificationId = EOS_RTCAudio_AddNotifyAudioBeforeSend(EOS_RTC_GetAudioInterface(GetRtcInterface()), &AudioBeforeSendOptions, Callback.Get(), Callback->GetCallbackPtr());
+#else
+		ChannelSession.OnAudioBeforeSendNotificationId = EOS_RTCAudio_AddNotifyAudioBeforeSend(EOS_RTC_GetAudioInterface(GetRtcInterface()), &AudioBeforeSendOptions, this, &FEOSVoiceChatUser::OnChannelAudioBeforeSendStatic);
+#endif
 		if (ChannelSession.OnAudioBeforeSendNotificationId == EOS_INVALID_NOTIFICATIONID)
 		{
 			EOSVOICECHATUSER_LOG(Warning, TEXT("BindChannelCallbacks EOS_RTCAudio_AddNotifyAudioBeforeSend failed"));
 		}
+#if ENGINE_MAJOR_VERSION == 5
 		else
 		{
 			ChannelSession.AudioBeforeSendCallback = MoveTemp(Callback);
 		}
+#endif
 	}
 
 	// OnAudioBeforeRender
@@ -1693,6 +1726,12 @@ void FEOSVoiceChatUser::ClearLoginSession()
 	LoginSession = FLoginSession();
 }
 
+#if ENGINE_MAJOR_VERSION != 5
+FEOSVoiceChatUserWeakPtr FEOSVoiceChatUser::CreateWeakThis()
+{
+	return FEOSVoiceChatUserWeakPtr(AsShared());
+}
+#endif
 #pragma region EOSCallbacks
 void EOS_CALL FEOSVoiceChatUser::OnJoinRoomStatic(const EOS_RTC_JoinRoomCallbackInfo* CallbackInfo)
 {
@@ -2389,7 +2428,7 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 				if (const UWorld* World = GEngine->GetWorldContexts().Last().World())
 				{
 					AActor* SpeakerActor = nullptr;
-					TArray<TObjectPtr<APlayerState>> PlayerArray;
+					TArray<APlayerState*> PlayerArray;
 					if(AGameStateBase* GameState = World->GetGameState())
 					{
 						PlayerArray = GameState->PlayerArray;
@@ -2398,7 +2437,7 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 					{
 						for(int i=0; i<PlayerArray.Num(); i++)
 						{
-							if(APlayerState* PlayerState = PlayerArray[i].Get())
+							if(APlayerState* PlayerState = PlayerArray[i])
 							{
 								if(PlayerState->GetPawn())
 								{
@@ -2441,7 +2480,11 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 				}
 			}
 			FScopeLock Lock(&BeforeRecvAudioRenderedLock);
+#if ENGINE_MAJOR_VERSION == 4
+			OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence);
+#else
 			OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence, ChannelName, PlayerName);
+#endif
 		}
 		else
 		{
@@ -2682,8 +2725,11 @@ bool FEOSVoiceChatUser::Exec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& A
 		if (FParse::Value(Cmd, TEXT("PlayerName="), PlayerName))
 		{
 			FString Token = InsecureGetLoginToken(PlayerName);
-
+#if ENGINE_MAJOR_VERSION == 5
 			FPlatformUserId FirstUser = FPlatformMisc::GetPlatformUserForUserIndex(0);
+#else
+			FPlatformUserId FirstUser = PLATFORMUSERID_NONE;
+#endif
 			Login(FirstUser, PlayerName, Token, FOnVoiceChatLoginCompleteDelegate::CreateLambda([this, &Ar](const FString& LoggedInPlayerName, const FVoiceChatResult& Result)
 			{
 				EOSVOICECHATUSER_LOG(Display, TEXT("EOS LOGIN playername:%s result:%s"), *LoggedInPlayerName, *LexToString(Result));
