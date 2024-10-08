@@ -37,7 +37,11 @@ void UEIK_Achievements_UnlockAchievements::Activate()
 				{
 					UnlockAchievements->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->UserId, Data->AchievementsCount);
 					UnlockAchievements->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 					UnlockAchievements->MarkAsGarbage();
+#else
+					UnlockAchievements->MarkPendingKill();
+#endif
 				}
 			});
 			return;
@@ -46,5 +50,9 @@ void UEIK_Achievements_UnlockAchievements::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
 	OnCallback.Broadcast(EEIK_Result::EOS_ServiceFailure, FEIK_ProductUserId(), 0);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

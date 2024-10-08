@@ -30,7 +30,11 @@ void UEIK_Achievements_QueryDefinitions::Activate()
 				{
 					QueryDefinitions->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 					QueryDefinitions->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 					QueryDefinitions->MarkAsGarbage();
+#else
+					QueryDefinitions->MarkPendingKill();
+#endif
 				}
 			});
 			return;
@@ -39,5 +43,9 @@ void UEIK_Achievements_QueryDefinitions::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to get EOS subsystem"));
 	OnCallback.Broadcast(EEIK_Result::EOS_ServiceFailure);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

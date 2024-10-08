@@ -19,13 +19,21 @@ void UEIK_AcceptFriendInvite_AsyncFunction::OnAcceptComplete(int32 LocalUserNum,
 	{
 		OnSuccess.Broadcast("");
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 	else
 	{
 		OnFailure.Broadcast(ErrorStr);
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
 
@@ -38,13 +46,21 @@ void UEIK_AcceptFriendInvite_AsyncFunction::Activate()
 		{
 			FriendsInterface->AcceptInvite(0,*Var_FriendId.GetUniqueNetId(),"",FOnAcceptInviteComplete::CreateUObject(this, &UEIK_AcceptFriendInvite_AsyncFunction::OnAcceptComplete));
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 		else
 		{
 			// Failed to get Friends Interface
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 			OnFailure.Broadcast("Failed to get Friends Interface");
 		}
 	}
@@ -52,7 +68,11 @@ void UEIK_AcceptFriendInvite_AsyncFunction::Activate()
 	{
 		// Failed to get Subsystem
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 		OnFailure.Broadcast("Failed to get Subsystem");
 	}
 }

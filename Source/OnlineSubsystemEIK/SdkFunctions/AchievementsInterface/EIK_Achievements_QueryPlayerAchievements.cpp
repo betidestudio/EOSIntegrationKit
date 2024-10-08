@@ -34,7 +34,11 @@ void UEIK_Achievements_QueryPlayerAchievements::Activate()
 				{
 					QueryPlayerAchievements->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId, Data->TargetUserId);
 					QueryPlayerAchievements->SetReadyToDestroy();
-					QueryPlayerAchievements->MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+QueryPlayerAchievements->MarkAsGarbage();
+#else
+QueryPlayerAchievements->MarkPendingKill();
+#endif
 				}
 			});
 			return;
