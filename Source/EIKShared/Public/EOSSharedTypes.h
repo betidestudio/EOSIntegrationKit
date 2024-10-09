@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreGlobals.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "Templates/SharedPointer.h"
 
 #if WITH_EOS_SDK

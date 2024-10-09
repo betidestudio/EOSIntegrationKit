@@ -441,4 +441,4 @@ void FEIKEditorModule::OnPackageAndDeploySelected()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FEIKEditorModule, EikEditor)
+IMPLEMENT_MODULE(FEIKEditorModule, EIKEditor)

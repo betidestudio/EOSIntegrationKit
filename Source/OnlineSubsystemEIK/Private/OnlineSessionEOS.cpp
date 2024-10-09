@@ -1306,7 +1306,11 @@ void FOnlineSessionEOS::AddAttribute(EOS_HSessionModification SessionModHandle, 
 void FOnlineSessionEOS::SetAttributes(EOS_HSessionModification SessionModHandle, FNamedOnlineSession* Session)
 {
 	// The first will let us find it on session searches
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+	const FString SearchPresence("PRESENCESEARCH");
+#else
 	const FString SearchPresence(SEARCH_PRESENCE.ToString());
+#endif
 	const FAttributeOptions SearchPresenceAttribute(TCHAR_TO_UTF8(*SearchPresence), true);
 	AddAttribute(SessionModHandle, &SearchPresenceAttribute);
 
@@ -4179,7 +4183,11 @@ void FOnlineSessionEOS::SetLobbyAttributes(EOS_HLobbyModification LobbyModificat
 	check(Session != nullptr);
 
 	// The first will let us find it on session searches
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+	const FString SearchPresence("PRESENCESEARCH");
+#else
 	const FString SearchPresence(SEARCH_PRESENCE.ToString());
+#endif
 	const FLobbyAttributeOptions SearchPresenceAttribute(TCHAR_TO_UTF8(*SearchPresence), true);
 	AddLobbyAttribute(LobbyModificationHandle, &SearchPresenceAttribute);
 

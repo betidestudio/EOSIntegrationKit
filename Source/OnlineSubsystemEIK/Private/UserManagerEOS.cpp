@@ -3808,8 +3808,11 @@ void FUserManagerEOS::ReadUserInfo(int32 LocalUserNum, EOS_EpicAccountId EpicAcc
 		}
 
 		// We mark this player as processed
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+		IsFriendQueryUserInfoOngoingForLocalUserMap[LocalUserNum].RemoveSwap(EpicAccountId, EAllowShrinking::No);
+#else
 		IsFriendQueryUserInfoOngoingForLocalUserMap[LocalUserNum].RemoveSwap(EpicAccountId, false);
-
+#endif
 		ProcessReadFriendsListComplete(LocalUserNum, true, TEXT(""));
 	};
 
@@ -4053,7 +4056,11 @@ bool FUserManagerEOS::QueryExternalIdMappings(const FUniqueNetId& UserId, const 
 			TArray<FString>& OngoingQueries = IsPlayerQueryExternalMappingsOngoingForLocalUserMap[LocalUserNum];
 			for (const FString& StringId : BatchIds)
 			{
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+				OngoingQueries.RemoveSwap(StringId, EAllowShrinking::No);
+#else
 				OngoingQueries.RemoveSwap(StringId, false);
+#endif
 			}
 
 			const bool bWasSuccessful = Result == EOS_EResult::EOS_Success;
