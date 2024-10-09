@@ -20,13 +20,5 @@ public class EIKShared : ModuleRules
 				"Projects",
 			}
 		);
-#if UE_5_0_OR_LATER && !UE_5_5_OR_LATER
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"Launch",
-			}
-		);
-#endif
 	}
 }
