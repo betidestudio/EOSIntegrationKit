@@ -24,9 +24,6 @@
 #endif
 
 TWeakObjectPtr<UGoogleLogin_SLK> UGoogleLogin_SLK::staticInstance = nullptr;
-static const ANSICHAR* UnrealInterface = "com/example/googleonetap/UnrealInterface";
-static const ANSICHAR* GameActivity = "com/epicgames/unreal/GameActivity";
-
 
 UGoogleLogin_SLK* UGoogleLogin_SLK::GoogleLogin(UObject* WorldContextObject, const FString& ClientID)
 {
@@ -64,11 +61,6 @@ void UGoogleLogin_SLK::BeginDestroy()
 void UGoogleLogin_SLK::GoogleLoginLocal()
 {
 #if PLATFORM_ANDROID
-	//AndroidJNICallUtils::CallStaticVoidMethod(UnrealInterface, "InitInterface", "(Landroid/app/Activity;Ljava/lang/String;)V", FJavaWrapper::GameActivityThis, AndroidJNIConvertor::GetJavaString(ClientID));
-	
-	//AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity,"AndroidThunkJava_GoogleSubsystem_Init", "(Ljava/lang/String;)V", AndroidJNIConvertor::GetJavaString(Var_ClientID));
-	//AndroidJNICallUtils::CallStaticVoidMethod(UnrealInterface, "SignIn", "()V");
-
 	AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity,"AndroidThunkJava_GoogleSubsystem_Init", "()V");
 	AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity, "AndroidThunkJava_GoogleSubsystem_SignIn", "(Ljava/lang/String;)V", AndroidJNIConvertor::GetJavaString(Var_ClientID));
 	return;
@@ -97,29 +89,31 @@ void UGoogleLogin_SLK::GoogleLoginLocal()
 }
 
 #if PLATFORM_ANDROID
-JNI_METHOD void Java_com_example_unrealcredentialmanager_UnrealCredentialManager_OnCredentialManagerCallback(JNIEnv* env, jclass clazz, jint status, jstring email, jstring username, jstring idToken, jstring error)
+extern "C"
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnGoogleCallback"));
-	int32 lstatus = static_cast<int32>(status);
-	FString lemail = AndroidJNIConvertor::FromJavaString(email);
-	FString lusername = AndroidJNIConvertor::FromJavaString(username);
-	FString lidToken = AndroidJNIConvertor::FromJavaString(idToken);
-	FString lerror = AndroidJNIConvertor::FromJavaString(error);
-	if (UGoogleLogin_SLK::staticInstance.Get())
+	JNIEXPORT void Java_com_epicgames_unreal_GameActivity_OnSignInResult(JNIEnv* env, jclass clazz, jboolean success, jstring response, jstring token)
 	{
-		FGraphEventRef task = FFunctionGraphTask::CreateAndDispatchWhenReady([lstatus, lemail, lusername, lidToken, lerror]
-			{
-			if(lstatus== 0)
-			{
-				UGoogleLogin_SLK::staticInstance.Get()->Failure.Broadcast("",lerror);
-			}
-			else
-			{
-				UGoogleLogin_SLK::staticInstance.Get()->Success.Broadcast(lidToken, "");
-			}
-				
-
-			}, TStatId(), nullptr, ENamedThreads::GameThread);
+		FString responseStr = AndroidJNIConvertor::FromJavaString(response);
+		FString tokenStr = AndroidJNIConvertor::FromJavaString(token);
+		if (UGoogleLogin_SLK::staticInstance.Get())
+		{
+			AsyncTask(ENamedThreads::GameThread, [success, responseStr, tokenStr]() {
+				if (success)
+				{
+					UGoogleLogin_SLK::staticInstance.Get()->Success.Broadcast(tokenStr, responseStr);
+				}
+				else
+				{
+					UGoogleLogin_SLK::staticInstance.Get()->Failure.Broadcast("", responseStr);
+				}
+			});
+		}
+	}
+	JNIEXPORT void Java_com_epicgames_unreal_GameActivity_OnSignOutResult(JNIEnv* env, jclass clazz, jboolean success, jstring response)
+	{
+		FString responseStr = AndroidJNIConvertor::FromJavaString(response);
+		
+		//....
 	}
 }
 #endif
