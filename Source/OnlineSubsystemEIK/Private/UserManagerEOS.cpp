@@ -305,7 +305,7 @@ void FUserManagerEOS::GetPlatformAuthToken(int32 LocalUserNum, const FOnGetLinke
 
 	// Request the auth token from the platform
 	PlatformIdentity->GetLinkedAccountAuthToken(LocalUserNum, TokenType, Delegate);
-#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 1
+#else
 	PlatformIdentity->GetLinkedAccountAuthToken(LocalUserNum, Delegate);
 #endif
 	// Request the auth token from the platform
