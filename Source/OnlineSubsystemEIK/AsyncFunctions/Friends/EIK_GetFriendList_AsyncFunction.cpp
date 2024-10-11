@@ -37,27 +37,43 @@ void UEIK_GetFriendList_AsyncFunction::OnFriendsReadComplete(int32 LocalUserNum,
 				}
 				OnSuccess.Broadcast(FriendList, "");
 				SetReadyToDestroy();
-				MarkAsGarbage();				
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif		
 			}
 			else
 			{
 				OnFailure.Broadcast(TArray<FEIK_FriendData>(), "Failed to get Friends Interface");
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 		else
 		{
 			OnFailure.Broadcast(TArray<FEIK_FriendData>(), "Failed to get Subsystem");
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
 	{
 		OnFailure.Broadcast(TArray<FEIK_FriendData>(), ErrorStr);
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 	}
 
@@ -74,13 +90,21 @@ void UEIK_GetFriendList_AsyncFunction::Activate()
 		{
 			OnFailure.Broadcast(TArray<FEIK_FriendData>(), "Failed to get Friends Interface");
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
 	{
 		OnFailure.Broadcast(TArray<FEIK_FriendData>(), "Failed to get Subsystem");
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }

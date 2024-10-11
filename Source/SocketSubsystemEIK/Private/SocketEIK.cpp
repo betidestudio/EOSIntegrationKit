@@ -203,7 +203,11 @@ bool FSocketEOS::Listen(int32)
 	Options.LocalUserId = LocalAddress.GetLocalUserId();
 	Options.SocketId = &SocketId;
 
+#if ENGINE_MAJOR_VERSION == 5
 	ConnectNotifyCallback = new FConnectNotifyCallback(CallbackAliveTracker);
+#else
+	ConnectNotifyCallback = new FConnectNotifyCallback();
+#endif
 	ConnectNotifyCallback->CallbackLambda = [this](const EOS_P2P_OnIncomingConnectionRequestInfo* Info)
 	{
 		char PuidBuffer[64];
@@ -664,7 +668,11 @@ void FSocketEOS::RegisterClosedNotification()
 	Options.LocalUserId = LocalAddress.GetLocalUserId();
 	Options.SocketId = &SocketId;
 
+#if ENGINE_MAJOR_VERSION == 5
 	ClosedNotifyCallback = new FClosedNotifyCallback(CallbackAliveTracker);
+#else
+	ClosedNotifyCallback = new FClosedNotifyCallback();
+#endif
 	ClosedNotifyCallback->CallbackLambda = [this](const EOS_P2P_OnRemoteConnectionClosedInfo* Info)
 	{
 		// Add this connection to the list of closed ones

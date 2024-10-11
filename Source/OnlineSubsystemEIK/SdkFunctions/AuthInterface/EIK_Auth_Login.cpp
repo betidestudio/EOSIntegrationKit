@@ -42,6 +42,10 @@ void UEIK_Auth_Login::Internal_OnLoginComplete(const EOS_Auth_LoginCallbackInfo*
 			Node->OnCallback.Broadcast(*Data);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

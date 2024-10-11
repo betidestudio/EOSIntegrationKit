@@ -2,8 +2,9 @@
 
 
 #include "EIK_FindSessionByID_AsyncFunction.h"
-
+#if ENGINE_MAJOR_VERSION == 5
 #include "Online/OnlineSessionNames.h"
+#endif
 
 UEIK_FindSessionByID_AsyncFunction* UEIK_FindSessionByID_AsyncFunction::FindEIKSessionByID(FString SessionID)
 {
@@ -29,7 +30,11 @@ void UEIK_FindSessionByID_AsyncFunction::FindSession()
 			const FUniqueNetIdPtr SearchingUserId = IOnlineSubsystem::Get()->GetIdentityInterface()->GetUniquePlayerId(0);
 			const FUniqueNetIdRef UserNetId = FUniqueNetIdString::Create(SearchingUserId.Get()->ToString(),"EIK");
 			const FUniqueNetIdRef SessionID = FUniqueNetIdString::Create(Var_SessionID,"EIK");
+#if ENGINE_MAJOR_VERSION == 5
 			const FUniqueNetIdRef SearchingUserIdRef = FUniqueNetIdString::EmptyId();
+#else
+			const FUniqueNetIdRef SearchingUserIdRef = FUniqueNetIdString::Create(SearchingUserId.Get()->ToString(),"EIK");
+#endif
 			const FOnSingleSessionResultCompleteDelegate OnSingleSessionResultCompleteDelegate = FOnSingleSessionResultCompleteDelegate::CreateUObject(this, &UEIK_FindSessionByID_AsyncFunction::OnFindSessionCompleted);
 			SessionPtrRef->FindSessionById(*UserNetId,*SessionID,*UserNetId,OnSingleSessionResultCompleteDelegate);
 		}
@@ -41,7 +46,11 @@ void UEIK_FindSessionByID_AsyncFunction::FindSession()
 			}
 			OnFail.Broadcast(FSessionFindStruct());
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -52,7 +61,11 @@ MarkAsGarbage();
 		}
 		OnFail.Broadcast(FSessionFindStruct());
 		SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
 
@@ -95,7 +108,11 @@ void UEIK_FindSessionByID_AsyncFunction::OnFindSessionCompleted(int I, bool bWas
 				OnSuccess.Broadcast(LocalStruct);
 				bDelegateCalled = true;
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 		else
@@ -107,7 +124,11 @@ MarkAsGarbage();
 			OnFail.Broadcast(FSessionFindStruct());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 		
 	}
@@ -120,6 +141,10 @@ MarkAsGarbage();
 		OnFail.Broadcast(FSessionFindStruct());
 		bDelegateCalled = true;
 		SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}	
 }

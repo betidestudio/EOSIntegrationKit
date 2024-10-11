@@ -28,7 +28,11 @@ void UEIK_P2P_QueryNATType::Activate()
 	UE_LOG(LogEIK, Error, TEXT("UEIK_P2P_QueryNATType::Activate: Unable to get EOS subsystem."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, EEIK_ENATType::EIK_NAT_Unknown);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_P2P_QueryNATType::EOS_P2P_QueryNATType_Callback(const EOS_P2P_OnQueryNATTypeCompleteInfo* Data)
@@ -37,6 +41,10 @@ void UEIK_P2P_QueryNATType::EOS_P2P_QueryNATType_Callback(const EOS_P2P_OnQueryN
 	{
 		ThisNode->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), static_cast<EEIK_ENATType>(Data->NATType));
 		ThisNode->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		ThisNode->MarkAsGarbage();
+#else
+		ThisNode->MarkPendingKill();
+#endif
 	}
 }

@@ -289,7 +289,7 @@ void UEIK_Subsystem::FindEOSSession(const FBP_FindSession_Callback& Result, TMap
 			{
 				SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
 			}
-			if (!Search_Settings.IsEmpty()) {
+			if (Search_Settings.Num()>0) {
 				for (auto& Settings_SingleValue : Search_Settings) {
 					if (Settings_SingleValue.Key.Len() == 0) {
 						continue;
@@ -771,7 +771,7 @@ void UEIK_Subsystem::SetPlayerData(const FBP_WriteFile_Callback& Result, FString
 	{
 		TArray<uint8> LocalArray;
 		UGameplayStatics::SaveGameToMemory(SavedGame,LocalArray);
-		if(!LocalArray.IsEmpty())
+		if(!LocalArray.Num() == 0)
 		{
 			if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get() )
 			{
@@ -942,7 +942,12 @@ void UEIK_Subsystem::GetLeaderboard(const FBP_GetFile_Callback& Result, FName Le
 			if(const IOnlineLeaderboardsPtr Leaderboards = SubsystemRef->GetLeaderboardsInterface())
 			{
 				ReadRef = MakeShared<FOnlineLeaderboardRead, ESPMode::ThreadSafe>();
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+				FString LeaderboardNameString = LeaderboardName.ToString();
+				ReadRef->LeaderboardName = LeaderboardNameString;
+#else
 				ReadRef->LeaderboardName = LeaderboardName;
+#endif
 				Leaderboards->AddOnLeaderboardReadCompleteDelegate_Handle(FOnLeaderboardReadComplete::FDelegate::CreateUObject(this,&UEIK_Subsystem::OnLeaderboardListCompleted));
 				Leaderboards->ReadLeaderboardsAroundRank(Rank, Range,ReadRef);
 			}
@@ -1172,7 +1177,7 @@ void UEIK_Subsystem::OnGetFileComplete(bool bSuccess, const FUniqueNetId& UserID
 					TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
 					TArray<uint8> FileContents;
 					CloudPointerRef->GetFileContents(*UserIDRef,FileName,FileContents);
-					if(!FileContents.IsEmpty())
+					if(FileContents.Num()>0)
 					{
 						USaveGame* LocalSaveGame = UGameplayStatics::LoadGameFromMemory(FileContents);
 						GetFile_CallbackBP.ExecuteIfBound(true, LocalSaveGame);

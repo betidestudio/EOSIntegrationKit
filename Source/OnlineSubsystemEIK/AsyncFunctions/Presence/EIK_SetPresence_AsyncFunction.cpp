@@ -5,7 +5,9 @@
 #include "IOnlineSubsystemEOS.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlinePresenceInterface.h"
+#if ENGINE_MAJOR_VERSION == 5
 #include "Online/OnlineSessionNames.h"
+#endif
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 
 void UEIK_SetPresence_AsyncFunction::Activate()
@@ -28,7 +30,11 @@ void UEIK_SetPresence_AsyncFunction::SetPresence()
 					UE_LOG(LogEIK, Error, TEXT("Identity is not valid to set presence"));
 					OnFaliure.Broadcast("", PresenceStatus);
 					SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 					return;
 				}
 				FOnlineUserPresenceStatus Status;
@@ -60,7 +66,11 @@ void UEIK_SetPresence_AsyncFunction::SetPresence()
 	}
 	OnFaliure.Broadcast("", PresenceStatus);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_SetPresence_AsyncFunction::OnSetPresenceCompleted(const class FUniqueNetId& UserId, const bool bWasSuccessful)
@@ -69,13 +79,21 @@ void UEIK_SetPresence_AsyncFunction::OnSetPresenceCompleted(const class FUniqueN
 	{
 		OnSuccess.Broadcast(RichPresence, PresenceStatus);
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 	else
 	{
 		OnFaliure.Broadcast("", PresenceStatus);
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
 

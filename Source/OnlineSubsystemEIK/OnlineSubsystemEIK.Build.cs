@@ -2,8 +2,11 @@
 
 using UnrealBuildTool;
 using System.IO;
+#if !UE_5_0_OR_LATER
+using Tools.DotNETCommon;
+#else
 using EpicGames.Core;
-
+#endif
 public class OnlineSubsystemEIK : ModuleRules
 {
 	public OnlineSubsystemEIK(ReadOnlyTargetRules Target) : base(Target)
@@ -19,14 +22,12 @@ public class OnlineSubsystemEIK : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[] {
 				"Core",
-				"CoreOnline",
 				"CoreUObject",
 				"Engine",
 				"EIKSDK",
 				"EIKShared",
 				"EIKVoiceChat",
 				"Json",
-				"OnlineBase",
 				"OnlineSubsystem",
 				"Sockets",
 				"VoiceChat",
@@ -40,6 +41,9 @@ public class OnlineSubsystemEIK : ModuleRules
 				"EOSIntegrationKit",
 			}
 		);
+		#if UE_5_0_OR_LATER
+		PrivateDependencyModuleNames.AddRange(new string[] { "CoreOnline", "Core", "Sockets" , "OnlineBase"});
+		#endif
 
 		
 		PrivateDefinitions.Add("USE_XBL_XSTS_TOKEN=" + (bUseXblXstsToken ? "1" : "0"));
@@ -71,7 +75,6 @@ public class OnlineSubsystemEIK : ModuleRules
 				new string[] {
 					"UnrealEd",
 					"ToolMenus",
-					"EditorFramework"
 				}
 			);
 		}

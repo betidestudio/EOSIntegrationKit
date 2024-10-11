@@ -79,7 +79,11 @@ void UEIK_PlayerDataStorage_WriteFile::EOS_PlayerDataStorage_OnWriteFileComplete
 		{
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
 			Node->SetReadyToDestroy();
-			Node->MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+Node->MarkAsGarbage();
+#else
+Node->MarkPendingKill();
+#endif
 		});
 	}
 }

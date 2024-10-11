@@ -26,7 +26,11 @@ void UEIK_Auth_QueryIdToken::OnQueryIdTokenCallback(const EOS_Auth_QueryIdTokenC
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId, Data->TargetAccountId);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -48,5 +52,9 @@ void UEIK_Auth_QueryIdToken::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to query id token either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, Var_LocalUserId, Var_TargetAccountId);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

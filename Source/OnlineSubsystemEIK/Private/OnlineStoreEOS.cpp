@@ -38,8 +38,11 @@ void FOnlineStoreEOS::QueryOffersById(const FUniqueNetId& UserId, const TArray<F
 	QueryOffers(UserId, Delegate);
 }
 
+#if ENGINE_MAJOR_VERSION == 5
 typedef TEOSCallback<EOS_Ecom_OnQueryOffersCallback, EOS_Ecom_QueryOffersCallbackInfo, FOnlineStoreEOS> FQueryOffersCallback;
-
+#else
+typedef TEOSCallback<EOS_Ecom_OnQueryOffersCallback, EOS_Ecom_QueryOffersCallbackInfo> FQueryOffersCallback;
+#endif
 void FOnlineStoreEOS::QueryOffers(const FUniqueNetId& UserId, const FOnQueryOnlineStoreOffersComplete& Delegate)
 {
 	if (CachedOfferIds.Num() && CachedOffers.Num())
@@ -62,7 +65,11 @@ void FOnlineStoreEOS::QueryOffers(const FUniqueNetId& UserId, const FOnQueryOnli
 	Options.ApiVersion = EOS_ECOM_QUERYOFFERS_API_LATEST;
 	Options.LocalUserId = AccountId;
 
+#if ENGINE_MAJOR_VERSION == 5
 	FQueryOffersCallback* CallbackObj = new FQueryOffersCallback(FOnlineStoreEOSWeakPtr(AsShared()));
+#else
+	FQueryOffersCallback* CallbackObj = new FQueryOffersCallback();
+#endif
 	CallbackObj->CallbackLambda = [this, OnComplete = FOnQueryOnlineStoreOffersComplete(Delegate)](const EOS_Ecom_QueryOffersCallbackInfo* Data)
 	{
 		EOS_EResult Result = Data->ResultCode;
@@ -142,9 +149,11 @@ TSharedPtr<FOnlineStoreOffer> FOnlineStoreEOS::GetOffer(const FUniqueOfferId& Of
 	}
 	return nullptr;
 }
-
+#if ENGINE_MAJOR_VERSION == 5
 typedef TEOSCallback<EOS_Ecom_OnCheckoutCallback, EOS_Ecom_CheckoutCallbackInfo, FOnlineStoreEOS> FCheckoutCallback;
-
+#else
+typedef TEOSCallback<EOS_Ecom_OnCheckoutCallback, EOS_Ecom_CheckoutCallbackInfo> FCheckoutCallback;
+#endif
 void FOnlineStoreEOS::Checkout(const FUniqueNetId& UserId, const FPurchaseCheckoutRequest& CheckoutRequest, const FOnPurchaseCheckoutComplete& Delegate)
 {
 	const FUniqueNetIdEOS& UserEOSId = FUniqueNetIdEOS::Cast(UserId);
@@ -186,8 +195,11 @@ void FOnlineStoreEOS::Checkout(const FUniqueNetId& UserId, const FPurchaseChecko
 	Options.LocalUserId = AccountId;
 	Options.EntryCount = NumItems;
 	Options.Entries = (const EOS_Ecom_CheckoutEntry*)Entries.GetData();
-
+#if ENGINE_MAJOR_VERSION == 5
 	FCheckoutCallback* CallbackObj = new FCheckoutCallback(FOnlineStoreEOSWeakPtr(AsShared()));
+#else
+	FCheckoutCallback* CallbackObj = new FCheckoutCallback();
+#endif
 	CallbackObj->CallbackLambda = [this, OnComplete = FOnPurchaseCheckoutComplete(Delegate)](const EOS_Ecom_CheckoutCallbackInfo* Data)
 	{
 		EOS_EResult Result = Data->ResultCode;
@@ -233,11 +245,13 @@ void FOnlineStoreEOS::Checkout(const FUniqueNetId& UserId, const FPurchaseChecko
 	EOS_Ecom_Checkout(EOSSubsystem->EcomHandle, &Options, CallbackObj, CallbackObj->GetCallbackPtr());
 }
 
+#if ENGINE_MAJOR_VERSION == 5
 void FOnlineStoreEOS::Checkout(const FUniqueNetId& UserId, const FPurchaseCheckoutRequest& CheckoutRequest, const FOnPurchaseReceiptlessCheckoutComplete& Delegate)
 {
 	// Checkout with no receipt query Delegate is not implemented, please use the other Checkout method
 	Delegate.ExecuteIfBound(ONLINE_ERROR(EOnlineErrorResult::NotImplemented));
 }
+#endif
 
 void FOnlineStoreEOS::FinalizePurchase(const FUniqueNetId& UserId, const FString& ReceiptId)
 {
@@ -250,8 +264,11 @@ void FOnlineStoreEOS::RedeemCode(const FUniqueNetId& UserId, const FRedeemCodeRe
 	Delegate.ExecuteIfBound(ONLINE_ERROR(EOnlineErrorResult::NotImplemented), BlankReceipt);
 }
 
+#if ENGINE_MAJOR_VERSION == 5
 typedef TEOSCallback<EOS_Ecom_OnQueryEntitlementsCallback, EOS_Ecom_QueryEntitlementsCallbackInfo, FOnlineStoreEOS> FQueryReceiptsCallback;
-
+#else
+typedef TEOSCallback<EOS_Ecom_OnQueryEntitlementsCallback, EOS_Ecom_QueryEntitlementsCallbackInfo> FQueryReceiptsCallback;
+#endif
 void FOnlineStoreEOS::QueryReceipts(const FUniqueNetId& UserId, bool bRestoreReceipts, const FOnQueryReceiptsComplete& Delegate)
 {
 	const FUniqueNetIdEOS& UserEOSId = FUniqueNetIdEOS::Cast(UserId);
@@ -269,8 +286,11 @@ void FOnlineStoreEOS::QueryReceipts(const FUniqueNetId& UserId, bool bRestoreRec
 	Options.ApiVersion = EOS_ECOM_QUERYENTITLEMENTS_API_LATEST;
 	Options.LocalUserId = AccountId;
 	Options.bIncludeRedeemed = bRestoreReceipts ? EOS_TRUE : EOS_FALSE;
-
+#if ENGINE_MAJOR_VERSION == 5
 	FQueryReceiptsCallback* CallbackObj = new FQueryReceiptsCallback(FOnlineStoreEOSWeakPtr(AsShared()));
+#else
+	FQueryReceiptsCallback* CallbackObj = new FQueryReceiptsCallback();
+#endif
 	CallbackObj->CallbackLambda = [this, OnComplete = FOnQueryReceiptsComplete(Delegate)](const EOS_Ecom_QueryEntitlementsCallbackInfo* Data)
 	{
 		EOS_EResult Result = Data->ResultCode;
@@ -326,7 +346,11 @@ void FOnlineStoreEOS::GetReceipts(const FUniqueNetId& UserId, TArray<FPurchaseRe
 	OutReceipts = CachedReceipts;
 }
 
+#if ENGINE_MAJOR_VERSION == 5
 typedef TEOSCallback<EOS_Ecom_OnRedeemEntitlementsCallback, EOS_Ecom_RedeemEntitlementsCallbackInfo, FOnlineStoreEOS> FRedeemReceiptCallback;
+#else
+typedef TEOSCallback<EOS_Ecom_OnRedeemEntitlementsCallback, EOS_Ecom_RedeemEntitlementsCallbackInfo> FRedeemReceiptCallback;
+#endif
 
 void FOnlineStoreEOS::FinalizeReceiptValidationInfo(const FUniqueNetId& UserId, FString& InReceiptValidationInfo, const FOnFinalizeReceiptValidationInfoComplete& Delegate)
 {
@@ -353,7 +377,11 @@ void FOnlineStoreEOS::FinalizeReceiptValidationInfo(const FUniqueNetId& UserId, 
 	Options.EntitlementIdCount = 1;
 	Options.EntitlementIds = Ids;
 
+#if ENGINE_MAJOR_VERSION == 5
 	FRedeemReceiptCallback* CallbackObj = new FRedeemReceiptCallback(FOnlineStoreEOSWeakPtr(AsShared()));
+#else
+	FRedeemReceiptCallback* CallbackObj = new FRedeemReceiptCallback();
+#endif
 	CallbackObj->CallbackLambda = [this, Info = FString(InReceiptValidationInfo), OnComplete = FOnFinalizeReceiptValidationInfoComplete(Delegate)](const EOS_Ecom_RedeemEntitlementsCallbackInfo* Data)
 	{
 		EOS_EResult Result = Data->ResultCode;

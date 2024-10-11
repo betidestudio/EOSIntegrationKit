@@ -21,13 +21,21 @@ void UEIK_RejectFriendInvite_AsyncFunction::Activate()
 		{
 			FriendsInterface->RejectInvite(0,*Var_FriendId.GetUniqueNetId(),"");
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 		else
 		{
 			// Failed to get Friends Interface
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 			OnFailure.Broadcast("Failed to get Friends Interface");
 		}
 	}
@@ -35,7 +43,11 @@ void UEIK_RejectFriendInvite_AsyncFunction::Activate()
 	{
 		// Failed to get Subsystem
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 		OnFailure.Broadcast("Failed to get Subsystem");
 	}
 }

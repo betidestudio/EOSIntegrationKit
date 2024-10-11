@@ -25,7 +25,11 @@ void UEIK_GetPlatformAuthToken_AsyncFunction::OnGetPlatformAuthTokenComplete(int
 		OnFailure.Broadcast(ExternalAuthToken.TokenString);
 	}
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_GetPlatformAuthToken_AsyncFunction::Activate()
@@ -45,5 +49,9 @@ void UEIK_GetPlatformAuthToken_AsyncFunction::Activate()
 	}
 	
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

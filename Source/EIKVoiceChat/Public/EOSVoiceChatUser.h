@@ -64,8 +64,13 @@ public:
 	virtual FOnVoiceChatPlayerTalkingUpdatedDelegate& OnVoiceChatPlayerTalkingUpdated() override { return OnVoiceChatPlayerTalkingUpdatedDelegate; }
 	virtual void SetPlayerMuted(const FString& PlayerName, bool bAudioMuted) override;
 	virtual bool IsPlayerMuted(const FString& PlayerName) const override;
+#if ENGINE_MAJOR_VERSION == 5
 	virtual void SetChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName, bool bAudioMuted) override;
 	virtual bool IsChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName) const override;
+#else
+	virtual void SetChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName, bool bAudioMuted);
+	virtual bool IsChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName) const;
+#endif
 	virtual FOnVoiceChatPlayerMuteUpdatedDelegate& OnVoiceChatPlayerMuteUpdated() override { return OnVoiceChatPlayerMuteUpdatedDelegate; }
 	virtual void SetPlayerVolume(const FString& PlayerName, float Volume) override;
 	virtual float GetPlayerVolume(const FString& PlayerName) const override;
@@ -77,7 +82,7 @@ public:
 #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
 	virtual void TransmitToSpecificChannels(const TSet<FString>& ChannelNames) override;
 	virtual TSet<FString> GetTransmitChannels() const override;
-#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
+#else
 	virtual void TransmitToSpecificChannel(const FString& ChannelName) override;
 	virtual FString GetTransmitChannel() const override;
 #endif
@@ -279,7 +284,7 @@ protected:
 		EVoiceChatTransmitMode Mode = EVoiceChatTransmitMode::All;
 #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
 		TSet<FString> SpecificChannels;
-#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
+#else
 		FString ChannelName;
 #endif
 	};
@@ -333,19 +338,21 @@ protected:
 	void ApplySendingOptions(FChannelSession& ChannelSession);
 	void BindLoginCallbacks();
 	void UnbindLoginCallbacks();
+#if ENGINE_MAJOR_VERSION != 5
+	static void OnChannelAudioBeforeSendStatic(const EOS_RTCAudio_AudioBeforeSendCallbackInfo* Data);
+	FEOSVoiceChatUserWeakPtr CreateWeakThis();
+#endif
 	void BindChannelCallbacks(FChannelSession& ChannelSession);
 	void UnbindChannelCallbacks(FChannelSession& ChannelSession);
 	void LeaveChannelInternal(const FString& ChannelName, const FOnVoiceChatChannelLeaveCompleteDelegate& Delegate);
 	void LogoutInternal(const FOnVoiceChatLogoutCompleteDelegate& Delegate);
 	void ClearLoginSession();
-
 	DECLARE_DELEGATE_OneParam(FOnVoiceChatUserRtcRegisterUserCompleteDelegate, const EOS_EResult /* Result */);
 	void RtcRegisterUser(const FString& UserId, const FOnVoiceChatUserRtcRegisterUserCompleteDelegate& Delegate);
 	DECLARE_DELEGATE_OneParam(FOnVoiceChatUserRtcUnregisterUserCompleteDelegate, const EOS_EResult /* Result */);
 	void RtcUnregisterUser(const FString& UserId, const FOnVoiceChatUserRtcUnregisterUserCompleteDelegate& Delegate);
 	
 	void SetHardwareAECEnabled(bool bEnabled);
-    
 	// EOS operation callbacks
 	static void EOS_CALL OnJoinRoomStatic(const EOS_RTC_JoinRoomCallbackInfo* CallbackInfo);
 	void OnJoinRoom(const EOS_RTC_JoinRoomCallbackInfo* CallbackInfo);

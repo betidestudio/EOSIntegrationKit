@@ -5,7 +5,11 @@
 #include "Misc/ScopeLock.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#if ENGINE_MAJOR_VERSION >= 5
 #include "Online/LANBeacon.h"
+#else
+#include "LANBeacon.h"
+#endif
 #include "OnlineSubsystemEOSTypes.h"
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 
@@ -53,9 +57,14 @@ struct FLobbyDetailsEOS : FNoncopyable
 /**
  * Interface for interacting with EOS sessions
  */
+#if ENGINE_MAJOR_VERSION >= 5
 class FOnlineSessionEOS
 	: public IOnlineSession
 	, public TSharedFromThis<FOnlineSessionEOS, ESPMode::ThreadSafe>
+#else
+class FOnlineSessionEOS :
+	public IOnlineSession
+#endif
 {
 public:
 	FOnlineSessionEOS() = delete;
@@ -311,7 +320,11 @@ private:
 	void SetJoinInProgress(EOS_HSessionModification SessionModHandle, FNamedOnlineSession* Session);
 	void AddAttribute(EOS_HSessionModification SessionModHandle, const EOS_Sessions_AttributeData* Attribute);
 	void SetAttributes(EOS_HSessionModification SessionModHandle, FNamedOnlineSession* Session);
+#if ENGINE_MAJOR_VERSION == 5
 	typedef TEOSCallback<EOS_Sessions_OnUpdateSessionCallback, EOS_Sessions_UpdateSessionCallbackInfo, FOnlineSessionEOS> FUpdateSessionCallback;
+#else
+	typedef TEOSCallback<EOS_Sessions_OnUpdateSessionCallback, EOS_Sessions_UpdateSessionCallbackInfo> FUpdateSessionCallback;
+#endif
 	uint32 SharedSessionUpdate(EOS_HSessionModification SessionModHandle, FNamedOnlineSession* Session, FUpdateSessionCallback* Callback);
 
 	void TickLanTasks(float DeltaTime);

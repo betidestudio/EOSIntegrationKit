@@ -3,6 +3,7 @@
 
 #include "EIK_UserInfo_QueryUserInfoByDisplayName.h"
 
+#include "Async/Async.h"
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 UEIK_UserInfo_QueryUserInfoByDisplayName* UEIK_UserInfo_QueryUserInfoByDisplayName::
@@ -32,7 +33,11 @@ void UEIK_UserInfo_QueryUserInfoByDisplayName::Activate()
 	UE_LOG(LogEIK, Error, TEXT("UEIK_UserInfo_QueryUserInfoByDisplayName::Activate: Unable to get EOS subsystem."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, Var_LocalUserId, FEIK_EpicAccountId(), Var_DisplayName);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_UserInfo_QueryUserInfoByDisplayName::OnQueryUserInfoByDisplayNameCallback(
@@ -45,6 +50,10 @@ void UEIK_UserInfo_QueryUserInfoByDisplayName::OnQueryUserInfoByDisplayNameCallb
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId, Data->TargetUserId, Data->DisplayName);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

@@ -24,7 +24,11 @@ void UEIK_Ecom_QueryOwnershipToken::OnQueryOwnershipTokenCallback(const EOS_Ecom
 			Node->OnCallback.Broadcast(*Data);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -43,5 +47,9 @@ void UEIK_Ecom_QueryOwnershipToken::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to query ownership token either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(FEIK_Ecom_QueryOwnershipTokenCallbackInfo());
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

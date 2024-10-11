@@ -96,8 +96,13 @@ public:
 	virtual FOnVoiceChatPlayerTalkingUpdatedDelegate& OnVoiceChatPlayerTalkingUpdated() override { return VoiceChatUser.OnVoiceChatPlayerTalkingUpdated(); }
 	virtual void SetPlayerMuted(const FString& PlayerName, bool bMuted) override { VoiceChatUser.SetPlayerMuted(PlayerName, bMuted); }
 	virtual bool IsPlayerMuted(const FString& PlayerName) const override { return VoiceChatUser.IsPlayerMuted(PlayerName); }
+#if ENGINE_MAJOR_VERSION == 5
 	virtual void SetChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName, bool bMuted) override { VoiceChatUser.SetChannelPlayerMuted(ChannelName, PlayerName, bMuted); }
 	virtual bool IsChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName) const override { return VoiceChatUser.IsChannelPlayerMuted(ChannelName, PlayerName); }
+#else
+	virtual void SetChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName, bool bMuted) { VoiceChatUser.SetChannelPlayerMuted(ChannelName, PlayerName, bMuted); }
+	virtual bool IsChannelPlayerMuted(const FString& ChannelName, const FString& PlayerName) const { return VoiceChatUser.IsChannelPlayerMuted(ChannelName, PlayerName); }
+#endif
 	virtual FOnVoiceChatPlayerMuteUpdatedDelegate& OnVoiceChatPlayerMuteUpdated() override { return VoiceChatUser.OnVoiceChatPlayerMuteUpdated(); }
 	virtual void SetPlayerVolume(const FString& PlayerName, float Volume) override { VoiceChatUser.SetPlayerVolume(PlayerName, Volume); }
 	virtual float GetPlayerVolume(const FString& PlayerName) const override { return VoiceChatUser.GetPlayerVolume(PlayerName); }
@@ -108,7 +113,7 @@ public:
 	virtual void TransmitToSpecificChannels(const TSet<FString>& ChannelNames) override { VoiceChatUser.TransmitToSpecificChannels(ChannelNames); }
 	virtual TSet<FString> GetTransmitChannels() const override { return VoiceChatUser.GetTransmitChannels(); }
 
-#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=1
+#else
 	virtual void TransmitToSpecificChannel(const FString& ChannelName) override { VoiceChatUser.TransmitToSpecificChannel(ChannelName); }
 	virtual FString GetTransmitChannel() const override { return VoiceChatUser.GetTransmitChannel(); }
 #endif
@@ -556,8 +561,11 @@ void FOnlineSubsystemEOS::ReloadConfigs(const TSet<FString>& ConfigSections)
 	}
 
 	// Notify user code so that overrides may be applied.
+#if ENGINE_MAJOR_VERSION == 5
 	TriggerOnConfigChangedDelegates(ConfigSections);
-
+#else
+	//TriggerOnConfigChangedDelegates(ConfigSections);
+#endif
 	// Reload config objects.
 	if (bConfigChanged)
 	{

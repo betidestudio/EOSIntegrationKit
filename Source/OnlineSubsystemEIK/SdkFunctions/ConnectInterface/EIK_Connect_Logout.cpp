@@ -23,8 +23,12 @@ void UEIK_Connect_Logout::OnLogoutCallback(const EOS_Connect_LogoutCallbackInfo*
 			Proxy->OnCallback.Broadcast(Proxy->Var_ProductUserId);
 		});
 		Proxy->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Proxy->MarkAsGarbage();
-	}
+#else
+		Proxy->MarkPendingKill();
+#endif
+		}
 }
 
 void UEIK_Connect_Logout::Activate()

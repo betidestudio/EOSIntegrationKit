@@ -3,8 +3,10 @@
 
 #include "EIK_Sessions_SendInvite.h"
 
+#include "Async/Async.h"
+
 UEIK_Sessions_SendInvite* UEIK_Sessions_SendInvite::EIK_Sessions_SendInvite(FString SessionName,
-	FEIK_ProductUserId LocalUserId, FEIK_ProductUserId TargetUserId)
+                                                                            FEIK_ProductUserId LocalUserId, FEIK_ProductUserId TargetUserId)
 {
 	UEIK_Sessions_SendInvite* Node = NewObject<UEIK_Sessions_SendInvite>();
 	Node->Var_SessionName = SessionName;
@@ -32,7 +34,11 @@ void UEIK_Sessions_SendInvite::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to send invite either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Sessions_SendInvite::OnSendInviteCallback(const EOS_Sessions_SendInviteCallbackInfo* Data)
@@ -44,6 +50,10 @@ void UEIK_Sessions_SendInvite::OnSendInviteCallback(const EOS_Sessions_SendInvit
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

@@ -299,9 +299,12 @@ private:
 	/** Currently-connected DiscordCore, if any */
 	discord::Core* DiscordCorePtr {nullptr};
 #endif
-
 	/** Tick delegate, if ticking is currently enabled */
+#if ENGINE_MAJOR_VERSION == 5
 	FTSTicker::FDelegateHandle TickDelegateHandle;
+#else
+	FDelegateHandle TickDelegateHandle;
+#endif
 
 	/** Amount of time (seconds) we will wait until trying to reconnect to Discord, if positive */
 	float RetryWaitRemaining {-1.f};

@@ -27,7 +27,11 @@ void UEIK_CreateParty::Activate()
 				UE_LOG(LogEIK, Warning, TEXT("You must be logged in to create a party."));
 				OnFailure.Broadcast();
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 				return;
 			}
 		}
@@ -46,7 +50,11 @@ void UEIK_CreateParty::Activate()
 			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = false;
 			SessionCreationInfo.bShouldAdvertise = true;
 			SessionCreationInfo.bAllowJoinInProgress = true;
+#if ENGINE_MAJOR_VERSION == 5
 			SessionCreationInfo.Set(SETTING_HOST_MIGRATION, true, EOnlineDataAdvertisementType::ViaOnlineService);
+#else
+			SessionCreationInfo.Set("SETTING_HOST_MIGRATION", true, EOnlineDataAdvertisementType::ViaOnlineService);
+#endif
 			{
 				FOnlineSessionSetting LocalVNameSetting;
 				LocalVNameSetting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
@@ -68,13 +76,21 @@ void UEIK_CreateParty::Activate()
 		UE_LOG(LogEIK, Warning, TEXT("Failed to create party session because the session interface is not valid."));
 		OnFailure.Broadcast();
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 		return;
 	}
 	UE_LOG(LogEIK, Warning, TEXT("Failed to create party session because the subsystem is not valid."));
 	OnFailure.Broadcast();
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_CreateParty::OnCreatePartyCompleted(FName SessionName, bool bWasSuccessful)
@@ -90,5 +106,9 @@ void UEIK_CreateParty::OnCreatePartyCompleted(FName SessionName, bool bWasSucces
 		OnFailure.Broadcast();
 	}
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

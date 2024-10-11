@@ -24,7 +24,11 @@ void UEIK_Auth_VerifyIdToken::OnVerifyIdTokenCallback(const EOS_Auth_VerifyIdTok
 			Node->OnCallback.Broadcast(*Data);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -46,5 +50,9 @@ void UEIK_Auth_VerifyIdToken::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to verify id token either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(FEIK_Auth_VerifyIdTokenCallbackInfo());
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

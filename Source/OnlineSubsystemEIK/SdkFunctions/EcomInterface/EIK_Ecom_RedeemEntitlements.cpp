@@ -25,7 +25,11 @@ void UEIK_Ecom_RedeemEntitlements::OnRedeemEntitlementsCallback(const EOS_Ecom_R
 			Node->OnCallback.Broadcast(Data->LocalUserId, static_cast<EEIK_Result>(Data->ResultCode), Data->RedeemedEntitlementIdsCount);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }
 
@@ -52,5 +56,9 @@ void UEIK_Ecom_RedeemEntitlements::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to redeem entitlements either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(FEIK_EpicAccountId(), EEIK_Result::EOS_Disabled, 0);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

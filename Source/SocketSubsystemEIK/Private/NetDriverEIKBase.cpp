@@ -11,7 +11,9 @@
 #include "EOSSharedTypes.h"
 #include "Engine/Engine.h"
 
+#if ENGINE_MAJOR_VERSION >= 5
 #include UE_INLINE_GENERATED_CPP_BY_NAME(NetDriverEIKBase)
+#endif
 
 bool UNetDriverEIKBase::IsAvailable() const
 {
@@ -248,15 +250,21 @@ void UNetDriverEIKBase::Shutdown()
 	// Kill our P2P sessions now, instead of when garbage collection kicks in later
 	if (!bIsPassthrough)
 	{
-		if (UNetConnectionEIK* const EOSServerConnection = Cast<UNetConnectionEIK>(ServerConnection))
+		if(ServerConnection)
 		{
-			EOSServerConnection->DestroyEOSConnection();
+			if (UNetConnectionEIK* const EOSServerConnection = Cast<UNetConnectionEIK>(ServerConnection))
+			{
+				EOSServerConnection->DestroyEOSConnection();
+			}
 		}
 		for (UNetConnection* Client : ClientConnections)
 		{
-			if (UNetConnectionEIK* const EOSClient = Cast<UNetConnectionEIK>(Client))
+			if(Client)
 			{
-				EOSClient->DestroyEOSConnection();
+				if (UNetConnectionEIK* const EOSClient = Cast<UNetConnectionEIK>(Client))
+				{
+					EOSClient->DestroyEOSConnection();
+				}
 			}
 		}
 	}

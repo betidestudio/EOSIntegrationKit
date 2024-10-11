@@ -5,7 +5,9 @@
 #include "CoreGlobals.h"
 #include "Misc/ConfigCacheIni.h"
 #include "Engine/NetDriver.h"
+#if ENGINE_MAJOR_VERSION == 5
 #include "Online/OnlineSessionNames.h"
+#endif
 
 void UEIK_CreateSession_AsyncFunction::Activate()
 {
@@ -85,7 +87,11 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 			{
 				OnFail.Broadcast("");
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 				bDelegateCalled = true;
 			}
 		}
@@ -97,7 +103,11 @@ void UEIK_CreateSession_AsyncFunction::CreateSession()
 			OnFail.Broadcast("");
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
@@ -114,14 +124,22 @@ void UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted(FName SessionNam
 				OnSuccess.Broadcast(CurrentSession->SessionInfo.Get()->GetSessionId().ToString());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 			else
 			{
 				OnSuccess.Broadcast("");
 				bDelegateCalled = true;
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -132,7 +150,11 @@ void UEIK_CreateSession_AsyncFunction::OnCreateSessionCompleted(FName SessionNam
 			OnFail.Broadcast("");
 			bDelegateCalled = true;
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }

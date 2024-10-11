@@ -31,14 +31,22 @@ void UEIK_Logout_AsyncFunction::LogoutPlayer()
 		{
 			OnFail.Broadcast();
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
 	{
 		OnFail.Broadcast();
 		SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
 
@@ -48,14 +56,22 @@ void UEIK_Logout_AsyncFunction::LogoutCallback(int32 LocalUserNum, bool bWasSucc
 	{
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 		return;
 	}
 	else
 	{
 		OnFail.Broadcast();
 		SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 		return;
 	}
 }

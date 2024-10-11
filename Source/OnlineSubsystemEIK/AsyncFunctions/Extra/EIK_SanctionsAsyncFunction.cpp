@@ -72,7 +72,11 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 			{
 				Success.Broadcast(SanctionsArray);
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 				return;
 			}
 			EOS_Sanctions_CopyPlayerSanctionByIndexOptions SanctionsCopyOptions;
@@ -103,7 +107,11 @@ void UEIK_SanctionsAsyncFunction::GetFinalValues()
 			}
 			Success.Broadcast(SanctionsArray);
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 		else
 		{
@@ -120,7 +128,11 @@ void UEIK_SanctionsAsyncFunction::FireFailure()
 {
 	Failure.Broadcast(TArray<FEIK_Sanctions_PlayerSanction>());
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_SanctionsAsyncFunction::Activate()

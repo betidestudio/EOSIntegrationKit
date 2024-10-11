@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreGlobals.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "Templates/SharedPointer.h"
 
 #if WITH_EOS_SDK
@@ -23,22 +24,29 @@ class EIKSHARED_API FCallbackBase
 public:
 	virtual ~FCallbackBase() {}
 };
-
 #if WITH_EOS_SDK
 
 /** Class to handle all callbacks generically using a lambda to process callback results */
+#if ENGINE_MAJOR_VERSION == 5
 template<typename CallbackFuncType, typename CallbackParamType, typename OwningType, typename CallbackReturnType = void, typename... CallbackExtraParams>
+#else
+template<typename CallbackFuncType, typename CallbackType>
+#endif
 class TEIKGlobalCallback :
 	public FCallbackBase
 {
 public:
+#if ENGINE_MAJOR_VERSION == 5
 	TFunction<CallbackReturnType(const CallbackParamType*, CallbackExtraParams... ExtraParams)> CallbackLambda;
-
 	TEIKGlobalCallback(TWeakPtr<OwningType> InOwner)
 		: FCallbackBase()
 		, Owner(InOwner)
 	{
 	}
+#else
+	TFunction<void(const CallbackType*)> CallbackLambda;
+	TEIKGlobalCallback() = default;
+#endif
 	virtual ~TEIKGlobalCallback() = default;
 
 	CallbackFuncType GetCallbackPtr()
@@ -50,6 +58,9 @@ public:
 	bool bIsGameThreadCallback = true;
 
 private:
+
+#if ENGINE_MAJOR_VERSION == 5
+
 	/** The object that needs to be checked for lifetime before calling the callback */
 	TWeakPtr<OwningType> Owner;
 
@@ -83,6 +94,20 @@ private:
 			return CallbackReturnType{};
 		}
 	}
+
+#else
+
+	static void EOS_CALL CallbackImpl(const CallbackType* Data)
+	{
+		check(IsInGameThread());
+
+		TEIKGlobalCallback* CallbackThis = (TEIKGlobalCallback*)Data->ClientData;
+		check(CallbackThis);
+
+		check(CallbackThis->CallbackLambda);
+		CallbackThis->CallbackLambda(Data);
+	}
+#endif
 };
 
 #endif

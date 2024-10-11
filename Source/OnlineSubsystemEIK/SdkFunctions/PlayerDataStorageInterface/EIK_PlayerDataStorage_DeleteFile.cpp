@@ -32,7 +32,11 @@ void UEIK_PlayerDataStorage_DeleteFile::Activate()
 	UE_LOG(LogEIK, Error, TEXT("EIK_PlayerDataStorage_DeleteFile: OnlineSubsystemEOS is not valid"));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, FEIK_ProductUserId());
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_PlayerDataStorage_DeleteFile::EOS_PlayerDataStorage_OnDeleteFileComplete(
@@ -44,7 +48,11 @@ void UEIK_PlayerDataStorage_DeleteFile::EOS_PlayerDataStorage_OnDeleteFileComple
 		{
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
 			Node->SetReadyToDestroy();
-			Node->MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+Node->MarkAsGarbage();
+#else
+Node->MarkPendingKill();
+#endif
 		});
 	}
 }

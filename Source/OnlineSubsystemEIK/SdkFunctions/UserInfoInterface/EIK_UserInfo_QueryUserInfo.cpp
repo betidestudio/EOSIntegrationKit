@@ -3,6 +3,7 @@
 
 #include "EIK_UserInfo_QueryUserInfo.h"
 
+#include "Async/Async.h"
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 UEIK_UserInfo_QueryUserInfo* UEIK_UserInfo_QueryUserInfo::EIK_UserInfo_QueryUserInfo(
@@ -32,7 +33,11 @@ void UEIK_UserInfo_QueryUserInfo::Activate()
 	UE_LOG(LogEIK, Error, TEXT("UEIK_UserInfo_QueryUserInfo::Activate: Unable to get EOS subsystem."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, Var_LocalUserId, Var_TargetUserId);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_UserInfo_QueryUserInfo::OnQueryUserInfoCallback(const EOS_UserInfo_QueryUserInfoCallbackInfo* Data)
@@ -44,6 +49,10 @@ void UEIK_UserInfo_QueryUserInfo::OnQueryUserInfoCallback(const EOS_UserInfo_Que
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Node->Var_LocalUserId, Node->Var_TargetUserId);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

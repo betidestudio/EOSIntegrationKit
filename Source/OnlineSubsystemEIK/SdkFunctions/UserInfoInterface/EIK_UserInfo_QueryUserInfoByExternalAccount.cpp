@@ -4,6 +4,7 @@
 #include "EIK_UserInfo_QueryUserInfoByExternalAccount.h"
 
 #include "OnlineSubsystemEOS.h"
+#include "Async/Async.h"
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 
 UEIK_UserInfo_QueryUserInfoByExternalAccount* UEIK_UserInfo_QueryUserInfoByExternalAccount::
@@ -36,7 +37,11 @@ void UEIK_UserInfo_QueryUserInfoByExternalAccount::Activate()
 	UE_LOG(LogEIK, Error, TEXT("UEIK_UserInfo_QueryUserInfoByExternalAccount::Activate: Unable to get EOS subsystem."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, Var_LocalUserId, FEIK_EpicAccountId(), Var_AccountType, Var_ExternalAccountId);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_UserInfo_QueryUserInfoByExternalAccount::OnQueryUserInfoByExternalAccountCallback(
@@ -49,6 +54,10 @@ void UEIK_UserInfo_QueryUserInfoByExternalAccount::OnQueryUserInfoByExternalAcco
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId, Data->TargetUserId, static_cast<EEIK_EExternalAccountType>(Data->AccountType), Data->ExternalAccountId);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

@@ -27,7 +27,11 @@ void UEIK_Connect_QueryExternalAccountMappings::OnQueryExternalAccountMappingsCa
 			Proxy->OnCallback.Broadcast(Proxy->Var_ProductUserId, static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Proxy->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Proxy->MarkAsGarbage();
+#else
+		Proxy->MarkPendingKill();
+#endif
 	}
 }
 
@@ -56,6 +60,10 @@ void UEIK_Connect_QueryExternalAccountMappings::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to query external account mappings either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(FEIK_ProductUserId(), EEIK_Result::EOS_ServiceFailure);
 	SetReadyToDestroy();
-	MarkAsGarbage();	
+	#if ENGINE_MAJOR_VERSION == 5
+	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif	
 }
 

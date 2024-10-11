@@ -3,8 +3,10 @@
 
 #include "EIK_Sessions_RejectInvite.h"
 
+#include "Async/Async.h"
+
 UEIK_Sessions_RejectInvite* UEIK_Sessions_RejectInvite::EIK_Sessions_RejectInvite(FString InviteId,
-	FEIK_ProductUserId LocalUserId)
+                                                                                  FEIK_ProductUserId LocalUserId)
 {
 	UEIK_Sessions_RejectInvite* Node = NewObject<UEIK_Sessions_RejectInvite>();
 	Node->Var_InviteId = InviteId;
@@ -30,7 +32,11 @@ void UEIK_Sessions_RejectInvite::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to reject invite either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Sessions_RejectInvite::OnRejectInviteCallback(const EOS_Sessions_RejectInviteCallbackInfo* Data)
@@ -42,6 +48,10 @@ void UEIK_Sessions_RejectInvite::OnRejectInviteCallback(const EOS_Sessions_Rejec
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

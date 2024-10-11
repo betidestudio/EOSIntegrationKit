@@ -31,7 +31,11 @@ void UEIK_Auth_Logout::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to logout either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, Var_EpicAccountId);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Auth_Logout::OnLogoutCallback(const EOS_Auth_LogoutCallbackInfo* Data)
@@ -44,6 +48,10 @@ void UEIK_Auth_Logout::OnLogoutCallback(const EOS_Auth_LogoutCallbackInfo* Data)
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

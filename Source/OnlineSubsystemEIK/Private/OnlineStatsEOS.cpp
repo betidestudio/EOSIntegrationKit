@@ -66,8 +66,11 @@ struct FQueryStatsOptions :
 	}
 };
 
+#if ENGINE_MAJOR_VERSION == 5
 typedef TEOSCallback<EOS_Stats_OnQueryStatsCompleteCallback, EOS_Stats_OnQueryStatsCompleteCallbackInfo, FOnlineStatsEOS> FReadStatsCallback;
-
+#else
+typedef TEOSCallback<EOS_Stats_OnQueryStatsCompleteCallback, EOS_Stats_OnQueryStatsCompleteCallbackInfo> FReadStatsCallback;
+#endif
 struct FStatsQueryContext
 {
 	int32 NumPlayerReads;
@@ -157,7 +160,11 @@ void FOnlineStatsEOS::QueryStats(const FUniqueNetIdRef LocalUserId, const TArray
 		Options.LocalUserId = LocalEOSUserId;
 		Options.TargetUserId = TargetEOSUserId;
 
+#if ENGINE_MAJOR_VERSION == 5
 		FReadStatsCallback* CallbackObj = new FReadStatsCallback(FOnlineStatsEOSWeakPtr(AsShared()));
+#else
+		FReadStatsCallback* CallbackObj = new FReadStatsCallback();
+#endif
 		CallbackObj->CallbackLambda = [this, StatsQueryContext](const EOS_Stats_OnQueryStatsCompleteCallbackInfo* Data)
 		{
 			StatsQueryContext->NumPlayerReads--;
@@ -280,7 +287,11 @@ inline int32 GetVariantValue(const FOnlineStatValue& Data)
 	return Value;
 }
 
+#if ENGINE_MAJOR_VERSION == 5
 typedef TEOSCallback<EOS_Stats_OnIngestStatCompleteCallback, EOS_Stats_IngestStatCompleteCallbackInfo, FOnlineStatsEOS> FWriteStatsCallback;
+#else
+typedef TEOSCallback<EOS_Stats_OnIngestStatCompleteCallback, EOS_Stats_IngestStatCompleteCallbackInfo> FWriteStatsCallback;
+#endif
 
 void FOnlineStatsEOS::WriteStats(EOS_ProductUserId LocalUserId, EOS_ProductUserId UserId, const FOnlineStatsUserUpdatedStats& PlayerStats)
 {
@@ -310,7 +321,11 @@ void FOnlineStatsEOS::WriteStats(EOS_ProductUserId LocalUserId, EOS_ProductUserI
 	Options.Stats = EOSData.GetData();
 	Options.StatsCount = EOSData.Num();
 
+#if ENGINE_MAJOR_VERSION == 5
 	FWriteStatsCallback* CallbackObj = new FWriteStatsCallback(FOnlineStatsEOSWeakPtr(AsShared()));
+#else
+	FWriteStatsCallback* CallbackObj = new FWriteStatsCallback();
+#endif
 	CallbackObj->CallbackLambda = [this](const EOS_Stats_IngestStatCompleteCallbackInfo* Data)
 	{
 		bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success;

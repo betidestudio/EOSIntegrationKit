@@ -41,7 +41,11 @@ void UEIK_SendSupportTicket_Async::SendTicketRequest()
 
             Failure.Broadcast(TEXT("API key is empty."), FSupportTicketResponseData(), 0);
             SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
             MarkAsGarbage();
+#else
+            MarkPendingKill();
+#endif
 
             // Return to cancel the rest of the function
             return;
@@ -56,7 +60,11 @@ void UEIK_SendSupportTicket_Async::SendTicketRequest()
     {
         Failure.Broadcast(TEXT("Couldn't retrive your api key from eik settings."), FSupportTicketResponseData(), 1);
         SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
         MarkAsGarbage();
+#else
+        MarkPendingKill();
+#endif
         return;
     }
 
@@ -131,14 +139,22 @@ void UEIK_SendSupportTicket_Async::OnResponseReceived(FHttpRequestPtr Request, F
             // Broadcast the success delegate
             Success.Broadcast(Response->GetContentAsString(), ResponseData, Response->GetResponseCode());
             SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
             MarkAsGarbage();
+#else
+            MarkPendingKill();
+#endif
         }
     }
     else
     {
         Failure.Broadcast(Response->GetContentAsString(), FSupportTicketResponseData(), Response->GetResponseCode());
         SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
         MarkAsGarbage();
+#else
+        MarkPendingKill();
+#endif
     }
 }
 

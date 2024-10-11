@@ -38,7 +38,11 @@ void UEIK_Auth_DeletePersistentAuth::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to delete persistent auth either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_Auth_DeletePersistentAuth::OnDeletePersistentAuthCallback(const EOS_Auth_DeletePersistentAuthCallbackInfo* Data)
@@ -51,6 +55,10 @@ void UEIK_Auth_DeletePersistentAuth::OnDeletePersistentAuthCallback(const EOS_Au
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

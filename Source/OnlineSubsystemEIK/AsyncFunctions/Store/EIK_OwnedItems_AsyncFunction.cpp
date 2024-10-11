@@ -42,7 +42,11 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 												bDelegateCalled = true;
 												OnSuccess.Broadcast(ItemNames, "");
 												SetReadyToDestroy();
-											MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+MarkAsGarbage();
+#else
+MarkPendingKill();
+#endif
 											}
 										}
 										else
@@ -52,7 +56,11 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 												bDelegateCalled = true;
 												OnFail.Broadcast(TArray<FString>(), "Invalid Purchase Interface");
 												SetReadyToDestroy();
-											MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+MarkAsGarbage();
+#else
+MarkPendingKill();
+#endif
 											}
 										}
 									}
@@ -63,7 +71,11 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 											bDelegateCalled = true;
 											OnFail.Broadcast(TArray<FString>(), Error.GetErrorMessage().ToString());
 											SetReadyToDestroy();
-											MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+MarkAsGarbage();
+#else
+MarkPendingKill();
+#endif
 										}
 									}
 								}));
@@ -75,7 +87,11 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 							bDelegateCalled = true;
 							OnFail.Broadcast(TArray<FString>(), "Invalid User ID");
 							SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 							MarkAsGarbage();
+#else
+							MarkPendingKill();
+#endif
 						}
 					}
 				}
@@ -86,7 +102,11 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 						bDelegateCalled = true;
 						OnFail.Broadcast(TArray<FString>(), "Invalid Purchase Interface");
 						SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 					}
 				}
 			}
@@ -97,7 +117,11 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 					bDelegateCalled = true;
 					OnFail.Broadcast(TArray<FString>(), "Invalid Identity Interface");
 					SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -108,7 +132,11 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 				bDelegateCalled = true;
 				OnFail.Broadcast(TArray<FString>(), "Invalid Store Interface");
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -119,7 +147,11 @@ void UEIK_OwnedItems_AsyncFunction::GetOwnedItems()
 			bDelegateCalled = true;
 			OnFail.Broadcast(TArray<FString>(), "Invalid Subsystem");
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }

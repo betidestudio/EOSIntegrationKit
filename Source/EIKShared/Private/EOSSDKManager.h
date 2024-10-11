@@ -7,6 +7,7 @@
 #include "Containers/Ticker.h"
 #include "Containers/UnrealString.h"
 #include "IEOSSDKManager.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "Misc/CoreMisc.h"
 
 #if defined(EOS_PLATFORM_BASE_FILE_NAME)
@@ -95,7 +96,11 @@ protected:
 	/** Contains platforms released with ReleasePlatform, which we will release on the next Tick. */
 	TArray<EOS_HPlatform> ReleasedPlatforms;
 	/** Handle to ticker delegate for Tick(), valid whenever there are ActivePlatforms to tick, or ReleasedPlatforms to release. */
+#if ENGINE_MAJOR_VERSION == 5
 	FTSTicker::FDelegateHandle TickerHandle;
+#else
+	FDelegateHandle TickerHandle;
+#endif
 	/** Callback objects, to be released after EOS_Shutdown */
 	TArray<TUniquePtr<FCallbackBase>> CallbackObjects;
 	/** Cache of named platform configs that have been loaded from ini files or added manually. */

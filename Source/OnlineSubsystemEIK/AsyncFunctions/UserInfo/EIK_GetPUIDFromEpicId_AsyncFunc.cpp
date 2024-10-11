@@ -48,7 +48,11 @@ void UEIK_GetPUIDFromEpicId_AsyncFunc::GetPUIDFromEpicId()
 				TArray<FProductUserIdAndEpicId> EmptyProductUserIdAndEpicId;
 				Failure.Broadcast(EmptyProductUserIdAndEpicId);
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 
 		}
@@ -57,7 +61,11 @@ void UEIK_GetPUIDFromEpicId_AsyncFunc::GetPUIDFromEpicId()
 			TArray<FProductUserIdAndEpicId> EmptyProductUserIdAndEpicId;
 			Failure.Broadcast(EmptyProductUserIdAndEpicId);
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -65,7 +73,11 @@ void UEIK_GetPUIDFromEpicId_AsyncFunc::GetPUIDFromEpicId()
 		TArray<FProductUserIdAndEpicId> EmptyProductUserIdAndEpicId;
 		Failure.Broadcast(EmptyProductUserIdAndEpicId);
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
 
@@ -129,7 +141,11 @@ void UEIK_GetPUIDFromEpicId_AsyncFunc::QueryExternalAccountMappingsSuccess()
 
 				Success.Broadcast(ProductUserIdStrings);
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 
 			}
 		}
@@ -142,7 +158,11 @@ void UEIK_GetPUIDFromEpicId_AsyncFunc::QueryExternalAccountMappingsFailure()
 
 	Failure.Broadcast(EmptyProductUserIdAndEpicId);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_GetPUIDFromEpicId_AsyncFunc::Activate()

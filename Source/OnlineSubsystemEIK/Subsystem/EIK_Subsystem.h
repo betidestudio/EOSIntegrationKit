@@ -8,7 +8,9 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Interfaces/OnlineStatsInterface.h"
 #include "Interfaces/OnlinePurchaseInterface.h"
+#if ENGINE_MAJOR_VERSION >= 5
 #include "Online/OnlineSessionNames.h"
+#endif
 #ifdef PLAYFAB_PLUGIN_INSTALLED
 #include "PlayFab.h"
 #include "Core/PlayFabError.h"

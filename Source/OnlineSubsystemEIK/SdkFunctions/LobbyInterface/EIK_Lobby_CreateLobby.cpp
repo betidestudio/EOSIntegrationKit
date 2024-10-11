@@ -23,7 +23,11 @@ void UEIK_Lobby_CreateLobby::OnCreateLobbyComplete(const EOS_Lobby_CreateLobbyCa
 		{
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LobbyId);
 			Node->SetReadyToDestroy();
-			Node->MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+Node->MarkAsGarbage();
+#else
+Node->MarkPendingKill();
+#endif
 		});
 	}
 }
@@ -42,5 +46,9 @@ void UEIK_Lobby_CreateLobby::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to create lobby either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, FEIK_LobbyId());
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

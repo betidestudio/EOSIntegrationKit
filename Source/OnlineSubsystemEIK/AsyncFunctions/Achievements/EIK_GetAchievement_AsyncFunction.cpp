@@ -35,7 +35,11 @@ void UEIK_GetAchievement_AsyncFunction::GetAchievements()
 					OnFail.Broadcast(TArray<FEIK_Achievement>());
 					bDelegateCalled = true;
 					SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -46,7 +50,11 @@ MarkAsGarbage();
 				OnFail.Broadcast(TArray<FEIK_Achievement>());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -57,7 +65,11 @@ MarkAsGarbage();
 			OnFail.Broadcast(TArray<FEIK_Achievement>());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
@@ -82,7 +94,11 @@ void UEIK_GetAchievement_AsyncFunction::OnAchievementsCompleted(const FUniqueNet
 				}
 				OnSuccess.Broadcast(AchievementsArray);
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 				return;
 			}
 		}
@@ -92,6 +108,10 @@ MarkAsGarbage();
 		OnFail.Broadcast(TArray<FEIK_Achievement>());
 		bDelegateCalled = true;
 		SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }

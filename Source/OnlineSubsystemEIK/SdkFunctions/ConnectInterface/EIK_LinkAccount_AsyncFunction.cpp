@@ -26,7 +26,11 @@ void UEIK_LinkAccount_AsyncFunction::OnLinkAccountCallback(const EOS_Connect_Lin
 			LinkAccountFunction->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
 		});
 		LinkAccountFunction->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		LinkAccountFunction->MarkAsGarbage();
+#else
+		LinkAccountFunction->MarkPendingKill();
+#endif
 	}
 }
 
@@ -47,5 +51,9 @@ void UEIK_LinkAccount_AsyncFunction::Activate()
 	}
 	OnCallback.Broadcast(EEIK_Result::EOS_ServiceFailure);
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

@@ -3,8 +3,10 @@
 
 #include "EIK_Sessions_UnregisterPlayers.h"
 
+#include "Async/Async.h"
+
 UEIK_Sessions_UnregisterPlayers* UEIK_Sessions_UnregisterPlayers::EIK_Sessions_UnregisterPlayers(FString SessionName,
-	TArray<FEIK_ProductUserId> PlayersToUnregister)
+                                                                                                 TArray<FEIK_ProductUserId> PlayersToUnregister)
 {
 	UEIK_Sessions_UnregisterPlayers* Node = NewObject<UEIK_Sessions_UnregisterPlayers>();
 	Node->Var_SessionName = SessionName;
@@ -35,7 +37,11 @@ void UEIK_Sessions_UnregisterPlayers::Activate()
 	UE_LOG(LogEIK, Error, TEXT("Failed to unregister players either OnlineSubsystem is not valid or EOSRef is not valid."));
 	OnCallback.Broadcast(EEIK_Result::EOS_NotFound, TArray<FEIK_ProductUserId>());
 	SetReadyToDestroy();
+	#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 	
 
@@ -54,6 +60,10 @@ void UEIK_Sessions_UnregisterPlayers::OnUnregisterPlayersCallback(
 			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), UnregisteredPlayers);
 		});
 		Node->SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		Node->MarkAsGarbage();
+#else
+		Node->MarkPendingKill();
+#endif
 	}
 }

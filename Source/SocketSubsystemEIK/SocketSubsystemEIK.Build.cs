@@ -25,7 +25,6 @@ public class SocketSubsystemEIK : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"CoreOnline",
 				"CoreUObject",
 				"EIKSDK"
 			}

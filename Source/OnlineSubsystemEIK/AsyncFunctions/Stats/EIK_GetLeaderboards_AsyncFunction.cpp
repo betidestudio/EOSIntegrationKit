@@ -30,7 +30,12 @@ void UEIK_GetLeaderboards_AsyncFunction::GetLeaderboardLocal()
 				TArray<TSharedRef<const FUniqueNetId>> Usersvar;
 				Usersvar.Add(IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef());
 				FOnlineLeaderboardReadRef LeaderboardRead = MakeShareable(new FOnlineLeaderboardRead());
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+				FString LeaderboardNameString = LeaderboardName.ToString();
+				LeaderboardRead->LeaderboardName = LeaderboardNameString;
+#else
 				LeaderboardRead->LeaderboardName = LeaderboardName;
+#endif
 				LeaderboardsPointerRef->OnLeaderboardReadCompleteDelegates.AddUObject(this,&UEIK_GetLeaderboards_AsyncFunction::OnGetLeaderboardCompleted,LeaderboardRead);
 				if(!LeaderboardsPointerRef->ReadLeaderboardsAroundRank(AroundRank,Range,LeaderboardRead))
 				{
@@ -39,7 +44,11 @@ void UEIK_GetLeaderboards_AsyncFunction::GetLeaderboardLocal()
 						OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 						bDelegateCalled = true;
 						SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 					}
 				}
 			}
@@ -50,7 +59,11 @@ MarkAsGarbage();
 					OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 					bDelegateCalled = true;
 					SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -61,7 +74,11 @@ MarkAsGarbage();
 				OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -72,7 +89,11 @@ MarkAsGarbage();
 			OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
@@ -87,7 +108,11 @@ void UEIK_GetLeaderboards_AsyncFunction::OnGetLeaderboardCompleted(bool bWasSucc
 		for (auto Row : LeaderboardRead->Rows)
 		{
 			int32 Score;
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+			Row.Columns.Find(FString("None"))->GetValue(Score);
+#else
 			Row.Columns.Find("None")->GetValue(Score);
+#endif
 			FEIKLeaderboardValue LocalRow;
 			LocalRow.Rank = Row.Rank;
 			LocalRow.Score = Score;
@@ -99,7 +124,11 @@ void UEIK_GetLeaderboards_AsyncFunction::OnGetLeaderboardCompleted(bool bWasSucc
 			OnSuccess.Broadcast(Result);
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -109,7 +138,11 @@ MarkAsGarbage();
 			OnFail.Broadcast(TArray<FEIKLeaderboardValue>());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }

@@ -43,7 +43,11 @@ void UEIK_DestroySession_AsyncFunction::DestroySession()
 			}
 			OnFail.Broadcast();
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 			bDelegateCalled = true;
 		}
 	}
@@ -55,7 +59,11 @@ void UEIK_DestroySession_AsyncFunction::DestroySession()
 		}
 		OnFail.Broadcast();
 		SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 		bDelegateCalled = true;
 	}
 }
@@ -76,5 +84,9 @@ void UEIK_DestroySession_AsyncFunction::OnDestroySessionCompleted(FName SessionN
 		OnFail.Broadcast();
 	}
 	SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }

@@ -36,7 +36,11 @@ void UEIK_GetStats_AsyncFunction::GetStats()
 						OnFail.Broadcast(TArray<FEIK_Stats>());
 						bDelegateCalled = true;
 						SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 					}
 				}
 				Usersvar.Add(IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef());
@@ -49,7 +53,11 @@ MarkAsGarbage();
 					OnFail.Broadcast(TArray<FEIK_Stats>());
 					bDelegateCalled = true;
 					SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -60,7 +68,11 @@ MarkAsGarbage();
 				OnFail.Broadcast(TArray<FEIK_Stats>());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -71,7 +83,11 @@ MarkAsGarbage();
 			OnFail.Broadcast(TArray<FEIK_Stats>());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
@@ -100,7 +116,11 @@ void UEIK_GetStats_AsyncFunction::OnGetStatsCompleted(const FOnlineError& Result
 			OnSuccess.Broadcast(LocalStatsArray);
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -110,7 +130,11 @@ MarkAsGarbage();
 			OnFail.Broadcast(TArray<FEIK_Stats>());
 			bDelegateCalled = true;
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }

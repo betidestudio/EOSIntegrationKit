@@ -6,7 +6,6 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystemUtils.h"
-#include "Online/OnlineSessionNames.h"
 
 void UEIK_CreateLobby_AsyncFunction::Activate()
 {
@@ -33,8 +32,13 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = Var_CreateLobbySettings.bUsePresence;
 			SessionCreationInfo.bShouldAdvertise = Var_CreateLobbySettings.bShouldAdvertise;
 			SessionCreationInfo.bAllowJoinInProgress = Var_CreateLobbySettings.bAllowJoinInProgress;
+#if ENGINE_MAJOR_VERSION == 5
 			SessionCreationInfo.SessionIdOverride = Var_CreateLobbySettings.LobbyIDOverride;
 			SessionCreationInfo.Set(SETTING_HOST_MIGRATION, Var_CreateLobbySettings.bSupportHostMigration, EOnlineDataAdvertisementType::ViaOnlineService);
+#else
+			SessionCreationInfo.Set("SETTING_SESSION_ID_OVERRIDE", Var_CreateLobbySettings.LobbyIDOverride, EOnlineDataAdvertisementType::ViaOnlineService);
+			SessionCreationInfo.Set("SETTING_HOST_MIGRATION", Var_CreateLobbySettings.bSupportHostMigration, EOnlineDataAdvertisementType::ViaOnlineService);
+#endif
 			{
 				FOnlineSessionSetting LocalVNameSetting;
 				LocalVNameSetting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
@@ -68,7 +72,11 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 				UE_LOG(LogOnline, Warning, TEXT("EIK: SessionPtrRef is null"));
 				OnFail.Broadcast("");
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 				bDelegateCalled = true;
 			}
 		}
@@ -80,7 +88,11 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 			UE_LOG(LogOnline, Warning, TEXT("EIK: SubsystemRef is null"));
 			OnFail.Broadcast("");
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 			bDelegateCalled = true;
 		}
 	}
@@ -98,14 +110,22 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName SessionName, b
 				OnSuccess.Broadcast(CurrentSession->SessionInfo.Get()->GetSessionId().ToString());
 				bDelegateCalled = true;
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 			else
 			{
 				OnSuccess.Broadcast("");
 				bDelegateCalled = true;
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -116,7 +136,11 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName SessionName, b
 			UE_LOG(LogOnline, Warning, TEXT("EIK: CreateLobby failed and response was false. Check logs for more information."));
 			OnFail.Broadcast("");
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 			bDelegateCalled = true;
 		}
 	}

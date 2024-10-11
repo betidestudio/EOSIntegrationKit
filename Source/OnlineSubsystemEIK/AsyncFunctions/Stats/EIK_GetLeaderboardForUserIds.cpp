@@ -188,7 +188,11 @@ void UEIK_GetLeaderboardForUserIds::ResultSuccess()
                 Success.Broadcast(EIKExtendedLeaderboardValues);
 
                 SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
                 MarkAsGarbage();
+#else
+                MarkPendingKill();
+#endif
 
             }
             else
@@ -211,7 +215,11 @@ void UEIK_GetLeaderboardForUserIds::ResultFaliure()
 {
     Faliure.Broadcast(TArray<FEIKExtendedLeaderboardValue>());
     SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
     MarkAsGarbage();
+#else
+    MarkPendingKill();
+#endif
 }
 
 void UEIK_GetLeaderboardForUserIds::Activate()

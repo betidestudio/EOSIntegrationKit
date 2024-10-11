@@ -14,7 +14,6 @@
 #include "Misc/Paths.h"
 #include "Misc/ConfigCacheIni.h"
 #include "ProfilingDebugging/CsvProfiler.h"
-#include "ProfilingDebugging/CallstackTrace.h"
 #include "Stats/Stats.h"
 #include "Runtime/Projects/Public/Interfaces/IPluginManager.h"
 #include "CoreGlobals.h"
@@ -541,14 +540,22 @@ void FEIKSDKManager::SetupTicker()
 {
 	if (TickerHandle.IsValid())
 	{
+#if ENGINE_MAJOR_VERSION == 5
 		FTSTicker::GetCoreTicker().RemoveTicker(TickerHandle);
+#else
+		FTicker::GetCoreTicker().RemoveTicker(TickerHandle);
+#endif
 		TickerHandle.Reset();
 	}
 
 	if (ActivePlatforms.Num() > 0)
 	{
 		const double TickIntervalSeconds = ConfigTickIntervalSeconds > SMALL_NUMBER ? ConfigTickIntervalSeconds / ActivePlatforms.Num() : 0.f;
+#if ENGINE_MAJOR_VERSION == 5
 		TickerHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateRaw(this, &FEIKSDKManager::Tick), TickIntervalSeconds);
+#else
+		TickerHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateRaw(this, &FEIKSDKManager::Tick), TickIntervalSeconds);
+#endif
 	}
 }
 

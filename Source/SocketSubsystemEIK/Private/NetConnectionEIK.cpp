@@ -4,8 +4,15 @@
 #include "NetDriverEIKBase.h"
 #include "InternetAddrEIK.h"
 #include "SocketEIK.h"
-
+#if ENGINE_MAJOR_VERSION >= 5
 #include UE_INLINE_GENERATED_CPP_BY_NAME(NetConnectionEIK)
+#else
+#include "OnlineSubsystem.h"
+#include "OnlineSubsystemNames.h"
+#include "OnlineSubsystemUtils.h"
+#include "Misc/EngineVersionComparison.h"
+#include "SocketSubsystemEIK.h"
+#endif
 
 UNetConnectionEIK::UNetConnectionEIK(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -58,8 +65,15 @@ void UNetConnectionEIK::CleanUp()
 
 void UNetConnectionEIK::DestroyEOSConnection()
 {
+#if ENGINE_MAJOR_VERSION == 5
 	FSocket* CurSocket = GetSocket();
-
+#else
+	if (!Socket)
+	{
+		return;
+	}
+	FSocket* CurSocket = Socket;
+#endif
 	if (CurSocket != nullptr && bHasP2PSession)
 	{
 		bHasP2PSession = false;

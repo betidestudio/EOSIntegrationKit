@@ -41,7 +41,11 @@ void UEIK_ExportTicketUserData_Async::ExportTicketData()
 
             Failure.Broadcast(TEXT("API key is empty."), TArray<FConversationData>(), 0);
             SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
             MarkAsGarbage();
+#else
+            MarkPendingKill();
+#endif
 
             return;
         }
@@ -55,7 +59,11 @@ void UEIK_ExportTicketUserData_Async::ExportTicketData()
     {
         Failure.Broadcast(TEXT("Couldn't retrieve your API key from EIK settings."), TArray<FConversationData>(), 1);
         SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
         MarkAsGarbage();
+#else
+        MarkPendingKill();
+#endif
 
         return;
     }
@@ -115,14 +123,22 @@ void UEIK_ExportTicketUserData_Async::OnResponseReceived(FHttpRequestPtr Request
             }
             Success.Broadcast(ResponseStr, Conversations, Response->GetResponseCode());
             SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
             MarkAsGarbage();
+#else
+            MarkPendingKill();
+#endif
         }
     }
     else
     {
         Failure.Broadcast(TEXT("Request failed."), TArray<FConversationData>(), Response->GetResponseCode());
         SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
         MarkAsGarbage();
+#else
+        MarkPendingKill();
+#endif
     }
 }
 

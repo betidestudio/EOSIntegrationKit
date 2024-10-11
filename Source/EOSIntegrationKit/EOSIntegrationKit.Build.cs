@@ -17,7 +17,6 @@ public class EOSIntegrationKit : ModuleRules
 			new string[]
 			{
 				"Core",
-				"CoreOnline",
 				"CoreUObject",
 				"Engine",
 				"Slate",
@@ -34,7 +33,6 @@ public class EOSIntegrationKit : ModuleRules
 				new string[] {
 					"UnrealEd",
 					"ToolMenus",
-					"EditorFramework"
 				}
 			);
 		}

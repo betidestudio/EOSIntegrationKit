@@ -8,7 +8,9 @@
 #include "Misc/ConfigCacheIni.h"
 #include "Misc/FileHelper.h"
 
+#if ENGINE_MAJOR_VERSION >= 5
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EIKSettings)
+#endif
 
 #if WITH_EDITOR
 	#include "Misc/MessageDialog.h"
@@ -204,7 +206,7 @@ EAppReturnType::Type UEIKSettings::ShowRestartWarning(const FText& Title)
 {
 #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=3
 	return FMessageDialog::Open(EAppMsgType::OkCancel, LOCTEXT("ActionRestartMsg", "Imported settings won't be applied until the editor is restarted. Do you wish to restart now (you will be prompted to save any changes)?"), Title);
-#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=0
+#else
 	return FMessageDialog::Open(EAppMsgType::OkCancel, LOCTEXT("ActionRestartMsg", "Imported settings won't be applied until the editor is restarted. Do you wish to restart now (you will be prompted to save any changes)?"), &Title);
 #endif
 }

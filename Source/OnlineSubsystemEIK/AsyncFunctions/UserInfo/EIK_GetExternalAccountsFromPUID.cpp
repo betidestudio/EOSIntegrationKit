@@ -47,7 +47,11 @@ void UEIK_GetExternalAccountsFromPUID::GetExternalAccountsFromPuid()
 				TArray<FProductUserIdAndExternalAccountIds> EmptyProductUserIdAndEpicId;
 				Failure.Broadcast(EmptyProductUserIdAndEpicId);
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 
 		}
@@ -56,7 +60,11 @@ void UEIK_GetExternalAccountsFromPUID::GetExternalAccountsFromPuid()
 			TArray<FProductUserIdAndExternalAccountIds> EmptyProductUserIdAndEpicId;
 			Failure.Broadcast(EmptyProductUserIdAndEpicId);
 			SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 	else
@@ -64,7 +72,11 @@ void UEIK_GetExternalAccountsFromPUID::GetExternalAccountsFromPuid()
 		TArray<FProductUserIdAndExternalAccountIds> EmptyProductUserIdAndEpicId;
 		Failure.Broadcast(EmptyProductUserIdAndEpicId);
 		SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 		MarkAsGarbage();
+#else
+		MarkPendingKill();
+#endif
 	}
 }
 
@@ -194,10 +206,11 @@ void UEIK_GetExternalAccountsFromPUID::QueryProductUserIdMappingsSuccess()
 
 				Success.Broadcast(ProductUserIdAndExternalAccountIds);
 				SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 				MarkAsGarbage();
-
-
-
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -209,7 +222,11 @@ void UEIK_GetExternalAccountsFromPUID::QueryProductUserIdMappingsFailure()
 
 	Failure.Broadcast(EmptyProductUserIdAndEpicId);
 	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
 	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_GetExternalAccountsFromPUID::Activate()

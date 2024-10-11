@@ -41,7 +41,11 @@ void UEIK_GetPlayerData_AsyncFunction::GetPlayerData()
 						bDelegateCalled = true;
 						OnFail.Broadcast(false, TArray<uint8>());
 						SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 					}
 				}
 				TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
@@ -55,7 +59,11 @@ MarkAsGarbage();
 					bDelegateCalled = true;
 					OnFail.Broadcast(false, TArray<uint8>());
 					SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -66,7 +74,11 @@ MarkAsGarbage();
 				bDelegateCalled = true;
 				OnFail.Broadcast(false, TArray<uint8>());
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -77,7 +89,11 @@ MarkAsGarbage();
 			bDelegateCalled = true;
 			OnFail.Broadcast(false, TArray<uint8>());
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
@@ -96,14 +112,18 @@ void UEIK_GetPlayerData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FU
 					TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
 					TArray<uint8> FileContents;
 					CloudPointerRef->GetFileContents(*UserIDRef,FileName,FileContents);
-					if(!FileContents.IsEmpty())
+					if(!FileContents.Num() == 0)
 					{
 						if(!bDelegateCalled)
 						{
 							bDelegateCalled = true;
 							OnSuccess.Broadcast(true, FileContents);
 							SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+							MarkAsGarbage();
+#else
+							MarkPendingKill();
+#endif
 						}
 					}
 					else
@@ -113,7 +133,11 @@ MarkAsGarbage();
 							bDelegateCalled = true;
 							OnFail.Broadcast(false, TArray<uint8>());
 							SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+							MarkAsGarbage();
+#else
+							MarkPendingKill();
+#endif
 						}
 					}
 				}
@@ -124,7 +148,11 @@ MarkAsGarbage();
 						bDelegateCalled = true;
 						OnFail.Broadcast(false, TArray<uint8>());
 						SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+						MarkAsGarbage();
+#else
+						MarkPendingKill();
+#endif
 					}
 				}
 			}
@@ -135,7 +163,11 @@ MarkAsGarbage();
 					bDelegateCalled = true;
 					OnFail.Broadcast(false, TArray<uint8>());
 					SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+					MarkAsGarbage();
+#else
+					MarkPendingKill();
+#endif
 				}
 			}
 		}
@@ -146,7 +178,11 @@ MarkAsGarbage();
 				bDelegateCalled = true;
 				OnFail.Broadcast(false, TArray<uint8>());
 				SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+				MarkAsGarbage();
+#else
+				MarkPendingKill();
+#endif
 			}
 		}
 	}
@@ -157,7 +193,11 @@ MarkAsGarbage();
 			bDelegateCalled = true;
 			OnFail.Broadcast(false, TArray<uint8>());
 			SetReadyToDestroy();
-MarkAsGarbage();
+#if ENGINE_MAJOR_VERSION == 5
+			MarkAsGarbage();
+#else
+			MarkPendingKill();
+#endif
 		}
 	}
 }
