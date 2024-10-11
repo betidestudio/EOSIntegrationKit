@@ -1226,7 +1226,7 @@ void FEOSVoiceChatUser::ApplyAudioOutputOptions()
 		static_assert(EOS_RTCAUDIO_SETAUDIOOUTPUTSETTINGS_API_LATEST == 1, "EOS_RTCAudio_SetAudioOutputSettingsOptions updated, check new fields");
 		Options.LocalUserId = LoginSession.LocalUserProductUserId;
 		Options.DeviceId = Utf8DeviceId.Get();
-		Options.Volume = AudioOutputOptions.bMuted ? 0.0f : AudioOutputOptions.Volume * 50.0;
+		Options.Volume =  AudioOutputOptions.bMuted ? 0.0f : AudioOutputOptions.Volume * 50.0;
 
 		CSV_SCOPED_TIMING_STAT_EXCLUSIVE(EOSVoiceChat);
 		QUICK_SCOPE_CYCLE_COUNTER(EOS_RTC_UpdateAudioOutput);
@@ -2419,7 +2419,6 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 		if (Buffer->Frames)
 		{
 			TArrayView<int16> Samples = MakeArrayView(Buffer->Frames, Buffer->FramesCount * Buffer->Channels);
-			// TODO EOS doesn't tell us if it's silence or not, maybe need to compare all the samples to some threshold?
 			const bool bIsSilence = false;
 			const FString PlayerName = LexToString(CallbackInfo->ParticipantId);
 			const FString ChannelName = UTF8_TO_TCHAR(CallbackInfo->RoomName);
@@ -2471,18 +2470,24 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 							{
 								if (IsValid(VoiceChatSynthComponent) && (VoiceChatSynthComponent->SupportedRooms.Contains(ChannelName) || VoiceChatSynthComponent->bUseGlobalRoom))
 								{
-									VoiceChatSynthComponent->WriteSamples(Samples);
-									return;
+									if (VoiceChatSynthComponent->IsActive())
+									{
+										VoiceChatSynthComponent->WriteSamples(Samples);
+										//if we're here, it means that we passed audio to all valid components, so we need to clear the buffer so that it isn't played by the RTC.
+										FMemory::Memset(Buffer->Frames, 0, Buffer->FramesCount * Buffer->Channels * sizeof(int16));
+									}
 								}
 							}
 						}
 					}
 				}
 			}
+
 			FScopeLock Lock(&BeforeRecvAudioRenderedLock);
 #if ENGINE_MAJOR_VERSION == 4
 			OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence);
 #else
+			//presumably, we still want to call the callback, passing the empty buffer
 			OnVoiceChatBeforeRecvAudioRenderedDelegate.Broadcast(Samples, Buffer->SampleRate, Buffer->Channels, bIsSilence, ChannelName, PlayerName);
 #endif
 		}

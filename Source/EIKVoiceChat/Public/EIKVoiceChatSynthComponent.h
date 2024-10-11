@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/SynthComponent.h"
 #include "DSP/Osc.h"
+#include "DSP/Dsp.h"
+#include "DSP/FloatArrayMath.h"
 #include "Containers/CircularBuffer.h"
 #include "EIKVoiceChatSynthComponent.generated.h"
 
@@ -17,14 +19,15 @@ class EIKVOICECHAT_API UEIKVoiceChatSynthComponent : public USynthComponent
 {
 	GENERATED_BODY()
 
+
 	//the minimum amount of samples we accumulate before we start streaming, to ensure there is no starvation on the audio thread, if there's too much latency this can be reduced
 	constexpr static int32 MinLatencySamples = 2048;
-	bool bIsReadyToStream = false;
 
-	//The circular buffer and its read/write indices, 44100 is really largely an arbitrary number here, a rather larger buffer
-	TCircularBuffer<float> Buffer = TCircularBuffer<float>(44100);
-	uint32 WriteIndex = 0;
-	uint32 ReadIndex = 0;
+	Audio::TCircularAudioBuffer<float> AudioBuffer;
+
+	bool bIsOutArrayInitialized = false;
+	TArray<float> OutArray;
+	TArrayView<float> OutArrayView;
 
 
 	// Called when synth is created
@@ -41,16 +44,9 @@ protected:
 	// called by EOSVoiceChatUser to fill the buffer, as long as these are samples available these should be consumed via OnGenerateAudio
 	void WriteSamples(TArrayView<int16> Samples)
 	{
-		for (int16 Sample : Samples)
-		{
-			Buffer[WriteIndex] = Sample / 32768.0f;
-			WriteIndex = Buffer.GetNextIndex(WriteIndex);
-		}
-
-		AvailableSamples += Samples.Num();
+		Audio::ArrayPcm16ToFloat(Samples, OutArrayView);
+		AudioBuffer.Push(OutArrayView.GetData(), Samples.Num());
 	}
-
-	int32 AvailableSamples = 0;
 
 public:
 

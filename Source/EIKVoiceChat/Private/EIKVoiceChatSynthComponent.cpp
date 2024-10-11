@@ -6,41 +6,25 @@
 bool UEIKVoiceChatSynthComponent::Init(int32& SampleRate)
 {
 	NumChannels = 1;
+	AudioBuffer = Audio::TCircularAudioBuffer<float>(SampleRate * NumChannels);
+	OutArray.Reserve(SampleRate / 10);
+	OutArrayView = TArrayView<float>(OutArray.GetData(), SampleRate / 10);
+
 	return true;
 }
 
 int32 UEIKVoiceChatSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
 	//we perform some basic checks to ensure we have enough samples to stream, if not we return 0
-	if (bIsReadyToStream)
+	if (AudioBuffer.Num() >= uint32(NumSamples))
 	{
-		if (AvailableSamples < NumSamples)
-		{
-			bIsReadyToStream = false;
-			return 0;
-		}
-
-		for (int32 Sample = 0; Sample < NumSamples; ++Sample)
-		{
-			OutAudio[Sample] = Buffer[ReadIndex];
-			ReadIndex = Buffer.GetNextIndex(ReadIndex);
-		}
-
-		AvailableSamples -= NumSamples;
-
+		AudioBuffer.Pop(OutAudio, NumSamples);
+		return NumSamples;
+		
 	}
 	else
 	{
-
-		if (AvailableSamples > MinLatencySamples)
-		{
-			bIsReadyToStream = true;
-		}
-
 		return 0;
-
 	}
-
-	return NumSamples;
 }
 

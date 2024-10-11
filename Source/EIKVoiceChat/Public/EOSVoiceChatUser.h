@@ -315,7 +315,7 @@ protected:
 
 	FEOSVoiceChat& EOSVoiceChat;
 
-	bool bFakeAudioInput = false;
+	bool bFakeAudioInput = true;
 	bool bInDestructor = false;
 
 	// Helper methods
