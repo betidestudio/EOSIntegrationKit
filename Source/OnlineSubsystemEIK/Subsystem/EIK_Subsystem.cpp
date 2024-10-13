@@ -771,7 +771,7 @@ void UEIK_Subsystem::SetPlayerData(const FBP_WriteFile_Callback& Result, FString
 	{
 		TArray<uint8> LocalArray;
 		UGameplayStatics::SaveGameToMemory(SavedGame,LocalArray);
-		if(!LocalArray.Num() == 0)
+		if(LocalArray.Num() > 0)
 		{
 			if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get() )
 			{

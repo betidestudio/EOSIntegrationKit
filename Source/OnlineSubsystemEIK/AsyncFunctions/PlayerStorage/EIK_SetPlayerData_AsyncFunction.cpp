@@ -24,7 +24,7 @@ void UEIK_SetPlayerData_AsyncFunction::Activate()
 
 void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 {
-	if(!DataToSave.Num() == 0)
+	if(DataToSave.Num() > 0)
 	{
 		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get() )
 		{

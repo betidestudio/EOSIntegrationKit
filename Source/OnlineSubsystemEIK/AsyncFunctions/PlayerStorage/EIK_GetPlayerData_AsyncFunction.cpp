@@ -112,7 +112,7 @@ void UEIK_GetPlayerData_AsyncFunction::OnGetFileComplete(bool bSuccess, const FU
 					TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
 					TArray<uint8> FileContents;
 					CloudPointerRef->GetFileContents(*UserIDRef,FileName,FileContents);
-					if(!FileContents.Num() == 0)
+					if(FileContents.Num() > 0)
 					{
 						if(!bDelegateCalled)
 						{
