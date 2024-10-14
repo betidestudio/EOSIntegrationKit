@@ -54,22 +54,14 @@ protected:
 		// Convert PCM16 to float and write to OutArrayView
 		Audio::ArrayPcm16ToFloat(Samples, OutArrayView);
 #else
-		ConvertPcm16ToFloat(Samples, OutArrayView);
+		// Convert each PCM16 sample to a float in the range [-1.0, 1.0]
+		for (int32 Index = 0; Index < Samples.Num(); ++Index)
+		{
+			OutArrayView[Index] = static_cast<float>(Samples[Index]) / 32768.0f;
+		}
 #endif
 		// Push the float data to the circular buffer
 		AudioBuffer.Push(OutArrayView.GetData(), Samples.Num());
-	}
-
-	void ConvertPcm16ToFloat(const TArrayView<int16>& InSamples, TArrayView<float>& OutSamples) const
-	{
-		// Ensure that the sizes of input and output arrays are the same
-		check(InSamples.Num() == OutSamples.Num());
-
-		// Convert each PCM16 sample to a float in the range [-1.0, 1.0]
-		for (int32 Index = 0; Index < InSamples.Num(); ++Index)
-		{
-			OutSamples[Index] = static_cast<float>(InSamples[Index]) / 32768.0f;
-		}
 	}
 
 public:
