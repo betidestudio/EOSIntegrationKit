@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 3,
-	"VersionName": "4.4.0",
+	"VersionName": "4.5",
 	"FriendlyName": "EOS Integration Kit",
 	"Description": "EIK (Epic Online Services Integration Kit) is a plugin that enables seamless integration between Epic Online Services (EOS) and Unreal Engine. The plugin provides access to the EOS SDK (Software Development Kit) within Unreal Engine, allowing developers to easily implement features such as matchmaking, achievements, leaderboards, and more.",
 	"Category": "Betide Studio",
@@ -10,7 +10,7 @@
 	"DocsURL": "https://eik.betide.studio/",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/dba0aa05bdd144e69405653a387ad63e",
 	"SupportURL": "https://discord.gg/betidestudio",
-	"EngineVersion": "5.4",
+	"EngineVersion": "5.2",
 	"CanContainContent": true,
 	"Installed": true,
 	"Modules": [
@@ -108,10 +108,6 @@
 	"Plugins": [
 		{
 			"Name": "OnlineSubsystemUtils",
-			"Enabled": true
-		},
-		{
-			"Name": "StructUtils",
 			"Enabled": true
 		},
 		{
