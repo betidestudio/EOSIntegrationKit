@@ -44,7 +44,17 @@ protected:
 	// called by EOSVoiceChatUser to fill the buffer, as long as these are samples available these should be consumed via OnGenerateAudio
 	void WriteSamples(TArrayView<int16> Samples)
 	{
+		// Ensure the OutArray has enough space to hold the converted float data
+		if (OutArray.Num() < Samples.Num())
+		{
+			OutArray.SetNum(Samples.Num());  // Resize OutArray to match the size of Samples
+			OutArrayView = TArrayView<float>(OutArray.GetData(), Samples.Num());  // Recreate OutArrayView with the new size
+		}
+
+		// Convert PCM16 to float and write to OutArrayView
 		Audio::ArrayPcm16ToFloat(Samples, OutArrayView);
+
+		// Push the float data to the circular buffer
 		AudioBuffer.Push(OutArrayView.GetData(), Samples.Num());
 	}
 

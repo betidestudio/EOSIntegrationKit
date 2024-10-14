@@ -2474,7 +2474,7 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 									{
 										VoiceChatSynthComponent->WriteSamples(Samples);
 										//if we're here, it means that we passed audio to all valid components, so we need to clear the buffer so that it isn't played by the RTC.
-										FMemory::Memset(Buffer->Frames, 0, Buffer->FramesCount * Buffer->Channels * sizeof(int16));
+										FMemory::Memset(Samples.GetData(), 0, Samples.Num() * sizeof(int16));
 									}
 									else
 									{
