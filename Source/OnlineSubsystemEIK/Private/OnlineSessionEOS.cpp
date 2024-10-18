@@ -3319,6 +3319,7 @@ bool FOnlineSessionEOS::RegisterPlayers(FName SessionName, const TArray< FUnique
 			const FUniqueNetIdRef& PlayerId = Players[0];
 			const FUniqueNetIdEOS& PlayerEOSId = FUniqueNetIdEOS::Cast(*PlayerId);
 			EOSIds.Add(PlayerEOSId.GetProductUserId());
+			Session->RegisteredPlayers.Add(PlayerId);
 			if (bRegisterEOS && EOSIds.Num() > 0)
 			{
 				EOSIds.Empty();
@@ -3452,6 +3453,7 @@ bool FOnlineSessionEOS::UnregisterPlayers(FName SessionName, const TArray< FUniq
 		{
 			const FUniqueNetIdRef& PlayerId = Players[PlayerIdx];
 			const FUniqueNetIdEOS& PlayerEOSId = FUniqueNetIdEOS::Cast(*PlayerId);
+			Session->RegisteredPlayers.Remove(PlayerId);
 			FUniqueNetIdMatcher PlayerMatch(*PlayerId);
 			int32 RegistrantIndex = Session->RegisteredPlayers.IndexOfByPredicate(PlayerMatch);
 			if (bUnregisterEOS)
