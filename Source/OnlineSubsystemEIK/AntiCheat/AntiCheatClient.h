@@ -32,6 +32,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|AntiCheat")
 	bool RecievedMessageFromServer(const TArray<uint8>& Message);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|AntiCheat", meta = (Keywords = "EOS_AntiCheatClient_EndSession"))
+	bool UnregisterAntiCheatClient();
 	
 	static void EOS_CALL OnMessageToServerCallback(const EOS_AntiCheatClient_OnMessageToServerCallbackInfo* Data);
 
@@ -48,5 +51,5 @@ public:
 		}
 	}
 
-
+	EOS_NotificationId MessageToServerId;
 };

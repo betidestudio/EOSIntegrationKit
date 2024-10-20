@@ -29,6 +29,11 @@ bool UAntiCheatServer::RegisterAntiCheatServer(FString ServerName, FString Clien
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
+			if(!EOSRef->AntiCheatServerHandle)
+			{
+				UE_LOG(LogEIK, Warning, TEXT("RegisterAntiCheatServer-> AntiCheatServerHandle is null"));
+				return false;
+			}
 			{
 				EOS_AntiCheatServer_AddNotifyMessageToClientOptions Options = {};
 				Options.ApiVersion = EOS_ANTICHEATSERVER_ADDNOTIFYMESSAGETOCLIENT_API_LATEST;
@@ -68,12 +73,52 @@ bool UAntiCheatServer::RegisterAntiCheatServer(FString ServerName, FString Clien
 	return false;
 }
 
+bool UAntiCheatServer::UnregisterAntiCheatServer()
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			if(!EOSRef->AntiCheatServerHandle)
+			{
+				UE_LOG(LogEIK, Warning, TEXT("UnregisterAntiCheatServer-> AntiCheatServerHandle is null"));
+				return false;
+			}
+			{
+				EOS_AntiCheatServer_RemoveNotifyClientActionRequired(EOSRef->AntiCheatServerHandle, ClientActionRequiredId);
+				EOS_AntiCheatServer_RemoveNotifyMessageToClient(EOSRef->AntiCheatServerHandle, MessageToClientId);
+			}
+			{
+				EOS_AntiCheatServer_EndSessionOptions Options = {};
+				Options.ApiVersion = EOS_ANTICHEATSERVER_ENDSESSION_API_LATEST;
+				const EOS_EResult Result = EOS_AntiCheatServer_EndSession(EOSRef->AntiCheatServerHandle, &Options);
+				if (Result == EOS_EResult::EOS_Success)
+				{
+					UE_LOG(LogEIK, Log, TEXT("UnregisterAntiCheatServer-> Success"));
+					return true;
+				}
+				UE_LOG(LogEIK, Log, TEXT("UnregisterAntiCheatServer-> %hs"), EOS_EResult_ToString(Result));
+				return false;
+			}
+		}
+		UE_LOG(LogEIK, Warning, TEXT("UnregisterAntiCheatServer-> FOnlineSubsystemEOS is null"));
+		return false;
+	}
+	UE_LOG(LogEIK, Warning, TEXT("UnregisterAntiCheatServer-> IOnlineSubsystem is null"));
+	return false;
+}
+
 bool UAntiCheatServer::RegisterClientForAntiCheat(FString ClientProductID, APlayerController* ControllerRef, TEnumAsByte<EUserPlatform> UserPlatform, TEnumAsByte<EEOS_ClientType> ClientType)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
+			if(!EOSRef->AntiCheatServerHandle)
+			{
+				UE_LOG(LogEIK, Warning, TEXT("RegisterClientForAntiCheat-> AntiCheatServerHandle is null"));
+				return false;
+			}
 			EOS_AntiCheatServer_RegisterClientOptions Options = {};
 			Options.ApiVersion = EOS_ANTICHEATSERVER_REGISTERCLIENT_API_LATEST;
 			Options.ClientHandle = ControllerRef;
@@ -96,12 +141,49 @@ bool UAntiCheatServer::RegisterClientForAntiCheat(FString ClientProductID, APlay
 	return false;
 }
 
+bool UAntiCheatServer::UnregisterClientFromAntiCheat(APlayerController* ControllerRef)
+{
+	if (IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
+	{
+		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
+		{
+			if(!EOSRef->AntiCheatServerHandle)
+			{
+				UE_LOG(LogEIK, Warning, TEXT("UnregisterClientFromAntiCheat-> AntiCheatServerHandle is null"));
+				return false;
+			}
+			{
+				EOS_AntiCheatServer_EndSessionOptions Options = {};
+				Options.ApiVersion = EOS_ANTICHEATSERVER_ENDSESSION_API_LATEST;
+
+				const EOS_EResult Result = EOS_AntiCheatServer_EndSession(EOSRef->AntiCheatServerHandle, &Options);
+				if (Result == EOS_EResult::EOS_Success)
+				{
+					UE_LOG(LogEIK, Log, TEXT("UnregisterAntiCheatServer-> Success"));
+					return true;
+				}
+				UE_LOG(LogEIK, Log, TEXT("UnregisterAntiCheatServer-> %hs"), EOS_EResult_ToString(Result));
+				return false;
+			}
+		}
+		UE_LOG(LogEIK, Warning, TEXT("UnregisterAntiCheatServer-> FOnlineSubsystemEOS is null"));
+		return false;
+	}
+	UE_LOG(LogEIK, Warning, TEXT("UnregisterAntiCheatServer-> IOnlineSubsystem is null"));
+	return false;
+}
+
 bool UAntiCheatServer::RecievedMessageFromClient(APlayerController* Controller,const TArray<uint8>& Message)
 {
 	if(	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get("EIK"))
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
+			if(!EOSRef->AntiCheatServerHandle)
+			{
+				UE_LOG(LogEIK, Warning, TEXT("RecievedMessageFromClient-> AntiCheatServerHandle is null"));
+				return false;
+			}
 			EOS_AntiCheatServer_ReceiveMessageFromClientOptions Options = {};
 			Options.ApiVersion = EOS_ANTICHEATSERVER_RECEIVEMESSAGEFROMCLIENT_API_LATEST;
 			Options.Data = Message.GetData();
@@ -125,6 +207,11 @@ bool UAntiCheatServer::RecievedMessageFromClient(APlayerController* Controller,c
 
 void UAntiCheatServer::OnMessageToClientCb(const EOS_AntiCheatCommon_OnMessageToClientCallbackInfo* Data)
 {
+	if(!Data->ClientData)
+	{
+		UE_LOG(LogEIK,Verbose, TEXT("OnMessageToClientCb-> ClientData is null"));
+		return;
+	}	
 	TArray<uint8> MessageData;
 	MessageData.Append((uint8*)Data->MessageData, Data->MessageDataSizeBytes);
 	if(const UAntiCheatServer* AntiCheatServer = static_cast<UAntiCheatServer*>(Data->ClientData))
@@ -139,6 +226,11 @@ void UAntiCheatServer::OnMessageToClientCb(const EOS_AntiCheatCommon_OnMessageTo
 
 void UAntiCheatServer::OnClientActionRequiredCb(const EOS_AntiCheatCommon_OnClientActionRequiredCallbackInfo* Data)
 {
+	if(!Data->ClientData)
+	{
+		UE_LOG(LogEIK,Verbose, TEXT("OnClientActionRequiredCb-> ClientData is null"));
+		return;
+	}	
 	if(const UAntiCheatServer* AntiCheatServer = static_cast<UAntiCheatServer*>(Data->ClientData))
 	{
 		AntiCheatServer->OnAntiCheatActionRequired.Broadcast(static_cast<APlayerController*>(Data->ClientHandle), Data->ClientAction == EOS_EAntiCheatCommonClientAction::EOS_ACCCA_RemovePlayer);
