@@ -65,8 +65,9 @@ FString UEIK_BlueprintFunctions::GetEpicAccountId(UObject* Context)
 	}
 }
 
-FEIK_CurrentSessionInfo UEIK_BlueprintFunctions::GetCurrentSessionInfo(UObject* Context,FName SessionName)
+FEIK_CurrentSessionInfo UEIK_BlueprintFunctions::GetCurrentSessionInfo(UObject* Context, bool& bIsSessionPresent,FName SessionName)
 {
+	bIsSessionPresent = false;
 	if(Context)
 	{
 		if(!Context->GetWorld())
@@ -82,6 +83,7 @@ FEIK_CurrentSessionInfo UEIK_BlueprintFunctions::GetCurrentSessionInfo(UObject* 
 					UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::GetCurrentSessionInfo: Session not found"));
 					return FEIK_CurrentSessionInfo();
 				}
+				bIsSessionPresent = true;
 				FEIK_CurrentSessionInfo SessionInfo(*SessionPtrRef->GetNamedSession(SessionName));
 				return SessionInfo;
 			}

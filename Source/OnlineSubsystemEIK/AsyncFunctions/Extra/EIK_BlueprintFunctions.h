@@ -63,6 +63,115 @@ enum ESessionCurrentState
 };
 
 USTRUCT(BlueprintType)
+struct FEIK_OnlineSessionSettings
+{
+	GENERATED_BODY()
+
+	/** The number of publicly available connections advertised */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	int32 NumPublicConnections;
+	/** The number of connections that are private (invite/password) only */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	int32 NumPrivateConnections;
+	/** Whether this match is publicly advertised on the online service */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bShouldAdvertise;
+	/** Whether joining in progress is allowed or not */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bAllowJoinInProgress;
+	/** This game will be lan only and not be visible to external players */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bIsLANMatch;
+	/** Whether the server is dedicated or player hosted */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bIsDedicated;
+	/** Whether the match should gather stats or not */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bUsesStats;
+	/** Whether the match allows invitations for this session or not */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bAllowInvites;
+	/** Whether to display user presence information or not */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bUsesPresence;
+	/** Whether joining via player presence is allowed or not */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bAllowJoinViaPresence;
+	/** Whether joining via player presence is allowed for friends only or not */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bAllowJoinViaPresenceFriendsOnly;
+	/** Whether the server employs anti-cheat (punkbuster, vac, etc) */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bAntiCheatProtected;
+	/** Whether to prefer lobbies APIs if the platform supports them */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bUseLobbiesIfAvailable;
+	/** Whether to create (and auto join) a voice chat room for the lobby, if the platform supports it */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	bool bUseLobbiesVoiceChatIfAvailable;
+	/** Manual override for the Session Id instead of having one assigned by the backend. Its size may be restricted depending on the platform */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	FString SessionIdOverride;
+
+	/** Used to keep different builds from seeing each other during searches */
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	int32 BuildUniqueId;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	TMap<FString, FEIKAttribute> SessionSettings;
+	
+	FEIK_OnlineSessionSettings(FOnlineSessionSettings Settings)
+	{
+		NumPublicConnections = Settings.NumPublicConnections;
+		NumPrivateConnections = Settings.NumPrivateConnections;
+		bShouldAdvertise = Settings.bShouldAdvertise;
+		bAllowJoinInProgress = Settings.bAllowJoinInProgress;
+		bIsLANMatch = Settings.bIsLANMatch;
+		bIsDedicated = Settings.bIsDedicated;
+		bUsesStats = Settings.bUsesStats;
+		bAllowInvites = Settings.bAllowInvites;
+		bUsesPresence = Settings.bUsesPresence;
+		bAllowJoinViaPresence = Settings.bAllowJoinViaPresence;
+		bAllowJoinViaPresenceFriendsOnly = Settings.bAllowJoinViaPresenceFriendsOnly;
+		bAntiCheatProtected = Settings.bAntiCheatProtected;
+		bUseLobbiesIfAvailable = Settings.bUseLobbiesIfAvailable;
+		bUseLobbiesVoiceChatIfAvailable = Settings.bUseLobbiesVoiceChatIfAvailable;
+		SessionIdOverride = Settings.SessionIdOverride;
+		BuildUniqueId = Settings.BuildUniqueId;
+		TMap<FName, FOnlineSessionSetting>::TIterator It(Settings.Settings);
+		TMap<FString, FEIKAttribute> LocalArraySettings;
+		while (It)
+		{
+			const FName& SettingName = It.Key();
+			const FOnlineSessionSetting& Setting = It.Value();
+			LocalArraySettings.Add(*SettingName.ToString(), Setting.Data);
+			++It;
+		}
+		SessionSettings = LocalArraySettings;
+	}
+
+	FEIK_OnlineSessionSettings()
+	{
+		NumPublicConnections = 0;
+		NumPrivateConnections = 0;
+		bShouldAdvertise = false;
+		bAllowJoinInProgress = false;
+		bIsLANMatch = false;
+		bIsDedicated = false;
+		bUsesStats = false;
+		bAllowInvites = false;
+		bUsesPresence = false;
+		bAllowJoinViaPresence = false;
+		bAllowJoinViaPresenceFriendsOnly = false;
+		bAntiCheatProtected = false;
+		bUseLobbiesIfAvailable = false;
+		bUseLobbiesVoiceChatIfAvailable = false;
+		SessionIdOverride = "";
+		BuildUniqueId = 0;
+	}
+};
+
+USTRUCT(BlueprintType)
 struct FEIK_CurrentSessionInfo
 {
 	GENERATED_BODY()
@@ -92,22 +201,29 @@ struct FEIK_CurrentSessionInfo
 	TEnumAsByte<ESessionCurrentState> SessionState;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
-	TMap<FString, FEIKAttribute> SessionSettings;
-
-	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
 	int32 NumOpenPublicConnections;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	int32 MaxPublicConnections;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
 	int32 NumOpenPrivateConnections;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	int32 MaxPrivateConnections;
 	
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
 	FString SessionIdString;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
 	FString CompleteDebugString;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	FEIK_OnlineSessionSettings OriginalSessionSettings;
 	
 	FEIK_CurrentSessionInfo(): bAllowInvites(false), SessionState(), NumOpenPublicConnections(0),
-	                           NumOpenPrivateConnections(0)
+	                           MaxPublicConnections(0),
+	                           NumOpenPrivateConnections(0), MaxPrivateConnections(0), OriginalSessionSettings()
 	{
 		bHostingSession = false;
 		bPublicJoinable = false;
@@ -120,20 +236,10 @@ struct FEIK_CurrentSessionInfo
 		CompleteDebugString = Session.SessionInfo->ToDebugString();
 		NumOpenPublicConnections = Session.NumOpenPublicConnections;
 		NumOpenPrivateConnections = Session.NumOpenPrivateConnections;
+		MaxPublicConnections = Session.SessionSettings.NumPublicConnections;
+		MaxPrivateConnections = Session.SessionSettings.NumPrivateConnections;
 		SessionIdString = Session.GetSessionIdStr();
-		
-		FOnlineSessionSettings LocalSessionSettings = Session.SessionSettings;
-		TMap<FName, FOnlineSessionSetting>::TIterator It(LocalSessionSettings.Settings);
-		
-		TMap<FString, FEIKAttribute> LocalArraySettings;
-		while (It)
-		{
-			const FName& SettingName = It.Key();
-			const FOnlineSessionSetting& Setting = It.Value();
-			LocalArraySettings.Add(*SettingName.ToString(), Setting.Data);
-			++It;
-		}
-		SessionSettings = LocalArraySettings;
+		OriginalSessionSettings = Session.SessionSettings;
 		bHostingSession = Session.bHosting;
 		Session.GetJoinability(bPublicJoinable, bFriendJoinable, bInviteOnly, bAllowInvites);
 		FEIKUniqueNetId Temp;
@@ -185,10 +291,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
 	static FString GetEpicAccountId(UObject* Context);
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
-	static FEIK_CurrentSessionInfo GetCurrentSessionInfo(UObject* Context, FName SessionName = "GameSession");
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ), DisplayName="Get EIK Session Info")
+	static FEIK_CurrentSessionInfo GetCurrentSessionInfo(UObject* Context, bool& bIsSessionPresent, FName SessionName = "GameSession");
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ), DisplayName="Get All EIK Session Names")
 	static TArray<FName> GetAllCurrentSessionNames(UObject* Context);
 	
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit || Extra", meta=( WorldContext = "Context" ))
