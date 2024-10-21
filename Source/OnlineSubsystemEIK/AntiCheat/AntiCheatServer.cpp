@@ -153,10 +153,10 @@ bool UAntiCheatServer::UnregisterClientFromAntiCheat(APlayerController* Controll
 				return false;
 			}
 			{
-				EOS_AntiCheatServer_EndSessionOptions Options = {};
+				EOS_AntiCheatServer_UnregisterClientOptions Options = {};
 				Options.ApiVersion = EOS_ANTICHEATSERVER_ENDSESSION_API_LATEST;
-
-				const EOS_EResult Result = EOS_AntiCheatServer_EndSession(EOSRef->AntiCheatServerHandle, &Options);
+				Options.ClientHandle = ControllerRef;
+				const EOS_EResult Result = EOS_AntiCheatServer_UnregisterClient(EOSRef->AntiCheatServerHandle, &Options);
 				if (Result == EOS_EResult::EOS_Success)
 				{
 					UE_LOG(LogEIK, Log, TEXT("UnregisterAntiCheatServer-> Success"));
