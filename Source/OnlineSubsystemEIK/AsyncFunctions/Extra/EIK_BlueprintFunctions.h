@@ -136,7 +136,9 @@ struct FEIK_OnlineSessionSettings
 		bAntiCheatProtected = Settings.bAntiCheatProtected;
 		bUseLobbiesIfAvailable = Settings.bUseLobbiesIfAvailable;
 		bUseLobbiesVoiceChatIfAvailable = Settings.bUseLobbiesVoiceChatIfAvailable;
+#if ENGINE_MAJOR_VERSION == 5
 		SessionIdOverride = Settings.SessionIdOverride;
+#endif
 		BuildUniqueId = Settings.BuildUniqueId;
 		TMap<FName, FOnlineSessionSetting>::TIterator It(Settings.Settings);
 		TMap<FString, FEIKAttribute> LocalArraySettings;
