@@ -1013,6 +1013,11 @@ void FUserManagerEOS::LoginViaAuthInterface(int32 LocalUserNum, const FOnlineAcc
 			// Continue the login process by getting the product user id for EAS only
 			ConnectLoginEAS(LocalUserNum, Data->LocalUserId);
 		}
+		else if (Data->ResultCode == EOS_EResult::EOS_InvalidUser)
+		{
+			// Link the account
+			LinkEAS(LocalUserNum, Data->ContinuanceToken);
+		}
 		else
 		{
 			auto TriggerLoginFailure = [this, LocalUserNum, LoginResultCode = Data->ResultCode]()
@@ -1324,7 +1329,6 @@ bool FUserManagerEOS::ConnectLoginEAS(int32 LocalUserNum, EOS_EpicAccountId Acco
 
 #if ENGINE_MAJOR_VERSION == 5
 		FConnectLoginCallback* CallbackObj = new FConnectLoginCallback(AsWeak());
-
 #else
 		FConnectLoginCallback* CallbackObj = new FConnectLoginCallback();
 #endif
