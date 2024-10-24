@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- init section is always evaluated once per architecture -->
+	<init>
+	<setBool result="bSupported" value="false"/>
+	<isArch arch="armeabi-v7a">
+	  <setBool result="bSupported" value="true"/>
+	</isArch>
+	<isArch arch="arm64-v8a">
+	  <setBool result="bSupported" value="true"/>
+	</isArch>
+	<isArch arch="x86">
+	  <setBool result="bSupported" value="true"/>
+	</isArch>
+	<isArch arch="x86_64">
+	  <setBool result="bSupported" value="true"/>
+	</isArch>
+	<if condition="bSupported">
+	  <false>
+		<log text="Unsupported architecture: $S(Architecture)"/>
+	  </false>
+	</if>
+	</init>
+
+	<resourceCopies>
+		<log text="Copying googlesignin.aar"/>
+		<copyFile src="$S(PluginDir)/Android/libs/googlesignin.aar" dst="$S(BuildDir)/libs/googlesignin.aar" />
+	</resourceCopies>
+	
+	<gradleProperties>
+		<insert>
+		</insert>
+	</gradleProperties>
+
+	<baseBuildGradleAdditions>
+		<insert>
+			allprojects 
+			{
+				def mappings = 
+				[
+					'android.support.annotation': 'androidx.annotation',
+					'android.arch.lifecycle': 'androidx.lifecycle',
+					'android.support.v4.app.NotificationCompat': 'androidx.core.app.NotificationCompat',
+					'android.support.v4.app.ActivityCompat': 'androidx.core.app.ActivityCompat',
+					'android.support.v4.content.ContextCompat': 'androidx.core.content.ContextCompat',
+					'android.support.v4.app.NotificationManagerCompat': 'androidx.core.app.NotificationManagerCompat',
+					'android.support.v4.content.FileProvider': 'androidx.core.content.FileProvider',
+					'android.support.v13.app.FragmentCompat': 'androidx.legacy.app.FragmentCompat',
+					'android.arch.lifecycle.Lifecycle': 'androidx.lifecycle.Lifecycle',
+					'android.arch.lifecycle.LifecycleObserver': 'androidx.lifecycle.LifecycleObserver',
+					'android.arch.lifecycle.OnLifecycleEvent': 'androidx.lifecycle.OnLifecycleEvent',
+					'android.arch.lifecycle.ProcessLifecycleOwner': 'androidx.lifecycle.ProcessLifecycleOwner',
+				]
+		
+				beforeEvaluate 
+				{ 
+					project -> project.rootProject.projectDir.traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.java$/) 
+					{ 
+						f ->mappings.each 
+						{ 
+							entry ->if (f.getText('UTF-8').contains(entry.key)) 
+							{
+								println "Updating ${entry.key} to ${entry.value} in file ${f}"
+								ant.replace(file: f, token: entry.key, value: entry.value)
+							}
+						}
+					}
+				}
+			
+				repositories {
+					flatDir {
+		</insert>
+						<insertValue value="dirs '$S(BuildDir)/libs'"/>
+		<insert>
+					}
+				}
+			}
+		</insert>
+	</baseBuildGradleAdditions>
+
+	<buildGradleAdditions>
+	<if condition="bSupported">
+	  <true>
+		<insert>
+			dependencies.implementation(name: 'googlesignin', ext: 'aar')
+			dependencies {
+				implementation "androidx.credentials:credentials:1.2.2"
+				implementation "androidx.credentials:credentials-play-services-auth:1.2.2"
+				implementation "com.google.android.libraries.identity.googleid:googleid:1.1.1"
+			}
+			android 
+			{      
+				packagingOptions 
+				{
+					// Allow the compilation process to choose the dependencies for us.
+					
+					pickFirst "lib/arm64-v8a/libc++_shared.so"
+					pickFirst "**"
+					exclude 'META-INF/DEPENDENCIES'
+					exclude 'META-INF/LICENSE'
+					exclude 'META-INF/LICENSE.txt'
+					exclude 'META-INF/license.txt'
+					exclude 'META-INF/NOTICE'
+					exclude 'META-INF/NOTICE.txt'
+					exclude 'META-INF/notice.txt'
+					exclude 'META-INF/ASL2.0'
+					exclude("META-INF/*.kotlin_module") 
+				}          
+			}
+		</insert>
+	  </true>
+	</if>
+	</buildGradleAdditions>
+
+	<gameActivityImportAdditions>
+	<insert>
+		import com.avnishgamedev.googlesignin.GoogleCredentialManager;
+		import com.avnishgamedev.googlesignin.GoogleCredentialResult;
+	</insert>
+	</gameActivityImportAdditions>
+
+	<gameActivityClassAdditions>
+	<insert>
+		private static native void OnSignInResult(boolean success, String response, String token);
+		private static native void OnSignOutResult(boolean success, String error);
+		
+		GoogleCredentialManager googleCredentialManager;
+		public void AndroidThunkJava_GoogleSubsystem_Init()
+		{
+			Log.debug("AndroidThunkJava_GoogleSubsystem_Init");
+			googleCredentialManager = new GoogleCredentialManager();
+			googleCredentialManager.init(this);
+			googleCredentialManager.setCallback(new GoogleCredentialResult() {
+				@Override
+				public void onSignIn(boolean b, String s) {
+					OnSignInResult(b, s, googleCredentialManager.getToken());
+				}
+				@Override
+				public void onSignOut(boolean b, String s) {
+					OnSignOutResult(b, s);
+				}
+			});
+		}
+		
+		public void AndroidThunkJava_GoogleSubsystem_SignIn(String clientID)
+		{
+			googleCredentialManager.signIn(clientID);
+		}
+
+		public void AndroidThunkJava_GoogleSubsystem_SignOut(String clientID)
+		{
+			googleCredentialManager.signOut();
+		}
+	</insert>
+	</gameActivityClassAdditions>
+  
+	<gameActivityOnStartAdditions>
+	<insert>  
+	</insert>
+	</gameActivityOnStartAdditions>
+
+	<gameActivityOnActivityResultAdditions> 
+	<insert>
+	</insert>   
+	</gameActivityOnActivityResultAdditions>
+  
+</root>
