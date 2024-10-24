@@ -11,6 +11,8 @@ public class EIKWeb : ModuleRules
             {
                 "Core",
                 "HTTP",
+                "JsonUtilities",
+                "Json",
             }
         );
 
