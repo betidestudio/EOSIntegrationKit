@@ -1,12 +1,11 @@
-﻿// Copyright (c) 2024 Betide Studio. All Rights Reserved.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "EIK_BaseWebApi.generated.h"
 
 USTRUCT(BlueprintType)
 struct FEIK_BaseWebApiResponse
@@ -45,5 +44,6 @@ public:
 
 protected:
 	void OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void DestroyAsyncTask();
 	FString APIEndpoint = "https://api.epicgames.dev";
 };
