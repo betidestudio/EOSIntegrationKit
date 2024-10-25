@@ -17,6 +17,7 @@ void APingClient::OnFailure()
 	Super::OnFailure();
 	UE_LOG(LogPingClient, Log, TEXT("APingClient connection failed"));
 	OnPingComplete.ExecuteIfBound(0, false);
+	DestroyBeacon();
 }
 
 void APingClient::ClientPingBegin_Implementation()
@@ -44,6 +45,7 @@ void APingClient::ClientPingEnd_Implementation()
 	PingMS = (int32)(PingTime / 10000);
 	UE_LOG(LogPingClient, Log, TEXT("Ping Complete: %d ms"), PingMS);
 	OnPingComplete.ExecuteIfBound(PingMS, true);
+	DestroyBeacon();
 }
 
 bool APingClient::ConnectToHost(FString Address, int32 Port, const bool bPortOverride, FEIK_PingComplete Ref)
@@ -66,6 +68,7 @@ bool APingClient::ConnectToHost(FString Address, int32 Port, const bool bPortOve
 			url.Port = 8888;
 		}
 	}
+	UE_LOG(LogPingClient, Log, TEXT("Connecting to %s:%d"), *url.Host, url.Port);
 	return InitClient(url);
 }
 
@@ -78,9 +81,11 @@ bool APingClient::ConnectToSession(FBlueprintSessionResult SearchResult, FEIK_Pi
 		{
 			FString Address;
 			Sessions->GetResolvedConnectString(SearchResult.OnlineResult, EName::BeaconPort, Address);
-			return ConnectToHost(Address, 0, false, OnPingComplete);
+			UE_LOG(LogPingClient, Log, TEXT("Resolved Address: %s"), *Address);
+			return ConnectToHost(Address, 0, false, Ref);
 		}
 	}
+	UE_LOG(LogPingClient, Log, TEXT("Failed to connect to session"));
 	OnPingComplete.ExecuteIfBound(0, false);
 	return false;
 }

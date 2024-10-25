@@ -15,8 +15,8 @@ class ONLINESUBSYSTEMEIK_API UEIK_CalculatePingForSession_AsyncFunction : public
 
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | Beacons | Ping", meta = (BlueprintInternalUseOnly = "true"), DisplayName = "Calculate Ping For Session")
-	static UEIK_CalculatePingForSession_AsyncFunction* CalculatePingForSession(FSessionFindStruct SessionFindStruct);
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit | Beacons | Ping", meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject"), DisplayName = "Calculate Ping For Session")
+	static UEIK_CalculatePingForSession_AsyncFunction* CalculatePingForSession(FSessionFindStruct SessionFindStruct, UObject* WorldContextObject);
 
 	UPROPERTY(BlueprintAssignable, Category = "EOS Integration Kit | Beacons | Ping")
 	FEIK_OnCalculatePingForSessionComplete OnSuccess;
@@ -30,5 +30,7 @@ private:
 	virtual void Activate() override;
 
 	FSessionFindStruct Var_SessionFindStruct;
-	
+
+	UPROPERTY()
+	UObject* WorldContextObject;
 };

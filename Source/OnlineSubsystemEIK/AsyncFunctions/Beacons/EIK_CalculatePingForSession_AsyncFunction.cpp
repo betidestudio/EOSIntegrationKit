@@ -6,10 +6,11 @@
 #include "PingClient.h"
 
 UEIK_CalculatePingForSession_AsyncFunction* UEIK_CalculatePingForSession_AsyncFunction::CalculatePingForSession(
-	FSessionFindStruct SessionFindStruct)
+	FSessionFindStruct SessionFindStruct, UObject* WorldContextObject)
 {
 	UEIK_CalculatePingForSession_AsyncFunction* BlueprintNode = NewObject<UEIK_CalculatePingForSession_AsyncFunction>();
 	BlueprintNode->Var_SessionFindStruct = SessionFindStruct;
+	BlueprintNode->WorldContextObject = WorldContextObject;
 	return BlueprintNode;
 }
 
@@ -34,9 +35,9 @@ void UEIK_CalculatePingForSession_AsyncFunction::OnPingComplete(int32 Ping, bool
 void UEIK_CalculatePingForSession_AsyncFunction::Activate()
 {
 	Super::Activate();
-	if(GetWorld())
+	if(WorldContextObject->GetWorld())
 	{
-		if(APingClient* PingClient = GetWorld()->SpawnActor<APingClient>(APingClient::StaticClass()))
+		if(APingClient* PingClient = WorldContextObject->GetWorld()->SpawnActor<APingClient>(APingClient::StaticClass()))
 		{
 			FEIK_PingComplete OnPingComplete;
 			OnPingComplete.BindDynamic(this, &UEIK_CalculatePingForSession_AsyncFunction::OnPingComplete);
@@ -53,12 +54,14 @@ void UEIK_CalculatePingForSession_AsyncFunction::Activate()
 		}
 		else
 		{
+			UE_LOG(LogTemp, Error, TEXT("UEIK_CalculatePingForSession_AsyncFunction::Activate: PingClient is null"));
 			OnFailure.Broadcast(0);
 			SetReadyToDestroy();
 		}
 	}
 	else
 	{
+		UE_LOG(LogTemp, Error, TEXT("UEIK_CalculatePingForSession_AsyncFunction::Activate: World is null"));
 		OnFailure.Broadcast(0);
 		SetReadyToDestroy();
 	}
