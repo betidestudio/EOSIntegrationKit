@@ -15,6 +15,8 @@
 #include "Interfaces/IHttpResponse.h"
 #include "Interfaces/IPluginManager.h"
 #include "Misc/Base64.h"
+#include "OnlineSubsystemEIK/AsyncFunctions/Beacons/PingHost.h"
+#include "OnlineSubsystemEIK/AsyncFunctions/Beacons/PingHostObject.h"
 #include "OnlineSubsystemEIK/AsyncFunctions/Login/EIK_Login_AsyncFunction.h"
 
 FString UEIK_BlueprintFunctions::GetEpicAccountId(UObject* Context)
@@ -935,4 +937,48 @@ FString UEIK_BlueprintFunctions::GetEnvironmentVariable(const FString& EnvVariab
 		return FString();
 	}
 	return FPlatformMisc::GetEnvironmentVariable(*EnvVariableName);
+}
+
+bool UEIK_BlueprintFunctions::InitPingBeacon(UObject* Context, AGameModeBase* GameMode)
+{
+	if(Context)
+	{
+		if(Context->GetWorld() && GameMode)
+		{
+			if(GameMode->GetNetMode() == NM_DedicatedServer || GameMode ->GetNetMode() == NM_ListenServer)
+			{
+				APingHost* Host = Context->GetWorld()->SpawnActor<APingHost>(APingHost::StaticClass());
+				if(Host && Host->InitializeHost())
+				{
+					APingHostObject* HostObject = Context->GetWorld()->SpawnActor<APingHostObject>(APingHostObject::StaticClass());
+					if(HostObject)
+					{
+						Host->RegisterHostObject(HostObject);
+						return true;
+					}
+					else
+					{
+						UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::InitPingBeacon: HostObject is null or failed to initialize"));
+					}
+				}
+				else
+				{
+					UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::InitPingBeacon: Host is null or failed to initialize"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::InitPingBeacon: GameMode is not a server"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::InitPingBeacon: Context or GameMode is null"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::InitPingBeacon: Context is null"));
+	}
+	return false;
 }

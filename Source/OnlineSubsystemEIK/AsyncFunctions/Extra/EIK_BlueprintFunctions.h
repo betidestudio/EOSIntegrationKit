@@ -472,4 +472,7 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Get Environment Variable", Category="EOS Integration Kit || Extra")
 	static FString GetEnvironmentVariable(const FString& EnvVariableName);
 
+	UFUNCTION(BlueprintCallable, DisplayName="Init Ping Beacon", Category="EOS Integration Kit || Extra", meta=(WorldContext="Context"))
+	static bool InitPingBeacon(UObject* Context, AGameModeBase* GameMode);
+
 };
