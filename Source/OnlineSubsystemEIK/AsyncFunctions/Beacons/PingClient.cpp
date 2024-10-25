@@ -46,8 +46,9 @@ void APingClient::ClientPingEnd_Implementation()
 	OnPingComplete.ExecuteIfBound(PingMS, true);
 }
 
-bool APingClient::ConnectToHost(FString Address, int32 Port, const bool bPortOverride, FEIK_PingComplete OnPingComplete)
+bool APingClient::ConnectToHost(FString Address, int32 Port, const bool bPortOverride, FEIK_PingComplete Ref)
 {
+	OnPingComplete = Ref;
 	FURL url(nullptr, *Address, ETravelType::TRAVEL_Absolute);
 	if (bPortOverride)
 	{
@@ -68,8 +69,9 @@ bool APingClient::ConnectToHost(FString Address, int32 Port, const bool bPortOve
 	return InitClient(url);
 }
 
-bool APingClient::ConnectToSession(FBlueprintSessionResult SearchResult, FEIK_PingComplete OnPingComplete)
+bool APingClient::ConnectToSession(FBlueprintSessionResult SearchResult, FEIK_PingComplete Ref)
 {
+	OnPingComplete = Ref;
 	if(IOnlineSubsystem* OnlineSub = Online::GetSubsystem(GetWorld()))
 	{
 		if(IOnlineSessionPtr Sessions = OnlineSub->GetSessionInterface())

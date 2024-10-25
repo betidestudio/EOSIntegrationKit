@@ -30,10 +30,10 @@ public:
 	void ClientPingEnd();
 
 	UFUNCTION(BlueprintCallable, Category=Ping)
-	bool ConnectToHost(FString Address, int32 Port, const bool bPortOverride, FEIK_PingComplete OnPingComplete);
+	bool ConnectToHost(FString Address, int32 Port, const bool bPortOverride, FEIK_PingComplete Ref);
 
 	UFUNCTION(BlueprintCallable, Category=Ping)
-	bool ConnectToSession(FBlueprintSessionResult SearchResult, FEIK_PingComplete OnPingComplete);
+	bool ConnectToSession(FBlueprintSessionResult SearchResult, FEIK_PingComplete Ref);
 
 	UFUNCTION(BlueprintCallable, Category=Ping)
 	void Disconnect();
