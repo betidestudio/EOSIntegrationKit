@@ -16,7 +16,7 @@ class EIKWEB_API UEIK_API_VerifyOwnershipVerificationToken : public UEIK_BaseWeb
 
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Web API|AntiCheat")
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Web API|Ecom")
 	static UEIK_API_VerifyOwnershipVerificationToken* VerifyOwnershipVerificationToken(FString KeyId);
 
 private:
