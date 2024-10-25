@@ -3458,7 +3458,14 @@ bool FOnlineSessionEOS::UnregisterPlayers(FName SessionName, const TArray< FUniq
 			int32 RegistrantIndex = Session->RegisteredPlayers.IndexOfByPredicate(PlayerMatch);
 			if (bUnregisterEOS)
 			{
-				EOSIds.Add(PlayerEOSId.GetProductUserId());
+				if(!PlayerEOSId.ToString().Contains(EOS_ID_SEPARATOR))
+				{
+					EOSIds.Add(EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*PlayerEOSId.ToString())));
+				}
+				else
+				{
+					EOSIds.Add(PlayerEOSId.GetProductUserId());
+				}
 			}
 			RemoveOnlineSessionMember(SessionName, PlayerId);
 		}
