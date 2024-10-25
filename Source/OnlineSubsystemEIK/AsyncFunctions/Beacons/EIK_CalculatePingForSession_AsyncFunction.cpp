@@ -6,10 +6,10 @@
 #include "PingClient.h"
 
 UEIK_CalculatePingForSession_AsyncFunction* UEIK_CalculatePingForSession_AsyncFunction::CalculatePingForSession(
-	FSessionFindStruct SessionFindStruct, UObject* WorldContextObject)
+	FSessionFindStruct Session, UObject* WorldContextObject)
 {
 	UEIK_CalculatePingForSession_AsyncFunction* BlueprintNode = NewObject<UEIK_CalculatePingForSession_AsyncFunction>();
-	BlueprintNode->Var_SessionFindStruct = SessionFindStruct;
+	BlueprintNode->Var_SessionFindStruct = Session;
 	BlueprintNode->WorldContextObject = WorldContextObject;
 	return BlueprintNode;
 }
