@@ -97,3 +97,5 @@ EIK_Example/.idea/.idea.EIK_Example/.idea/workspace.xml
 # Files that might appear on external disks
 .Spotlight-V100
 .Trashes
+/Source/ThirdParty/DiscordGameSDK/x86_64
+/Source/ThirdParty/DiscordGameSDK/aarch64
