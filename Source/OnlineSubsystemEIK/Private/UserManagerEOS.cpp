@@ -2582,7 +2582,11 @@ FPlatformUserId FUserManagerEOS::GetPlatformUserIdFromUniqueNetId(const FUniqueN
 #endif
 }
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+void FUserManagerEOS::GetLinkedAccountAuthToken(int32 LocalUserNum, const FString& TokenType, const FOnGetLinkedAccountAuthTokenCompleteDelegate& Delegate) const
+#else
 void FUserManagerEOS::GetLinkedAccountAuthToken(int32 LocalUserNum, const FOnGetLinkedAccountAuthTokenCompleteDelegate& Delegate) const
+#endif
 {
 	FExternalAuthToken ExternalToken;
 	ExternalToken.TokenString = GetAuthToken(LocalUserNum);
