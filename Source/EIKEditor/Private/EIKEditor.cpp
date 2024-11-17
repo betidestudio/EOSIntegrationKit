@@ -191,7 +191,7 @@ void FEIKEditorModule::OpenDevTool()
         return;
     }
 #elif PLATFORM_MAC
-    DevToolPath = FPaths::Combine(*PluginRoot, TEXT("Source/ThirdParty/EIKSDK/Tools/EOS_DevAuthTool.app"));
+    DevToolPath = FPaths::Combine(*PluginRoot, TEXT("Source/ThirdParty/EIKSDK/Tools/EOS_DevAuthTool-darwin-x64-1.2.1/EOS_DevAuthTool.app"));
 #else
     UE_LOG(LogEikEditor, Error, TEXT("Unsupported platform"));
     FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("UnsupportedPlatform", "Unsupported platform"));
