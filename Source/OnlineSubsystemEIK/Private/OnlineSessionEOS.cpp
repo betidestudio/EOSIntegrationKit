@@ -863,7 +863,11 @@ void FOnlineSessionEOS::OnMemberStatusReceived(const EOS_LobbyId& LobbyId, const
 						{
 							RemoveOnlineSessionMember(Session->SessionName, ResolvedUniqueNetId);
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+							TriggerOnSessionParticipantLeftDelegates(Session->SessionName, *ResolvedUniqueNetId, EOnSessionParticipantLeftReason::Left);
+#else
 							TriggerOnSessionParticipantsChangeDelegates(Session->SessionName, *ResolvedUniqueNetId, false);
+#endif
 						}
 						else
 						{
@@ -884,7 +888,11 @@ void FOnlineSessionEOS::OnMemberStatusReceived(const EOS_LobbyId& LobbyId, const
 						{
 							RemoveOnlineSessionMember(Session->SessionName, ResolvedUniqueNetId);
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+							TriggerOnSessionParticipantLeftDelegates(Session->SessionName, * ResolvedUniqueNetId, EOnSessionParticipantLeftReason::Kicked);
+#else
 							TriggerOnSessionParticipantRemovedDelegates(Session->SessionName, *ResolvedUniqueNetId);
+#endif
 						}
 						else
 						{
@@ -3206,7 +3214,11 @@ void FOnlineSessionEOS::UpdateOrAddLobbyMember(const FUniqueNetIdEOSLobbyRef& Lo
 
 				if (bWasLobbyMemberAdded)
 				{
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+					TriggerOnSessionParticipantJoinedDelegates(Session->SessionName, *PlayerId);
+#else
 					TriggerOnSessionParticipantsChangeDelegates(Session->SessionName, *PlayerId, true);
+#endif
 				}
 				else
 				{

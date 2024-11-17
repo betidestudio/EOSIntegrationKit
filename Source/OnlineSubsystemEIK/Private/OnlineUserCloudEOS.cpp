@@ -579,11 +579,12 @@ bool FOnlineUserCloudEOS::WriteUserFile(const FUniqueNetId& UserId, const FStrin
 	CallbackObj->SetNested2CallbackLambda([this, SharedUserId, FileName](const EOS_PlayerDataStorage_FileTransferProgressCallbackInfo* Data)
 		{
 			UE_LOG_ONLINE_CLOUD(VeryVerbose, TEXT("[FOnlineUserCloudEOS::WriteUserFile] File transfer progress for file %s is %d bytes"), *FileName, Data->BytesTransferred);
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 4
+			TriggerOnWriteUserFileProgress64Delegates(Data->BytesTransferred, *SharedUserId, FileName);
+#else
 		PRAGMA_DISABLE_DEPRECATION_WARNINGS
 			TriggerOnWriteUserFileProgressDelegates(Data->BytesTransferred, *SharedUserId, FileName);
 		PRAGMA_ENABLE_DEPRECATION_WARNINGS
-#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 4
-			TriggerOnWriteUserFileProgress64Delegates(Data->BytesTransferred, *SharedUserId, FileName);
 #endif
 		});
 
