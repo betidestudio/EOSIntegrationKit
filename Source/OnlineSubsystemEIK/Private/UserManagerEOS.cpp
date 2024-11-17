@@ -703,14 +703,6 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	LocalUserNumToLastLoginCredentials.Emplace(LocalUserNum, MakeShared<FOnlineAccountCredentials>(AccountCredentials));
 	FEOSSettings Settings = UEIKSettings::GetSettings();
 
-	// We don't support offline logged in, so they are either logged in or not
-	if (GetLoginStatus(LocalUserNum) == ELoginStatus::LoggedIn)
-	{
-		UE_LOG_ONLINE(Warning, TEXT("User (%d) already logged in."), LocalUserNum);
-		TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), FString(TEXT("Already logged in")));
-		return true;
-	}
-
 	TArray<FString> BrokenTypeString;
 	if(AccountCredentials.Type.ParseIntoArray(BrokenTypeString, TEXT("_+_"), true) > 0)
 	{
