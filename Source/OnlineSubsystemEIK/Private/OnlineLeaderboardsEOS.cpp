@@ -3,6 +3,7 @@
 #include "OnlineLeaderboardsEOS.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemEOS.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "OnlineSubsystemEOSPrivate.h"
 #include "OnlineSubsystemEOSTypes.h"
 #include "UserManagerEOS.h"
@@ -379,10 +380,17 @@ bool FOnlineLeaderboardsEOS::WriteLeaderboards(const FName& SessionName, const F
 	TArray<FOnlineStatsUserUpdatedStats> StatsToWrite;
 
 	FOnlineStatsUserUpdatedStats& UpdatedStats = StatsToWrite.Emplace_GetRef(Player.AsShared());
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+	for (const TPair<FString, FVariantData>& Stat : WriteObject.Properties)
+	{
+		UpdatedStats.Stats.Add(Stat.Key, FOnlineStatUpdate(Stat.Value, FOnlineStatUpdate::EOnlineStatModificationType::Unknown));
+	}
+#else
 	for (const TPair<FName, FVariantData>& Stat : WriteObject.Properties)
 	{
 		UpdatedStats.Stats.Add(Stat.Key.ToString(), FOnlineStatUpdate(Stat.Value, FOnlineStatUpdate::EOnlineStatModificationType::Unknown));
 	}
+#endif
 
 	EOSSubsystem->StatsInterfacePtr->UpdateStats(Player.AsShared(), StatsToWrite, FOnlineStatsUpdateStatsComplete());
 	return true;

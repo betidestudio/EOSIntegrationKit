@@ -6,6 +6,7 @@
 #include "OnlineSubsystemEOSPrivate.h"
 #include "OnlineSubsystemEOSTypes.h"
 #include "OnlineStatsEOS.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "UserManagerEOS.h"
 
 #if WITH_EOS_SDK
@@ -16,10 +17,17 @@ void FOnlineAchievementsEOS::WriteAchievements(const FUniqueNetId& PlayerId, FOn
 	TArray<FOnlineStatsUserUpdatedStats> StatsToWrite;
 
 	FOnlineStatsUserUpdatedStats& UpdatedStats = StatsToWrite.Emplace_GetRef(PlayerId.AsShared());
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+	for (const TPair<FString, FVariantData>& Stat : WriteObject->Properties)
+	{
+		UpdatedStats.Stats.Add(Stat.Key, FOnlineStatUpdate(Stat.Value, FOnlineStatUpdate::EOnlineStatModificationType::Unknown));
+	}
+#else
 	for (const TPair<FName, FVariantData>& Stat : WriteObject->Properties)
 	{
 		UpdatedStats.Stats.Add(Stat.Key.ToString(), FOnlineStatUpdate(Stat.Value, FOnlineStatUpdate::EOnlineStatModificationType::Unknown));
 	}
+#endif
 
 	EOSSubsystem->StatsInterfacePtr->UpdateStats(PlayerId.AsShared(), StatsToWrite, FOnlineStatsUpdateStatsComplete());
 

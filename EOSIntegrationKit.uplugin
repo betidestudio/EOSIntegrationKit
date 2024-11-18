@@ -1,125 +1,125 @@
 {
-	"FileVersion": 3,
-	"Version": 3,
-	"VersionName": "4.5",
-	"FriendlyName": "EOS Integration Kit",
-	"Description": "EIK (Epic Online Services Integration Kit) is a plugin that enables seamless integration between Epic Online Services (EOS) and Unreal Engine. The plugin provides access to the EOS SDK (Software Development Kit) within Unreal Engine, allowing developers to easily implement features such as matchmaking, achievements, leaderboards, and more.",
-	"Category": "Betide Studio",
-	"CreatedBy": "Betide Studio",
-	"CreatedByURL": "https://betide.studio",
-	"DocsURL": "https://eik.betide.studio/",
-	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/dba0aa05bdd144e69405653a387ad63e",
-	"SupportURL": "https://discord.gg/betidestudio",
-	"EngineVersion": "5.2",
-	"CanContainContent": true,
-	"Installed": true,
-	"Modules": [
-		{
-			"Name": "EOSIntegrationKit",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Win64",
-				"Android",
-				"Mac",
-				"IOS",
-				"Linux"
-			]
-		},
-		{
-			"Name": "SocketSubsystemEIK",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Win64",
-				"Android",
-				"Mac",
-				"IOS",
-				"Linux"
-			]
-		},
-		{
-			"Name": "OnlineSubsystemEIK",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Win64",
-				"Android",
-				"Mac",
-				"IOS",
-				"Linux"
-			]
-		},
-		{
-			"Name": "EIKVoiceChat",
-			"Type": "ClientOnlyNoCommandlet",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Win64",
-				"Android",
-				"Mac",
-				"IOS",
-				"Linux"
-			]
-		},
-		{
-			"Name": "EIKShared",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Win64",
-				"Android",
-				"Mac",
-				"IOS",
-				"Linux"
-			]
-		},
-		{
-			"Name": "EIKLoginMethods",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Android",
-				"Win64",
-				"Mac",
-				"IOS",
-				"Linux"
-			]
-		},
-		{
-			"Name": "EIKEditor",
-			"Type": "Editor",
-			"LoadingPhase": "Default",
-			"PlatformAllowList": [
-				"Win64",
-				"Mac",
-				"Linux"
-			]
-		},
-		{
-			"Name": "DiscordGame",
-			"Type": "Runtime",
-			"LoadingPhase": "PostDefault",
-			"PlatformAllowList": [
-				"Win64"
-			]
-		},
-		{
-			"Name": "EIKWeb",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "OnlineSubsystemUtils",
-			"Enabled": true
-		},
-		{
-			"Name": "Synthesis",
-			"Enabled": true
-		}
-	],
-	"IsBetaVersion": false,
-	"IsExperimentalVersion": false
+    "FileVersion": 3,
+    "Version": 3,
+    "VersionName": "4.5.1",
+    "FriendlyName": "EOS Integration Kit",
+    "Description": "EIK (Epic Online Services Integration Kit) is a plugin that enables seamless integration between Epic Online Services (EOS) and Unreal Engine. The plugin provides access to the EOS SDK (Software Development Kit) within Unreal Engine, allowing developers to easily implement features such as matchmaking, achievements, leaderboards, and more.",
+    "Category": "Betide Studio",
+    "CreatedBy": "Betide Studio",
+    "CreatedByURL": "https://betide.studio",
+    "DocsURL": "https://eik.betide.studio/",
+    "MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/dba0aa05bdd144e69405653a387ad63e",
+    "SupportURL": "https://discord.gg/betidestudio",
+    "EngineVersion": "5.5",
+    "CanContainContent": true,
+    "Installed": true,
+    "Modules": [
+        {
+            "Name": "EOSIntegrationKit",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64",
+                "Android",
+                "Mac",
+                "IOS",
+                "Linux"
+            ]
+        },
+        {
+            "Name": "SocketSubsystemEIK",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64",
+                "Android",
+                "Mac",
+                "IOS",
+                "Linux"
+            ]
+        },
+        {
+            "Name": "OnlineSubsystemEIK",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64",
+                "Android",
+                "Mac",
+                "IOS",
+                "Linux"
+            ]
+        },
+        {
+            "Name": "EIKVoiceChat",
+            "Type": "ClientOnlyNoCommandlet",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64",
+                "Android",
+                "Mac",
+                "IOS",
+                "Linux"
+            ]
+        },
+        {
+            "Name": "EIKShared",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64",
+                "Android",
+                "Mac",
+                "IOS",
+                "Linux"
+            ]
+        },
+        {
+            "Name": "EIKLoginMethods",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Android",
+                "Win64",
+                "Mac",
+                "IOS",
+                "Linux"
+            ]
+        },
+        {
+            "Name": "EIKEditor",
+            "Type": "Editor",
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64",
+                "Mac",
+                "Linux"
+            ]
+        },
+        {
+            "Name": "DiscordGame",
+            "Type": "Runtime",
+            "LoadingPhase": "PostDefault",
+            "PlatformAllowList": [
+                "Win64"
+            ]
+        },
+        {
+            "Name": "EIKWeb",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        }
+    ],
+    "Plugins": [
+        {
+            "Name": "OnlineSubsystemUtils",
+            "Enabled": true
+        },
+        {
+            "Name": "Synthesis",
+            "Enabled": true
+        }
+    ],
+    "IsBetaVersion": false,
+    "IsExperimentalVersion": false
 }

@@ -61,8 +61,8 @@ void UGoogleLogin_SLK::BeginDestroy()
 void UGoogleLogin_SLK::GoogleLoginLocal()
 {
 #if PLATFORM_ANDROID
-	AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity,"AndroidThunkJava_GoogleSubsystem_Init", "()V");
-	AndroidJNICallUtils::CallGameActivityVoidMethod(GameActivity, "AndroidThunkJava_GoogleSubsystem_SignIn", "(Ljava/lang/String;)V", AndroidJNIConvertor::GetJavaString(Var_ClientID));
+	AndroidJNICallUtils::CallGameActivityVoidMethod("GameActivity","AndroidThunkJava_GoogleSubsystem_Init", "()V");
+	AndroidJNICallUtils::CallGameActivityVoidMethod("GameActivity", "AndroidThunkJava_GoogleSubsystem_SignIn", "(Ljava/lang/String;)V", AndroidJNIConvertor::GetJavaString(Var_ClientID));
 	return;
 #endif
 #if PLATFORM_IOS
