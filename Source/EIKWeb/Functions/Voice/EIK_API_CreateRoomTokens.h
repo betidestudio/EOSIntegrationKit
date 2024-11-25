@@ -21,7 +21,7 @@ struct FEWebApi_EosRoomParticipant
 
 	//Initial mute status of the participant
 	UPROPERTY(BlueprintReadWrite, Category = "EOS Integration Kit|Web")
-	bool bHardMuted;
+	bool bHardMuted = false;
 };
 
 UCLASS()
