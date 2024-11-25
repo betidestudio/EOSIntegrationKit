@@ -4,6 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "Runtime/Launch/Resources/Version.h"
+#if ENGINE_MAJOR_VERSION == 5
+#include "Online/CoreOnline.h"
+#else
+#include "UObject/CoreOnline.h"
+#endif
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #include "EIK_LoginwithAuth_AsyncFunction.generated.h"
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_Logout_AsyncFunction.generated.h"
 

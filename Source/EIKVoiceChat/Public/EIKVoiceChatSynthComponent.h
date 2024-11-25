@@ -8,6 +8,7 @@
 #include "DSP/Dsp.h"
 #include "DSP/FloatArrayMath.h"
 #include "Containers/CircularBuffer.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "EIKVoiceChatSynthComponent.generated.h"
 
 /**

@@ -2,6 +2,8 @@
 
 
 #include "GoogleLogin_SLK.h"
+#include "Async/Async.h"
+
 #if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJNI.h" 
@@ -11,7 +13,6 @@
 #endif
 
 #if PLATFORM_IOS
-#include "Async/Async.h"
 #define GTM_APPAUTH_SKIP_GOOGLE_SUPPORT 0
 #define GTMSESSION_ASSERT_AS_LOG 1
 

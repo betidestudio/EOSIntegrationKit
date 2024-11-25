@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #include "eos_p2p.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "eos_p2p_types.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "EIK_P2PSubsystem.generated.h"

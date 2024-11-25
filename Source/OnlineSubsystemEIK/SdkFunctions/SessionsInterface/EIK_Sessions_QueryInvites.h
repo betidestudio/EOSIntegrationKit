@@ -6,6 +6,8 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "OnlineSubsystemEIK/SdkFunctions/ConnectInterface/EIK_ConnectSubsystem.h"
 #include "OnlineSubsystemEOS.h"
+#include "Runtime/Launch/Resources/Version.h"
+#include "Async/TaskGraphInterfaces.h"
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 THIRD_PARTY_INCLUDES_START
 #include "eos_sessions.h"

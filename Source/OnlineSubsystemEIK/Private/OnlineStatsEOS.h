@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Interfaces/OnlineStatsInterface.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "OnlineSubsystemEOSTypes.h"
 
 class FOnlineSubsystemEOS;

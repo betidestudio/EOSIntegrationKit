@@ -4,6 +4,10 @@
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Runtime/Json/Public/Dom/JsonValue.h"
+#include "Misc/Base64.h"
+#include "Runtime/Json/Public/Serialization/JsonSerializer.h"
+#include "Runtime/Json/Public/Dom/JsonObject.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_BaseWebApi.generated.h"
 

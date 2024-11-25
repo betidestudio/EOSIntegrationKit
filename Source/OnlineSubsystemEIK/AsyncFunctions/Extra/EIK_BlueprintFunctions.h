@@ -13,6 +13,7 @@
 #include "VoiceChat.h"
 #include "eos_lobby_types.h"
 #include "eos_lobby.h"
+
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "OnlineSubsystemEIK/AsyncFunctions/Sessions/EIK_UpdateSession_AsyncFunction.h"

@@ -2,7 +2,6 @@
 
 #include "EIKEditor.h"
 #include "ToolMenus.h"
-#include "Slate.h"
 #include "SlateCore.h"
 #include "EditorStyle.h"
 #include "EditorStyleSet.h"
@@ -13,9 +12,11 @@
 #include "EosIconStyle.h"
 #include "Misc/Paths.h"
 #include "ISettingsModule.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "Interfaces/IPluginManager.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/InteractiveProcess.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 #define LOCTEXT_NAMESPACE "FEIKEditorModule"
 

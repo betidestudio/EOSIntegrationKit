@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "IOnlineSubsystemEOS.h"
 #include "OnlineSubsystemUtils.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlinePresenceInterface.h"
