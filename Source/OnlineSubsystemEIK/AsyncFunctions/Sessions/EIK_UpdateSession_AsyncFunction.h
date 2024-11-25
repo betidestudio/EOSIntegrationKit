@@ -10,6 +10,18 @@
 #include "EIK_UpdateSession_AsyncFunction.generated.h"
 
 
+USTRUCT(BlueprintType)
+struct FEIK_MemberSpecificAttribute
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	FEIKUniqueNetId MemberId;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit")
+	TMap<FString, FEIKAttribute> Attributes;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateSessionDelegate);
 
 UCLASS()
@@ -23,6 +35,7 @@ public:
 		Category="EOS Integration Kit || Sessions")
 	static UEIK_UpdateSession_AsyncFunction* UpdateEIKSessions(UObject* WorldContextObject,
 	                                                           TMap<FString, FEIKAttribute> SessionSettings,
+	                                                           TArray<FEIK_MemberSpecificAttribute> MemberSettings,
 	                                                           FName SessionName = "GameSession",
 	                                                           bool bShouldAdvertise = true,
 	                                                           bool bAllowJoinInProgress = true,
@@ -38,6 +51,7 @@ public:
 	UPROPERTY()
 	UObject* Var_WorldContextObject;
 	TMap<FString, FEIKAttribute> Var_SessionSettings;
+	TArray<FEIK_MemberSpecificAttribute> Var_MemberSettings;
 	bool Var_bShouldAdvertise;
 	bool Var_bAllowJoinInProgress;
 	bool Var_bAllowInvites;
