@@ -2790,6 +2790,19 @@ void FUserManagerEOS::FriendStatusChanged(const EOS_Friends_OnFriendsUpdateInfo*
 		}
 		else if (Data->PreviousStatus < EOS_EFriendsStatus::EOS_FS_Friends && Data->CurrentStatus == EOS_EFriendsStatus::EOS_FS_NotFriends)
 		{
+			if (!Friend.IsValid())
+			{
+				return; // Early return to avoid crash
+			}
+			if (!AccountIdToStringMap.Contains(Data->TargetUserId))
+			{
+				return;
+			}
+			if (!LocalUserNumToFriendsListMap.Contains(LocalUserNum))
+			{
+				UE_LOG(LogTemp, Error, TEXT("Invalid LocalUserNum or FriendsListMap entry for LocalUserNum: %d"), LocalUserNum);
+				return;
+			}
 			LocalUserNumToFriendsListMap[LocalUserNum]->Remove(AccountIdToStringMap[Data->TargetUserId], Friend.ToSharedRef());
 			Friend->SetInviteStatus(EInviteStatus::Unknown);
 			TriggerOnInviteRejectedDelegates(*LocalEOSID, *OnlineUser->GetUserId());
