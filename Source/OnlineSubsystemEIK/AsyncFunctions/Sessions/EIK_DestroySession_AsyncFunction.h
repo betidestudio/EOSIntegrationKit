@@ -17,7 +17,6 @@ class ONLINESUBSYSTEMEIK_API UEIK_DestroySession_AsyncFunction : public UBluepri
 public:
 
 	bool bDelegateCalled = false;
-	FEIKUniqueNetId Var_PlayerId;
 	FName Var_SessionName;
 	
 	UPROPERTY(BlueprintAssignable, DisplayName="Success")
@@ -32,7 +31,7 @@ public:
 	 *For Input Parameters, please refer to the documentation link above.
 	 */
 	UFUNCTION(BlueprintCallable, DisplayName="Destroy EIK Session",meta = (BlueprintInternalUseOnly = "true"), Category="EOS Integration Kit || Sessions")
-	static UEIK_DestroySession_AsyncFunction* DestroyEIKSessions(FName SessionName,FEIKUniqueNetId PlayerId);
+	static UEIK_DestroySession_AsyncFunction* DestroyEIKSessions(FName SessionName);
 
 
 	virtual void Activate() override;
