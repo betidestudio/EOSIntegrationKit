@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/Launch/Resources/Version.h"
 #if EIKDISCORDACTIVE
 #include "discord-cpp/discord.h"
 #endif
