@@ -200,6 +200,8 @@ void FEIKEditorModule::OpenDevTool()
 #endif
 
 #if PLATFORM_WINDOWS
+    // Print the path to the DevTool & Length
+    UE_LOG(LogEikEditor, Log, TEXT("DevToolPath: %s | Length: %d"), *DevToolPath, DevToolPath.Len());
     FString DevToolArgs = TEXT("");
     FPlatformProcess::CreateProc(*DevToolPath, *DevToolArgs, true, false, false, nullptr, 0, nullptr, nullptr);
 #elif PLATFORM_MAC
