@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "FindSessionsCallbackProxy.h"
+#include "Misc/ConfigCacheIni.h"
 #include "OnlineBeaconClient.h"
 #include "PingClient.generated.h"
 

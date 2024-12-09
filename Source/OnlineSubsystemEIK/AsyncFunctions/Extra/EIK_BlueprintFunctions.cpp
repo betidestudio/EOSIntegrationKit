@@ -76,7 +76,7 @@ FEIK_CurrentSessionInfo UEIK_BlueprintFunctions::GetCurrentSessionInfo(UObject* 
 		{
 			return FEIK_CurrentSessionInfo();
 		}
-		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
+		if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(Context->GetWorld(), "EIK"))
 		{
 			if(const IOnlineSessionPtr SessionPtrRef = SubsystemRef->GetSessionInterface())
 			{

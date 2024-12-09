@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Interfaces/OnlineLeaderboardInterface.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "OnlineSubsystemEOSTypes.h"
 
 class FOnlineSubsystemEOS;

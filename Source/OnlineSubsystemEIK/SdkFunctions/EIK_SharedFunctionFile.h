@@ -34,6 +34,8 @@ THIRD_PARTY_INCLUDES_START
 #include "eos_sessions_types.h"
 THIRD_PARTY_INCLUDES_END
 #include "UObject/Object.h"
+#include "Async/Async.h"
+#include "Async/TaskGraphInterfaces.h"
 #include "EIK_SharedFunctionFile.generated.h"
 
 USTRUCT(BlueprintType)

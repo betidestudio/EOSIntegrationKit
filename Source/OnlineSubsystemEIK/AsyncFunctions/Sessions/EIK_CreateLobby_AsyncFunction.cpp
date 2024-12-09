@@ -32,6 +32,16 @@ void UEIK_CreateLobby_AsyncFunction::CreateLobby()
 			SessionCreationInfo.bAllowJoinViaPresenceFriendsOnly = Var_CreateLobbySettings.bUsePresence;
 			SessionCreationInfo.bShouldAdvertise = Var_CreateLobbySettings.bShouldAdvertise;
 			SessionCreationInfo.bAllowJoinInProgress = Var_CreateLobbySettings.bAllowJoinInProgress;
+			if(MemberSettings.Num() > 0)
+			{
+				TUniqueNetIdMap<FSessionSettings> LocalMemberSettings;
+				FSessionSettings LocalSessionSettings;
+				for(auto& MemberSetting : MemberSettings)
+				{
+					LocalSessionSettings.Add(FName(*MemberSetting.Key), MemberSetting.Value.GetVariantData());
+				}
+				LocalMemberSettings.Add(SubsystemRef->GetIdentityInterface()->GetUniquePlayerId(0).ToSharedRef(), LocalSessionSettings);
+			}
 #if ENGINE_MAJOR_VERSION == 5
 			SessionCreationInfo.SessionIdOverride = Var_CreateLobbySettings.LobbyIDOverride;
 			SessionCreationInfo.Set(SETTING_HOST_MIGRATION, Var_CreateLobbySettings.bSupportHostMigration, EOnlineDataAdvertisementType::ViaOnlineService);
@@ -146,13 +156,14 @@ void UEIK_CreateLobby_AsyncFunction::OnCreateLobbyCompleted(FName SessionName, b
 	}
 }
 
-UEIK_CreateLobby_AsyncFunction* UEIK_CreateLobby_AsyncFunction::CreateEIKLobby(TMap<FString, FEIKAttribute> SessionSettings,
+UEIK_CreateLobby_AsyncFunction* UEIK_CreateLobby_AsyncFunction::CreateEIKLobby(TMap<FString, FEIKAttribute> SessionSettings, TMap<FString, FEIKAttribute> MemberSettings,
 FName SessionName,
 	int32 NumberOfPublicConnections, FCreateLobbySettings ExtraSettings)
 {
 	UEIK_CreateLobby_AsyncFunction* Ueik_CreateLobbyObject= NewObject<UEIK_CreateLobby_AsyncFunction>();
 	Ueik_CreateLobbyObject->NumberOfPublicConnections = NumberOfPublicConnections;
 	Ueik_CreateLobbyObject->SessionSettings = SessionSettings;
+	Ueik_CreateLobbyObject->MemberSettings = MemberSettings;
 	Ueik_CreateLobbyObject->Var_CreateLobbySettings = ExtraSettings;
 	Ueik_CreateLobbyObject->VSessionName = SessionName;
 	return Ueik_CreateLobbyObject;

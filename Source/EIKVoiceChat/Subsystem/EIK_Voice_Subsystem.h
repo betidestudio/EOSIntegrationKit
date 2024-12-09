@@ -74,7 +74,7 @@ struct FEIK_PositionalVoiceChat
 	FString ChannelName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="EOS Integration Kit|Voice Chat")
-	float MaxHearingDistance;	
+	float MaxHearingDistance = 1000.0f;	
 };
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FEIKResultDelegate, bool, bWasSuccess, EEVIKResultCodes, Result);

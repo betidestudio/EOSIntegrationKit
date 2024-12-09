@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Interfaces/OnlineStatsInterface.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "EIK_GetStats_AsyncFunction.generated.h"
 

@@ -4,6 +4,7 @@
 
 #include "Misc/ScopeLock.h"
 #include "OnlineSessionSettings.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #if ENGINE_MAJOR_VERSION >= 5
 #include "Online/LANBeacon.h"

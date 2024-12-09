@@ -21,7 +21,7 @@
 #include "VoiceChatErrors.h"
 #include "EOSAudioDevicePool.h"
 #include "IEOSSDKManager.h"
-
+#include "Engine.h"
 #include "eos_common.h"
 #include "eos_lobby.h"
 #include "eos_rtc.h"

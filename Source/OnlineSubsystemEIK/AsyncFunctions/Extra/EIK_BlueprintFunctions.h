@@ -13,8 +13,10 @@
 #include "VoiceChat.h"
 #include "eos_lobby_types.h"
 #include "eos_lobby.h"
+
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "OnlineSubsystemEIK/AsyncFunctions/Sessions/EIK_UpdateSession_AsyncFunction.h"
 #include "EIK_BlueprintFunctions.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnResponseFromSanctions, bool, bWasSuccess);
@@ -197,6 +199,9 @@ struct FEIK_CurrentSessionInfo
 	TArray<FEIKUniqueNetId> RegisteredPlayers;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
+	TArray<FEIK_MemberSpecificAttribute> MemberSettings;
+
+	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
 	FEIKUniqueNetId SessionOwner;
 
 	UPROPERTY(BlueprintReadWrite, Category="EOS Integration Kit || Sessions")
@@ -252,6 +257,21 @@ struct FEIK_CurrentSessionInfo
 			FEIKUniqueNetId Temp1;
 			Temp1.SetUniqueNetId(Player);
 			RegisteredPlayers.Add(Temp1);
+		}
+		for (auto& LocalMemberSettings : Session.SessionSettings.MemberSettings)
+		{
+			FEIK_MemberSpecificAttribute Temp2;
+			FEIKUniqueNetId MemberId;
+			MemberId.SetUniqueNetId(LocalMemberSettings.Key);
+			Temp2.MemberId = MemberId;
+			TMap<FString, FEIKAttribute> LocalAttributes;
+			for (auto& Attribute : LocalMemberSettings.Value)
+			{
+				FEIKAttribute Temp3 = Attribute.Value.Data;
+				LocalAttributes.Add(Attribute.Key.ToString(), Temp3);
+			}
+			Temp2.Attributes = LocalAttributes;
+			MemberSettings.Add(Temp2);
 		}
 		
 		switch (Session.SessionState)

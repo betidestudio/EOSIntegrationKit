@@ -67,6 +67,7 @@ class ONLINESUBSYSTEMEIK_API UEIK_CreateLobby_AsyncFunction : public UBlueprintA
 public:
 	int32 NumberOfPublicConnections;
 	TMap<FString, FEIKAttribute> SessionSettings;
+	TMap<FString, FEIKAttribute> MemberSettings;
 	FCreateLobbySettings Var_CreateLobbySettings;
 	bool bDelegateCalled = false;
 	FName VSessionName;
@@ -89,9 +90,10 @@ public:
 	@param ExtraSettings - A struct containing extra settings to be used when creating the lobby which is completely optional.
 	Documentation link: https://eik.betide.studio/multiplayer/sessions/lobbies/
 	*/
-	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Lobby",meta = (BlueprintInternalUseOnly = "true",AutoCreateRefTerm=SessionSettings), Category="EOS Integration Kit || Sessions")
+	UFUNCTION(BlueprintCallable, DisplayName="Create EIK Lobby",meta = (BlueprintInternalUseOnly = "true",AutoCreateRefTerm="SessionSettings,MemberSettings" ), Category="EOS Integration Kit || Sessions")
 	static UEIK_CreateLobby_AsyncFunction* CreateEIKLobby(
 		TMap<FString, FEIKAttribute> SessionSettings,
+		TMap<FString, FEIKAttribute> MemberSettings,
 		FName SessionName,
 		int32 NumberOfPublicConnections,
 		FCreateLobbySettings ExtraSettings);

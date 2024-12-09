@@ -2,7 +2,7 @@
 
 
 #include "EIK_CalculatePingForIp_AsyncFunction.h"
-
+#include "Engine/World.h"
 #include "PingClient.h"
 
 UEIK_CalculatePingForIp_AsyncFunction* UEIK_CalculatePingForIp_AsyncFunction::CalculatePingForIp(FString IpAddress,
@@ -17,6 +17,20 @@ UEIK_CalculatePingForIp_AsyncFunction* UEIK_CalculatePingForIp_AsyncFunction::Ca
 
 void UEIK_CalculatePingForIp_AsyncFunction::OnPingComplete(int32 Ping, bool bSuccess)
 {
+	if(bSuccess)
+	{
+		OnSuccess.Broadcast(Ping);
+	}
+	else
+	{
+		OnFailure.Broadcast(Ping);
+	}
+	SetReadyToDestroy();
+#if ENGINE_MAJOR_VERSION == 5
+	MarkAsGarbage();
+#else
+	MarkPendingKill();
+#endif
 }
 
 void UEIK_CalculatePingForIp_AsyncFunction::Activate()

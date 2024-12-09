@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "EIK_GetOffers_AsyncFunction.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGetOffers_Delegate, const TArray<FOffersStruct>&, Offers);

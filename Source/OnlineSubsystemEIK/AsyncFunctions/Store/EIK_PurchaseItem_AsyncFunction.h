@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "EIK_PurchaseItem_AsyncFunction.generated.h"
 
 

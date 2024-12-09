@@ -703,14 +703,6 @@ bool FUserManagerEOS::Login(int32 LocalUserNum, const FOnlineAccountCredentials&
 	LocalUserNumToLastLoginCredentials.Emplace(LocalUserNum, MakeShared<FOnlineAccountCredentials>(AccountCredentials));
 	FEOSSettings Settings = UEIKSettings::GetSettings();
 
-	// We don't support offline logged in, so they are either logged in or not
-	if (GetLoginStatus(LocalUserNum) == ELoginStatus::LoggedIn)
-	{
-		UE_LOG_ONLINE(Warning, TEXT("User (%d) already logged in."), LocalUserNum);
-		TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdEOS::EmptyId(), FString(TEXT("Already logged in")));
-		return true;
-	}
-
 	TArray<FString> BrokenTypeString;
 	if(AccountCredentials.Type.ParseIntoArray(BrokenTypeString, TEXT("_+_"), true) > 0)
 	{
@@ -2582,7 +2574,11 @@ FPlatformUserId FUserManagerEOS::GetPlatformUserIdFromUniqueNetId(const FUniqueN
 #endif
 }
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 5
+void FUserManagerEOS::GetLinkedAccountAuthToken(int32 LocalUserNum, const FString& TokenType, const FOnGetLinkedAccountAuthTokenCompleteDelegate& Delegate) const
+#else
 void FUserManagerEOS::GetLinkedAccountAuthToken(int32 LocalUserNum, const FOnGetLinkedAccountAuthTokenCompleteDelegate& Delegate) const
+#endif
 {
 	FExternalAuthToken ExternalToken;
 	ExternalToken.TokenString = GetAuthToken(LocalUserNum);
@@ -2794,6 +2790,19 @@ void FUserManagerEOS::FriendStatusChanged(const EOS_Friends_OnFriendsUpdateInfo*
 		}
 		else if (Data->PreviousStatus < EOS_EFriendsStatus::EOS_FS_Friends && Data->CurrentStatus == EOS_EFriendsStatus::EOS_FS_NotFriends)
 		{
+			if (!Friend.IsValid())
+			{
+				return; // Early return to avoid crash
+			}
+			if (!AccountIdToStringMap.Contains(Data->TargetUserId))
+			{
+				return;
+			}
+			if (!LocalUserNumToFriendsListMap.Contains(LocalUserNum))
+			{
+				UE_LOG(LogTemp, Error, TEXT("Invalid LocalUserNum or FriendsListMap entry for LocalUserNum: %d"), LocalUserNum);
+				return;
+			}
 			LocalUserNumToFriendsListMap[LocalUserNum]->Remove(AccountIdToStringMap[Data->TargetUserId], Friend.ToSharedRef());
 			Friend->SetInviteStatus(EInviteStatus::Unknown);
 			TriggerOnInviteRejectedDelegates(*LocalEOSID, *OnlineUser->GetUserId());

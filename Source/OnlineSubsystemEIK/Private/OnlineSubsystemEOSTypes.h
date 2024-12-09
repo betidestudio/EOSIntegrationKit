@@ -399,9 +399,19 @@ private:
 			// Ignore
 			return;
 		}
+		if (!Data->ClientData)
+		{
+			UE_LOG(LogTemp, Error, TEXT("ClientData is null in CallbackImpl"));
+			return;
+		}
 		check(IsInGameThread());
 
 		TEOSCallback* CallbackThis = (TEOSCallback*)Data->ClientData;
+		if (!CallbackThis)
+		{
+			UE_LOG(LogTemp, Error, TEXT("CallbackThis is null in CallbackImpl"));
+			return;
+		}
 		check(CallbackThis);
 
 #if ENGINE_MAJOR_VERSION == 5

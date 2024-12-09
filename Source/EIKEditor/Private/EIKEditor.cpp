@@ -2,7 +2,6 @@
 
 #include "EIKEditor.h"
 #include "ToolMenus.h"
-#include "Slate.h"
 #include "SlateCore.h"
 #include "EditorStyle.h"
 #include "EditorStyleSet.h"
@@ -13,9 +12,11 @@
 #include "EosIconStyle.h"
 #include "Misc/Paths.h"
 #include "ISettingsModule.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "Interfaces/IPluginManager.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/InteractiveProcess.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 #define LOCTEXT_NAMESPACE "FEIKEditorModule"
 
@@ -172,30 +173,43 @@ void FEIKEditorModule::OpenDevTool()
 {
     IPluginManager& PluginManager = IPluginManager::Get();
     TSharedPtr<IPlugin> EOSPlugin = PluginManager.FindPlugin(TEXT("EOSIntegrationKit"));
-    if(!EOSPlugin.IsValid())
+    if (!EOSPlugin.IsValid())
     {
         UE_LOG(LogEikEditor, Error, TEXT("EOSIntegrationKit plugin not found"));
         return;
     }
+
     FString PluginRoot = EOSPlugin->GetBaseDir();
-    auto MainModulePath = FPaths::Combine(*PluginRoot, TEXT("Source/ThirdParty/EIKSDK/Tools/EOS_DevAuthTool-win32-x64-1.2.1"));
-    FString DevToolPath = FPaths::Combine(*MainModulePath, TEXT("EOS_DevAuthTool.exe"));
-    if(!FPaths::FileExists(DevToolPath))
+    FString DevToolPath;
+
+#if PLATFORM_WINDOWS
+    FString MainModulePath = FPaths::Combine(*PluginRoot, TEXT("Source/ThirdParty/EIKSDK/Tools/EOS_DevAuthTool-win32-x64-1.2.1"));
+    DevToolPath = FPaths::Combine(*MainModulePath, TEXT("EOS_DevAuthTool.exe"));
+    if (!FPaths::FileExists(DevToolPath))
     {
-        FString DevToolZipPath = FPaths::Combine(*PluginRoot, TEXT("Source/ThirdParty/EIKSDK/Tools/EOS_DevAuthTool-win32-x64-1.2.1.zip"));
-        if (!FPaths::FileExists(DevToolZipPath))
-        {
-            UE_LOG(LogEikEditor, Error, TEXT("DevTool zip not found at %s"), *DevToolZipPath);
-            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("DevToolZipNotFound", "DevTool zip not found. Make sure devtool is downloaded and extracted at Source/ThirdParty/EIKSDK/Tools/EOS_DevAuthTool-win32-x64-1.2.1"));
-            return;
-        }
-        FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("DevToolNotExtracted", "DevTool not extracted. Extract the devtool zip at Source/ThirdParty/EIKSDK/Tools/EOS_DevAuthTool-win32-x64-1.2.1"));
+        UE_LOG(LogEikEditor, Error, TEXT("DevTool not found at %s"), *DevToolPath);
+        FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("DevToolNotFound", "DevTool not found. Ensure the devtool is downloaded and placed in the correct directory and unzipped."));
         return;
     }
+#elif PLATFORM_MAC
+    DevToolPath = FPaths::Combine(*PluginRoot, TEXT("Source/ThirdParty/EIKSDK/Tools/EOS_DevAuthTool-darwin-x64-1.2.1/EOS_DevAuthTool.app"));
+#else
+    UE_LOG(LogEikEditor, Error, TEXT("Unsupported platform"));
+    FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("UnsupportedPlatform", "Unsupported platform"));
+    return;
+#endif
+
+#if PLATFORM_WINDOWS
+    // Print the path to the DevTool & Length
+    UE_LOG(LogEikEditor, Log, TEXT("DevToolPath: %s | Length: %d"), *DevToolPath, DevToolPath.Len());
     FString DevToolArgs = TEXT("");
     FPlatformProcess::CreateProc(*DevToolPath, *DevToolArgs, true, false, false, nullptr, 0, nullptr, nullptr);
+#elif PLATFORM_MAC
+    FString OpenCommand = TEXT("/usr/bin/open");
+    FString DevToolArgs = FString::Printf(TEXT("\"%s\""), *DevToolPath);
+    FPlatformProcess::CreateProc(*OpenCommand, *DevToolArgs, true, false, false, nullptr, 0, nullptr, nullptr);
+#endif
 }
-
 
 TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
 {

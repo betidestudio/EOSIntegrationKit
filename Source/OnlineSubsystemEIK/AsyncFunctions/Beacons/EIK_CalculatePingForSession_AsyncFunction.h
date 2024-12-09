@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "Runtime/Launch/Resources/Version.h"
+#include "Engine/World.h"
 #include "OnlineSubsystemEIK/Subsystem/EIK_Subsystem.h"
 #include "EIK_CalculatePingForSession_AsyncFunction.generated.h"
 

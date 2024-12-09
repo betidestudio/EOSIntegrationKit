@@ -6,6 +6,7 @@
 #include "OnlineError.h"
 #include "OnlineSubsystem.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "OnlineSubsystemEIK/SdkFunctions/EIK_SharedFunctionFile.h"
 #if ENGINE_MAJOR_VERSION >= 5
 #include "Online/CoreOnline.h"

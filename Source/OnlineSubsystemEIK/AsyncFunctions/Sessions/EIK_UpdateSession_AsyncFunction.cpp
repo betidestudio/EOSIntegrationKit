@@ -4,15 +4,16 @@
 
 
 UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSessions(UObject* WorldContextObject,
-	TMap<FString, FEIKAttribute> SessionSettings, FName SessionName, bool bShouldAdvertise, bool bAllowJoinInProgress,
-	bool bAllowInvites, bool bUsesPresence, bool bIsLANMatch, bool bIsDedicatedServer, bool bIsLobbySession,
-	int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections)
+	TMap<FString, FEIKAttribute> SessionSettings, TArray<FEIK_MemberSpecificAttribute> MemberSettings, FName SessionName,
+	bool bShouldAdvertise, bool bAllowJoinInProgress, bool bAllowInvites, bool bUsesPresence, bool bIsLANMatch,
+	bool bIsDedicatedServer, bool bIsLobbySession, int32 NumberOfPublicConnections, int32 NumberOfPrivateConnections)
 {
 	UEIK_UpdateSession_AsyncFunction* UpdateSession = NewObject<UEIK_UpdateSession_AsyncFunction>();
 	UpdateSession->Var_WorldContextObject = WorldContextObject;
 	UpdateSession->Var_SessionSettings = SessionSettings;
 	UpdateSession->Var_bShouldAdvertise = bShouldAdvertise;
 	UpdateSession->Var_bAllowJoinInProgress = bAllowJoinInProgress;
+	UpdateSession->Var_MemberSettings = MemberSettings;
 	UpdateSession->Var_bAllowInvites = bAllowInvites;
 	UpdateSession->Var_SessionName = SessionName;
 	UpdateSession->Var_bUsesPresence = bUsesPresence;
@@ -23,6 +24,7 @@ UEIK_UpdateSession_AsyncFunction* UEIK_UpdateSession_AsyncFunction::UpdateEIKSes
 	UpdateSession->Var_bIsLobbySession = bIsLobbySession;
 	return UpdateSession;
 }
+
 void UEIK_UpdateSession_AsyncFunction::OnUpdateSessionComplete(FName Name, bool bArg)
 {
 	if (bArg)
@@ -58,6 +60,20 @@ void UEIK_UpdateSession_AsyncFunction::Activate()
 			SessionSettings.bIsLANMatch = Var_bIsLANMatch;
 			SessionSettings.bUseLobbiesIfAvailable = Var_bIsLobbySession;
 			SessionSettings.bIsDedicated = Var_bIsDedicatedServer;
+			if(Var_MemberSettings.Num() > 0)
+			{
+				TUniqueNetIdMap<FSessionSettings> LocalMemberSettings;
+				for(auto& MemberSetting : Var_MemberSettings)
+				{
+					FSessionSettings LocalSessionSettings;
+					for(auto& LocalMemberSpecificAttribute : MemberSetting.Attributes)
+					{
+						LocalSessionSettings.Add(FName(*LocalMemberSpecificAttribute.Key), LocalMemberSpecificAttribute.Value.GetVariantData());
+					}
+					LocalMemberSettings.Add(MemberSetting.MemberId.GetUniqueNetId()->AsShared(), LocalSessionSettings);
+				}
+				SessionSettings.MemberSettings = LocalMemberSettings;
+			}
 			for (auto& Settings_SingleValue : Var_SessionSettings)
 			{
 				if (Settings_SingleValue.Key.Len() == 0)
