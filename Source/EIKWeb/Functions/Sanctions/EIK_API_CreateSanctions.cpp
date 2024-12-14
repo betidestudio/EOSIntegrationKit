@@ -54,7 +54,7 @@ void UEIK_API_CreateSanctions::Activate()
 			{
 				SanctionJson->SetStringField(TEXT("source"), Sanction.Source);
 			}
-			if(!Sanction.Tags.IsEmpty())
+			if(Sanction.Tags.Num() > 0)
 			{
 				TArray<TSharedPtr<FJsonValue>> TagsJson;
 				for (auto Tag : Sanction.Tags)
@@ -64,7 +64,7 @@ void UEIK_API_CreateSanctions::Activate()
 				SanctionJson->SetArrayField(TEXT("tags"), TagsJson);
 			}
 			SanctionJson->SetBoolField(TEXT("pending"), Sanction.bPending);
-			if(!Sanction.Metadata.IsEmpty())
+			if(Sanction.Metadata.Num() > 0)
 			{
 				//Arbitrary metadata key/value pairs associated with this sanction
 				TSharedPtr<FJsonObject> MetadataJson = MakeShareable(new FJsonObject);

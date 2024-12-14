@@ -29,7 +29,7 @@ void UEIK_API_UpdatingSanctions::Activate()
 		HttpRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *Var_Authorization));
 	}
 	TSharedPtr<FJsonObject> RequestBodyJson = MakeShareable(new FJsonObject);
-	if (!Var_SanctionPatchPayload.IsEmpty())
+	if (Var_SanctionPatchPayload.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> SanctionsJson;
 		for (auto Sanction : Var_SanctionPatchPayload)
@@ -45,7 +45,7 @@ void UEIK_API_UpdatingSanctions::Activate()
 				{
 					SanctionJson->SetStringField(TEXT("justification"), UpdateItem.Justification);
 				}
-				if (!UpdateItem.Metadata.IsEmpty())
+				if (UpdateItem.Metadata.Num() > 0)
 				{
 					TSharedPtr<FJsonObject> MetadataJson = MakeShareable(new FJsonObject);
 					for (auto MetadataItem : UpdateItem.Metadata)
@@ -54,7 +54,7 @@ void UEIK_API_UpdatingSanctions::Activate()
 					}
 					SanctionJson->SetObjectField(TEXT("metadata"), MetadataJson);
 				}
-				if (!UpdateItem.Tags.IsEmpty())
+				if (UpdateItem.Tags.Num() > 0)
 				{
 					TArray<TSharedPtr<FJsonValue>> TagsJson;
 					for (auto Tag : UpdateItem.Tags)
