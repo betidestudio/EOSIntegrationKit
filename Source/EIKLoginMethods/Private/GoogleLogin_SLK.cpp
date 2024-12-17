@@ -10,6 +10,20 @@
 #include "Android/Utils/AndroidJNICallUtils.h"
 #include "Android/Utils/AndroidJNIConvertor.h"
 #include "Runtime/Core/Public/Async/TaskGraphInterfaces.h"
+
+#define INIT_JAVA_METHOD(name, signature) \
+if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true)) { \
+name = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, #name, signature, false); \
+check(name != NULL); \
+} else { \
+check(0); \
+}
+
+#define DECLARE_JAVA_METHOD(name) \
+static jmethodID name = NULL;
+
+DECLARE_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_Init);
+DECLARE_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_SignIn);
 #endif
 
 #if PLATFORM_IOS
@@ -45,6 +59,10 @@ void UGoogleLogin_SLK::Activate()
 {
 	UGoogleLogin_SLK::staticInstance = this;
 
+#if PLATFORM_ANDROID
+	INIT_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_Init, "()V");
+	INIT_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_SignIn, "(Ljava/lang/String;)V");
+#endif
 #if PLATFORM_IOS
 	FIOSCoreDelegates::OnOpenURL.AddStatic(&OnGoogleOpenURL);
 #endif
@@ -62,8 +80,11 @@ void UGoogleLogin_SLK::BeginDestroy()
 void UGoogleLogin_SLK::GoogleLoginLocal()
 {
 #if PLATFORM_ANDROID
-	AndroidJNICallUtils::CallGameActivityVoidMethod("GameActivity","AndroidThunkJava_GoogleSubsystem_Init", "()V");
-	AndroidJNICallUtils::CallGameActivityVoidMethod("GameActivity", "AndroidThunkJava_GoogleSubsystem_SignIn", "(Ljava/lang/String;)V", AndroidJNIConvertor::GetJavaString(Var_ClientID));
+	if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+	{
+		FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_Init);
+		FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_SignIn, AndroidJNIConvertor::GetJavaString(Var_ClientID));
+	}
 	return;
 #endif
 #if PLATFORM_IOS
