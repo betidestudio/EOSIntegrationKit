@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Betide Studio. All Rights Reserved.
 // Written by AvnishGameDev.
 
-#include "GoogleLogin_SLK.h"
+#include "GoogleLogout_SLK.h"
 #include "Async/Async.h"
 
 #if PLATFORM_ANDROID
@@ -22,8 +22,7 @@ check(0); \
 #define DECLARE_JAVA_METHOD(name) \
 static jmethodID name = NULL;
 
-DECLARE_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_Init);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_SignIn);
+DECLARE_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_SignOut);
 #endif
 
 #if PLATFORM_IOS
@@ -38,57 +37,43 @@ DECLARE_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_SignIn);
 #import <SafariServices/SafariServices.h>
 #endif
 
-TWeakObjectPtr<UGoogleLogin_SLK> UGoogleLogin_SLK::staticInstance = nullptr;
+TWeakObjectPtr<UGoogleLogout_SLK> UGoogleLogout_SLK::staticInstance = nullptr;
 
-UGoogleLogin_SLK* UGoogleLogin_SLK::GoogleLogin(UObject* WorldContextObject, const FString& ClientID)
+UGoogleLogout_SLK* UGoogleLogout_SLK::GoogleLogout(UObject* WorldContextObject)
 {
-	UGoogleLogin_SLK* Action = NewObject<UGoogleLogin_SLK>();
-	Action->Var_ClientID = ClientID;
+	UGoogleLogout_SLK* Action = NewObject<UGoogleLogout_SLK>();
 	return Action;
 }
 
-#if PLATFORM_IOS
-static void OnGoogleOpenURL(UIApplication* application, NSURL* url, NSString* sourceApplication, id annotation)
+void UGoogleLogout_SLK::Activate()
 {
-	BOOL handled;
-	handled = [GIDSignIn.sharedInstance handleURL:url];
-}
-#endif
-
-void UGoogleLogin_SLK::Activate()
-{
-	UGoogleLogin_SLK::staticInstance = this;
+	UGoogleLogout_SLK::staticInstance = this;
 
 #if PLATFORM_ANDROID
-	INIT_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_Init, "()V");
-	INIT_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_SignIn, "(Ljava/lang/String;)V");
-#endif
-#if PLATFORM_IOS
-	FIOSCoreDelegates::OnOpenURL.AddStatic(&OnGoogleOpenURL);
+	INIT_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_SignOut, "()V");
 #endif
 	
-	GoogleLoginLocal();
+	GoogleLogoutLocal();
 	Super::Activate();
 }
 
-void UGoogleLogin_SLK::BeginDestroy()
+void UGoogleLogout_SLK::BeginDestroy()
 {
-	UGoogleLogin_SLK::staticInstance = nullptr;
+	UGoogleLogout_SLK::staticInstance = nullptr;
 	Super::BeginDestroy();
 }
 
-void UGoogleLogin_SLK::GoogleLoginLocal()
+void UGoogleLogout_SLK::GoogleLogoutLocal()
 {
 #if PLATFORM_ANDROID
 	if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 	{
-		FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_Init);
-		FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_SignIn, AndroidJNIConvertor::GetJavaString(Var_ClientID));
+		FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_SignOut);
 	}
 	return;
 #endif
 #if PLATFORM_IOS
-	UIViewController *viewController = [IOSAppDelegate GetDelegate].IOSController;
+	/*UIViewController *viewController = [IOSAppDelegate GetDelegate].IOSController;
 
 	[GIDSignIn.sharedInstance signInWithPresentingViewController:viewController
 													  completion:^(GIDSignInResult* result, NSError* signInError) {
@@ -105,28 +90,27 @@ void UGoogleLogin_SLK::GoogleLoginLocal()
 			});
 		}
 	}];
-	return;
+	return;*/
 #endif
-	UGoogleLogin_SLK::staticInstance.Get()->Failure.Broadcast("", "Google Login Failed to initialise");
+	UGoogleLogout_SLK::staticInstance.Get()->Failure.Broadcast("Platform not supported!");
 }
 
 #if PLATFORM_ANDROID
 extern "C"
 {
-	JNIEXPORT void Java_com_epicgames_unreal_GameActivity_OnSignInResult(JNIEnv* env, jclass clazz, jboolean success, jstring response, jstring token)
+	JNIEXPORT void Java_com_epicgames_unreal_GameActivity_OnSignOutResult(JNIEnv* env, jclass clazz, jboolean success, jstring response)
 	{
 		FString responseStr = AndroidJNIConvertor::FromJavaString(response);
-		FString tokenStr = AndroidJNIConvertor::FromJavaString(token);
-		if (UGoogleLogin_SLK::staticInstance.Get())
+		if (UGoogleLogout_SLK::staticInstance.Get())
 		{
-			AsyncTask(ENamedThreads::GameThread, [success, responseStr, tokenStr]() {
+			AsyncTask(ENamedThreads::GameThread, [success, responseStr]() {
 				if (success)
 				{
-					UGoogleLogin_SLK::staticInstance.Get()->Success.Broadcast(tokenStr, responseStr);
+					UGoogleLogout_SLK::staticInstance.Get()->Success.Broadcast(responseStr);
 				}
 				else
 				{
-					UGoogleLogin_SLK::staticInstance.Get()->Failure.Broadcast("", responseStr);
+					UGoogleLogout_SLK::staticInstance.Get()->Failure.Broadcast(responseStr);
 				}
 			});
 		}

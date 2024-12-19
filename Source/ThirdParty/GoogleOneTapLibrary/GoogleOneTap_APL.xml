@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Written by AvnishGameDev -->
 <root xmlns:android="http://schemas.android.com/apk/res/android">
 	<!-- init section is always evaluated once per architecture -->
 	<init>
@@ -147,10 +148,33 @@
 			googleCredentialManager.signIn(clientID);
 		}
 
-		public void AndroidThunkJava_GoogleSubsystem_SignOut(String clientID)
+		public void AndroidThunkJava_GoogleSubsystem_SignOut()
 		{
 			googleCredentialManager.signOut();
 		}
+		
+		/* BFL_GoogleSignIn */
+		public String AndroidThunkJava_GoogleSubsystem_GetUserDisplayName()
+		{
+			return googleCredentialManager.getUserDisplayName();
+		}
+		public String AndroidThunkJava_GoogleSubsystem_GetUserFirstName()
+		{
+			return googleCredentialManager.getUserFirstName();
+		}
+		public String AndroidThunkJava_GoogleSubsystem_GetUserLastName()
+		{
+			return googleCredentialManager.getUserLastName();
+		}
+		public String AndroidThunkJava_GoogleSubsystem_GetUserProfilePictureUrl()
+		{
+			return googleCredentialManager.getUserProfilePictureUrl();
+		}
+		public boolean AndroidThunkJava_GoogleSubsystem_IsUserLoggedIn()
+		{
+			return googleCredentialManager.isUserLoggedIn();
+		}
+		
 	</insert>
 	</gameActivityClassAdditions>
   
