@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// Copyright (C) 2024 Betide Studio. All Rights Reserved.
+// Written by AvnishGameDev.
+
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
