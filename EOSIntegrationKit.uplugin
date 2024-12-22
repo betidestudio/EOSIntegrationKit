@@ -22,8 +22,10 @@
                 "Win64",
                 "Android",
                 "Mac",
-                "IOS",
                 "Linux"
+            ],
+            "BlacklistPlatforms": [
+                "IOS"
             ]
         },
         {
@@ -34,8 +36,10 @@
                 "Win64",
                 "Android",
                 "Mac",
-                "IOS",
                 "Linux"
+            ],
+            "BlacklistPlatforms": [
+                "IOS"
             ]
         },
         {
@@ -46,8 +50,10 @@
                 "Win64",
                 "Android",
                 "Mac",
-                "IOS",
                 "Linux"
+            ],
+            "BlacklistPlatforms": [
+                "IOS"
             ]
         },
         {
@@ -58,8 +64,10 @@
                 "Win64",
                 "Android",
                 "Mac",
-                "IOS",
                 "Linux"
+            ],
+            "BlacklistPlatforms": [
+                "IOS"
             ]
         },
         {
@@ -70,8 +78,10 @@
                 "Win64",
                 "Android",
                 "Mac",
-                "IOS",
                 "Linux"
+            ],
+            "BlacklistPlatforms": [
+                "IOS"
             ]
         },
         {
@@ -79,11 +89,13 @@
             "Type": "Runtime",
             "LoadingPhase": "Default",
             "PlatformAllowList": [
-                "Android",
                 "Win64",
+                "Android",
                 "Mac",
-                "IOS",
                 "Linux"
+            ],
+            "BlacklistPlatforms": [
+                "IOS"
             ]
         },
         {
@@ -102,12 +114,30 @@
             "LoadingPhase": "PostDefault",
             "PlatformAllowList": [
                 "Win64"
+            ],
+            "WhitelistPlatforms": [
+                "Win64"
+            ],
+            "BlacklistPlatforms": [
+                "Mac",
+                "IOS",
+                "Linux",
+                "Android"
             ]
         },
         {
             "Name": "EIKWeb",
             "Type": "Runtime",
-            "LoadingPhase": "Default"
+            "LoadingPhase": "Default",
+            "PlatformAllowList": [
+                "Win64",
+                "Android",
+                "Mac",
+                "Linux"
+            ],
+            "BlacklistPlatforms": [
+                "IOS"
+            ]
         }
     ],
     "Plugins": [
