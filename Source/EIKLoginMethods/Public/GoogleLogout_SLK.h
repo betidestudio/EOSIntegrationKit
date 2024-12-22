@@ -5,32 +5,31 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "GoogleLogin_SLK.generated.h"
+#include "GoogleLogout_SLK.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGoogleSignInCallback, const FString&, Token, const FString&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGoogleSignOutCallback, const FString&, Error);
 
 /**
  * 
  */
 UCLASS()
-class EIKLOGINMETHODS_API UGoogleLogin_SLK : public UBlueprintAsyncActionBase
+class EIKLOGINMETHODS_API UGoogleLogout_SLK : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
 
 public:
 	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|GoogleSubsystem")
-	static UGoogleLogin_SLK* GoogleLogin(UObject* WorldContextObject, const FString& ClientID);
+	static UGoogleLogout_SLK* GoogleLogout(UObject* WorldContextObject);
 
 	void Activate() override;
 	void BeginDestroy() override;
-	FString Var_ClientID;
-	static TWeakObjectPtr<UGoogleLogin_SLK> staticInstance;
+	static TWeakObjectPtr<UGoogleLogout_SLK> staticInstance;
 
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|GoogleSubsystem")
-	FGoogleSignInCallback Success;
+	FGoogleSignOutCallback Success;
 
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|GoogleSubsystem")
-	FGoogleSignInCallback Failure;
+	FGoogleSignOutCallback Failure;
 
-	void GoogleLoginLocal();
+	void GoogleLogoutLocal();
 };
