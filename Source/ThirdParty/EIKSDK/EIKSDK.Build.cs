@@ -62,28 +62,7 @@ public class EIKSDK : ModuleRules
 			return String.Format("EOSSDK-{0}-Shipping", Target.Platform.ToString());
 		}
 	}
-	public virtual string LibraryLinkName
-	{
-		get
-		{
-			if (Target.Platform == UnrealTargetPlatform.Mac)
-			{
-				return Path.Combine(SDKBinariesDir, "lib" + LibraryLinkNameBase + ".dylib");
-			}
-			else if(Target.Platform == UnrealTargetPlatform.Linux)
-			{
-				return Path.Combine(SDKBinariesDir, "lib" + LibraryLinkNameBase + ".so");
-			}
-			else if (Target.Platform.IsInGroup(UnrealPlatformGroup.Microsoft))
-			{
-				return Path.Combine(SDKLibsDir, LibraryLinkNameBase + ".lib");
-			}
-			// Android has one .so per architecture, so just deal with that below.
-			// Other platforms will override this property.
-
-			throw new BuildException("Unsupported platform");
-		}
-	}
+	
 	public virtual string RuntimeLibraryFileName
 	{
 		get
@@ -107,7 +86,8 @@ public class EIKSDK : ModuleRules
 			}
 			// Other platforms will override this property.
 
-			throw new BuildException("Unsupported platform");
+			Console.WriteLine(string.Format("EIKSDK: Unsupported platform detected: {0}", Target.Platform));
+			return string.Empty;
 		}
 	}
 	public virtual bool bRequiresRuntimeLoad
@@ -127,7 +107,7 @@ public class EIKSDK : ModuleRules
 		Console.WriteLine(RuntimeLibraryFileName);
 		PublicIncludePaths.Add(SDKIncludesDir);
 		PublicSystemIncludePaths.Add(SDKIncludesDir);
-		PrivateIncludePaths.Add(SDKIncludesDir);
+		Console.WriteLine("EOS Integration Kit: Include path: " + SDKIncludesDir);
 		PublicDefinitions.Add("EOSSDK_USE_PROJECT_BINARY=1");
 
 		if (Target.Platform == UnrealTargetPlatform.Win64)
@@ -190,20 +170,41 @@ public class EIKSDK : ModuleRules
 		else if (Target.Platform == UnrealTargetPlatform.Android)
 		{
 #if !UE_5_0_OR_LATER
-			if (Target.Architecture == "arm64-v8a")
+			IAndroidToolChain ToolChain = AndroidExports.CreateToolChain(Target.ProjectFile);
+			var Architectures = ToolChain.GetAllArchitectures();
+
+			foreach (var arch in Architectures)
 			{
-				Console.WriteLine("Adding EOS SDK for arm64-v8a");
-				PublicAdditionalLibraries.Add(Path.Combine(SDKBinariesDir, "arm64-v8a", "libEOSSDK.so"));
-			}
-			else if (Target.Architecture == "armeabi-v7a")
-			{
-				Console.WriteLine("Adding EOS SDK for armeabi-v7a");
-				PublicAdditionalLibraries.Add(Path.Combine(SDKBinariesDir, "armeabi-v7a", "libEOSSDK.so"));
-			}
-			else if (Target.Architecture == "x86_64")
-			{
-				Console.WriteLine("Adding EOS SDK for x86_64");
-				PublicAdditionalLibraries.Add(Path.Combine(SDKBinariesDir, "x86_64", "libEOSSDK.so"));
+				string FolderName;
+
+				// Map Unreal's architecture names to folder names
+				if (arch == "-armv7")
+				{
+					FolderName = "armeabi-v7a";
+				}
+				else if (arch == "-arm64")
+				{
+					FolderName = "arm64-v8a";
+				}
+				else if (arch == "-x86")
+				{
+					FolderName = "x86";
+				}
+				else if (arch == "-x64" || arch == "-x86_64")
+				{
+					FolderName = "x86_64";
+				}
+				else
+				{
+					Console.WriteLine("Unknown architecture: " + arch);
+					continue;
+				}
+
+				Console.WriteLine("Adding EOS SDK for architecture folder: " + FolderName);
+
+				// Add the corresponding .so file for this architecture
+				PublicAdditionalLibraries.Add(Path.Combine(SDKBinariesDir, FolderName, "libEOSSDK.so"));
+				RuntimeDependencies.Add(Path.Combine(SDKBinariesDir, FolderName, "libEOSSDK.so"));
 			}
 #else
 			if (Target.Architectures.Contains(UnrealArch.Arm64))
