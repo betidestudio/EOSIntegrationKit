@@ -73,24 +73,9 @@ void UGoogleLogout_SLK::GoogleLogoutLocal()
 	return;
 #endif
 #if PLATFORM_IOS
-	/*UIViewController *viewController = [IOSAppDelegate GetDelegate].IOSController;
-
-	[GIDSignIn.sharedInstance signInWithPresentingViewController:viewController
-													  completion:^(GIDSignInResult* result, NSError* signInError) {
-		if (signInError == nil) {
-			const char* token_str = [result.user.accessToken.tokenString UTF8String];
-			AsyncTask(ENamedThreads::GameThread, [this, token_str]() {
-				UGoogleLogin_SLK::staticInstance.Get()->Success.Broadcast(FString(token_str), "");
-			});
-		} else {
-			// Handle sign-in error
-			const char* c_error = [signInError.localizedDescription UTF8String];
-			AsyncTask(ENamedThreads::GameThread, [this, c_error]() {
-			   UGoogleLogin_SLK::staticInstance.Get()->Failure.Broadcast("", FString(c_error));
-			});
-		}
-	}];
-	return;*/
+	[[GIDSignIn sharedInstance] signOut];
+	UGoogleLogout_SLK::staticInstance.Get()->Success.Broadcast("Logout Success");
+	return;
 #endif
 	UGoogleLogout_SLK::staticInstance.Get()->Failure.Broadcast("Platform not supported!");
 }
