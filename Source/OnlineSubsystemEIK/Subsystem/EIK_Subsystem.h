@@ -73,7 +73,7 @@ struct FEIKAttribute
 	}
 
 	FEIKAttribute(FVariantData VariantData)
-	{
+	{		
 		switch (VariantData.GetType())
 		{
 		case EOnlineKeyValuePairDataType::String:
@@ -87,6 +87,12 @@ struct FEIKAttribute
 		case EOnlineKeyValuePairDataType::Int32:
 			AttributeType = EEIKAttributeType::Integer;
 			VariantData.GetValue(IntValue);
+			break;
+		case EOnlineKeyValuePairDataType::Int64:
+			AttributeType = EEIKAttributeType::Integer;
+			int64 Int64Value;
+			VariantData.GetValue(Int64Value);
+			IntValue = Int64Value;
 			break;
 		default:
 			AttributeType = EEIKAttributeType::String;
