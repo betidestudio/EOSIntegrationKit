@@ -16,7 +16,7 @@
 	<isArch arch="x86_64">
 	  <setBool result="bSupported" value="true"/>
 	</isArch>
-	<if condition="android.compileSdkVersion < 34">
+	<if condition="android.compileSdkVersion &lt; 34">
 		<true>
 			<setBool result="bSupported" value="false"/>
 			<log text="Unsupported API level: $S(android.compileSdkVersion). Minimum required is 34."/>
