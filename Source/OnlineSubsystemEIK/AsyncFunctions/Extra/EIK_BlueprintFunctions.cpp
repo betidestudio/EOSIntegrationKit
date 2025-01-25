@@ -358,8 +358,10 @@ bool UEIK_BlueprintFunctions::SetLobbyPlayerVoiceChatVolume(UObject* Context, FS
 	if(GetLobbyVoiceChat(Context))
 	{
 		GetLobbyVoiceChat(Context)->SetPlayerVolume(PlayerName, Volume);
+		UE_LOG(LogEIK, Verbose, TEXT("UEIK_BlueprintFunctions::SetLobbyPlayerVoiceChatVolume: Player volume set"));
 		return true;
 	}
+	UE_LOG(LogEIK, Error, TEXT("UEIK_BlueprintFunctions::SetLobbyPlayerVoiceChatVolume: VoiceChatUserInterface is null"));
 	return false;
 }
 
@@ -719,6 +721,32 @@ FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueID(const APlayerController
 			return LocalUNetID;
 		}
 	}
+	return FEIKUniqueNetId();
+}
+
+FEIKUniqueNetId UEIK_BlueprintFunctions::GetUserUniqueIDFromPlayerState(const APlayerState* PlayerState, bool& bIsValid)
+{
+	if(!PlayerState)
+	{
+		bIsValid = false;
+		return FEIKUniqueNetId();
+	}
+	if (!PlayerState->GetUniqueId().IsValid())
+	{
+		bIsValid = false;
+		return FEIKUniqueNetId();
+	}
+	if(const TSharedPtr<const FUniqueNetId> EIK_NetID = PlayerState->GetUniqueId().GetUniqueNetId())
+	{
+		FEIKUniqueNetId LocalUNetID;
+		LocalUNetID.SetUniqueNetId(EIK_NetID);
+		if(LocalUNetID.IsValid())
+		{
+			bIsValid = true;
+			return LocalUNetID;
+		}
+	}
+	bIsValid = false;
 	return FEIKUniqueNetId();
 }
 

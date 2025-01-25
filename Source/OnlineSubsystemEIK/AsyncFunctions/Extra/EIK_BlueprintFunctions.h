@@ -457,6 +457,9 @@ public:
 	UFUNCTION(BlueprintPure, DisplayName="Get User Unique NetID", Category="EOS Integration Kit || Extra")
 	static FEIKUniqueNetId GetUserUniqueID(const APlayerController* PlayerController, bool& bIsValid);
 
+	UFUNCTION(BlueprintPure, DisplayName="Get User Unique NetID From PlayerState", Category="EOS Integration Kit || Extra")
+	static FEIKUniqueNetId GetUserUniqueIDFromPlayerState(const APlayerState* PlayerState, bool& bIsValid);
+
 	UFUNCTION(BlueprintPure, DisplayName="EOS SDK Version", Category="EOS Integration Kit || Extra")
 	static FString GetEOSSDKVersion();
 
