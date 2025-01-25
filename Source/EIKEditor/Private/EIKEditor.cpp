@@ -1,6 +1,8 @@
 ﻿ // Copyright (c) 2024 Betide Studio. All Rights Reserved.
 
 #include "EIKEditor.h"
+
+#include "DesktopPlatformModule.h"
 #include "ToolMenus.h"
 #include "SlateCore.h"
 #include "EditorStyle.h"
@@ -211,7 +213,100 @@ void FEIKEditorModule::OpenDevTool()
 #endif
 }
 
-TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
+void FEIKEditorModule::OpenRedistributableInstallerTool()
+{
+    TArray<FString> OutFileNames;
+    IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+    if (DesktopPlatform)
+    {
+        void* ParentWindowHandle = const_cast<void*>(FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr));
+        
+        const FString FileTypes = TEXT("Executable Files (*.exe)|*.exe|All Files (*.*)|*.*");
+        const FString DefaultPath = FPaths::ProjectDir(); // Default path to start from
+
+        bool bFileSelected = DesktopPlatform->OpenFileDialog(
+            ParentWindowHandle,
+            TEXT("Select Redistributable Installer EXE"),
+            DefaultPath,
+            TEXT(""),
+            FileTypes,
+            EFileDialogFlags::None,
+            OutFileNames
+        );
+
+        if (bFileSelected && OutFileNames.Num() > 0)
+        {
+            // Get the selected file path
+            const FString SelectedFilePath = OutFileNames[0];
+            UE_LOG(LogTemp, Log, TEXT("Selected EXE Path: %s"), *SelectedFilePath);
+
+            // Extract directory and executable name
+            FString SelectedFileName = FPaths::GetCleanFilename(SelectedFilePath);
+            FString SelectedFileDir = FPaths::GetPath(SelectedFilePath);
+
+            // Locate the EOSBootstrapperTool
+            IPluginManager& PluginManager = IPluginManager::Get();
+            FString PluginDir = PluginManager.FindPlugin("EOSIntegrationKit")->GetBaseDir();
+            FString EOSBootstrapperToolPath = PluginDir / TEXT("Source/ThirdParty/EIKSDK/Tools/EOSBootstrapperTool.exe");
+
+            //Show error if the tool is not found
+            if (!FPaths::FileExists(EOSBootstrapperToolPath))
+            {
+                UE_LOG(LogTemp, Error, TEXT("EOSBootstrapperTool not found at %s"), *EOSBootstrapperToolPath);
+                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("EOSBootstrapperToolNotFound", "EOSBootstrapperTool not found. Ensure the tool is downloaded and placed in the correct directory and unzipped."));
+                return;
+            }
+            // Output path for EOSBootstrapper.exe
+            FString EOSBootstrapperOutputPath = SelectedFileDir / TEXT("EOSBootstrapper.exe");
+
+            // Command-line arguments for EOSBootstrapperTool
+            FString CommandLineArgs = FString::Printf(
+                TEXT("\"%s\" -o \"%s\" -a \"%s\""),
+                *EOSBootstrapperToolPath,
+                *EOSBootstrapperOutputPath,
+                *SelectedFileName
+            );
+
+            // Launch the command prompt with the tool and arguments
+            FString Command = FString::Printf(TEXT("cmd.exe /K %s"), *CommandLineArgs);
+            UE_LOG(LogTemp, Log, TEXT("Command: %s"), *Command);
+            FProcHandle ProcessHandle = FPlatformProcess::CreateProc(
+                TEXT("cmd.exe"),
+                *FString::Printf(TEXT("/K \"%s\""), *CommandLineArgs),
+                true,   // bLaunchDetached
+                false,  // bLaunchHidden
+                false,  // bLaunchReallyHidden
+                nullptr, // OutProcessId
+                0,      // PriorityModifier
+                nullptr,// OptionalWorkingDirectory
+                nullptr // Pipe for output
+            );
+
+            if (!ProcessHandle.IsValid())
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to launch the EOSBootstrapperTool in the command prompt."));
+                //Show a message box
+                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("FailedToLaunchEOSBootstrapperTool", "Failed to launch the EOSBootstrapperTool in the command prompt."));
+            }
+            else
+            {
+                UE_LOG(LogTemp, Log, TEXT("EOSBootstrapperTool launched successfully."));
+                //Show a message box
+                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("EOSBootstrapperToolLaunched", "EOSBootstrapperTool launched successfully."));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("No file selected or operation canceled."));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to access the Desktop Platform Module."));
+    }
+}
+
+ TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
 {
     FMenuBuilder MenuBuilder(true, nullptr);
 
@@ -236,6 +331,17 @@ TSharedRef<SWidget> FEIKEditorModule::GenerateMenuContent()
 #endif
     FUIAction(FExecuteAction::CreateRaw(this, &FEIKEditorModule::OpenDevTool))
 );
+
+    MenuBuilder.AddMenuEntry(
+        LOCTEXT("Option5", "Redistributable Installer Tool"),
+        LOCTEXT("Option5_Tooltip", "Add the redistributable installer tool to a build"),
+#if ENGINE_MAJOR_VERSION == 5
+        FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Install"),
+#else
+        FSlateIcon(FEditorStyle::GetStyleSetName(), "ContentBrowser.ImportIcon"),
+#endif
+        FUIAction(FExecuteAction::CreateRaw(this, &FEIKEditorModule::OpenRedistributableInstallerTool))
+        );
 
     MenuBuilder.BeginSection(NAME_None, LOCTEXT("OneClickDeployHeader", "One Click Deploy"));
 

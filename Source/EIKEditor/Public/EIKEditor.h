@@ -22,6 +22,7 @@ private:
     void OpenDevPortal();
     void OnPackageAndDeploySelected();
     void OpenDevTool();
+    void OpenRedistributableInstallerTool();
     TSharedRef<SWidget> GenerateMenuContent();
     TSharedPtr<FInteractiveProcess> InteractiveProcess;
     TSharedPtr<FInteractiveProcess> InteractiveProcessLogin;
