@@ -59,19 +59,19 @@ uint32 FUniqueNetIdEOS::GetTypeHash() const
 
 FString FUniqueNetIdEOS::ToString() const
 {
-	if(LexToString(EpicAccountId).IsEmpty())
+	if(EIK_LexToString(EpicAccountId).IsEmpty())
 	{
-		return LexToString(ProductUserId);
+		return EIK_LexToString(ProductUserId);
 	}
-	return LexToString(EpicAccountId) + EOS_ID_SEPARATOR + LexToString(ProductUserId);
+	return EIK_LexToString(EpicAccountId) + EOS_ID_SEPARATOR + EIK_LexToString(ProductUserId);
 }
 
 FString FUniqueNetIdEOS::ToDebugString() const
 {
 	if (IsValid())
 	{
-		const FString EpicAccountIdStr = LexToString(EpicAccountId);
-		const FString ProductUserIdStr = LexToString(ProductUserId);
+		const FString EpicAccountIdStr = EIK_LexToString(EpicAccountId);
+		const FString ProductUserIdStr = EIK_LexToString(ProductUserId);
 		if(EpicAccountIdStr.IsEmpty())
 		{
 			return OSS_UNIQUEID_REDACT(*this, ProductUserIdStr);
@@ -105,8 +105,8 @@ FUniqueNetIdEOS::FUniqueNetIdEOS(EOS_EpicAccountId InEpicAccountId, EOS_ProductU
 	: EpicAccountId(InEpicAccountId)
 	, ProductUserId(InProductUserId)
 {
-	HexToBytes(LexToString(EpicAccountId), RawBytes);
-	HexToBytes(LexToString(ProductUserId), RawBytes + ID_HALF_BYTE_SIZE);
+	HexToBytes(EIK_LexToString(EpicAccountId), RawBytes);
+	HexToBytes(EIK_LexToString(ProductUserId), RawBytes + ID_HALF_BYTE_SIZE);
 }
 
 FUniqueNetIdEOSRegistry& FUniqueNetIdEOSRegistry::Get()

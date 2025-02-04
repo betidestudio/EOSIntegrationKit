@@ -9,7 +9,7 @@
 class FWindowsEOSSDKManager : public FEIKSDKManager
 {
 protected:
-	virtual IEOSPlatformHandlePtr CreatePlatform(const FEOSSDKPlatformConfig& PlatformConfig, EOS_Platform_Options& PlatformOptions) override;
+	virtual IEIKPlatformHandlePtr CreatePlatform(const FEOSSDKPlatformConfig& PlatformConfig, EOS_Platform_Options& PlatformOptions) override;
 };
 
 using FPlatformEOSSDKManager = FWindowsEOSSDKManager;

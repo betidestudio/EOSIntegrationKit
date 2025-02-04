@@ -109,12 +109,12 @@ FVoiceChatResult ResultFromEOSResult(const EOS_EResult EosResult)
 		case EOS_EResult::EOS_UnexpectedError:
 		default:
 			// TODO map more EOS statuses to text error codes
-			Result = EOSVOICECHAT_ERROR(EVoiceChatResult::ImplementationError, *LexToString(EosResult));
+			Result = EOSVOICECHAT_ERROR(EVoiceChatResult::ImplementationError, *EIK_LexToString(EosResult));
 			break;
 		}
 
 		Result.ErrorNum = static_cast<int>(EosResult);
-		Result.ErrorDesc = FString::Printf(TEXT("EOS_EResult=%s"), *LexToString(EosResult));
+		Result.ErrorDesc = FString::Printf(TEXT("EOS_EResult=%s"), *EIK_LexToString(EosResult));
 	}
 
 	return Result;

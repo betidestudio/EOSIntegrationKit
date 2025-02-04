@@ -73,7 +73,7 @@ namespace
 #if !NO_LOGGING
 	void EOS_CALL EOSLogMessageReceived(const EOS_LogMessage* Message)
 	{
-#define EOSLOG(Level) UE_LOG(LogEOSSDK, Level, TEXT("%s: %s"), UTF8_TO_TCHAR(Message->Category), *MessageStr)
+#define EOSLOG(Level) UE_LOG(LogEIKSDK, Level, TEXT("%s: %s"), UTF8_TO_TCHAR(Message->Category), *MessageStr)
 
 		FString MessageStr(UTF8_TO_TCHAR(Message->Message));
 		MessageStr.TrimStartAndEndInline();
@@ -135,22 +135,22 @@ namespace
 			// Check if the file exists before attempting to load
 			if (FPaths::FileExists(BinaryPath))
 			{
-				UE_LOG(LogEOSSDK, Log, TEXT("Loading EOS SDK from plugin binaries: %s."), *BinaryPath);
+				UE_LOG(LogEIKSDK, Log, TEXT("Loading EOS SDK from plugin binaries: %s."), *BinaryPath);
 				Result = FPlatformProcess::GetDllHandle(*BinaryPath);
 			}
 			else if (FPaths::FileExists(SecondBinaryPath))
 			{
-				UE_LOG(LogEOSSDK, Log, TEXT("Loading EOS SDK from main plugin binaries: %s."), *SecondBinaryPath);
+				UE_LOG(LogEIKSDK, Log, TEXT("Loading EOS SDK from main plugin binaries: %s."), *SecondBinaryPath);
 				Result = FPlatformProcess::GetDllHandle(*SecondBinaryPath);
 			}
 			else
 			{
-				UE_LOG(LogEOSSDK, Log, TEXT("EOS SDK binary not found: %s. Now project binaries will be looked up."), *BinaryPath);
+				UE_LOG(LogEIKSDK, Log, TEXT("EOS SDK binary not found: %s. Now project binaries will be looked up."), *BinaryPath);
 			}
 		}
 		else
 		{
-			UE_LOG(LogEOSSDK, Log, TEXT("Plugin not found: %s"), *PluginModuleName);
+			UE_LOG(LogEIKSDK, Log, TEXT("Plugin not found: %s"), *PluginModuleName);
 		}
 		const FString ProjectBinaryPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::GetRelativePathToRoot(), TEXT("Binaries"), FPlatformProcess::GetBinariesSubdirectory(), TEXT(EOSSDK_RUNTIME_LIBRARY_NAME)));
 
@@ -158,18 +158,18 @@ namespace
 		{
 			if (FPaths::FileExists(ProjectBinaryPath))
 			{
-				UE_LOG(LogEOSSDK, Log, TEXT("Loading EOS SDK from project binaries: %s"), *ProjectBinaryPath);
+				UE_LOG(LogEIKSDK, Log, TEXT("Loading EOS SDK from project binaries: %s"), *ProjectBinaryPath);
 				Result = FPlatformProcess::GetDllHandle(*ProjectBinaryPath);
 			}
 			else
 			{
-				UE_LOG(LogEOSSDK, Log, TEXT("Unable to find EOS SDK in project binaries: %s"), *ProjectBinaryPath);
+				UE_LOG(LogEIKSDK, Log, TEXT("Unable to find EOS SDK in project binaries: %s"), *ProjectBinaryPath);
 			}
 		}
 
 		if (!Result)
 		{
-			UE_LOG(LogEOSSDK, Log, TEXT("Loading EOS SDK from engine binaries. This may not be good if you are using a older version of the SDK."));
+			UE_LOG(LogEIKSDK, Log, TEXT("Loading EOS SDK from engine binaries. This may not be good if you are using a older version of the SDK."));
 			const FString EngineBinaryPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::EngineDir(), TEXT("Binaries"), FPlatformProcess::GetBinariesSubdirectory(), TEXT(EOSSDK_RUNTIME_LIBRARY_NAME)));
 			if (FPaths::FileExists(EngineBinaryPath))
 			{
@@ -179,7 +179,7 @@ namespace
 
 		if (!Result)
 		{
-			UE_LOG(LogEOSSDK, Warning, TEXT("Loading EOS SDK from system path"));
+			UE_LOG(LogEIKSDK, Warning, TEXT("Loading EOS SDK from system path"));
 			Result = FPlatformProcess::GetDllHandle(TEXT(EOSSDK_RUNTIME_LIBRARY_NAME));
 		}
 
@@ -218,7 +218,7 @@ FEIKSDKManager::FEIKSDKManager()
 	SDKHandle = GetSdkDllHandle();
 	if (SDKHandle == nullptr)
 	{
-		UE_LOG(LogEOSSDK, Warning, TEXT("Unable to load EOSSDK dynamic library"));
+		UE_LOG(LogEIKSDK, Warning, TEXT("Unable to load EOSSDK dynamic library"));
 		return;
 	}
 #endif
@@ -239,7 +239,7 @@ EOS_EResult FEIKSDKManager::Initialize()
 #if EOSSDK_RUNTIME_LOAD_REQUIRED
 	if (SDKHandle == nullptr)
 	{
-		UE_LOG(LogEOSSDK, Log, TEXT("FEIKSDKManager::Initialize failed, SDKHandle=nullptr"));
+		UE_LOG(LogEIKSDK, Log, TEXT("FEIKSDKManager::Initialize failed, SDKHandle=nullptr"));
 		return EOS_EResult::EOS_InvalidState;
 	}
 #endif
@@ -250,7 +250,7 @@ EOS_EResult FEIKSDKManager::Initialize()
 	}
 	else
 	{
-		UE_LOG(LogEOSSDK, Log, TEXT("Initializing EOSSDK Version:%s"), UTF8_TO_TCHAR(EOS_GetVersion()));
+		UE_LOG(LogEIKSDK, Log, TEXT("Initializing EOSSDK Version:%s"), UTF8_TO_TCHAR(EOS_GetVersion()));
 
 		const FTCHARToUTF8 ProductName(*GetProductName());
 		const FTCHARToUTF8 ProductVersion(*GetProductVersion());
@@ -287,19 +287,19 @@ EOS_EResult FEIKSDKManager::Initialize()
 			EosResult = EOS_Logging_SetCallback(&EOSLogMessageReceived);
 			if (EosResult != EOS_EResult::EOS_Success)
 			{
-				UE_LOG(LogEOSSDK, Warning, TEXT("EOS_Logging_SetCallback failed error:%s"), *LexToString(EosResult));
+				UE_LOG(LogEIKSDK, Warning, TEXT("EOS_Logging_SetCallback failed error:%s"), *EIK_LexToString(EosResult));
 			}
 
-			EosResult = EOS_Logging_SetLogLevel(EOS_ELogCategory::EOS_LC_ALL_CATEGORIES, ConvertLogLevel(LogEOSSDK.GetVerbosity()));
+			EosResult = EOS_Logging_SetLogLevel(EOS_ELogCategory::EOS_LC_ALL_CATEGORIES, ConvertLogLevel(LogEIKSDK.GetVerbosity()));
 			if (EosResult != EOS_EResult::EOS_Success)
 			{
-				UE_LOG(LogEOSSDK, Warning, TEXT("EOS_Logging_SetLogLevel failed Verbosity=%s error=[%s]"), ToString(LogEOSSDK.GetVerbosity()), *LexToString(EosResult));
+				UE_LOG(LogEIKSDK, Warning, TEXT("EOS_Logging_SetLogLevel failed Verbosity=%s error=[%s]"), ToString(LogEIKSDK.GetVerbosity()), *EIK_LexToString(EosResult));
 			}
 #endif // !NO_LOGGING
 		}
 		else
 		{
-			UE_LOG(LogEOSSDK, Warning, TEXT("EOS_Initialize failed error:%s"), *LexToString(EosResult));
+			UE_LOG(LogEIKSDK, Warning, TEXT("EOS_Initialize failed error:%s"), *EIK_LexToString(EosResult));
 		}
 
 		return EosResult;
@@ -310,7 +310,7 @@ const FEOSSDKPlatformConfig* FEIKSDKManager::GetPlatformConfig(const FString& Pl
 {
 	if (PlatformConfigName.IsEmpty())
 	{
-		UE_LOG(LogEOSSDK, Warning, TEXT("Platform name can't be empty"));
+		UE_LOG(LogEIKSDK, Warning, TEXT("Platform name can't be empty"));
 		return nullptr;
 	}
 
@@ -323,7 +323,7 @@ const FEOSSDKPlatformConfig* FEIKSDKManager::GetPlatformConfig(const FString& Pl
 	const FString SectionName(TEXT("EOSSDK.Platform.") + PlatformConfigName);
 	if (!GConfig->DoesSectionExist(*SectionName, GEngineIni))
 	{
-		UE_LOG(LogEOSSDK, Warning, TEXT("Could not find platform config: %s"), *PlatformConfigName);
+		UE_LOG(LogEIKSDK, Warning, TEXT("Could not find platform config: %s"), *PlatformConfigName);
 		return nullptr;
 	}
 
@@ -350,7 +350,7 @@ const FEOSSDKPlatformConfig* FEIKSDKManager::GetPlatformConfig(const FString& Pl
 	GConfig->GetInt(*SectionName, TEXT("TickBudgetInMilliseconds"), PlatformConfig->TickBudgetInMilliseconds, GEngineIni);
 	GConfig->GetArray(*SectionName, TEXT("OptionalConfig"), PlatformConfig->OptionalConfig, GEngineIni);
 
-	UE_LOG(LogEOSSDK, Verbose, TEXT("Loaded platform config: %s"), *PlatformConfigName);
+	UE_LOG(LogEIKSDK, Verbose, TEXT("Loaded platform config: %s"), *PlatformConfigName);
 	return PlatformConfig;
 }
 
@@ -358,18 +358,18 @@ bool FEIKSDKManager::AddPlatformConfig(const FEOSSDKPlatformConfig& PlatformConf
 {
 	if (PlatformConfig.Name.IsEmpty())
 	{
-		UE_LOG(LogEOSSDK, Warning, TEXT("Platform name can't be empty"));
+		UE_LOG(LogEIKSDK, Warning, TEXT("Platform name can't be empty"));
 		return false;
 	}
 
 	if (PlatformConfigs.Find(PlatformConfig.Name))
 	{
-		UE_LOG(LogEOSSDK, Warning, TEXT("Platform config already exists: %s"), *PlatformConfig.Name);
+		UE_LOG(LogEIKSDK, Warning, TEXT("Platform config already exists: %s"), *PlatformConfig.Name);
 		return false;
 	}
 
 	PlatformConfigs.Emplace(PlatformConfig.Name, PlatformConfig);
-	UE_LOG(LogEOSSDK, Verbose, TEXT("Added platform config: %s"), *PlatformConfig.Name);
+	UE_LOG(LogEIKSDK, Verbose, TEXT("Added platform config: %s"), *PlatformConfig.Name);
 	return true;
 }
 
@@ -391,39 +391,39 @@ void FEIKSDKManager::SetDefaultPlatformConfigName(const FString& PlatformConfigN
 {
 	if (DefaultPlatformConfigName != PlatformConfigName)
 	{
-		UE_LOG(LogEOSSDK, Verbose, TEXT("Default platform name changed: New=%s Old=%s"), *PlatformConfigName, *DefaultPlatformConfigName);
+		UE_LOG(LogEIKSDK, Verbose, TEXT("Default platform name changed: New=%s Old=%s"), *PlatformConfigName, *DefaultPlatformConfigName);
 		OnDefaultPlatformConfigNameChanged.Broadcast(PlatformConfigName, DefaultPlatformConfigName);
 		DefaultPlatformConfigName = PlatformConfigName;
 	}
 }
 
-IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(const FString& PlatformConfigName, FName InstanceName)
+IEIKPlatformHandlePtr FEIKSDKManager::CreatePlatform(const FString& PlatformConfigName, FName InstanceName)
 {
 	if (PlatformConfigName.IsEmpty())
 	{
-		UE_LOG(LogEOSSDK, Warning, TEXT("Platform name can't be empty"));
-		return IEOSPlatformHandlePtr();
+		UE_LOG(LogEIKSDK, Warning, TEXT("Platform name can't be empty"));
+		return IEIKPlatformHandlePtr();
 	}
 
 	const FEOSSDKPlatformConfig* const PlatformConfig = GetPlatformConfig(PlatformConfigName, true);
 	if (!PlatformConfig)
 	{
-		return IEOSPlatformHandlePtr();
+		return IEIKPlatformHandlePtr();
 	}
 
-	TMap<FName, IEOSPlatformHandleWeakPtr>* PlatformMap = PlatformHandles.Find(PlatformConfigName);
+	TMap<FName, IEIKPlatformHandleWeakPtr>* PlatformMap = PlatformHandles.Find(PlatformConfigName);
 	if (PlatformMap)
 	{
-		IEOSPlatformHandleWeakPtr* WeakPlatformHandle = PlatformMap->Find(InstanceName);
+		IEIKPlatformHandleWeakPtr* WeakPlatformHandle = PlatformMap->Find(InstanceName);
 		if (WeakPlatformHandle)
 		{
-			if (IEOSPlatformHandlePtr Pinned = WeakPlatformHandle->Pin())
+			if (IEIKPlatformHandlePtr Pinned = WeakPlatformHandle->Pin())
 			{
-				UE_LOG(LogEOSSDK, Verbose, TEXT("Found existing platform handle: PlatformConfigName=%s InstanceName=%s"), *PlatformConfigName, *InstanceName.ToString());
+				UE_LOG(LogEIKSDK, Verbose, TEXT("Found existing platform handle: PlatformConfigName=%s InstanceName=%s"), *PlatformConfigName, *InstanceName.ToString());
 				return Pinned;
 			}
 
-			UE_LOG(LogEOSSDK, Verbose, TEXT("Removing stale platform handle pointer: PlatformConfigName=%s InstanceName=%s"), *PlatformConfigName, *InstanceName.ToString());
+			UE_LOG(LogEIKSDK, Verbose, TEXT("Removing stale platform handle pointer: PlatformConfigName=%s InstanceName=%s"), *PlatformConfigName, *InstanceName.ToString());
 			PlatformMap->Remove(InstanceName);
 		}
 	}
@@ -470,25 +470,25 @@ IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(const FString& PlatformConf
 
 	PlatformOptions.IntegratedPlatformOptionsContainerHandle = nullptr;
 
-	IEOSPlatformHandlePtr PlatformHandle = CreatePlatform(*PlatformConfig, PlatformOptions);
+	IEIKPlatformHandlePtr PlatformHandle = CreatePlatform(*PlatformConfig, PlatformOptions);
 	if (PlatformHandle.IsValid())
 	{
-		UE_LOG(LogEOSSDK, Verbose, TEXT("Created platform handle: PlatformConfigName=%s InstanceName=%s"), *PlatformConfigName, *InstanceName.ToString());
+		UE_LOG(LogEIKSDK, Verbose, TEXT("Created platform handle: PlatformConfigName=%s InstanceName=%s"), *PlatformConfigName, *InstanceName.ToString());
 		PlatformMap->Emplace(InstanceName, PlatformHandle);
 	}
 
 	return PlatformHandle;
 }
 
-IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(const FEOSSDKPlatformConfig& PlatformConfig, EOS_Platform_Options& PlatformOptions)
+IEIKPlatformHandlePtr FEIKSDKManager::CreatePlatform(const FEOSSDKPlatformConfig& PlatformConfig, EOS_Platform_Options& PlatformOptions)
 {
 	OnPreCreateNamedPlatform.Broadcast(PlatformConfig, PlatformOptions);
 	return CreatePlatform(PlatformOptions);
 }
 
-IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(EOS_Platform_Options& PlatformOptions)
+IEIKPlatformHandlePtr FEIKSDKManager::CreatePlatform(EOS_Platform_Options& PlatformOptions)
 {
-	IEOSPlatformHandlePtr SharedPlatform;
+	IEIKPlatformHandlePtr SharedPlatform;
 
 	if (IsInitialized())
 	{
@@ -498,7 +498,7 @@ IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(EOS_Platform_Options& Platf
 		if (PlatformHandle)
 		{
 			ActivePlatforms.Emplace(PlatformHandle);
-			SharedPlatform = MakeShared<FEOSPlatformHandle, ESPMode::ThreadSafe>(*this, PlatformHandle);
+			SharedPlatform = MakeShared<FEIKPlatformHandle, ESPMode::ThreadSafe>(*this, PlatformHandle);
 			SetupTicker();
 
 			EOS_Platform_SetApplicationStatus(PlatformHandle, CachedApplicationStatus);
@@ -509,12 +509,12 @@ IEOSPlatformHandlePtr FEIKSDKManager::CreatePlatform(EOS_Platform_Options& Platf
 		}
 		else
 		{
-			UE_LOG(LogEOSSDK, Warning, TEXT("FEIKSDKManager::CreatePlatform failed. EosPlatformHandle=nullptr"));
+			UE_LOG(LogEIKSDK, Warning, TEXT("FEIKSDKManager::CreatePlatform failed. EosPlatformHandle=nullptr"));
 		}
 	}
 	else
 	{
-		UE_LOG(LogEOSSDK, Warning, TEXT("FEIKSDKManager::CreatePlatform failed. SDK not initialized"));
+		UE_LOG(LogEIKSDK, Warning, TEXT("FEIKSDKManager::CreatePlatform failed. SDK not initialized"));
 	}
 
 	return SharedPlatform;
@@ -590,7 +590,7 @@ bool FEIKSDKManager::Tick(float)
 
 void FEIKSDKManager::OnApplicationStatusChanged(EOS_EApplicationStatus ApplicationStatus)
 {
-	UE_LOG(LogEOSSDK, Log, TEXT("OnApplicationStatusChanged [%s] -> [%s]"), LexToString(CachedApplicationStatus), LexToString(ApplicationStatus));
+	UE_LOG(LogEIKSDK, Log, TEXT("OnApplicationStatusChanged [%s] -> [%s]"), EIK_LexToString(CachedApplicationStatus), EIK_LexToString(ApplicationStatus));
 	CachedApplicationStatus = ApplicationStatus;
 	for (EOS_HPlatform PlatformHandle : ActivePlatforms)
 	{
@@ -600,7 +600,7 @@ void FEIKSDKManager::OnApplicationStatusChanged(EOS_EApplicationStatus Applicati
 
 void FEIKSDKManager::OnNetworkStatusChanged(EOS_ENetworkStatus NetworkStatus)
 {
-	UE_LOG(LogEOSSDK, Log, TEXT("OnNetworkStatusChanged [%s] -> [%s]"), LexToString(CachedNetworkStatus), LexToString(NetworkStatus));
+	UE_LOG(LogEIKSDK, Log, TEXT("OnNetworkStatusChanged [%s] -> [%s]"), EIK_LexToString(CachedNetworkStatus), EIK_LexToString(NetworkStatus));
 	CachedNetworkStatus = NetworkStatus;
 	for (EOS_HPlatform PlatformHandle : ActivePlatforms)
 	{
@@ -612,12 +612,12 @@ void FEIKSDKManager::OnLogVerbosityChanged(const FLogCategoryName& CategoryName,
 {
 #if !NO_LOGGING
 	if (IsInitialized() &&
-		CategoryName == LogEOSSDK.GetCategoryName())
+		CategoryName == LogEIKSDK.GetCategoryName())
 	{
 		const EOS_EResult EosResult = EOS_Logging_SetLogLevel(EOS_ELogCategory::EOS_LC_ALL_CATEGORIES, ConvertLogLevel(NewVerbosity));
 		if (EosResult != EOS_EResult::EOS_Success)
 		{
-			UE_LOG(LogEOSSDK, Warning, TEXT("EOS_Logging_SetLogLevel failed Verbosity=%s error=[%s]"), ToString(NewVerbosity), *LexToString(EosResult));
+			UE_LOG(LogEIKSDK, Warning, TEXT("EOS_Logging_SetLogLevel failed Verbosity=%s error=[%s]"), ToString(NewVerbosity), *EIK_LexToString(EosResult));
 		}
 	}
 #endif // !NO_LOGGING
@@ -706,7 +706,7 @@ void FEIKSDKManager::Shutdown()
 
 		if (ActivePlatforms.Num() > 0)
 		{
-			UE_LOG(LogEOSSDK, Warning, TEXT("FEIKSDKManager::Shutdown Releasing %d remaining platforms"), ActivePlatforms.Num());
+			UE_LOG(LogEIKSDK, Warning, TEXT("FEIKSDKManager::Shutdown Releasing %d remaining platforms"), ActivePlatforms.Num());
 			ReleasedPlatforms.Append(ActivePlatforms);
 			ReleaseReleasedPlatforms();
 		}
@@ -723,7 +723,7 @@ void FEIKSDKManager::Shutdown()
 #endif // !NO_LOGGING
 
 		const EOS_EResult Result = EOS_Shutdown();
-		UE_LOG(LogEOSSDK, Log, TEXT("FEIKSDKManager::Shutdown EOS_Shutdown Result=[%s]"), *LexToString(Result));
+		UE_LOG(LogEIKSDK, Log, TEXT("FEIKSDKManager::Shutdown EOS_Shutdown Result=[%s]"), *EIK_LexToString(Result));
 
 		CallbackObjects.Empty();
 
@@ -751,13 +751,13 @@ bool FEIKSDKManager::Exec(class UWorld* InWorld, const TCHAR* Cmd, FOutputDevice
 	}
 	else
 	{
-		UE_LOG(LogEOSSDK, Warning, TEXT("Unknown exec command: %s]"), Cmd);
+		UE_LOG(LogEIKSDK, Warning, TEXT("Unknown exec command: %s]"), Cmd);
 	}
 
 	return true;
 }
 
-#define UE_LOG_EOSSDK_INFO(Format, ...) UE_LOG(LogEOSSDK, Log, TEXT("Info: %*s" Format), Indent * 2, TEXT(""), ##__VA_ARGS__)
+#define UE_LOG_EOSSDK_INFO(Format, ...) UE_LOG(LogEIKSDK, Log, TEXT("Info: %*s" Format), Indent * 2, TEXT(""), ##__VA_ARGS__)
 
 void FEIKSDKManager::LogInfo(int32 Indent) const
 {
@@ -778,8 +778,8 @@ void FEIKSDKManager::LogInfo(int32 Indent) const
 
 void FEIKSDKManager::LogPlatformInfo(const EOS_HPlatform Platform, int32 Indent) const
 {
-	UE_LOG_EOSSDK_INFO("ApplicationStatus=%s", LexToString(EOS_Platform_GetApplicationStatus(Platform)));
-	UE_LOG_EOSSDK_INFO("NetworkStatus=%s", LexToString(EOS_Platform_GetNetworkStatus(Platform)));
+	UE_LOG_EOSSDK_INFO("ApplicationStatus=%s", EIK_LexToString(EOS_Platform_GetApplicationStatus(Platform)));
+	UE_LOG_EOSSDK_INFO("NetworkStatus=%s", EIK_LexToString(EOS_Platform_GetNetworkStatus(Platform)));
 	UE_LOG_EOSSDK_INFO("OverrideCountryCode=%s", *GetOverrideCountryCode(Platform));
 	UE_LOG_EOSSDK_INFO("OverrideLocaleCode=%s", *GetOverrideLocaleCode(Platform));
 
@@ -792,12 +792,12 @@ void FEIKSDKManager::LogPlatformInfo(const EOS_HPlatform Platform, int32 Indent)
 	if (Result == EOS_EResult::EOS_Success)
 	{
 		UE_LOG_EOSSDK_INFO("DesktopCrossplayStatusInfo Status=%s ServiceInitResult=%d",
-			LexToString(GetDesktopCrossplayStatusInfo.Status),
+			EIK_LexToString(GetDesktopCrossplayStatusInfo.Status),
 			GetDesktopCrossplayStatusInfo.ServiceInitResult);
 	}
 	else
 	{
-		UE_LOG_EOSSDK_INFO("DesktopCrossplayStatusInfo (EOS_Platform_GetDesktopCrossplayStatus failed: %s)", *LexToString(Result));
+		UE_LOG_EOSSDK_INFO("DesktopCrossplayStatusInfo (EOS_Platform_GetDesktopCrossplayStatus failed: %s)", *EIK_LexToString(Result));
 	}
 
 	const EOS_HAuth AuthHandle = EOS_Platform_GetAuthInterface(Platform);
@@ -833,7 +833,8 @@ void FEIKSDKManager::LogPlatformInfo(const EOS_HPlatform Platform, int32 Indent)
 void FEIKSDKManager::LogAuthInfo(const EOS_HPlatform Platform, const EOS_EpicAccountId LoggedInAccount, int32 Indent) const
 {
 	const EOS_HAuth AuthHandle = EOS_Platform_GetAuthInterface(Platform);
-	UE_LOG_EOSSDK_INFO("LoginStatus=%s", LexToString(EOS_Auth_GetLoginStatus(AuthHandle, LoggedInAccount)));
+	
+	UE_LOG_EOSSDK_INFO("LoginStatus=%s", EIK_LexToString(EOS_Auth_GetLoginStatus(AuthHandle, LoggedInAccount)));
 
 	static_assert(EOS_AUTH_COPYUSERAUTHTOKEN_API_LATEST == 1, "EOS_Auth_CopyUserAuthTokenOptions updated");
 	EOS_Auth_CopyUserAuthTokenOptions CopyUserAuthTokenOptions;
@@ -852,7 +853,7 @@ void FEIKSDKManager::LogAuthInfo(const EOS_HPlatform Platform, const EOS_EpicAcc
 #endif // !UE_BUILD_SHIPPING
 		UE_LOG_EOSSDK_INFO("ExpiresIn=%f", AuthToken->ExpiresIn);
 		UE_LOG_EOSSDK_INFO("ExpiresAt=%s", UTF8_TO_TCHAR(AuthToken->ExpiresAt));
-		UE_LOG_EOSSDK_INFO("AuthType=%s", LexToString(AuthToken->AuthType));
+		UE_LOG_EOSSDK_INFO("AuthType=%s", EIK_LexToString(AuthToken->AuthType));
 #if !UE_BUILD_SHIPPING
 		UE_LOG_EOSSDK_INFO("RefreshToken=%s", UTF8_TO_TCHAR(AuthToken->RefreshToken));
 #endif // !UE_BUILD_SHIPPING
@@ -863,7 +864,7 @@ void FEIKSDKManager::LogAuthInfo(const EOS_HPlatform Platform, const EOS_EpicAcc
 	}
 	else
 	{
-		UE_LOG_EOSSDK_INFO("AuthToken (EOS_Auth_CopyUserAuthToken failed: %s)", *LexToString(Result));
+		UE_LOG_EOSSDK_INFO("AuthToken (EOS_Auth_CopyUserAuthToken failed: %s)", *EIK_LexToString(Result));
 	}
 
 #if !UE_BUILD_SHIPPING
@@ -881,14 +882,14 @@ void FEIKSDKManager::LogAuthInfo(const EOS_HPlatform Platform, const EOS_EpicAcc
 	}
 	else
 	{
-		UE_LOG_EOSSDK_INFO("IdToken (EOS_Auth_CopyIdToken failed: %s)", *LexToString(Result));
+		UE_LOG_EOSSDK_INFO("IdToken (EOS_Auth_CopyIdToken failed: %s)", *EIK_LexToString(Result));
 	}
 #endif // !UE_BUILD_SHIPPING
 }
 
 void FEIKSDKManager::LogUserInfo(const EOS_HPlatform Platform, const EOS_EpicAccountId LoggedInAccount, const EOS_EpicAccountId TargetAccount, int32 Indent) const
 {
-	UE_LOG_EOSSDK_INFO("EpicAccountId=%s", *LexToString(TargetAccount));
+	UE_LOG_EOSSDK_INFO("EpicAccountId=%s", *EIK_LexToString(TargetAccount));
 
 	static_assert(EOS_USERINFO_COPYUSERINFO_API_LATEST >=2 && EOS_USERINFO_COPYUSERINFO_API_LATEST <= 3, "EOS_UserInfo_CopyUserInfo updated");
 	EOS_UserInfo_CopyUserInfoOptions CopyUserInfoOptions;
@@ -914,7 +915,7 @@ void FEIKSDKManager::LogUserInfo(const EOS_HPlatform Platform, const EOS_EpicAcc
 	}
 	else
 	{
-		UE_LOG_EOSSDK_INFO("UserInfo (EOS_UserInfo_CopyUserInfo failed: %s)", *LexToString(Result));
+		UE_LOG_EOSSDK_INFO("UserInfo (EOS_UserInfo_CopyUserInfo failed: %s)", *EIK_LexToString(Result));
 	}
 }
 
@@ -945,7 +946,7 @@ void FEIKSDKManager::LogPresenceInfo(const EOS_HPlatform Platform, const EOS_Epi
 	{
 		UE_LOG_EOSSDK_INFO("Presence");
 		Indent++;
-		UE_LOG_EOSSDK_INFO("Status=%s", LexToString(PresenceInfo->Status));
+		UE_LOG_EOSSDK_INFO("Status=%s", EIK_LexToString(PresenceInfo->Status));
 		UE_LOG_EOSSDK_INFO("ProductId=%s", UTF8_TO_TCHAR(PresenceInfo->ProductId));
 		UE_LOG_EOSSDK_INFO("ProductName=%s", UTF8_TO_TCHAR(PresenceInfo->ProductName));
 		UE_LOG_EOSSDK_INFO("ProductVersion=%s", UTF8_TO_TCHAR(PresenceInfo->ProductVersion));
@@ -965,7 +966,7 @@ void FEIKSDKManager::LogPresenceInfo(const EOS_HPlatform Platform, const EOS_Epi
 	}
 	else
 	{
-		UE_LOG_EOSSDK_INFO("Presence (EOS_Presence_CopyPresence failed: %s)", *LexToString(Result));
+		UE_LOG_EOSSDK_INFO("Presence (EOS_Presence_CopyPresence failed: %s)", *EIK_LexToString(Result));
 	}
 }
 
@@ -999,7 +1000,7 @@ void FEIKSDKManager::LogFriendsInfo(const EOS_HPlatform Platform, const EOS_Epic
 		GetStatusOptions.TargetUserId = FriendId;
 
 		const EOS_EFriendsStatus FriendStatus = EOS_Friends_GetStatus(FriendsHandle, &GetStatusOptions);
-		UE_LOG_EOSSDK_INFO("FriendStatus=%s", LexToString(FriendStatus));
+		UE_LOG_EOSSDK_INFO("FriendStatus=%s", EIK_LexToString(FriendStatus));
 
 		LogUserInfo(Platform, LoggedInAccount, FriendId, Indent);
 		LogPresenceInfo(Platform, LoggedInAccount, FriendId, Indent);
@@ -1009,10 +1010,10 @@ void FEIKSDKManager::LogFriendsInfo(const EOS_HPlatform Platform, const EOS_Epic
 
 void FEIKSDKManager::LogConnectInfo(const EOS_HPlatform Platform, const EOS_ProductUserId LoggedInAccount, int32 Indent) const
 {
-	UE_LOG_EOSSDK_INFO("ProductUserId=%s", *LexToString(LoggedInAccount));
+	UE_LOG_EOSSDK_INFO("ProductUserId=%s", *EIK_LexToString(LoggedInAccount));
 
 	const EOS_HConnect ConnectHandle = EOS_Platform_GetConnectInterface(Platform);
-	UE_LOG_EOSSDK_INFO("LoginStatus=%s", LexToString(EOS_Connect_GetLoginStatus(ConnectHandle, LoggedInAccount)));
+	UE_LOG_EOSSDK_INFO("LoginStatus=%s", EIK_LexToString(EOS_Connect_GetLoginStatus(ConnectHandle, LoggedInAccount)));
 
 	EOS_EResult Result;
 
@@ -1031,7 +1032,7 @@ void FEIKSDKManager::LogConnectInfo(const EOS_HPlatform Platform, const EOS_Prod
 	}
 	else
 	{
-		UE_LOG_EOSSDK_INFO("IdToken (EOS_Connect_CopyIdToken failed: %s)", *LexToString(Result));
+		UE_LOG_EOSSDK_INFO("IdToken (EOS_Connect_CopyIdToken failed: %s)", *EIK_LexToString(Result));
 	}
 #endif // !UE_BUILD_SHIPPING
 
@@ -1062,7 +1063,7 @@ void FEIKSDKManager::LogConnectInfo(const EOS_HPlatform Platform, const EOS_Prod
 			Indent++;
 			UE_LOG_EOSSDK_INFO("DisplayName=%s", UTF8_TO_TCHAR(ExternalAccountInfo->DisplayName));
 			UE_LOG_EOSSDK_INFO("AccountId=%s", UTF8_TO_TCHAR(ExternalAccountInfo->AccountId));
-			UE_LOG_EOSSDK_INFO("AccountIdType=%s", LexToString(ExternalAccountInfo->AccountIdType));
+			UE_LOG_EOSSDK_INFO("AccountIdType=%s", EIK_LexToString(ExternalAccountInfo->AccountIdType));
 			UE_LOG_EOSSDK_INFO("LastLoginTime=%lld", ExternalAccountInfo->LastLoginTime);
 			Indent--;
 
@@ -1070,7 +1071,7 @@ void FEIKSDKManager::LogConnectInfo(const EOS_HPlatform Platform, const EOS_Prod
 		}
 		else
 		{
-			UE_LOG_EOSSDK_INFO("ExternalAccountInfo (EOS_Connect_CopyProductUserExternalAccountByIndex failed: %s)", *LexToString(Result));
+			UE_LOG_EOSSDK_INFO("ExternalAccountInfo (EOS_Connect_CopyProductUserExternalAccountByIndex failed: %s)", *EIK_LexToString(Result));
 		}
 
 		Indent--;
@@ -1082,55 +1083,55 @@ void FEIKSDKManager::AddCallbackObject(TUniquePtr<FCallbackBase> CallbackObj)
 	CallbackObjects.Emplace(MoveTemp(CallbackObj));
 }
 
-FEOSPlatformHandle::~FEOSPlatformHandle()
+FEIKPlatformHandle::~FEIKPlatformHandle()
 {
 	Manager.ReleasePlatform(PlatformHandle);
 }
 
-void FEOSPlatformHandle::Tick()
+void FEIKPlatformHandle::Tick()
 {
 	LLM_SCOPE(ELLMTag::RealTimeCommunications);
-	QUICK_SCOPE_CYCLE_COUNTER(FEOSPlatformHandle_Tick);
+	QUICK_SCOPE_CYCLE_COUNTER(FEIKPlatformHandle_Tick);
 	CSV_SCOPED_TIMING_STAT_EXCLUSIVE(EOSSDK);
 	EOS_Platform_Tick(PlatformHandle);
 }
 
-FString FEOSPlatformHandle::GetOverrideCountryCode() const
+FString FEIKPlatformHandle::GetOverrideCountryCode() const
 {
 	return Manager.GetOverrideCountryCode(PlatformHandle);
 }
 
-FString FEOSPlatformHandle::GetOverrideLocaleCode() const
+FString FEIKPlatformHandle::GetOverrideLocaleCode() const
 {
 	return Manager.GetOverrideLocaleCode(PlatformHandle);
 }
 
-void FEOSPlatformHandle::LogInfo(int32 Indent) const
+void FEIKPlatformHandle::LogInfo(int32 Indent) const
 {
 	Manager.LogPlatformInfo(PlatformHandle, Indent);
 }
 
-void FEOSPlatformHandle::LogAuthInfo(const EOS_EpicAccountId LoggedInAccount, int32 Indent) const
+void FEIKPlatformHandle::LogAuthInfo(const EOS_EpicAccountId LoggedInAccount, int32 Indent) const
 {
 	Manager.LogAuthInfo(PlatformHandle, LoggedInAccount, Indent);
 }
 
-void FEOSPlatformHandle::LogUserInfo(const EOS_EpicAccountId LoggedInAccount, const EOS_EpicAccountId TargetAccount, int32 Indent) const
+void FEIKPlatformHandle::LogUserInfo(const EOS_EpicAccountId LoggedInAccount, const EOS_EpicAccountId TargetAccount, int32 Indent) const
 {
 	Manager.LogUserInfo(PlatformHandle, LoggedInAccount, TargetAccount, Indent);
 }
 
-void FEOSPlatformHandle::LogPresenceInfo(const EOS_EpicAccountId LoggedInAccount, const EOS_EpicAccountId TargetAccount, int32 Indent) const
+void FEIKPlatformHandle::LogPresenceInfo(const EOS_EpicAccountId LoggedInAccount, const EOS_EpicAccountId TargetAccount, int32 Indent) const
 {
 	Manager.LogPresenceInfo(PlatformHandle, LoggedInAccount, TargetAccount, Indent);
 }
 
-void FEOSPlatformHandle::LogFriendsInfo(const EOS_EpicAccountId LoggedInAccount, int32 Indent) const
+void FEIKPlatformHandle::LogFriendsInfo(const EOS_EpicAccountId LoggedInAccount, int32 Indent) const
 {
 	Manager.LogFriendsInfo(PlatformHandle, LoggedInAccount, Indent);
 }
 
-void FEOSPlatformHandle::LogConnectInfo(const EOS_ProductUserId LoggedInAccount, int32 Indent) const
+void FEIKPlatformHandle::LogConnectInfo(const EOS_ProductUserId LoggedInAccount, int32 Indent) const
 {
 	Manager.LogConnectInfo(PlatformHandle, LoggedInAccount, Indent);
 }

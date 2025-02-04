@@ -37,7 +37,7 @@ public:
 	/** Create an instance with its own EOS platform. */
 	IVoiceChatPtr CreateInstance();
 	/** Create an instance sharing an existing EOS platform. Used to enable interaction with e.g. lobby voice channels via an IVoiceChat interface. */
-	IVoiceChatPtr CreateInstanceWithPlatform(const IEOSPlatformHandlePtr& PlatformHandle);
+	IVoiceChatPtr CreateInstanceWithPlatform(const IEIKPlatformHandlePtr& PlatformHandle);
 
 	// ~Begin FSelfRegisteringExec
 	virtual bool Exec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Ar) override;

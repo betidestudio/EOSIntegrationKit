@@ -129,7 +129,9 @@
                   <insert>
                       String str = &quot;&lt;string name=\&quot;eos_login_protocol_scheme\&quot;&gt;eos.${ClientId}&lt;/string&gt;&quot;
                   </insert>
-                  <insertNewline />
+          <log text="Android Using ClientId: $S(ClientId)"/>
+
+          <insertNewline />
                   <insert>
                       str = str.toLowerCase();
                     File xmlFile = new File("${project.projectDir}/src/main/res/values/strings.xml")

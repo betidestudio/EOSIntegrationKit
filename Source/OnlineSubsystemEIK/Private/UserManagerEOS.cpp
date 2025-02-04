@@ -2290,7 +2290,7 @@ bool FUserManagerEOS::GetEpicAccountIdFromProductUserId(const EOS_ProductUserId&
 	}
 	else
 	{
-		UE_LOG_ONLINE(Verbose, TEXT("[FUserManagerEOS::GetEpicAccountIdFromProductUserId] EOS_Connect_GetProductUserIdMapping not successful for ProductUserId (%s). Finished with EOS_EResult %s"), *LexToString(ProductUserId), ANSI_TO_TCHAR(EOS_EResult_ToString(Result)));
+		UE_LOG_ONLINE(Verbose, TEXT("[FUserManagerEOS::GetEpicAccountIdFromProductUserId] EOS_Connect_GetProductUserIdMapping not successful for ProductUserId (%s). Finished with EOS_EResult %s"), *EIK_LexToString(ProductUserId), ANSI_TO_TCHAR(EOS_EResult_ToString(Result)));
 	}
 
 	return bResult;
@@ -2345,7 +2345,7 @@ void FUserManagerEOS::ResolveUniqueNetIds(const TArray<EOS_ProductUserId>& Produ
 		{
 			if (Data->ResultCode != EOS_EResult::EOS_Success)
 			{
-				UE_LOG_ONLINE(Verbose, TEXT("[FUserManagerEOS::ResolveUniqueNetIds] EOS_Connect_QueryProductUserIdMappings not successful for user (%s). Finished with EOS_EResult %s."), *LexToString(Data->LocalUserId), ANSI_TO_TCHAR(EOS_EResult_ToString(Data->ResultCode)));
+				UE_LOG_ONLINE(Verbose, TEXT("[FUserManagerEOS::ResolveUniqueNetIds] EOS_Connect_QueryProductUserIdMappings not successful for user (%s). Finished with EOS_EResult %s."), *EIK_LexToString(Data->LocalUserId), ANSI_TO_TCHAR(EOS_EResult_ToString(Data->ResultCode)));
 			}
 
 			for (const EOS_ProductUserId& ProductUserId : ProductUserIdsToResolve)
@@ -2876,7 +2876,7 @@ void FUserManagerEOS::UpdateRemotePlayerProductUserId(EOS_EpicAccountId EpicAcco
 		return;
 	}
 
-	const FString ProductUserIdStr = LexToString(ProductUserId);
+	const FString ProductUserIdStr = EIK_LexToString(ProductUserId);
 
 	// Get the unique net id and rebuild the string for it
 	IAttributeAccessInterfaceRef AttrAccess = NetIdStringToAttributeAccessMap[PrevNetIdStr];
@@ -2977,7 +2977,7 @@ bool FUserManagerEOS::ReadFriendsList(int32 LocalUserNum, const FString& ListNam
 				if (FriendEpicAccountId != nullptr)
 				{
 					AddFriend(LocalUserNum, FriendEpicAccountId);
-					FriendEasIds.Add(LexToString(FriendEpicAccountId));
+					FriendEasIds.Add(EIK_LexToString(FriendEpicAccountId));
 				}
 			}
 
@@ -3588,7 +3588,7 @@ void FUserManagerEOS::SetPresence(const FUniqueNetId& UserId, const FOnlineUserP
 	EOS_EResult SetDataResult = EOS_PresenceModification_SetData(ChangeHandle, &DataOptions);
 	if (SetDataResult != EOS_EResult::EOS_Success)
 	{
-		UE_LOG_ONLINE(Error, TEXT("EOS_PresenceModification_SetData() failed with result code (%s)"), *LexToString(SetDataResult));
+		UE_LOG_ONLINE(Error, TEXT("EOS_PresenceModification_SetData() failed with result code (%s)"), *EIK_LexToString(SetDataResult));
 	}
 #if ENGINE_MAJOR_VERSION == 5
 	FSetPresenceCallback* CallbackObj = new FSetPresenceCallback(AsWeak());
@@ -3603,7 +3603,7 @@ void FUserManagerEOS::SetPresence(const FUniqueNetId& UserId, const FOnlineUserP
 			Delegate.ExecuteIfBound(*EOSID, true);
 			return;
 		}
-		UE_LOG_ONLINE(Error, TEXT("SetPresence() failed with result code (%s)"), *LexToString(Data->ResultCode));
+		UE_LOG_ONLINE(Error, TEXT("SetPresence() failed with result code (%s)"), *EIK_LexToString(Data->ResultCode));
 		Delegate.ExecuteIfBound(*FUniqueNetIdEOS::EmptyId(), false);
 	};
 
@@ -3662,7 +3662,7 @@ void FUserManagerEOS::QueryPresence(const FUniqueNetId& UserId, const FOnPresenc
 				return;
 			}
 			const FString& TargetUser = FUniqueNetIdEOSRegistry::FindOrAdd(Data->TargetUserId, nullptr)->ToString();
-			UE_LOG_ONLINE(Error, TEXT("QueryPresence() for user (%s) failed with result code (%s)"), *TargetUser, *LexToString(Data->ResultCode));
+			UE_LOG_ONLINE(Error, TEXT("QueryPresence() for user (%s) failed with result code (%s)"), *TargetUser, *EIK_LexToString(Data->ResultCode));
 			Delegate.ExecuteIfBound(*FUniqueNetIdEOS::EmptyId(), false);
 		};
 
@@ -3786,7 +3786,7 @@ bool FUserManagerEOS::QueryUserInfo(int32 LocalUserNum, const TArray<FUniqueNetI
 			else
 			{
 				// If the user is not registered, we'll add it and query their user info
-				UserEasIdsNeedingExternalMappings.Add(LexToString(AccountId));
+				UserEasIdsNeedingExternalMappings.Add(EIK_LexToString(AccountId));
 
 				// Registering the player will also query the user info data
 				AddRemotePlayer(LocalUserNum, EOSID.ToString(), AccountId);
@@ -3917,7 +3917,7 @@ bool FUserManagerEOS::QueryUserIdMapping(const FUniqueNetId& UserId, const FStri
 		bool bWasSuccessful = Result == EOS_EResult::EOS_Success;
 		if (bWasSuccessful)
 		{
-			const FString NetIdStr = LexToString(Data->TargetUserId);
+			const FString NetIdStr = EIK_LexToString(Data->TargetUserId);
 			FUniqueNetIdEOSPtr LocalUserId = UserNumToNetIdMap[DefaultLocalUser];
 			if (!EpicAccountIdToOnlineUserMap.Contains(Data->TargetUserId))
 			{

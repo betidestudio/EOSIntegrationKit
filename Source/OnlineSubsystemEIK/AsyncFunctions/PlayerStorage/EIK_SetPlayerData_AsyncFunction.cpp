@@ -26,12 +26,22 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 {
 	if(DataToSave.Num() > 0)
 	{
-		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get() )
+		if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(GetWorld(), "EIK"))
 		{
 			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
 				if(const IOnlineUserCloudPtr CloudPointerRef = SubsystemRef->GetUserCloudInterface())
 				{
+					if(!IdentityPointerRef->GetUniquePlayerId(0).IsValid())
+					{
+						if(!bDelegateCalled)
+						{
+							bDelegateCalled = true;
+							OnFail.Broadcast();
+							SetReadyToDestroy();
+							return;
+						}
+					}
 					const TSharedPtr<const FUniqueNetId> UserIDRef = IdentityPointerRef->GetUniquePlayerId(0).ToSharedRef();
 					CloudPointerRef->OnWriteUserFileCompleteDelegates.AddUObject(this, &UEIK_SetPlayerData_AsyncFunction::OnWriteFileComplete);
 					CloudPointerRef->WriteUserFile(*UserIDRef,FileName,DataToSave);

@@ -13,7 +13,7 @@
 #include "Interfaces/OnlineExternalUIInterface.h"
 
 class FOnlineSubsystemEOS;
-using IEOSPlatformHandlePtr = TSharedPtr<class IEOSPlatformHandle, ESPMode::ThreadSafe>;
+using IEIKPlatformHandlePtr = TSharedPtr<class IEIKPlatformHandle, ESPMode::ThreadSafe>;
 
 class FEOSHelpers
 {
@@ -22,7 +22,7 @@ public:
 
 	virtual void PlatformAuthCredentials(EOS_Auth_Credentials &Credentials);
 	virtual void PlatformTriggerLoginUI(FOnlineSubsystemEOS* EOSSubsystem, const int ControllerIndex, bool bShowOnlineOnly, bool bShowSkipButton, const FOnLoginUIClosedDelegate& Delegate);
-	virtual IEOSPlatformHandlePtr CreatePlatform(EOS_Platform_Options& PlatformOptions);
+	virtual IEIKPlatformHandlePtr CreatePlatform(EOS_Platform_Options& PlatformOptions);
 
 protected:
 	/** Shared LoginUI logic that can be used by platforms that support LoginUI */

@@ -42,11 +42,11 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FEIKSDKManagerOnDefaultPlatformConfigNameCh
 DECLARE_MULTICAST_DELEGATE_TwoParams(FEIKSDKManagerOnPreCreateNamedPlatform, const FEOSSDKPlatformConfig& Config, EOS_Platform_Options& Options);
 DECLARE_MULTICAST_DELEGATE_OneParam(FEIKSDKManagerOnPreCreatePlatform, EOS_Platform_Options& Options);
 
-class IEOSPlatformHandle
+class IEIKPlatformHandle
 {
 public:
-	IEOSPlatformHandle(EOS_HPlatform InPlatformHandle) : PlatformHandle(InPlatformHandle) {}
-	virtual ~IEOSPlatformHandle() = default;
+	IEIKPlatformHandle(EOS_HPlatform InPlatformHandle) : PlatformHandle(InPlatformHandle) {}
+	virtual ~IEIKPlatformHandle() = default;
 
 	virtual void Tick() = 0;
 
@@ -67,8 +67,8 @@ protected:
 	//EOS_HPlatform PlatformHandle;
 };
 
-using IEOSPlatformHandlePtr = TSharedPtr<IEOSPlatformHandle, ESPMode::ThreadSafe>;
-using IEOSPlatformHandleWeakPtr = TWeakPtr<IEOSPlatformHandle, ESPMode::ThreadSafe>;
+using IEIKPlatformHandlePtr = TSharedPtr<IEIKPlatformHandle, ESPMode::ThreadSafe>;
+using IEIKPlatformHandleWeakPtr = TWeakPtr<IEIKPlatformHandle, ESPMode::ThreadSafe>;
 
 class IEOSSDKManager : public IModularFeature
 {
@@ -102,10 +102,10 @@ public:
 	 * Create a platform handle for a platform config name. Config is loaded from .ini files if it was not added with AddPlatformConfig.
 	 * If a platform handle already exists for the config name, this will return a shared pointer to that handle and not create a new one.
 	 */
-	virtual IEOSPlatformHandlePtr CreatePlatform(const FString& PlatformConfigName, FName InstanceName = NAME_None) = 0;
+	virtual IEIKPlatformHandlePtr CreatePlatform(const FString& PlatformConfigName, FName InstanceName = NAME_None) = 0;
 
 	/** Create a platform handle using EOSSDK options directly. */
-	virtual IEOSPlatformHandlePtr CreatePlatform(EOS_Platform_Options& PlatformOptions) = 0;
+	virtual IEIKPlatformHandlePtr CreatePlatform(EOS_Platform_Options& PlatformOptions) = 0;
 
 	virtual FString GetProductName() const = 0;
 	virtual FString GetProductVersion() const = 0;

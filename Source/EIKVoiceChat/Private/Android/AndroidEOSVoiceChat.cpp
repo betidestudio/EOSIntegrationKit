@@ -6,7 +6,7 @@
 
 #include "AndroidEOSVoiceChatUser.h"
 
-FAndroidEOSVoiceChat::FAndroidEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEOSPlatformHandlePtr& InPlatformHandle)
+FAndroidEOSVoiceChat::FAndroidEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEIKPlatformHandlePtr& InPlatformHandle)
 	: FEOSVoiceChat(InSDKManager, InPlatformHandle)
 {
 }

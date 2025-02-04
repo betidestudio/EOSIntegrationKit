@@ -6,7 +6,7 @@
 
 class FUniqueNetId;
 class IVoiceChatUser;
-using IEOSPlatformHandlePtr = TSharedPtr<class IEOSPlatformHandle, ESPMode::ThreadSafe>;
+using IEIKPlatformHandlePtr = TSharedPtr<class IEIKPlatformHandle, ESPMode::ThreadSafe>;
 
 /**
  *	OnlineSubsystemEOS - Implementation of the online subsystem for EOS services
@@ -19,5 +19,5 @@ public:
 	virtual ~IOnlineSubsystemEOS() = default;
 
 	virtual IVoiceChatUser* GetVoiceChatUserInterface(const FUniqueNetId& LocalUserId) = 0;
-	virtual IEOSPlatformHandlePtr GetEOSPlatformHandle() const = 0;
+	virtual IEIKPlatformHandlePtr GetEOSPlatformHandle() const = 0;
 };

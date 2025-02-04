@@ -3,7 +3,7 @@
 
 #include "BFL_GoogleSignIn.h"
 
-#if PLATFORM_ANDROID
+#if PLATFORM_ANDROID && GOOGLE_ONETAP_ENABLED
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJNI.h" 
 #include "Android/Utils/AndroidJNICallUtils.h"
@@ -35,7 +35,7 @@ DECLARE_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_IsUserLoggedIn);
 
 UBFL_GoogleSignIn::UBFL_GoogleSignIn()
 {
-#if PLATFORM_ANDROID
+#if PLATFORM_ANDROID && GOOGLE_ONETAP_ENABLED
 	INIT_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_GetUserDisplayName, "()Ljava/lang/String;");
 	INIT_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_GetUserFirstName, "()Ljava/lang/String;");
 	INIT_JAVA_METHOD(AndroidThunkJava_GoogleSubsystem_GetUserLastName, "()Ljava/lang/String;");
@@ -46,7 +46,7 @@ UBFL_GoogleSignIn::UBFL_GoogleSignIn()
 
 FString UBFL_GoogleSignIn::GetUserDisplayName()
 {
-#if PLATFORM_ANDROID
+#if PLATFORM_ANDROID && GOOGLE_ONETAP_ENABLED
 	if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 	{
 		return AndroidJNIConvertor::FromJavaString(static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_GetUserDisplayName)));
@@ -65,7 +65,7 @@ FString UBFL_GoogleSignIn::GetUserDisplayName()
 
 FString UBFL_GoogleSignIn::GetUserFirstName()
 {
-#if PLATFORM_ANDROID
+#if PLATFORM_ANDROID && GOOGLE_ONETAP_ENABLED
 	if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 	{
 		return AndroidJNIConvertor::FromJavaString(static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_GetUserFirstName)));
@@ -84,7 +84,7 @@ FString UBFL_GoogleSignIn::GetUserFirstName()
 
 FString UBFL_GoogleSignIn::GetUserLastName()
 {
-#if PLATFORM_ANDROID
+#if PLATFORM_ANDROID && GOOGLE_ONETAP_ENABLED
 	if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 	{
 		return AndroidJNIConvertor::FromJavaString(static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_GetUserLastName)));
@@ -103,7 +103,7 @@ FString UBFL_GoogleSignIn::GetUserLastName()
 
 FString UBFL_GoogleSignIn::GetUserProfilePictureUrl()
 {
-#if PLATFORM_ANDROID
+#if PLATFORM_ANDROID && GOOGLE_ONETAP_ENABLED
 	if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 	{
 		return AndroidJNIConvertor::FromJavaString(static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_GetUserProfilePictureUrl)));
@@ -123,7 +123,7 @@ FString UBFL_GoogleSignIn::GetUserProfilePictureUrl()
 
 bool UBFL_GoogleSignIn::IsUserLoggedIn()
 {
-#if PLATFORM_ANDROID
+#if PLATFORM_ANDROID && GOOGLE_ONETAP_ENABLED
 	if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 	{
 		return FJavaWrapper::CallBooleanMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GoogleSubsystem_IsUserLoggedIn);

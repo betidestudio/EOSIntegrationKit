@@ -9,12 +9,12 @@
 
 #include "Windows/eos_Windows.h"
 
-FWindowsEOSVoiceChat::FWindowsEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEOSPlatformHandlePtr& InPlatformHandle)
+FWindowsEOSVoiceChat::FWindowsEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEIKPlatformHandlePtr& InPlatformHandle)
 	: FEOSVoiceChat(InSDKManager, InPlatformHandle)
 {
 }
 
-IEOSPlatformHandlePtr FWindowsEOSVoiceChat::EOSPlatformCreate(EOS_Platform_Options& PlatformOptions)
+IEIKPlatformHandlePtr FWindowsEOSVoiceChat::EOSPlatformCreate(EOS_Platform_Options& PlatformOptions)
 {
 	const FString XAudioPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*FPaths::Combine(FPaths::EngineDir(), TEXT("Binaries/ThirdParty/Windows/XAudio2_9"), PLATFORM_64BITS ? TEXT("x64") : TEXT("x86"), TEXT("xaudio2_9redist.dll")));
 	const FTCHARToUTF8 Utf8XAudioPath(*XAudioPath);

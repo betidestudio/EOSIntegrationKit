@@ -19,7 +19,7 @@
 #include "eos_connect_types.h"
 #include "eos_init.h"
 
-struct FEOSPlatformHandle;
+struct FEIKPlatformHandle;
 
 class FEIKSDKManager :
 	public IEOSSDKManager,
@@ -38,8 +38,8 @@ public:
 	virtual const FString& GetDefaultPlatformConfigName() override;
 	virtual void SetDefaultPlatformConfigName(const FString& PlatformConfigName) override;
 
-	virtual IEOSPlatformHandlePtr CreatePlatform(const FString& PlatformConfigName, FName InstanceName = NAME_None) override;
-	virtual IEOSPlatformHandlePtr CreatePlatform(EOS_Platform_Options& PlatformOptions) override;
+	virtual IEIKPlatformHandlePtr CreatePlatform(const FString& PlatformConfigName, FName InstanceName = NAME_None) override;
+	virtual IEIKPlatformHandlePtr CreatePlatform(EOS_Platform_Options& PlatformOptions) override;
 
 	virtual FString GetProductName() const override;
 	virtual FString GetProductVersion() const override;
@@ -66,7 +66,7 @@ public:
 
 protected:
 	virtual EOS_EResult EOSInitialize(EOS_InitializeOptions& Options);
-	virtual IEOSPlatformHandlePtr CreatePlatform(const FEOSSDKPlatformConfig& PlatformConfig, EOS_Platform_Options& PlatformOptions);
+	virtual IEIKPlatformHandlePtr CreatePlatform(const FEOSSDKPlatformConfig& PlatformConfig, EOS_Platform_Options& PlatformOptions);
 	virtual bool Tick(float);
 
 	void OnApplicationStatusChanged(EOS_EApplicationStatus ApplicationStatus);
@@ -74,7 +74,7 @@ protected:
 	EOS_EApplicationStatus CachedApplicationStatus = EOS_EApplicationStatus::EOS_AS_Foreground;
 	EOS_ENetworkStatus CachedNetworkStatus = EOS_ENetworkStatus::EOS_NS_Online;
 
-	friend struct FEOSPlatformHandle;
+	friend struct FEIKPlatformHandle;
 
 	void OnConfigSectionsChanged(const FString& IniFilename, const TSet<FString>& SectionName);
 	void LoadConfig();
@@ -108,21 +108,21 @@ protected:
 	/** Default platform config name to use. */
 	FString DefaultPlatformConfigName;
 	/** Cache of named platform handles that have been created. */
-	TMap<FString, TMap<FName, IEOSPlatformHandleWeakPtr>> PlatformHandles;
+	TMap<FString, TMap<FName, IEIKPlatformHandleWeakPtr>> PlatformHandles;
 
 	// Config
 	/** Interval between platform ticks. 0 means we tick every frame. */
 	double ConfigTickIntervalSeconds = 0.f;
 };
 
-struct FEOSPlatformHandle : public IEOSPlatformHandle
+struct FEIKPlatformHandle : public IEIKPlatformHandle
 {
-	FEOSPlatformHandle(FEIKSDKManager& InManager, EOS_HPlatform InPlatformHandle)
-		: IEOSPlatformHandle(InPlatformHandle), Manager(InManager)
+	FEIKPlatformHandle(FEIKSDKManager& InManager, EOS_HPlatform InPlatformHandle)
+		: IEIKPlatformHandle(InPlatformHandle), Manager(InManager)
 	{
 	}
 
-	virtual ~FEOSPlatformHandle();
+	virtual ~FEIKPlatformHandle();
 	virtual void Tick() override;
 
 	virtual FString GetOverrideCountryCode() const override;

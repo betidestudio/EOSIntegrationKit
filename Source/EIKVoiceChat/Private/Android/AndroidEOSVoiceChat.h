@@ -9,7 +9,7 @@
 class FAndroidEOSVoiceChat : public FEOSVoiceChat
 {
 public:
-	FAndroidEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEOSPlatformHandlePtr& InPlatformHandle);
+	FAndroidEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEIKPlatformHandlePtr& InPlatformHandle);
 	virtual ~FAndroidEOSVoiceChat() = default;
 
 	// ~Begin IVoiceChat Interface 

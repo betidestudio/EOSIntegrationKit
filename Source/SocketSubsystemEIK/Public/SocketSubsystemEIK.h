@@ -33,7 +33,7 @@ class SOCKETSUBSYSTEMEIK_API FSocketSubsystemEIK
 	: public ISocketSubsystem
 {
 public:
-	FSocketSubsystemEIK(IEOSPlatformHandlePtr InPlatformHandle, ISocketSubsystemEOSUtilsPtr InUtils);
+	FSocketSubsystemEIK(IEIKPlatformHandlePtr InPlatformHandle, ISocketSubsystemEOSUtilsPtr InUtils);
 	virtual ~FSocketSubsystemEIK();
 
 //~ Begin ISocketSubsystem Interface

@@ -18,7 +18,7 @@ DECLARE_STATS_GROUP(TEXT("EOS"), STATGROUP_EOS, STATCAT_Advanced);
 
 class FSocketSubsystemEOS;
 class IEOSSDKManager;
-using IEOSPlatformHandlePtr = TSharedPtr<class IEOSPlatformHandle, ESPMode::ThreadSafe>;
+using IEIKPlatformHandlePtr = TSharedPtr<class IEIKPlatformHandle, ESPMode::ThreadSafe>;
 
 class IVoiceChatUser;
 class FEOSVoiceChatUser;
@@ -68,7 +68,7 @@ public:
 
 // IOnlineSubsystemEOS
 	virtual IVoiceChatUser* GetVoiceChatUserInterface(const FUniqueNetId& LocalUserId) override;
-	virtual IEOSPlatformHandlePtr GetEOSPlatformHandle() const override { return EOSPlatformHandle; };
+	virtual IEIKPlatformHandlePtr GetEOSPlatformHandle() const override { return EOSPlatformHandle; };
 
 // IOnlineSubsystem
 	virtual IOnlineSessionPtr GetSessionInterface() const override;
@@ -123,7 +123,7 @@ public:
 	FGuid EOSCallbackContext;
 	
 	/** EOS handles */
-	IEOSPlatformHandlePtr EOSPlatformHandle;
+	IEIKPlatformHandlePtr EOSPlatformHandle;
 	EOS_HAuth AuthHandle;
 	EOS_HUI UIHandle;
 	EOS_HFriends FriendsHandle;

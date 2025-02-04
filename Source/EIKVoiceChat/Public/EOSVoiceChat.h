@@ -14,7 +14,7 @@
 #include "eos_rtc_audio_types.h"
 #include "eos_lobby_types.h"
 
-EIKVOICECHAT_API const TCHAR* LexToString(EOS_ERTCAudioInputStatus Status);
+EIKVOICECHAT_API const TCHAR* EIK_LexToString(EOS_ERTCAudioInputStatus Status);
 
 struct FVoiceChatMetadataItem
 {
@@ -44,7 +44,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnVoiceChatDataReceivedDelegate, const F
 class FEOSAudioDevicePool;
 class FEOSVoiceChatUser;
 class IEOSSDKManager;
-using IEOSPlatformHandlePtr = TSharedPtr<class IEOSPlatformHandle, ESPMode::ThreadSafe>;
+using IEIKPlatformHandlePtr = TSharedPtr<class IEIKPlatformHandle, ESPMode::ThreadSafe>;
 
 typedef TSharedPtr<class FEOSVoiceChat, ESPMode::ThreadSafe> FEOSVoiceChatPtr;
 typedef TSharedPtr<class FEOSVoiceChatUser, ESPMode::ThreadSafe> FEOSVoiceChatUserPtr;
@@ -57,7 +57,7 @@ typedef TWeakPtr<class FEOSVoiceChatUser, ESPMode::ThreadSafe> FEOSVoiceChatUser
 class FEOSVoiceChat : public TSharedFromThis<FEOSVoiceChat, ESPMode::ThreadSafe>, public IVoiceChat
 {
 public:
-	FEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEOSPlatformHandlePtr& PlatformHandle);
+	FEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEIKPlatformHandlePtr& PlatformHandle);
 
 	virtual ~FEOSVoiceChat();
 
@@ -159,7 +159,7 @@ public:
 	virtual FString InsecureGetJoinToken(const FString& ChannelName, EVoiceChatChannelType ChannelType, TOptional<FVoiceChatChannel3dProperties> Channel3dProperties = TOptional<FVoiceChatChannel3dProperties>()) override;
 	// ~End IVoiceChatUser Interface
 
-	IEOSPlatformHandlePtr GetPlatformHandle() const { return EosPlatformHandle; }
+	IEIKPlatformHandlePtr GetPlatformHandle() const { return EosPlatformHandle; }
 	EOS_HRTC GetRtcInterface() const { return InitSession.EosRtcInterface; }
 	EOS_HLobby GetLobbyInterface() const { return InitSession.EosLobbyInterface; }
 
@@ -236,8 +236,8 @@ protected:
 	TArray<IVoiceChatUser*> UsersCreatedByConsoleCommand;
 
 	IEOSSDKManager& SDKManager;
-	IEOSPlatformHandlePtr EosPlatformHandle = nullptr;
-	virtual IEOSPlatformHandlePtr EOSPlatformCreate(EOS_Platform_Options& PlatformOptions);
+	IEIKPlatformHandlePtr EosPlatformHandle = nullptr;
+	virtual IEIKPlatformHandlePtr EOSPlatformCreate(EOS_Platform_Options& PlatformOptions);
 
 	static int64 StaticInstanceIdCount;
 	int64 InstanceId = StaticInstanceIdCount++;

@@ -10,7 +10,7 @@
 #include "Misc/ConfigCacheIni.h"
 #include "Misc/CoreDelegates.h"
 
-FIOSEOSVoiceChat::FIOSEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEOSPlatformHandlePtr& InPlatformHandle)
+FIOSEOSVoiceChat::FIOSEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEIKPlatformHandlePtr& InPlatformHandle)
 	: FEOSVoiceChat(InSDKManager, InPlatformHandle)
 {
 }

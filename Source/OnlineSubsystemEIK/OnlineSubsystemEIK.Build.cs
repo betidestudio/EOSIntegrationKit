@@ -12,6 +12,8 @@ public class OnlineSubsystemEIK : ModuleRules
 	public OnlineSubsystemEIK(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PrivateDefinitions.Add("ONLINESUBSYSTEMEOS_PACKAGE=1");
+		
+		PrivatePCHHeaderFile = "AntiCheat/AntiCheatClient.h";
 
 		PublicDependencyModuleNames.AddRange(
 			new string[] {

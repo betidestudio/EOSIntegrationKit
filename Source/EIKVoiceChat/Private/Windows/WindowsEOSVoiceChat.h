@@ -9,11 +9,11 @@
 class FWindowsEOSVoiceChat : public FEOSVoiceChat
 {
 public:
-	FWindowsEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEOSPlatformHandlePtr& InPlatformHandle);
+	FWindowsEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEIKPlatformHandlePtr& InPlatformHandle);
 	virtual ~FWindowsEOSVoiceChat() = default;
 
 protected:
-	virtual IEOSPlatformHandlePtr EOSPlatformCreate(EOS_Platform_Options& PlatformOptions) override;
+	virtual IEIKPlatformHandlePtr EOSPlatformCreate(EOS_Platform_Options& PlatformOptions) override;
 };
 
 using FPlatformEOSVoiceChat = FWindowsEOSVoiceChat;

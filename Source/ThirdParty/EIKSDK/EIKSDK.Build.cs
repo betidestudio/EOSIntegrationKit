@@ -169,7 +169,7 @@ public class EIKSDK : ModuleRules
 		} 
 		else if (Target.Platform == UnrealTargetPlatform.Android)
 		{
-#if !UE_5_0_OR_LATER
+#if !UE_5_3_OR_LATER
 			IAndroidToolChain ToolChain = AndroidExports.CreateToolChain(Target.ProjectFile);
 			var Architectures = ToolChain.GetAllArchitectures();
 

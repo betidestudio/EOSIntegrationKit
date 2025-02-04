@@ -11,7 +11,7 @@ class FWindowsEOSHelpers : public FEOSHelpers
 public:
 	virtual ~FWindowsEOSHelpers() = default;
 
-	virtual IEOSPlatformHandlePtr CreatePlatform(EOS_Platform_Options& PlatformOptions) override;
+	virtual IEIKPlatformHandlePtr CreatePlatform(EOS_Platform_Options& PlatformOptions) override;
 };
 
 using FPlatformEOSHelpers = FWindowsEOSHelpers;

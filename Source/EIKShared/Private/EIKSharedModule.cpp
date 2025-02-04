@@ -17,18 +17,18 @@ IMPLEMENT_MODULE(FEIKSharedModule, EIKShared);
 
 void FEIKSharedModule::StartupModule()
 {
-#if WITH_EOS_SDK
+#if WITH_EOS_SDK	
 	if (IsRunningCommandlet())
 	{
 		// No need to do anything when running in commandlet mode. We won't register the EOSSDKManager, EOS will not be initialized, no platforms will be created, etc.
-		UE_LOG(LogEOSSDK, Log, TEXT("IsRunningCommandlet=true, skipping EOSSDK initialization."))
+		UE_LOG(LogEIKSDK, Log, TEXT("IsRunningCommandlet=true, skipping EOSSDK initialization."))
 		return;
 	}
 
 	SDKManager = MakeUnique<FPlatformEOSSDKManager>();
 	check(SDKManager);
 
-	IModularFeatures::Get().RegisterModularFeature(TEXT("EOSSDKManager"), SDKManager.Get());
+	IModularFeatures::Get().RegisterModularFeature(IEOSSDKManager::GetModularFeatureName(), SDKManager.Get());
 
 	// Load from a configurable array of modules at this point, so things that need to bind to the SDK Manager init hooks can do so.
 	TArray<FString> ModulesToLoad;
@@ -48,7 +48,7 @@ void FEIKSharedModule::ShutdownModule()
 #if WITH_EOS_SDK
 	if(SDKManager.IsValid())
 	{
-		IModularFeatures::Get().UnregisterModularFeature(TEXT("EOSSDKManager"), SDKManager.Get());
+		IModularFeatures::Get().UnregisterModularFeature(IEOSSDKManager::GetModularFeatureName(), SDKManager.Get());
 		SDKManager->Shutdown();
 		SDKManager.Reset();
 	}

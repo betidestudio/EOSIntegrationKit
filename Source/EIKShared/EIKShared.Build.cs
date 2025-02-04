@@ -10,6 +10,7 @@ public class EIKShared : ModuleRules
 	{
 		PublicDependencyModuleNames.AddRange(new string[] { "EIKSDK" });
 		Type = ModuleType.CPlusPlus;
+		PrivatePCHHeaderFile = "Private/EIKSharedModule.h";
 
 		PrivateDependencyModuleNames.AddRange(
 			new string[]

@@ -1,11 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
-
 #if WITH_EOS_SDK
 
 #include "eos_auth_types.h"
-#include "eos_ios.h"
+#include "ThirdParty/EIKSDK/Bin/IOS/EOSSDK.framework/Headers/eos_ios.h"
 #include "Interfaces/OnlineExternalUIInterface.h"
 #include "EOSHelpers.h"
 

@@ -31,31 +31,31 @@ EOS_ENUM_FORWARD_DECL(EOS_ENetworkStatus);
 EOS_ENUM_FORWARD_DECL(EOS_Presence_EStatus);
 #undef EOS_ENUM_FORWARD_DECL
 
-DECLARE_LOG_CATEGORY_EXTERN(LogEOSSDK, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogEIKSDK, Log, All);
 
-EIKSHARED_API FString LexToString(const EOS_EResult EosResult);
-EIKSHARED_API FString LexToString(const EOS_ProductUserId UserId);
-EIKSHARED_API void LexFromString(EOS_ProductUserId& UserId, const TCHAR* String);
+EIKSHARED_API FString EIK_LexToString(const EOS_EResult EosResult);
+EIKSHARED_API FString EIK_LexToString(const EOS_ProductUserId UserId);
+EIKSHARED_API void EIK_LexFromString(EOS_ProductUserId& UserId, const TCHAR* String);
 inline EOS_ProductUserId EOSProductUserIdFromString(const TCHAR* String)
 {
 	EOS_ProductUserId UserId;
-	LexFromString(UserId, String);
+	EIK_LexFromString(UserId, String);
 	return UserId;
 }
 
-EIKSHARED_API FString LexToString(const EOS_EpicAccountId AccountId);
+EIKSHARED_API FString EIK_LexToString(const EOS_EpicAccountId AccountId);
 
-EIKSHARED_API const TCHAR* LexToString(const EOS_EApplicationStatus ApplicationStatus);
-EIKSHARED_API const TCHAR* LexToString(const EOS_EAuthTokenType AuthTokenType);
-EIKSHARED_API const TCHAR* LexToString(const EOS_EDesktopCrossplayStatus DesktopCrossplayStatus);
-EIKSHARED_API const TCHAR* LexToString(const EOS_EExternalAccountType ExternalAccountType);
-EIKSHARED_API const TCHAR* LexToString(const EOS_EFriendsStatus FriendStatus);
-EIKSHARED_API const TCHAR* LexToString(const EOS_ELoginStatus LoginStatus);
-EIKSHARED_API const TCHAR* LexToString(const EOS_ENetworkStatus NetworkStatus);
-EIKSHARED_API const TCHAR* LexToString(const EOS_Presence_EStatus PresenceStatus);
+EIKSHARED_API const TCHAR* EIK_LexToString(const EOS_EApplicationStatus ApplicationStatus);
+EIKSHARED_API const TCHAR* EIK_LexToString(const EOS_EAuthTokenType AuthTokenType);
+EIKSHARED_API const TCHAR* EIK_LexToString(const EOS_EDesktopCrossplayStatus DesktopCrossplayStatus);
+EIKSHARED_API const TCHAR* EIK_LexToString(const EOS_EExternalAccountType ExternalAccountType);
+EIKSHARED_API const TCHAR* EIK_LexToString(const EOS_EFriendsStatus FriendStatus);
+EIKSHARED_API const TCHAR* EIK_LexToString(const EOS_ELoginStatus LoginStatus);
+EIKSHARED_API const TCHAR* EIK_LexToString(const EOS_ENetworkStatus NetworkStatus);
+EIKSHARED_API const TCHAR* EIK_LexToString(const EOS_Presence_EStatus PresenceStatus);
 
-EIKSHARED_API bool LexFromString(EOS_EAuthScopeFlags& OutEnum, const TCHAR* InString);
-EIKSHARED_API bool LexFromString(EOS_EExternalCredentialType& OutEnum, const TCHAR* InString);
-EIKSHARED_API bool LexFromString(EOS_ELoginCredentialType& OutEnum, const TCHAR* InString);
+EIKSHARED_API bool EIK_LexFromString(EOS_EAuthScopeFlags& OutEnum, const TCHAR* InString);
+EIKSHARED_API bool EIK_LexFromString(EOS_EExternalCredentialType& OutEnum, const TCHAR* InString);
+EIKSHARED_API bool EIK_LexFromString(EOS_ELoginCredentialType& OutEnum, const TCHAR* InString);
 
 #endif // WITH_EOS_SDK

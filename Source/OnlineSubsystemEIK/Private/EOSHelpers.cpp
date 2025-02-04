@@ -28,7 +28,7 @@ void FEOSHelpers::PlatformTriggerLoginUI(FOnlineSubsystemEOS* EOSSubsystem, cons
 	});
 }
 
-IEOSPlatformHandlePtr FEOSHelpers::CreatePlatform(EOS_Platform_Options& PlatformOptions)
+IEIKPlatformHandlePtr FEOSHelpers::CreatePlatform(EOS_Platform_Options& PlatformOptions)
 {
 	IEOSSDKManager* SDKManager = IEOSSDKManager::Get();
 	if (ensure(SDKManager))

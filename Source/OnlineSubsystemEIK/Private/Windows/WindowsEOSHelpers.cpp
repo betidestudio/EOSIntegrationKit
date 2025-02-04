@@ -11,7 +11,7 @@
 #include "Windows/eos_Windows.h"
 #endif
 
-IEOSPlatformHandlePtr FWindowsEOSHelpers::CreatePlatform(EOS_Platform_Options& PlatformOptions)
+IEIKPlatformHandlePtr FWindowsEOSHelpers::CreatePlatform(EOS_Platform_Options& PlatformOptions)
 {
 #if WITH_EOS_RTC
 	const FTCHARToUTF8 Utf8XAudioPath(*IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*FPaths::Combine(FPaths::EngineDir(), TEXT("Binaries/ThirdParty/Windows/XAudio2_9"), PLATFORM_64BITS ? TEXT("x64") : TEXT("x86"), TEXT("xaudio2_9redist.dll"))));

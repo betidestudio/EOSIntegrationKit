@@ -8,14 +8,14 @@
 #include "eos_presence_types.h"
 #include "eos_types.h"
 
-DEFINE_LOG_CATEGORY(LogEOSSDK);
+DEFINE_LOG_CATEGORY(LogEIKSDK);
 
-FString LexToString(const EOS_EResult EosResult)
+FString EIK_LexToString(const EOS_EResult EosResult)
 {
 	return UTF8_TO_TCHAR(EOS_EResult_ToString(EosResult));
 }
 
-FString LexToString(const EOS_ProductUserId UserId)
+FString EIK_LexToString(const EOS_ProductUserId UserId)
 {
 	FString Result;
 
@@ -31,12 +31,12 @@ FString LexToString(const EOS_ProductUserId UserId)
 	return Result;
 }
 
-void LexFromString(EOS_ProductUserId& UserId, const TCHAR* String)
+void EIK_LexFromString(EOS_ProductUserId& UserId, const TCHAR* String)
 {
 	UserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(String));
 }
 
-FString LexToString(const EOS_EpicAccountId AccountId)
+FString EIK_LexToString(const EOS_EpicAccountId AccountId)
 {
 	FString Result;
 
@@ -52,7 +52,7 @@ FString LexToString(const EOS_EpicAccountId AccountId)
 	return Result;
 }
 
-const TCHAR* LexToString(const EOS_EApplicationStatus ApplicationStatus)
+const TCHAR* EIK_LexToString(const EOS_EApplicationStatus ApplicationStatus)
 {
 	switch (ApplicationStatus)
 	{
@@ -64,7 +64,7 @@ const TCHAR* LexToString(const EOS_EApplicationStatus ApplicationStatus)
 	}
 }
 
-const TCHAR* LexToString(const EOS_EAuthTokenType AuthTokenType)
+const TCHAR* EIK_LexToString(const EOS_EAuthTokenType AuthTokenType)
 {
 	switch (AuthTokenType)
 	{
@@ -74,7 +74,7 @@ const TCHAR* LexToString(const EOS_EAuthTokenType AuthTokenType)
 	}
 }
 
-const TCHAR* LexToString(const EOS_EDesktopCrossplayStatus DesktopCrossplayStatus)
+const TCHAR* EIK_LexToString(const EOS_EDesktopCrossplayStatus DesktopCrossplayStatus)
 {
 	switch (DesktopCrossplayStatus)
 	{
@@ -91,7 +91,7 @@ const TCHAR* LexToString(const EOS_EDesktopCrossplayStatus DesktopCrossplayStatu
 	}
 }
 
-const TCHAR* LexToString(const EOS_EExternalAccountType ExternalAccountType)
+const TCHAR* EIK_LexToString(const EOS_EExternalAccountType ExternalAccountType)
 {
 	switch (ExternalAccountType)
 	{
@@ -113,7 +113,7 @@ const TCHAR* LexToString(const EOS_EExternalAccountType ExternalAccountType)
 	}
 }
 
-const TCHAR* LexToString(const EOS_EFriendsStatus FriendStatus)
+const TCHAR* EIK_LexToString(const EOS_EFriendsStatus FriendStatus)
 {
 	switch (FriendStatus)
 	{
@@ -125,7 +125,7 @@ const TCHAR* LexToString(const EOS_EFriendsStatus FriendStatus)
 	}
 }
 
-const TCHAR* LexToString(const EOS_ELoginStatus LoginStatus)
+const TCHAR* EIK_LexToString(const EOS_ELoginStatus LoginStatus)
 {
 	switch (LoginStatus)
 	{
@@ -136,7 +136,7 @@ const TCHAR* LexToString(const EOS_ELoginStatus LoginStatus)
 	}
 }
 
-const TCHAR* LexToString(const EOS_ENetworkStatus NetworkStatus)
+const TCHAR* EIK_LexToString(const EOS_ENetworkStatus NetworkStatus)
 {
 	switch (NetworkStatus)
 	{
@@ -147,7 +147,7 @@ const TCHAR* LexToString(const EOS_ENetworkStatus NetworkStatus)
 	}
 }
 
-const TCHAR* LexToString(const EOS_Presence_EStatus PresenceStatus)
+const TCHAR* EIK_LexToString(const EOS_Presence_EStatus PresenceStatus)
 {
 	switch (PresenceStatus)
 	{
@@ -160,7 +160,7 @@ const TCHAR* LexToString(const EOS_Presence_EStatus PresenceStatus)
 	}
 }
 
-bool LexFromString(EOS_EExternalCredentialType& OutEnum, const TCHAR* InString)
+bool EIK_LexFromString(EOS_EExternalCredentialType& OutEnum, const TCHAR* InString)
 {
 	if (FCString::Stricmp(InString, TEXT("Steam")) == 0)
 	{
@@ -199,7 +199,7 @@ bool LexFromString(EOS_EExternalCredentialType& OutEnum, const TCHAR* InString)
 	return true;
 }
 
-bool LexFromString(EOS_EAuthScopeFlags& OutEnum, const TCHAR* InString)
+bool EIK_LexFromString(EOS_EAuthScopeFlags& OutEnum, const TCHAR* InString)
 {
 	if (FCString::Stricmp(InString, TEXT("BasicProfile")) == 0)
 	{
@@ -232,7 +232,7 @@ bool LexFromString(EOS_EAuthScopeFlags& OutEnum, const TCHAR* InString)
 	return true;
 }
 
-bool LexFromString(EOS_ELoginCredentialType& OutEnum, const TCHAR* InString)
+bool EIK_LexFromString(EOS_ELoginCredentialType& OutEnum, const TCHAR* InString)
 {
 	if (FCString::Stricmp(InString, TEXT("ExchangeCode")) == 0)
 	{

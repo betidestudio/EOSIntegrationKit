@@ -14,7 +14,6 @@ void FEOSIntegrationKitModule::StartupModule()
 {
     ConfigureOnlineSubsystemEIK();
 #if WITH_EDITOR && ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
-    
     //Special love and respect to Redpoint Dev but this had to be added as a warning and you know why 🙏
     if(IPluginManager::Get().FindPlugin("EOSCore") != nullptr && IPluginManager::Get().FindPlugin("EOSCore")->IsEnabled())
     {

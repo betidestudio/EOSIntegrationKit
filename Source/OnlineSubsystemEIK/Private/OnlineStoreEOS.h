@@ -15,7 +15,6 @@
 
 #if WITH_EOS_SDK
 	#include "eos_ecom_types.h"
-
 class UWorld;
 
 /**

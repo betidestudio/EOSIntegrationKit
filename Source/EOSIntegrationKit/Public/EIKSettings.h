@@ -192,6 +192,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
 	FString ProductName;
 
+	/** Should the Google One Tap be enabled? Should be off for Quest builds */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
+	bool bEnableGoogleOneTap = false;
+
 	
 	/** Auto-Logins the player into the game. Can be used for testing or games with only 1 type of login */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
@@ -279,23 +283,12 @@ public:
 	TArray<FEArtifactSettings> Artifacts;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
-	FString ProductId;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
-	FString ClientSecret;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
-	FString DeploymentId;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
-	FString SandboxId;
-
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|Android")
 	FString ClientId;
 
 	/** GoogleSignIn iOS Settings **/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|iOS|GoogleSignIn")
 	FString Google_ClientId;
+	
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Artifact Settings|Platform Specific|iOS|GoogleSignIn")
 	FString Google_ReverseClientId;
 

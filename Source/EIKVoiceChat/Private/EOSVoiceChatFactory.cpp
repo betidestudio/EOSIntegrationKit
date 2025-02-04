@@ -20,7 +20,7 @@ IVoiceChatPtr FEOSVoiceChatFactory::CreateInstance()
 	return VoiceChat;
 }
 
-IVoiceChatPtr FEOSVoiceChatFactory::CreateInstanceWithPlatform(const IEOSPlatformHandlePtr& PlatformHandle)
+IVoiceChatPtr FEOSVoiceChatFactory::CreateInstanceWithPlatform(const IEIKPlatformHandlePtr& PlatformHandle)
 {
 	IEOSSDKManager* EOSSDKManager = IEOSSDKManager::Get();
 	check(EOSSDKManager);

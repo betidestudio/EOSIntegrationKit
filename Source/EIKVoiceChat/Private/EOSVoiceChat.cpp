@@ -30,7 +30,7 @@
 
 DEFINE_LOG_CATEGORY(LogEOSVoiceChat);
 
-const TCHAR* LexToString(EOS_ERTCAudioInputStatus Status)
+const TCHAR* EIK_LexToString(EOS_ERTCAudioInputStatus Status)
 {
 	switch (Status)
 	{
@@ -52,7 +52,7 @@ int64 FEOSVoiceChat::StaticInstanceIdCount = 0;
 
 #define EOS_VOICE_TODO 0
 
-FEOSVoiceChat::FEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEOSPlatformHandlePtr& InPlatformHandle)
+FEOSVoiceChat::FEOSVoiceChat(IEOSSDKManager& InSDKManager, const IEIKPlatformHandlePtr& InPlatformHandle)
 	: SDKManager(InSDKManager)
 	, EosPlatformHandle(InPlatformHandle)
 {
@@ -709,6 +709,7 @@ FOnVoiceChatPlayerMuteUpdatedDelegate& FEOSVoiceChat::OnVoiceChatPlayerMuteUpdat
 
 void FEOSVoiceChat::SetPlayerVolume(const FString& PlayerName, float Volume)
 {
+	UE_LOG(LogEOSVoiceChat, Warning, TEXT("FEOSVoiceChat::SetPlayerVolume called"));
 	GetVoiceChatUser().SetPlayerVolume(PlayerName, Volume);
 }
 
@@ -1082,7 +1083,7 @@ void FEOSVoiceChat::FInitSession::Reset()
 	EosAudioDevicePool = MakeShared<FEOSAudioDevicePool>(EosRtcInterface);
 }
 
-IEOSPlatformHandlePtr FEOSVoiceChat::EOSPlatformCreate(EOS_Platform_Options& PlatformOptions)
+IEIKPlatformHandlePtr FEOSVoiceChat::EOSPlatformCreate(EOS_Platform_Options& PlatformOptions)
 {
 	return SDKManager.CreatePlatform(PlatformOptions);
 }

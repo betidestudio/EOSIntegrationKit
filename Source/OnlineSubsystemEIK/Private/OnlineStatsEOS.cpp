@@ -206,7 +206,7 @@ void FOnlineStatsEOS::QueryStats(const FUniqueNetIdRef LocalUserId, const TArray
 			}
 			else
 			{
-				UE_LOG_ONLINE_STATS(Error, TEXT("EOS_Stats_QueryStats() for user (%s) failed with EOS result code (%s)"), *LexToString(Data->TargetUserId), *LexToString(Data->ResultCode));
+				UE_LOG_ONLINE_STATS(Error, TEXT("EOS_Stats_QueryStats() for user (%s) failed with EOS result code (%s)"), *EIK_LexToString(Data->TargetUserId), *EIK_LexToString(Data->ResultCode));
 			}
 			if (StatsQueryContext->NumPlayerReads <= 0)
 			{

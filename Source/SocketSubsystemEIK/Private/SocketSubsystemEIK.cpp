@@ -18,7 +18,7 @@
 TArray<FSocketSubsystemEIK*> FSocketSubsystemEIK::SocketSubsystemEOSInstances;
 TMap<UWorld*, FSocketSubsystemEIK*> FSocketSubsystemEIK::SocketSubsystemEOSPerWorldMap;
 
-FSocketSubsystemEIK::FSocketSubsystemEIK(IEOSPlatformHandlePtr InPlatformHandle, ISocketSubsystemEOSUtilsPtr InUtils)
+FSocketSubsystemEIK::FSocketSubsystemEIK(IEIKPlatformHandlePtr InPlatformHandle, ISocketSubsystemEOSUtilsPtr InUtils)
 	: P2PHandle(nullptr)
 	, Utils(InUtils)
 	, LastSocketError(ESocketErrors::SE_NO_ERROR)

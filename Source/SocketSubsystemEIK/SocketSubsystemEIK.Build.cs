@@ -9,7 +9,7 @@ public class SocketSubsystemEIK : ModuleRules
 	public SocketSubsystemEIK(ReadOnlyTargetRules Target) : base(Target)
 	{
 		Type = ModuleType.CPlusPlus;
-
+		PrivatePCHHeaderFile = "Public/InternetAddrEIK.h";
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
