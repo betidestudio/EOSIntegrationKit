@@ -196,6 +196,13 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
 	bool bEnableGoogleOneTap = false;
 
+	/** Should Google Play Games be enabled? Works only on Android. */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
+	bool bEnableGooglePlayGames = false;
+
+	/** Google Play Games App ID */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings", meta = (EditCondition = "bEnableGooglePlayGames"))
+	FString GooglePlayGamesAppID = FString("");
 	
 	/** Auto-Logins the player into the game. Can be used for testing or games with only 1 type of login */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")

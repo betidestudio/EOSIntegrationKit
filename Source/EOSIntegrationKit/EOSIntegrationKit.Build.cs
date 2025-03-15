@@ -1,3 +1,4 @@
+using System.IO;
 using UnrealBuildTool;
 
 public class EOSIntegrationKit : ModuleRules
@@ -35,6 +36,15 @@ public class EOSIntegrationKit : ModuleRules
 					"ToolMenus",
 				}
 			);
+		}
+
+		if (!Target.bBuildEditor && Target.Platform == UnrealTargetPlatform.Android)
+		{
+			PublicDefinitions.Add("ANDROIDX_ENABLED=1");
+			PublicDependencyModuleNames.AddRange(new string[] { "Launch" });
+
+			string modulePath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(modulePath, "EOSIntegrationKit_Android.xml"));
 		}
 	}
 }
