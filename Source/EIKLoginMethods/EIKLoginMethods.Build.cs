@@ -32,7 +32,9 @@ public class EIKLoginMethods : ModuleRules
                 "SlateCore",
                 "OnlineSubsystemEIK",
                 "GoogleOneTapLibrary",
-                "GooglePlayGamesLibrary"
+                "GooglePlayGamesLibrary",
+                "Json",
+                "JsonUtilities"
             }
         );
     }

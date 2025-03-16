@@ -1,42 +1,5 @@
 #include "GooglePlayGames/BFL_GooglePlayGames.h"
-
-#define GPGS_SUPPORTED (PLATFORM_ANDROID && GOOGLE_PLAYGAMES_ENABLED)
-
-#if GPGS_SUPPORTED
-#include "Android/AndroidApplication.h"
-#include "Android/AndroidJNI.h"
-
-#include "Android/Utils/AndroidJNIConvertor.h"
-
-#define INIT_JAVA_METHOD(name, signature) \
-if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true)) { \
-name = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, #name, signature, false); \
-check(name != NULL); \
-} else { \
-check(0); \
-}
-
-#define DECLARE_JAVA_METHOD(name) \
-static jmethodID name = NULL;
-
-// ---- Methods ----
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_manualSignIn);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_getUsername);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_getPlayerID);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_unlockAchievement);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_incrementAchievement);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_displayAppAchievementsUI);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_submitLeaderboardScore);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_showLeaderboard);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_loadFriends);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_comparePlayerProfile);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_showSavedGamesUI);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_writeSavedGame);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_readSavedGame);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_submitEvent);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_loadEvent);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_getPlayerStats);
-#endif
+#include "GooglePlayGames/GooglePlayGamesMethods.h"
 
 UBFL_GooglePlayGames::UBFL_GooglePlayGames()
 {
@@ -90,4 +53,86 @@ FString UBFL_GooglePlayGames::GetPlayerID()
 	}
 #endif
 	return "Google Play Games Services Not Supported!";
+}
+
+void UBFL_GooglePlayGames::UnlockAchievement(const FString& AchievementID)
+{
+#if GPGS_SUPPORTED
+    if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+    {
+        jstring JavaAchievementID = Env->NewStringUTF(TCHAR_TO_UTF8(*AchievementID));
+        FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_unlockAchievement, JavaAchievementID);
+        Env->DeleteLocalRef(JavaAchievementID);
+    }
+#endif
+}
+
+void UBFL_GooglePlayGames::IncrementAchievement(const FString& AchievementID, int32 Value)
+{
+#if GPGS_SUPPORTED
+    if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+    {
+        jstring JavaAchievementID = Env->NewStringUTF(TCHAR_TO_UTF8(*AchievementID));
+        FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_incrementAchievement, JavaAchievementID, Value);
+        Env->DeleteLocalRef(JavaAchievementID);
+    }
+#endif
+}
+
+void UBFL_GooglePlayGames::DisplayAchievementsUI()
+{
+#if GPGS_SUPPORTED
+    if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+    {
+        FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_displayAppAchievementsUI);
+    }
+#endif
+}
+
+void UBFL_GooglePlayGames::SubmitLeaderboardScore(const FString& LeaderboardID, int64 Value)
+{
+#if GPGS_SUPPORTED
+    if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+    {
+        jstring JavaLeaderboardID = Env->NewStringUTF(TCHAR_TO_UTF8(*LeaderboardID));
+        FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_submitLeaderboardScore, JavaLeaderboardID, (jlong)Value);
+        Env->DeleteLocalRef(JavaLeaderboardID);
+    }
+#endif
+}
+
+void UBFL_GooglePlayGames::ShowLeaderboard(const FString& LeaderboardID)
+{
+#if GPGS_SUPPORTED
+    if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+    {
+        jstring JavaLeaderboardID = Env->NewStringUTF(TCHAR_TO_UTF8(*LeaderboardID));
+        FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_showLeaderboard, JavaLeaderboardID);
+        Env->DeleteLocalRef(JavaLeaderboardID);
+    }
+#endif
+}
+
+void UBFL_GooglePlayGames::ComparePlayerProfile(const FString& PlayerID)
+{
+#if GPGS_SUPPORTED
+    if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+    {
+        jstring JavaPlayerID = Env->NewStringUTF(TCHAR_TO_UTF8(*PlayerID));
+        FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_comparePlayerProfile, JavaPlayerID);
+        Env->DeleteLocalRef(JavaPlayerID);
+    }
+#endif
+}
+
+void UBFL_GooglePlayGames::SubmitEvent(const FString& EventID, int32 NumberOfOccurrences)
+{
+#if GPGS_SUPPORTED
+    if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+    {
+        jstring JavaEventID = Env->NewStringUTF(TCHAR_TO_UTF8(*EventID));
+        FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_submitEvent, JavaEventID, NumberOfOccurrences);
+        Env->DeleteLocalRef(JavaEventID);
+    }
+#endif
 }

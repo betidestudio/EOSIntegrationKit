@@ -104,6 +104,31 @@
 			<true>
 				<insert>
 					GPGSManager gpgs_manager;
+
+					/* Friends Callbacks */
+					public native void nativeOnFriendsLoaded(boolean success, String friendsJson, String error);
+
+					/* Saved Games UI Callbacks */
+					public native void nativeOnSavedGameSelected(String id);
+					public native void nativeOnNewSavedGameRequest();
+					public native void nativeOnSavedGamesUIBackClicked();
+					public native void nativeOnSavedGamesUIFailure(String error);
+
+					/* Write Saved Game Callbacks */
+					public native void nativeOnWriteSavedGameSuccess(String id);
+					public native void nativeOnWriteSavedGameFailure(String id, String error);
+
+					/* Read Saved Game Callbacks */
+					public native void nativeOnReadSavedGameSuccess(String id, byte[] data);
+					public native void nativeOnReadSavedGameFailure(String id, String error);
+
+					/* Event Loading Callbacks */
+					public native void nativeOnEventLoadSuccess(String eventJson);
+					public native void nativeOnEventLoadFailure(String id, String error);
+
+					/* Player Stats Callbacks */
+					public native void nativeOnPlayerStatsSuccess(String statsJson);
+					public native void nativeOnPlayerStatsFailure(String error);
 					
 					public void AndroidThunkJava_GPGS_manualSignIn()
 					{
@@ -150,7 +175,7 @@
 						gpgs_manager.loadFriends(max, forceReload, new OnFriendsLoaded() {
 							@Override
 							public void onFriendsLoaded(boolean success, FriendsArray friends, String error) {
-								// TODO: Callback
+								nativeOnFriendsLoaded(success, friends.toJson(), error);
 							}
 						});
 					}
@@ -165,22 +190,22 @@
 						gpgs_manager.showSavedGamesUI(max, new OnSavedGamesUIAction() {
 							@Override
 							public void selectedSavedGame(String id) {
-								// TODO: Callback
+								nativeOnSavedGameSelected(id);
 							}
 					
 							@Override
 							public void createNewSavedGame() {
-								// TODO: Callback
+								nativeOnNewSavedGameRequest();
 							}
 
 							@Override
 							public void clickedBack() {
-								// TODO: Callback
+								nativeOnSavedGamesUIBackClicked();
 							}
 					
 							@Override
 							public void onFailure(String error) {
-								// TODO: Callback
+								nativeOnSavedGamesUIFailure(error);
 							}
 						});
 					}
@@ -190,12 +215,12 @@
 						gpgs_manager.writeToSavedGame(id, desc, data, new OnWriteToSavedGame() {
 							@Override
 							public void onSuccess() {
-								// TODO: Callback
+								nativeOnWriteSavedGameSuccess(id);
 							}
 					
 							@Override
 							public void onFailure(String error) {
-								// TODO: Callback
+								nativeOnWriteSavedGameFailure(id, error);
 							}
 						});
 					}
@@ -205,12 +230,12 @@
 						gpgs_manager.readFromSavedGame(id, new OnReadFromSavedGame() {
 							@Override
 							public void onSuccess(String id, byte[] data) {
-								// TODO: Callback
+								nativeOnReadSavedGameSuccess(id, data);
 							}
 					
 							@Override
 							public void onFailure(String id, String error) {
-								// TODO: Callback
+								nativeOnReadSavedGameFailure(id, error);
 							}
 						});
 					}
@@ -225,12 +250,12 @@
 						gpgs_manager.loadEvent(id, new OnEventLoaded() {
 							@Override
 							public void onSuccess(GPGSEvent e) {
-					             // TODO: Callback
+								nativeOnEventLoadSuccess(e.toJson());
 							}
 					
 							@Override
 							public void onFailure(String error) {
-								// TODO: Callback
+								nativeOnEventLoadFailure(id, error);
 							}
 						});
 					}
@@ -240,12 +265,12 @@
 						gpgs_manager.getPlayerStats(new OnGetPlayerStats() {
 							@Override
 							public void onSuccess(PlayerStats playerStats) {
-								// TODO: Callback
+								nativeOnPlayerStatsSuccess(playerStats.toJson());
 							}
 					
 							@Override
 							public void onFailure(String error) {
-								// TODO: Callback
+								nativeOnPlayerStatsFailure(error);
 							}
 						});
 					}
