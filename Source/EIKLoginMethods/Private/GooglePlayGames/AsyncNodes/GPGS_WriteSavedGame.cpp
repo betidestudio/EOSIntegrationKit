@@ -50,7 +50,7 @@ extern "C"
 		{
 			AsyncTask(ENamedThreads::GameThread, [ID]() {
 				UGPGS_WriteSavedGame::StaticInstance->Success.Broadcast(ID, "");
-				UGPGS_ReadSavedGame::StaticInstance->SetReadyToDestroy();
+				UGPGS_WriteSavedGame::StaticInstance->SetReadyToDestroy();
 			});
 		}
 	}
@@ -62,7 +62,7 @@ extern "C"
 		{
 			AsyncTask(ENamedThreads::GameThread, [ID, Error]() {
 				UGPGS_WriteSavedGame::StaticInstance->Failure.Broadcast(ID, Error);
-				UGPGS_ReadSavedGame::StaticInstance->SetReadyToDestroy();
+				UGPGS_WriteSavedGame::StaticInstance->SetReadyToDestroy();
 			});
 		}
 	}
