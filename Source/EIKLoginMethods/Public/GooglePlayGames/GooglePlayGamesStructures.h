@@ -121,7 +121,6 @@ struct FGPGS_Event
 		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
 		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 		{
-			FGPGS_Event Event;
 			if (JsonObject.IsValid())
 			{
 				// Read all fields from the JSON object
@@ -134,4 +133,60 @@ struct FGPGS_Event
 		}
 		return Event;
 	}
+};
+
+USTRUCT(BlueprintType)
+struct FGPGS_PlayerStats
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	float AverageSessionLength;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	int32 DaysSinceLastPlayed;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	int32 NumberOfPurchases;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	int32 NumberOfSessions;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	float SessionPercentile;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	float SpendPercentile;
+
+	FGPGS_PlayerStats()
+		: AverageSessionLength(0)
+		, DaysSinceLastPlayed(0)
+		, NumberOfPurchases(0)
+		, NumberOfSessions(0)
+		, SessionPercentile(0)
+		, SpendPercentile(0)
+	{
+	}
+
+	static FGPGS_PlayerStats ParseFromJson(const FString& JsonString)
+	{
+		FGPGS_PlayerStats PlayerStats;
+		TSharedPtr<FJsonObject> JsonObject;
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
+		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+		{
+			if (JsonObject.IsValid())
+			{
+				// Read all fields from the JSON object
+				JsonObject->TryGetNumberField("averageSessionLength", PlayerStats.AverageSessionLength);
+				JsonObject->TryGetNumberField("daysSinceLastPlayed", PlayerStats.DaysSinceLastPlayed);
+				JsonObject->TryGetNumberField("numberOfPurchases", PlayerStats.NumberOfPurchases);
+				JsonObject->TryGetNumberField("numberOfSessions", PlayerStats.NumberOfSessions);
+				JsonObject->TryGetNumberField("sessionPercentile", PlayerStats.SessionPercentile);
+				JsonObject->TryGetNumberField("spendPercentile", PlayerStats.SpendPercentile);
+			}
+		}
+		return PlayerStats;
+	}
+	
 };
