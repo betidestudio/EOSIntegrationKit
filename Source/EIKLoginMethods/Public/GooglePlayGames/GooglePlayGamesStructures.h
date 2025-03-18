@@ -82,3 +82,56 @@ struct FGPGS_Friend
 		return Friends;
 	}
 };
+
+USTRUCT(BlueprintType)
+struct FGPGS_Event
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	FString Name;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	FString Description;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	FString EventID;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	int64 Value;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	bool bIsVisible;
+
+	// Constructor
+	FGPGS_Event()
+		: Name(TEXT(""))
+		, Description(TEXT(""))
+		, EventID(TEXT(""))
+		, Value(0)
+		, bIsVisible(false)
+	{
+	}
+
+	static FGPGS_Event ParseFromJson(const FString& JsonString)
+	{
+		FGPGS_Event Event;
+		
+		TSharedPtr<FJsonObject> JsonObject;
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
+		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+		{
+			FGPGS_Event Event;
+			if (JsonObject.IsValid())
+			{
+				// Read all fields from the JSON object
+				JsonObject->TryGetStringField("name", Event.Name);
+				JsonObject->TryGetStringField("description", Event.Description);
+				JsonObject->TryGetStringField("eventId", Event.EventID);
+				JsonObject->TryGetNumberField("value", Event.Value);
+				JsonObject->TryGetBoolField("isVisible", Event.bIsVisible);
+			}
+		}
+		return Event;
+	}
+};
