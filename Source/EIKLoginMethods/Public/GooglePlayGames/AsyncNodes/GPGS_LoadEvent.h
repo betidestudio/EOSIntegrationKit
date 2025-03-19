@@ -19,7 +19,7 @@ class EIKLOGINMETHODS_API UGPGS_LoadEvent : public UBlueprintAsyncActionBase
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games")
+	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games|Events")
 	static UGPGS_LoadEvent* LoadEvent(UObject* WorldContextObject, const FString& ID);
 
 	virtual void Activate() override;

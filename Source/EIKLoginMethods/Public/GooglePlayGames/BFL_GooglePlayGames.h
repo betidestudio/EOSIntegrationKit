@@ -14,34 +14,44 @@ class EIKLOGINMETHODS_API UBFL_GooglePlayGames : public UBlueprintFunctionLibrar
 
 	UBFL_GooglePlayGames();
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
+	// ---------------------- Sign In ----------------------
+	
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|SignIn")
 	static void ManualSignIn();
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|SignIn")
 	static FString GetUsername();
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|SignIn")
 	static FString GetPlayerID();
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
-	void UnlockAchievement(const FString& AchievementID);
+	// ------------------- Achievements -------------------
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
-	void IncrementAchievement(const FString& AchievementID, int32 Value);
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|Achievements")
+	static void UnlockAchievement(const FString& AchievementID);
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
-	void DisplayAchievementsUI();
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|Achievements")
+	static void IncrementAchievement(const FString& AchievementID, int32 Value);
+
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|Achievements")
+	static void DisplayAchievementsUI();
+
+	// ------------------- Leaderboards -------------------
 	
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
-	void SubmitLeaderboardScore(const FString& LeaderboardID, int64 Value);
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|Leaderboards")
+	static void SubmitLeaderboardScore(const FString& LeaderboardID, int64 Value);
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
-	void ShowLeaderboard(const FString& LeaderboardID);
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|Leaderboards")
+	static void ShowLeaderboard(const FString& LeaderboardID);
 
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
-	void ComparePlayerProfile(const FString& PlayerID);
+	// --------------------- Friends ----------------------
 	
-	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games")
-	void SubmitEvent(const FString& EventID, int32 NumberOfOccurrences);
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|Friends")
+	static void ComparePlayerProfile(const FString& PlayerID);
+
+	// ---------------------- Events ----------------------
+	
+	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|Events")
+	static void SubmitEvent(const FString& EventID, int32 NumberOfOccurrences);
 	
 };

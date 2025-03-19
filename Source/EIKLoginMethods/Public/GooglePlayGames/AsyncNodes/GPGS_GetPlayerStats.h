@@ -19,7 +19,7 @@ class EIKLOGINMETHODS_API UGPGS_GetPlayerStats : public UBlueprintAsyncActionBas
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games")
+	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games|PlayerStats")
 	static UGPGS_GetPlayerStats* GetPlayerStats(UObject* WorldContextObject);
 
 	virtual void Activate() override;

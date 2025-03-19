@@ -15,7 +15,7 @@ class EIKLOGINMETHODS_API UGPGS_ShowSavedGamesUI : public UBlueprintAsyncActionB
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games")
+	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games|Saved Games")
 	static UGPGS_ShowSavedGamesUI* ShowSavedGamesUI(UObject* WorldContextObject, int Max = 5);
 
 	virtual void Activate() override;

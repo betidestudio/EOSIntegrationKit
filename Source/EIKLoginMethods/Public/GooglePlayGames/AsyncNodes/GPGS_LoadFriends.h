@@ -19,7 +19,7 @@ class EIKLOGINMETHODS_API UGPGS_LoadFriends : public UBlueprintAsyncActionBase
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games")
+	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games|Friends")
 	static UGPGS_LoadFriends* LoadFriends(UObject* WorldContextObject, int Max = 10, bool bForceReload = false);
 
 	virtual void Activate() override;
