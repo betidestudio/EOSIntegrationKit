@@ -19,15 +19,22 @@ class EIKLOGINMETHODS_API UGPGS_LoadEvent : public UBlueprintAsyncActionBase
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Load Event from Google Play Console
+	 * @param ID ID of the Event from Google Play Console
+	 * @return Event Data
+	 */
 	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games|Events")
 	static UGPGS_LoadEvent* LoadEvent(UObject* WorldContextObject, const FString& ID);
 
 	virtual void Activate() override;
 	virtual void BeginDestroy() override;
 
+	// Executed after Event is Loaded successfully
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_LoadEventCallbackSignature Success;
 
+	// Executed if there was an error loading the Event
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_LoadEventCallbackSignature Failure;
 	

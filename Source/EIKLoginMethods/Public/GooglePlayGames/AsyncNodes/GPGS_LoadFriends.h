@@ -19,15 +19,23 @@ class EIKLOGINMETHODS_API UGPGS_LoadFriends : public UBlueprintAsyncActionBase
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Load Friends of the Currently Signed In Player
+	 * @param Max Max amount of Friends to Load
+	 * @param bForceReload Force Reload from server instead of using Cache
+	 * @return Array of Friends data
+	 */
 	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games|Friends")
 	static UGPGS_LoadFriends* LoadFriends(UObject* WorldContextObject, int Max = 10, bool bForceReload = false);
 
 	virtual void Activate() override;
 	virtual void BeginDestroy() override;
 
+	// Executed after Friends loaded successfully
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_LoadFriendsCallbackSignature Success;
 
+	// Executed if there was an error Loading Friends
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_LoadFriendsCallbackSignature Failure;
 

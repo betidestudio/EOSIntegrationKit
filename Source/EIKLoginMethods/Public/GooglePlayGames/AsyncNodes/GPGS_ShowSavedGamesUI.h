@@ -15,21 +15,29 @@ class EIKLOGINMETHODS_API UGPGS_ShowSavedGamesUI : public UBlueprintAsyncActionB
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Show the Saved Games UI from Google Play Games
+	 * @param Max Max amount of SavedGames to show
+	 */
 	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games|Saved Games")
 	static UGPGS_ShowSavedGamesUI* ShowSavedGamesUI(UObject* WorldContextObject, int Max = 5);
 
 	virtual void Activate() override;
 	virtual void BeginDestroy() override;
 
+	// Executed if a Saved Game is selected from the UI
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_ShowSavedGamesUIOutputSignature Selected;
 
+	// Executed if the '+' Floating Button is clicked from the UI
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_ShowSavedGamesUIOutputSignature CreateNew;
-	
+
+	// Executed if Back was clicked from the UI
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_ShowSavedGamesUIOutputSignature ClickedBack;
 
+	// Executed if there was an error showing the UI
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_ShowSavedGamesUIOutputSignature Failure;
 	

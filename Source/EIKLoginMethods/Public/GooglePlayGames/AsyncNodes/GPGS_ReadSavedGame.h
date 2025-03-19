@@ -18,15 +18,22 @@ class EIKLOGINMETHODS_API UGPGS_ReadSavedGame : public UBlueprintAsyncActionBase
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Read Saved Game from Google Play Games
+	 * @param ID ID of the Saved Game
+	 * @return SavedGame Data
+	 */
 	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="EOS Integration Kit|Google Play Games|Saved Games")
 	static UGPGS_ReadSavedGame* ReadSavedGame(UObject* WorldContextObject, const FString& ID);
 
 	virtual void Activate() override;
 	virtual void BeginDestroy() override;
 
+	// Executed after SavedGame read successfully
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_ReadSavedGameCallbackSignature Success;
 
+	// Executed if there was an error loading the Saved Game
 	UPROPERTY(BlueprintAssignable, Category="EOS Integration Kit|Google Play Games")
 	FGPGS_ReadSavedGameCallbackSignature Failure;
 	
