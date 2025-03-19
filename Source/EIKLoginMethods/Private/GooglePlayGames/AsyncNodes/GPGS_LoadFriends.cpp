@@ -28,7 +28,7 @@ void UGPGS_LoadFriends::Activate()
 		FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_loadFriends, Var_Max, Var_bForceReload);
 	}
 #else
-	TArray<FGPGS_Friend> Friends;
+	TArray<FGPGS_Player> Friends;
 	Failure.Broadcast(Friends, "ERROR: Google Play Games Not Supported!");
 	SetReadyToDestroy();
 #endif
@@ -45,11 +45,11 @@ void UGPGS_LoadFriends::HandleCallback(bool bSuccess, const FString& FriendsJson
 	if (bSuccess)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Parsing: %s"), *FriendsJson);
-		Success.Broadcast(FGPGS_Friend::ParseFriendArrayFromJson(FriendsJson), Error);
+		Success.Broadcast(FGPGS_Player::ParseFriendArrayFromJson(FriendsJson), Error);
 	}
 	else
 	{
-		TArray<FGPGS_Friend> Friends;
+		TArray<FGPGS_Player> Friends;
 		Failure.Broadcast(Friends, Error);
 	}
 	SetReadyToDestroy();

@@ -5,8 +5,8 @@ UBFL_GooglePlayGames::UBFL_GooglePlayGames()
 {
 #if GPGS_SUPPORTED
 	INIT_JAVA_METHOD(AndroidThunkJava_GPGS_manualSignIn, "()V");
-	INIT_JAVA_METHOD(AndroidThunkJava_GPGS_getUsername, "()Ljava/lang/String;");
-	INIT_JAVA_METHOD(AndroidThunkJava_GPGS_getPlayerID,  "()Ljava/lang/String;");
+	INIT_JAVA_METHOD(AndroidThunkJava_GPGS_getIsSignedIn, "()Z");
+	INIT_JAVA_METHOD(AndroidThunkJava_GPGS_getPlayer, "()Ljava/lang/String;");
 	INIT_JAVA_METHOD(AndroidThunkJava_GPGS_unlockAchievement, "(Ljava/lang/String;)V");
 	INIT_JAVA_METHOD(AndroidThunkJava_GPGS_incrementAchievement, "(Ljava/lang/String;I)V");
 	INIT_JAVA_METHOD(AndroidThunkJava_GPGS_displayAppAchievementsUI, "()V");
@@ -33,26 +33,26 @@ void UBFL_GooglePlayGames::ManualSignIn()
 #endif
 }
 
-FString UBFL_GooglePlayGames::GetUsername()
+bool UBFL_GooglePlayGames::IsSignedIn()
 {
 #if GPGS_SUPPORTED
 	if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 	{
-		return AndroidJNIConvertor::FromJavaString(static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_getUsername)));
+		return FJavaWrapper::CallBooleanMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_getIsSignedIn);
 	}
 #endif
-	return "Google Play Games Services Not Supported!";
+	return false;
 }
 
-FString UBFL_GooglePlayGames::GetPlayerID()
+FGPGS_Player UBFL_GooglePlayGames::GetPlayer()
 {
 #if GPGS_SUPPORTED
 	if (JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 	{
-		return AndroidJNIConvertor::FromJavaString(static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_getPlayerID)));
+		return FGPGS_Player::ParseFromJson(AndroidJNIConvertor::FromJavaString((jstring)FJavaWrapper::CallObjectMethod(Env, FJavaWrapper::GameActivityThis, AndroidThunkJava_GPGS_getPlayer)));
 	}
 #endif
-	return "Google Play Games Services Not Supported!";
+	return FGPGS_Player();
 }
 
 void UBFL_GooglePlayGames::UnlockAchievement(const FString& AchievementID)

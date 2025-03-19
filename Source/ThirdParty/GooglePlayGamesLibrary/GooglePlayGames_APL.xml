@@ -135,14 +135,9 @@
 						gpgs_manager.manualSignIn();
 					}
 
-					public String AndroidThunkJava_GPGS_getUsername()
+					public String AndroidThunkJava_GPGS_getPlayer()
 					{
-						return gpgs_manager.getUsername();
-					}
-
-					public String AndroidThunkJava_GPGS_getPlayerID()
-					{
-						return gpgs_manager.getPlayerID();
+						return gpgs_manager.getPlayer().toJson();
 					}
 
 					public void AndroidThunkJava_GPGS_unlockAchievement(String achievementID)

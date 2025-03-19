@@ -8,7 +8,7 @@
 #include "GooglePlayGames/GooglePlayGamesStructures.h"
 #include "GPGS_LoadFriends.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGPGS_LoadFriendsCallbackSignature, const TArray<FGPGS_Friend>&, Friends, const FString&, error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGPGS_LoadFriendsCallbackSignature, const TArray<FGPGS_Player>&, Friends, const FString&, error);
 
 /**
  * 

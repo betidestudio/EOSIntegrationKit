@@ -5,7 +5,7 @@
 #include "GooglePlayGamesStructures.generated.h"
 
 USTRUCT(BlueprintType)
-struct FGPGS_Friend
+struct FGPGS_Player
 {
 	GENERATED_BODY()
 	
@@ -16,49 +16,93 @@ struct FGPGS_Friend
 	FString PlayerID;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	int64 RetrievedTimeStamp;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	bool bHasHiResImage;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	bool bHasIconImage;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
-	FString HiResImageURL;
+	FString HiResImageUrl;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
-	FString IconImageURL;
+	FString IconImageUrl;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	FString Title;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	FString BannerImageLandscapeUrl;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
+	FString BannerImagePortraitUrl;
 	
-	// Constructor
-	FGPGS_Friend()
+	FGPGS_Player()
 		: DisplayName(TEXT(""))
 		, PlayerID(TEXT(""))
+		, RetrievedTimeStamp(0)
 		, bHasHiResImage(false)
 		, bHasIconImage(false)
-		, HiResImageURL(TEXT(""))
-		, IconImageURL(TEXT(""))
+		, HiResImageUrl(TEXT(""))
+		, IconImageUrl(TEXT(""))
+		, Title(TEXT(""))
+		, BannerImageLandscapeUrl(TEXT(""))
+		, BannerImagePortraitUrl(TEXT(""))
 	{
 	}
 
-	static FGPGS_Friend ParseFromJson(const TSharedPtr<FJsonObject>& JsonObject)
+	static FGPGS_Player ParseFromJson(const TSharedPtr<FJsonObject>& JsonObject)
 	{
-		FGPGS_Friend Friend;
+		FGPGS_Player Player;
 		if (JsonObject.IsValid())
 		{
 			// Read all fields from the JSON object
-			JsonObject->TryGetStringField("displayName", Friend.DisplayName);
-			JsonObject->TryGetStringField("playerId", Friend.PlayerID);
-			JsonObject->TryGetBoolField("hasHiResImage", Friend.bHasHiResImage);
-			JsonObject->TryGetBoolField("hasIconImage", Friend.bHasIconImage);
-			JsonObject->TryGetStringField("hiResImageUrl", Friend.HiResImageURL);
-			JsonObject->TryGetStringField("iconImageUrl", Friend.IconImageURL);
+			JsonObject->TryGetStringField("displayName", Player.DisplayName);
+			JsonObject->TryGetStringField("playerId", Player.PlayerID);
+			JsonObject->TryGetNumberField("retrievedTimeStamp", Player.RetrievedTimeStamp);
+			JsonObject->TryGetBoolField("hasHiResImage", Player.bHasHiResImage);
+			JsonObject->TryGetBoolField("hasIconImage", Player.bHasIconImage);
+			JsonObject->TryGetStringField("hiResImageUrl", Player.HiResImageUrl);
+			JsonObject->TryGetStringField("iconImageUrl", Player.IconImageUrl);
+			JsonObject->TryGetStringField("title", Player.Title);
+			JsonObject->TryGetStringField("bannerImageLandscapeUrl", Player.BannerImageLandscapeUrl);
+			JsonObject->TryGetStringField("bannerImagePortraitUrl", Player.BannerImagePortraitUrl);
 		}
-		return Friend;
+		return Player;
 	}
 
-	static TArray<FGPGS_Friend> ParseFriendArrayFromJson(const FString& JsonString)
+	static FGPGS_Player ParseFromJson(const FString& JsonString)
+	{
+		FGPGS_Player Player;
+		TSharedPtr<FJsonObject> JsonObject;
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
+		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+		{
+			if (JsonObject.IsValid())
+			{
+				// Read all fields from the JSON object
+				JsonObject->TryGetStringField("displayName", Player.DisplayName);
+				JsonObject->TryGetStringField("playerId", Player.PlayerID);
+				JsonObject->TryGetNumberField("retrievedTimeStamp", Player.RetrievedTimeStamp);
+				JsonObject->TryGetBoolField("hasHiResImage", Player.bHasHiResImage);
+				JsonObject->TryGetBoolField("hasIconImage", Player.bHasIconImage);
+				JsonObject->TryGetStringField("hiResImageUrl", Player.HiResImageUrl);
+				JsonObject->TryGetStringField("iconImageUrl", Player.IconImageUrl);
+				JsonObject->TryGetStringField("title", Player.Title);
+				JsonObject->TryGetStringField("bannerImageLandscapeUrl", Player.BannerImageLandscapeUrl);
+				JsonObject->TryGetStringField("bannerImagePortraitUrl", Player.BannerImagePortraitUrl);
+			}
+		}
+		return Player;
+	}
+
+	static TArray<FGPGS_Player> ParseFriendArrayFromJson(const FString& JsonString)
 	{
 		TSharedPtr<FJsonObject> JsonObject;
 		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
-		TArray<FGPGS_Friend> Friends;
+		TArray<FGPGS_Player> Friends;
 
 		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
 		{
@@ -73,7 +117,7 @@ struct FGPGS_Friend
 					if (FriendObject.IsValid())
 					{
 						// Create a new friend, parse it, and add it to the array
-						Friends.Add(FGPGS_Friend::ParseFromJson(FriendObject));
+						Friends.Add(FGPGS_Player::ParseFromJson(FriendObject));
 					}
 				}
 			}

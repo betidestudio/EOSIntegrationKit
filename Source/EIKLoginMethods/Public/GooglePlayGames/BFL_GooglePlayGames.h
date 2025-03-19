@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GooglePlayGamesStructures.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "BFL_GooglePlayGames.generated.h"
 
@@ -24,18 +25,18 @@ class EIKLOGINMETHODS_API UBFL_GooglePlayGames : public UBlueprintFunctionLibrar
 	static void ManualSignIn();
 
 	/**
-	 * Get Username of the Signed-In User
-	 * @return Username of the currently Signed-In User
+	 * Get is User Signed in to Google Play Games
+	 * @return True if User signed in, else False.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|SignIn")
-	static FString GetUsername();
+	static bool IsSignedIn();
 
 	/**
-	 * Get Player ID of the Signed-In User
-	 * @return Player ID of the currently Signed-In User
+	 * Get the current Player Data
+	 * @return The Currently Signed In Player Data
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EOS Integration Kit|Google Play Games|SignIn")
-	static FString GetPlayerID();
+	static FGPGS_Player GetPlayer();
 
 	// ------------------- Achievements -------------------
 

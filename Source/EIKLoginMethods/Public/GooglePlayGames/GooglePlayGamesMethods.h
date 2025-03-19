@@ -21,8 +21,8 @@ static jmethodID name = NULL;
 
 // ---- Methods ----
 DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_manualSignIn);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_getUsername);
-DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_getPlayerID);
+DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_getIsSignedIn);
+DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_getPlayer);
 DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_unlockAchievement);
 DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_incrementAchievement);
 DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_displayAppAchievementsUI);
