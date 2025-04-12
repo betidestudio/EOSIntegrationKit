@@ -1,3 +1,6 @@
+// Copyright (C) 2025 Betide Studio. All Rights Reserved.
+// Written by AvnishGameDev.
+
 #pragma once
 
 #define GPGS_SUPPORTED (PLATFORM_ANDROID && GOOGLE_PLAYGAMES_ENABLED)

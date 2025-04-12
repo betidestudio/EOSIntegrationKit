@@ -1,41 +1,57 @@
+// Copyright (C) 2025 Betide Studio. All Rights Reserved.
+// Written by AvnishGameDev.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Json.h"
 #include "GooglePlayGamesStructures.generated.h"
 
+/**
+ * Google Play Games Services Player
+ */
 USTRUCT(BlueprintType)
 struct FGPGS_Player
 {
 	GENERATED_BODY()
-	
+
+	/* Display Name of the Player */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString DisplayName;
 
+	/* Player ID from Google Play Games of the Player */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString PlayerID;
 
+	/* TimeStamp when this data was retrieved */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	int64 RetrievedTimeStamp;
 
+	/* Does player have High Resolution Image */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	bool bHasHiResImage;
 
+	/* Does player have Icon Image */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	bool bHasIconImage;
 
+	/* URL of High Resolution Image */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString HiResImageUrl;
 
+	/* URL of Icon Image */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString IconImageUrl;
 
+	/* Title of Player from Google Play Games */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString Title;
 
+	/* Player Landscape Banner URL */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString BannerImageLandscapeUrl;
 
+	/* Player Portrait Banner URL */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString BannerImagePortraitUrl;
 	
@@ -127,27 +143,34 @@ struct FGPGS_Player
 	}
 };
 
+/**
+ * Google Play Games Services Event
+ */
 USTRUCT(BlueprintType)
 struct FGPGS_Event
 {
 	GENERATED_BODY()
 
+	/* Name of the Event */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString Name;
 
+	/* Description of the Event */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString Description;
-	
+
+	/* Event ID of the Event from Google Play Games Services */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	FString EventID;
 
+	/* Number of occurences (Value) of the Event */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	int64 Value;
 
+	/* Is the Event Visible? */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	bool bIsVisible;
-
-	// Constructor
+	
 	FGPGS_Event()
 		: Name(TEXT(""))
 		, Description(TEXT(""))
@@ -167,7 +190,6 @@ struct FGPGS_Event
 		{
 			if (JsonObject.IsValid())
 			{
-				// Read all fields from the JSON object
 				JsonObject->TryGetStringField("name", Event.Name);
 				JsonObject->TryGetStringField("description", Event.Description);
 				JsonObject->TryGetStringField("eventId", Event.EventID);
@@ -179,26 +201,35 @@ struct FGPGS_Event
 	}
 };
 
+/**
+ * Google Play Games Services Player Statistics
+ */
 USTRUCT(BlueprintType)
 struct FGPGS_PlayerStats
 {
 	GENERATED_BODY()
 
+	/* Average Session Length of the Player */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	float AverageSessionLength;
 
+	/* Days since last played */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	int32 DaysSinceLastPlayed;
 
+	/* Number of purchases */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	int32 NumberOfPurchases;
 
+	/* Number of sessions */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	int32 NumberOfSessions;
-	
+
+	/* Session Percentile from Google Play Games Services */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	float SessionPercentile;
 
+	/* Spend Percentile from Google Play Games Services */
 	UPROPERTY(BlueprintReadOnly, Category = "Google Play Games")
 	float SpendPercentile;
 
@@ -221,7 +252,6 @@ struct FGPGS_PlayerStats
 		{
 			if (JsonObject.IsValid())
 			{
-				// Read all fields from the JSON object
 				JsonObject->TryGetNumberField("averageSessionLength", PlayerStats.AverageSessionLength);
 				JsonObject->TryGetNumberField("daysSinceLastPlayed", PlayerStats.DaysSinceLastPlayed);
 				JsonObject->TryGetNumberField("numberOfPurchases", PlayerStats.NumberOfPurchases);
