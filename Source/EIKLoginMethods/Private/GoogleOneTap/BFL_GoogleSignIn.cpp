@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Betide Studio. All Rights Reserved.
 // Written by AvnishGameDev.
 
-#include "BFL_GoogleSignIn.h"
+#include "GoogleOneTap/BFL_GoogleSignIn.h"
 
 #if PLATFORM_ANDROID && GOOGLE_ONETAP_ENABLED
 #include "Android/AndroidApplication.h"

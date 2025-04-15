@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by AvnishGameDev -->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- init section is always evaluated once per architecture -->
+	<init>
+		<log text="GooglePlayGames SDK Init"/>
+		<setBool result="bSupported" value="false"/>
+		<isArch arch="armeabi-v7a">
+		  <setBool result="bSupported" value="true"/>
+		</isArch>
+		<isArch arch="arm64-v8a">
+		  <setBool result="bSupported" value="true"/>
+		</isArch>
+		<isArch arch="x86">
+		  <setBool result="bSupported" value="true"/>
+		</isArch>
+		<isArch arch="x86_64">
+		  <setBool result="bSupported" value="true"/>
+		</isArch>
+		<if condition="android.compileSdkVersion &lt; 21">
+			<true>
+				<setBool result="bSupported" value="false"/>
+				<log text="Unsupported API level: $S(android.compileSdkVersion). Minimum required is 21."/>
+			</true>
+		</if>
+		<if condition="bSupported">
+		  <false>
+			<log text="Unsupported architecture: $S(Architecture)"/>
+		  </false>
+		</if>
+
+		<setStringFromProperty result="AppID"
+							   ini="Engine"
+							   section="/Script/EOSIntegrationKit.EIKSettings"
+							   property="GooglePlayGamesAppID"
+							   default=""/>
+	</init>
+	
+	<androidManifestUpdates>
+		<addPermission android:name="android.permission.INTERNET"/>
+		<addPermission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+		<setBoolIsEqual result="bAppIdEmpty" arg1="$S(AppID)" arg2=""/>
+		<if condition="bAppIdEmpty">
+			<true>
+				<log text="ERROR: Google Play Games App ID not set! Disabling support"/>
+				<setBool result="bSupported" value="false"/>
+			</true>
+		</if>
+
+		<loopElements tag="meta-data">
+			<setStringFromAttribute result="metaName" tag="$" name="android:name"/>
+			<log text="looping over $S(metaName)"/>
+			<setBoolIsEqual result="bEqual" arg1="$S(metaName)" arg2="com.google.android.gms.games.APP_ID"/>
+			<if condition="bEqual">
+				<true>
+				<log text="Removed com.google.android.gms.games.APP_ID"/>
+				<removeElement tag="$"/>
+				</true>
+			</if>
+		</loopElements>
+
+		<setElement result="PlayGamesMeta" value="meta-data" />
+		<if condition="bAppIdEmpty">
+			<false>
+				<addAttribute tag="$PlayGamesMeta" name="android:name" value="com.google.android.gms.games.APP_ID" />
+				<addAttribute tag="$PlayGamesMeta" name="android:value" value="$S(AppID)" />
+			</false>
+		</if>
+		<addElement tag="application" name="PlayGamesMeta" />
+	</androidManifestUpdates>
+
+	<resourceCopies>
+		<if condition="bSupported">
+			<true>
+				<log text="Copying gpgs.aar"/>
+				<copyFile src="$S(PluginDir)/Android/libs/gpgs.aar" dst="$S(BuildDir)/libs/gpgs.aar" />
+			</true>
+		</if>
+	</resourceCopies>
+
+	<buildGradleAdditions>
+		<if condition="bSupported">
+		  <true>
+			<insert>
+				dependencies.implementation(name: 'gpgs', ext: 'aar')
+			</insert>
+		  </true>
+		</if>
+	</buildGradleAdditions>
+
+	<gameActivityImportAdditions>
+		<if condition="bSupported">
+			<true>
+				<insert>
+					import com.avnishgamedev.gpgs.*;
+				</insert>
+			</true>
+		</if>
+	</gameActivityImportAdditions>
+
+	<gameActivityClassAdditions>
+		<if condition="bSupported">
+			<true>
+				<insert>
+					GPGSManager gpgs_manager;
+
+					/* Friends Callbacks */
+					public native void nativeOnFriendsLoaded(boolean success, String friendsJson, String error);
+
+					/* Saved Games UI Callbacks */
+					public native void nativeOnSavedGameSelected(String id);
+					public native void nativeOnNewSavedGameRequest();
+					public native void nativeOnSavedGamesUIBackClicked();
+					public native void nativeOnSavedGamesUIFailure(String error);
+
+					/* Write Saved Game Callbacks */
+					public native void nativeOnWriteSavedGameSuccess(String id);
+					public native void nativeOnWriteSavedGameFailure(String id, String error);
+
+					/* Read Saved Game Callbacks */
+					public native void nativeOnReadSavedGameSuccess(String id, byte[] data);
+					public native void nativeOnReadSavedGameFailure(String id, String error);
+
+					/* Event Loading Callbacks */
+					public native void nativeOnEventLoadSuccess(String eventJson);
+					public native void nativeOnEventLoadFailure(String id, String error);
+
+					/* Player Stats Callbacks */
+					public native void nativeOnPlayerStatsSuccess(String statsJson);
+					public native void nativeOnPlayerStatsFailure(String error);
+					
+					public void AndroidThunkJava_GPGS_manualSignIn()
+					{
+						gpgs_manager.manualSignIn();
+					}
+
+					public String AndroidThunkJava_GPGS_getPlayer()
+					{
+						return gpgs_manager.getPlayer().toJson();
+					}
+
+					public void AndroidThunkJava_GPGS_unlockAchievement(String achievementID)
+					{
+						gpgs_manager.unlockAchievement(achievementID);
+					}
+
+					public void AndroidThunkJava_GPGS_incrementAchievement(String achievementID, int value)
+					{
+						gpgs_manager.incrementAchievement(achievementID, value);
+					}
+
+					public void AndroidThunkJava_GPGS_displayAppAchievementsUI()
+					{
+						gpgs_manager.displayAppAchievementsUI();
+					}
+
+					public void AndroidThunkJava_GPGS_submitLeaderboardScore(String leaderboardID, long value)
+					{
+						gpgs_manager.submitLeaderboardScore(leaderboardID, value);
+					}
+
+					public void AndroidThunkJava_GPGS_showLeaderboard(String leaderboardID)
+					{
+						gpgs_manager.showLeaderboard(leaderboardID);
+					}
+
+					public void AndroidThunkJava_GPGS_loadFriends(int max, boolean forceReload)
+					{
+						gpgs_manager.loadFriends(max, forceReload, new OnFriendsLoaded() {
+							@Override
+							public void onFriendsLoaded(boolean success, FriendsArray friends, String error) {
+								nativeOnFriendsLoaded(success, friends.toJson(), error);
+							}
+						});
+					}
+
+					public void AndroidThunkJava_GPGS_comparePlayerProfile(String playerID)
+					{
+						gpgs_manager.comparePlayerProfile(playerID);
+					}
+
+					public void AndroidThunkJava_GPGS_showSavedGamesUI(int max)
+					{
+						gpgs_manager.showSavedGamesUI(max, new OnSavedGamesUIAction() {
+							@Override
+							public void selectedSavedGame(String id) {
+								nativeOnSavedGameSelected(id);
+							}
+					
+							@Override
+							public void createNewSavedGame() {
+								nativeOnNewSavedGameRequest();
+							}
+
+							@Override
+							public void clickedBack() {
+								nativeOnSavedGamesUIBackClicked();
+							}
+					
+							@Override
+							public void onFailure(String error) {
+								nativeOnSavedGamesUIFailure(error);
+							}
+						});
+					}
+					
+					public void AndroidThunkJava_GPGS_writeSavedGame(String id, String desc, byte[] data)
+					{
+						gpgs_manager.writeToSavedGame(id, desc, data, new OnWriteToSavedGame() {
+							@Override
+							public void onSuccess() {
+								nativeOnWriteSavedGameSuccess(id);
+							}
+					
+							@Override
+							public void onFailure(String error) {
+								nativeOnWriteSavedGameFailure(id, error);
+							}
+						});
+					}
+					
+					public void AndroidThunkJava_GPGS_readSavedGame(String id)
+					{
+						gpgs_manager.readFromSavedGame(id, new OnReadFromSavedGame() {
+							@Override
+							public void onSuccess(String id, byte[] data) {
+								nativeOnReadSavedGameSuccess(id, data);
+							}
+					
+							@Override
+							public void onFailure(String id, String error) {
+								nativeOnReadSavedGameFailure(id, error);
+							}
+						});
+					}
+					
+					public void AndroidThunkJava_GPGS_submitEvent(String id, int noOfOccurrences)
+					{
+						gpgs_manager.submitEvent(id, noOfOccurrences);
+					}
+					
+					public void AndroidThunkJava_GPGS_loadEvent(String id)
+					{
+						gpgs_manager.loadEvent(id, new OnEventLoaded() {
+							@Override
+							public void onSuccess(GPGSEvent e) {
+								nativeOnEventLoadSuccess(e.toJson());
+							}
+					
+							@Override
+							public void onFailure(String error) {
+								nativeOnEventLoadFailure(id, error);
+							}
+						});
+					}
+					
+					public void AndroidThunkJava_GPGS_getPlayerStats()
+					{
+						gpgs_manager.getPlayerStats(new OnGetPlayerStats() {
+							@Override
+							public void onSuccess(PlayerStats playerStats) {
+								nativeOnPlayerStatsSuccess(playerStats.toJson());
+							}
+					
+							@Override
+							public void onFailure(String error) {
+								nativeOnPlayerStatsFailure(error);
+							}
+						});
+					}
+				</insert>
+			</true>
+		</if>
+	</gameActivityClassAdditions>
+
+	<gameActivityOnCreateAdditions>
+		<if condition="bSupported">
+			<true>
+				<insert>
+					gpgs_manager = new GPGSManager(this);
+				</insert>
+			</true>
+		</if>
+	</gameActivityOnCreateAdditions>
+
+	<gameActivityOnActivityResultAdditions>
+		<if condition="bSupported">
+			<true>
+				<insert>
+					gpgs_manager.onActivityResult(requestCode, resultCode, data);
+				</insert>
+			</true>
+		</if>
+	</gameActivityOnActivityResultAdditions>
+  
+</root>

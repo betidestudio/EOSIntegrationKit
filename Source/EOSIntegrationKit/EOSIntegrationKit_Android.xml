@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Written by AvnishGameDev -->
+<!-- This file serves as the base APL file to add support for AndroidX -->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<baseBuildGradleAdditions>
+		<insert>
+			allprojects 
+			{
+				def mappings = 
+				[
+					'android.support.annotation': 'androidx.annotation',
+					'android.arch.lifecycle': 'androidx.lifecycle',
+					'android.support.v4.app.NotificationCompat': 'androidx.core.app.NotificationCompat',
+					'android.support.v4.app.ActivityCompat': 'androidx.core.app.ActivityCompat',
+					'android.support.v4.content.ContextCompat': 'androidx.core.content.ContextCompat',
+					'android.support.v4.app.NotificationManagerCompat': 'androidx.core.app.NotificationManagerCompat',
+					'android.support.v4.content.FileProvider': 'androidx.core.content.FileProvider',
+					'android.support.v13.app.FragmentCompat': 'androidx.legacy.app.FragmentCompat',
+					'android.arch.lifecycle.Lifecycle': 'androidx.lifecycle.Lifecycle',
+					'android.arch.lifecycle.LifecycleObserver': 'androidx.lifecycle.LifecycleObserver',
+					'android.arch.lifecycle.OnLifecycleEvent': 'androidx.lifecycle.OnLifecycleEvent',
+					'android.arch.lifecycle.ProcessLifecycleOwner': 'androidx.lifecycle.ProcessLifecycleOwner',
+				]
+		
+				beforeEvaluate 
+				{ 
+					project -> project.rootProject.projectDir.traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.java$/) 
+					{ 
+						f ->mappings.each 
+						{ 
+							entry ->if (f.getText('UTF-8').contains(entry.key)) 
+							{
+								println "Updating ${entry.key} to ${entry.value} in file ${f}"
+								ant.replace(file: f, token: entry.key, value: entry.value)
+							}
+						}
+					}
+				}
+			
+				repositories {
+					flatDir {
+		</insert>
+						<!-- All Android libs should be copied in $S(BuildDir)/libs -->
+						<insertValue value="dirs '$S(BuildDir)/libs'"/>
+		<insert>
+					}
+				}
+			}
+		</insert>
+	</baseBuildGradleAdditions>
+
+	<buildGradleAdditions>
+		<insert>
+			android 
+			{      
+				packagingOptions 
+				{
+					// Allow the compilation process to choose the dependencies for us.
+					
+					pickFirst "lib/arm64-v8a/libc++_shared.so"
+					pickFirst "**"
+					exclude 'META-INF/DEPENDENCIES'
+					exclude 'META-INF/LICENSE'
+					exclude 'META-INF/LICENSE.txt'
+					exclude 'META-INF/license.txt'
+					exclude 'META-INF/NOTICE'
+					exclude 'META-INF/NOTICE.txt'
+					exclude 'META-INF/notice.txt'
+					exclude 'META-INF/ASL2.0'
+					exclude("META-INF/*.kotlin_module") 
+				}          
+			}
+		</insert>
+	</buildGradleAdditions>
+  
+</root>
