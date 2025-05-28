@@ -2469,6 +2469,7 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 						SpeakerActor->GetComponents<UEIKVoiceChatSynthComponent>(VoiceChatSynthComponents);
 						if(VoiceChatSynthComponents.Num() > 0)
 						{
+							bool bFoundValidVoiceChatSynthComponent = false;
 							for(auto VoiceChatSynthComponent : VoiceChatSynthComponents)
 							{
 								if (IsValid(VoiceChatSynthComponent))
