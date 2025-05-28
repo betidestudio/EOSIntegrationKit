@@ -2490,7 +2490,8 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 							}
 							//if we're here, it means that we passed audio to all valid components, so we need to clear the buffer so that it isn't played by the RTC.
 							FMemory::Memset(Samples.GetData(), 0, Samples.Num() * sizeof(int16));
-						}else
+						}
+						else
 						{
 							UE_LOG(LogEOSVoiceChat,Warning,TEXT("no VoiceChatSynthComponent found"));
 						}
