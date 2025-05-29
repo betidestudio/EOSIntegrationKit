@@ -4,7 +4,6 @@
 
 void FEIKLoginMethodsModule::StartupModule()
 {
-    
 }
 
 void FEIKLoginMethodsModule::ShutdownModule()
