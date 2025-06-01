@@ -2469,30 +2469,31 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 						SpeakerActor->GetComponents<UEIKVoiceChatSynthComponent>(VoiceChatSynthComponents);
 						if(VoiceChatSynthComponents.Num() > 0)
 						{
+							bool bFoundValidVoiceChatSynthComponent = false;
 							for(auto VoiceChatSynthComponent : VoiceChatSynthComponents)
 							{
-								if (IsValid(VoiceChatSynthComponent) && (VoiceChatSynthComponent->SupportedRooms.Contains(ChannelName) || VoiceChatSynthComponent->bUseGlobalRoom))
+								if (IsValid(VoiceChatSynthComponent))
 								{
-									if (VoiceChatSynthComponent->IsActive())
+									if(VoiceChatSynthComponent->SupportedRooms.Contains(ChannelName) || VoiceChatSynthComponent->bUseGlobalRoom)
 									{
-										VoiceChatSynthComponent->WriteSamples(Samples);
-										//if we're here, it means that we passed audio to all valid components, so we need to clear the buffer so that it isn't played by the RTC.
-										FMemory::Memset(Samples.GetData(), 0, Samples.Num() * sizeof(int16));
+										if (VoiceChatSynthComponent->IsActive())
+										{
+											VoiceChatSynthComponent->WriteSamples(Samples);
+											bFoundValidVoiceChatSynthComponent = true;
+										}
 									}
-									else
-									{
-										UE_LOG(LogTemp,Warning,TEXT("VoiceChatSynthComponent is not active"));
-									}
-								}
-								else
-								{
-									UE_LOG(LogTemp,Warning,TEXT("VoiceChatSynthComponent is not valid"));
 								}
 							}
+							if (!bFoundValidVoiceChatSynthComponent)
+							{
+								UE_LOG(LogEOSVoiceChat,Warning,TEXT("no valid or active VoiceChatSynthComponent found"));
+							}
+							//if we're here, it means that we passed audio to all valid components, so we need to clear the buffer so that it isn't played by the RTC.
+							FMemory::Memset(Samples.GetData(), 0, Samples.Num() * sizeof(int16));
 						}
 						else
 						{
-							UE_LOG(LogTemp,Warning,TEXT("VoiceChatSynthComponent is not found"));
+							UE_LOG(LogEOSVoiceChat,Warning,TEXT("no VoiceChatSynthComponent found"));
 						}
 					}
 				}
@@ -2508,7 +2509,7 @@ void FEOSVoiceChatUser::OnChannelAudioBeforeRender(const EOS_RTCAudio_AudioBefor
 		}
 		else
 		{
-			UE_LOG(LogTemp,Warning,TEXT("GEngine is not found"));
+			UE_LOG(LogEOSVoiceChat,Warning,TEXT("GEngine is not found"));
 		}
 	}
 }
