@@ -87,7 +87,7 @@
         {
             "Name": "EIKLoginMethods",
             "Type": "Runtime",
-            "LoadingPhase": "Default",
+            "LoadingPhase": "PreLoadingScreen",
             "PlatformAllowList": [
                 "Win64",
                 "Android",
