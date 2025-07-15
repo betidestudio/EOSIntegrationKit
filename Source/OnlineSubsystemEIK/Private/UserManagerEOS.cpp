@@ -117,7 +117,11 @@ static inline EOS_EExternalCredentialType ToEOS_EExternalCredentialType(FName OS
 	{
 		return EOS_EExternalCredentialType::EOS_ECT_XBL_XSTS_TOKEN;
 	}
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 6
+	else if (OSSName == NINTENDO_SUBSYSTEM)
+#else
 	else if (OSSName == SWITCH_SUBSYSTEM)
+#endif
 	{
 		if (AccountCredentials.Type == TEXT("NintendoAccount"))
 		{

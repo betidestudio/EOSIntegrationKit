@@ -13,7 +13,7 @@ public class OnlineSubsystemEIK : ModuleRules
 	{
 		PrivateDefinitions.Add("ONLINESUBSYSTEMEOS_PACKAGE=1");
 		
-		PrivatePCHHeaderFile = "AntiCheat/AntiCheatClient.h";
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(
 			new string[] {

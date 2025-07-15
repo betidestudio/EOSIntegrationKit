@@ -24,7 +24,7 @@ UEIK_Login_AsyncFunction* UEIK_Login_AsyncFunction::LoginUsingConnectInterface(T
 void UEIK_Login_AsyncFunction::Activate()
 {
 	Super::Activate();
-	if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(GetWorld(), "EIK"))
+	if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 	{
 		if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 		{

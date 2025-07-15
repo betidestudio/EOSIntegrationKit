@@ -3858,7 +3858,7 @@ void FOnlineSessionEOS::RemovePlayerFromSession(int32 LocalUserNum, FName Sessio
 		{
 			if (Data->ResultCode == EOS_EResult::EOS_Success)
 			{
-				UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionEOS::RemovePlayerFromSession] KickMember finished successfully for lobby %d."), Data->LobbyId);
+				UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionEOS::RemovePlayerFromSession] KickMember finished successfully for lobby %hs."), Data->LobbyId);
 			}
 			else
 			{
@@ -3993,7 +3993,7 @@ uint32 FOnlineSessionEOS::CreateLobbySession(int32 HostingPlayerNum, FNamedOnlin
 			bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success;
 			if (bWasSuccessful)
 			{
-				UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionEOS::CreateLobbySession] CreateLobby was successful. LobbyId is %d."), Data->LobbyId);
+				UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionEOS::CreateLobbySession] CreateLobby was successful. LobbyId is %hs."), Data->LobbyId);
 
 				Session->SessionState = EOnlineSessionState::Pending;
 
@@ -4092,7 +4092,7 @@ uint32 FOnlineSessionEOS::JoinLobbySession(int32 PlayerNum, FNamedOnlineSession*
 					bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success;
 					if (bWasSuccessful)
 					{
-						UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionEOS::JoinLobbySession] JoinLobby was successful. LobbyId is %d."), Data->LobbyId);
+						UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionEOS::JoinLobbySession] JoinLobby was successful. LobbyId is %hs."), Data->LobbyId);
 
 						BeginSessionAnalytics(Session);
 
@@ -4426,7 +4426,7 @@ uint32 FOnlineSessionEOS::DestroyLobbySession(FNamedOnlineSession* Session, cons
 				bool bWasSuccessful = Data->ResultCode == EOS_EResult::EOS_Success;
 				if (bWasSuccessful)
 				{
-					UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionEOS::DestroyLobbySession] LeaveLobby was successful. LobbyId is %s."), Data->LobbyId);
+					UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionEOS::DestroyLobbySession] LeaveLobby was successful. LobbyId is %hs."), Data->LobbyId);
 				}
 				else
 				{

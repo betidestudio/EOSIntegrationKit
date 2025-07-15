@@ -46,7 +46,7 @@ void FOnlineAchievementsEOS::QueryAchievements(const FUniqueNetId& PlayerId, con
 	int32 LocalUserId = EOSSubsystem->UserManager->GetLocalUserNumFromUniqueNetId(PlayerId);
 	if (LocalUserId < 0)
 	{
-		UE_LOG_ONLINE_ACHIEVEMENTS(Error, TEXT("Can't query achievement progress for non-local user (%)"), *PlayerId.ToString());
+		UE_LOG_ONLINE_ACHIEVEMENTS(Error, TEXT("Can't query achievement progress for non-local user (%s)"), *PlayerId.ToString());
 		Delegate.ExecuteIfBound(PlayerId, false);
 		return;
 	}
@@ -144,7 +144,7 @@ void FOnlineAchievementsEOS::QueryAchievementDescriptions(const FUniqueNetId& Pl
 	int32 LocalUserId = EOSSubsystem->UserManager->GetLocalUserNumFromUniqueNetId(PlayerId);
 	if (LocalUserId < 0)
 	{
-		UE_LOG_ONLINE_ACHIEVEMENTS(Error, TEXT("Can't query achievement definitions for non-local user (%)"), *PlayerId.ToString());
+		UE_LOG_ONLINE_ACHIEVEMENTS(Error, TEXT("Can't query achievement definitions for non-local user (%s)"), *PlayerId.ToString());
 		Delegate.ExecuteIfBound(PlayerId, false);
 		return;
 	}

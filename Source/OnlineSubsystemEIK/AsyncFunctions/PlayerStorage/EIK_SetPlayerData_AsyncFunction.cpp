@@ -26,7 +26,7 @@ void UEIK_SetPlayerData_AsyncFunction::SetPlayerData()
 {
 	if(DataToSave.Num() > 0)
 	{
-		if(const IOnlineSubsystem *SubsystemRef = Online::GetSubsystem(GetWorld(), "EIK"))
+		if(const IOnlineSubsystem *SubsystemRef = IOnlineSubsystem::Get("EIK"))
 		{
 			if(const IOnlineIdentityPtr IdentityPointerRef = SubsystemRef->GetIdentityInterface())
 			{
