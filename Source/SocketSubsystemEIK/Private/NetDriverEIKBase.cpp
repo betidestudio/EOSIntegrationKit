@@ -10,10 +10,32 @@
 #include "Misc/EngineVersionComparison.h"
 #include "EOSSharedTypes.h"
 #include "Engine/Engine.h"
+#include "Misc/ConfigCacheIni.h"
 
 #if ENGINE_MAJOR_VERSION >= 5
 #include UE_INLINE_GENERATED_CPP_BY_NAME(NetDriverEIKBase)
 #endif
+
+UNetDriverEIKBase::UNetDriverEIKBase(const FObjectInitializer& ObjectInitializer)
+	: UIpNetDriver(ObjectInitializer)
+{
+	bIsPassthrough = false;
+	
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 6
+	// Check for deprecated config in UE 5.6+
+	bool bUnused;
+	if (GConfig->GetBool(TEXT("/Script/SocketSubsystemEIK.NetDriverEIKBase"), TEXT("bIsUsingP2PSockets"), bUnused, GEngineIni))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EIK NetDriver: bIsUsingP2PSockets is deprecated, please remove any related config values"));
+	}
+#else
+	// For UE 5.5 and below, initialize bIsUsingP2PSockets from config
+	if (!GConfig->GetBool(TEXT("/Script/SocketSubsystemEIK.NetDriverEIKBase"), TEXT("bIsUsingP2PSockets"), bIsUsingP2PSockets, GEngineIni))
+	{
+		bIsUsingP2PSockets = true; // Default to true
+	}
+#endif
+}
 
 bool UNetDriverEIKBase::IsAvailable() const
 {
@@ -91,10 +113,16 @@ bool UNetDriverEIKBase::InitBase(bool bInitAsClient, FNetworkNotify* InNotify, c
 	}
 	else
 	{
-		// Because some platforms remap ports, we will use the ID of the name of the net driver to be our channel
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 6
+		// UE 5.6+ uses NetDriverDefinition instead of NetDriverName
+		FString NetDriverDefinitionStr = GetNetDriverDefinition().ToString();
+		EOSLocalAddress->SetChannel(GetTypeHash(NetDriverDefinitionStr));
+		EOSLocalAddress->SetSocketName(NetDriverDefinitionStr);
+#else
+		// UE 5.5 and below use NetDriverName
 		EOSLocalAddress->SetChannel(GetTypeHash(NetDriverName.ToString()));
-		// Set our net driver name so we don't accept connections across net driver types
 		EOSLocalAddress->SetSocketName(NetDriverName.ToString());
+#endif
 	}
 
 	static_cast<FSocketEOS*>(GetSocket())->SetLocalAddress(*EOSLocalAddress);
@@ -106,9 +134,19 @@ bool UNetDriverEIKBase::InitBase(bool bInitAsClient, FNetworkNotify* InNotify, c
 
 bool UNetDriverEIKBase::InitConnect(FNetworkNotify* InNotify, const FURL& ConnectURL, FString& Error)
 {
-	if (!bIsUsingP2PSockets || !IsAvailable() || !ConnectURL.Host.StartsWith(EOS_CONNECTION_URL_PREFIX, ESearchCase::IgnoreCase))
+	
+	bool bIsEOSURL = ConnectURL.Host.StartsWith(EOS_CONNECTION_URL_PREFIX, ESearchCase::IgnoreCase);
+	bool bIsAvailableResult = IsAvailable();
+	
+	
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 6
+	// UE 5.6+ removed bIsUsingP2PSockets checks - engine now always uses EOS sockets when available
+	if (!bIsAvailableResult || !bIsEOSURL)
+#else
+	// UE 5.5 and below still check bIsUsingP2PSockets
+	if (!bIsUsingP2PSockets || !bIsAvailableResult || !bIsEOSURL)
+#endif
 	{
-		UE_LOG(LogTemp, Verbose, TEXT("Connecting using IPNetDriver passthrough. ConnectUrl = (%s)"), *ConnectURL.ToString());
 
 		bIsPassthrough = true;
 		return Super::InitConnect(InNotify, ConnectURL, Error);
@@ -124,7 +162,6 @@ bool UNetDriverEIKBase::InitConnect(FNetworkNotify* InNotify, const FURL& Connec
 		return false;
 	}
 
-	UE_LOG(LogTemp, Verbose, TEXT("Connecting using EOSNetDriver. ConnectUrl = (%s)"), *ConnectURL.ToString());
 
 	if (!InitBase(true, InNotify, ConnectURL, false, Error))
 	{
@@ -163,16 +200,25 @@ bool UNetDriverEIKBase::InitConnect(FNetworkNotify* InNotify, const FURL& Connec
 
 bool UNetDriverEIKBase::InitListen(FNetworkNotify* InNotify, FURL& LocalURL, bool bReuseAddressAndPort, FString& Error)
 {
-	UE_LOG(LogTemp, Verbose, TEXT("InitListen with LocalURL = (%s)"), *LocalURL.ToString());
-	if (!bIsUsingP2PSockets || !IsAvailable() || LocalURL.HasOption(TEXT("bIsLanMatch")) || LocalURL.HasOption(TEXT("bUseIPSockets")))
+	
+	bool bIsAvailableResult = IsAvailable();
+	bool bHasLanMatch = LocalURL.HasOption(TEXT("bIsLanMatch"));
+	bool bUseIPSockets = LocalURL.HasOption(TEXT("bUseIPSockets"));
+	
+	
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 6
+	// UE 5.6+ removed bIsUsingP2PSockets checks - engine now always uses EOS sockets when available
+	if (!bIsAvailableResult || bHasLanMatch || bUseIPSockets)
+#else
+	// UE 5.5 and below still check bIsUsingP2PSockets
+	if (!bIsUsingP2PSockets || !bIsAvailableResult || bHasLanMatch || bUseIPSockets)
+#endif
 	{
-		UE_LOG(LogTemp, Verbose, TEXT("Init as IPNetDriver listen server. LocalURL = (%s)"), *LocalURL.ToString());
 
 		bIsPassthrough = true;
 		return Super::InitListen(InNotify, LocalURL, bReuseAddressAndPort, Error);
 	}
 
-	UE_LOG(LogTemp, Verbose, TEXT("Init as EOSNetDriver listen server. LocalURL = (%s)"), *LocalURL.ToString());
 
 	if (!InitBase(false, InNotify, LocalURL, bReuseAddressAndPort, Error))
 	{

@@ -23,7 +23,13 @@ UNetConnectionEIK::UNetConnectionEIK(const FObjectInitializer& ObjectInitializer
 
 void UNetConnectionEIK::InitLocalConnection(UNetDriver* InDriver, FSocket* InSocket, const FURL& InURL, EConnectionState InState, int32 InMaxPacket, int32 InPacketOverhead)
 {
+#if ENGINE_MAJOR_VERSION >= 5 && ENGINE_MINOR_VERSION >= 6
+	// UE 5.6+ removed bIsUsingP2PSockets - always use EOS sockets when URL is EOS format
+	bIsPassthrough = !InURL.Host.StartsWith(EOS_CONNECTION_URL_PREFIX, ESearchCase::IgnoreCase);
+#else
+	// UE 5.5 and below still check bIsUsingP2PSockets
 	bIsPassthrough = !static_cast<UNetDriverEIKBase*>(InDriver)->bIsUsingP2PSockets || !InURL.Host.StartsWith(EOS_CONNECTION_URL_PREFIX, ESearchCase::IgnoreCase);
+#endif
 	bHasP2PSession = !bIsPassthrough;
 	  
 	if (bHasP2PSession)

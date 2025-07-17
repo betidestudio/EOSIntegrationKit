@@ -16,4 +16,5 @@ class ONLINESUBSYSTEMEIK_API UNetDriverEIK
 	GENERATED_BODY()
 
 public:
+	UNetDriverEIK(const FObjectInitializer& ObjectInitializer);
 };
