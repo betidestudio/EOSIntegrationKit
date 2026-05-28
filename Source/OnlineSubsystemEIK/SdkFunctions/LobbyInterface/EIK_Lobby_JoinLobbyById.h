@@ -37,15 +37,14 @@ struct FEIK_Lobby_JoinLobbyByIdOptions
 		bPresenceEnabled = false;
 		bCrossplayOptOut = false;
 	}
-	EOS_Lobby_JoinLobbyByIdOptions ToEOSOptions()
+	EOS_Lobby_JoinLobbyByIdOptions ToEOSOptions(EOS_Lobby_LocalRTCOptions* LocalRTCOptions = nullptr)
 	{
 		EOS_Lobby_JoinLobbyByIdOptions Options;
-		Options.ApiVersion = EOS_LOBBY_JOINLOBBY_API_LATEST;
+		Options.ApiVersion = EOS_LOBBY_JOINLOBBYBYID_API_LATEST;
 		Options.LobbyId = LobbyId.Ref;
 		Options.LocalUserId = LocalUserId.GetValueAsEosType();
 		Options.bPresenceEnabled = bPresenceEnabled ? EOS_TRUE : EOS_FALSE;
-		EOS_Lobby_LocalRTCOptions VarTemp = LobbyRTCOptions.GetValueAsEosType();
-		Options.LocalRTCOptions = &VarTemp;
+		Options.LocalRTCOptions = LocalRTCOptions;
 		Options.bCrossplayOptOut = bCrossplayOptOut ? EOS_TRUE : EOS_FALSE;
 		return Options;
 	}

@@ -39,7 +39,8 @@ void UEIK_Lobby_JoinLobby::Activate()
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
-			EOS_Lobby_JoinLobbyOptions Options = Var_Options.ToEOSOptions();
+			EOS_Lobby_LocalRTCOptions LocalRTCOptions = Var_Options.LobbyRTCOptions.GetValueAsEosType();
+			EOS_Lobby_JoinLobbyOptions Options = Var_Options.ToEOSOptions(&LocalRTCOptions);
 			EOS_Lobby_JoinLobby(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, this, &UEIK_Lobby_JoinLobby::OnJoinLobbyComplete);
 			return;
 		}
