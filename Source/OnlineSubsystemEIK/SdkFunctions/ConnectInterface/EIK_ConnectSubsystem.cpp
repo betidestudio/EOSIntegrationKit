@@ -14,6 +14,7 @@ FEIK_NotificationId UEIK_ConnectSubsystem::EIK_Connect_AddNotifyAuthExpiration(c
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
+			OnAuthExpiration = Callback;
 			EOS_Connect_AddNotifyAuthExpirationOptions AddNotifyAuthExpirationOptions = { };
 			AddNotifyAuthExpirationOptions.ApiVersion = EOS_CONNECT_ADDNOTIFYAUTHEXPIRATION_API_LATEST;
 			auto Return = EOS_Connect_AddNotifyAuthExpiration(EOSRef->ConnectHandle, &AddNotifyAuthExpirationOptions, this, [] (const EOS_Connect_AuthExpirationCallbackInfo* Data)
@@ -21,7 +22,7 @@ FEIK_NotificationId UEIK_ConnectSubsystem::EIK_Connect_AddNotifyAuthExpiration(c
 				UEIK_ConnectSubsystem* ConnectSubsystem = static_cast<UEIK_ConnectSubsystem*>(Data->ClientData);
 				if(ConnectSubsystem)
 				{
-					ConnectSubsystem->OnAuthExpiration.ExecuteIfBound(Data->LocalUserId);
+					ConnectSubsystem->OnAuthExpiration.ExecuteIfBound(FEIK_ProductUserId(Data->LocalUserId));
 				}
 			});
 			return Return;
@@ -37,6 +38,7 @@ FEIK_NotificationId UEIK_ConnectSubsystem::EIK_Connect_AddNotifyLoginStatusChang
 	{
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub))
 		{
+			OnLoginStatusChanged = Callback;
 			EOS_Connect_AddNotifyLoginStatusChangedOptions AddNotifyLoginStatusChangedOptions = { };
 			AddNotifyLoginStatusChangedOptions.ApiVersion = EOS_CONNECT_ADDNOTIFYLOGINSTATUSCHANGED_API_LATEST;
 			auto Return = EOS_Connect_AddNotifyLoginStatusChanged(EOSRef->ConnectHandle, &AddNotifyLoginStatusChangedOptions, this, [] (const EOS_Connect_LoginStatusChangedCallbackInfo* Data)
@@ -44,7 +46,7 @@ FEIK_NotificationId UEIK_ConnectSubsystem::EIK_Connect_AddNotifyLoginStatusChang
 				UEIK_ConnectSubsystem* ConnectSubsystem = static_cast<UEIK_ConnectSubsystem*>(Data->ClientData);
 				if(ConnectSubsystem)
 				{
-					ConnectSubsystem->OnLoginStatusChanged.ExecuteIfBound(Data->LocalUserId, static_cast<EIK_ELoginStatus>(Data->CurrentStatus));
+					ConnectSubsystem->OnLoginStatusChanged.ExecuteIfBound(FEIK_ProductUserId(Data->LocalUserId), static_cast<EIK_ELoginStatus>(Data->CurrentStatus));
 				}
 			});
 			return Return;
