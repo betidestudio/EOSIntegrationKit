@@ -40,7 +40,7 @@ public class EIKSDK : ModuleRules
 		{
 			if (Target.Platform == UnrealTargetPlatform.Android)
 			{
-				return Path.Combine(SDKBaseDir, "include");
+				return Path.Combine(SDKBaseDir, "Include");
 			}
 			else if (Target.Platform == UnrealTargetPlatform.IOS)
 			{

@@ -55,19 +55,29 @@ public:
 	}
 
 	FEIK_ProductUserId(EOS_ProductUserId InProductUserId)
+		: ProductUserIdBasic(InProductUserId)
 	{
-		ProductUserIdBasic = InProductUserId;
-		char ProductIdAnsi[EOS_PRODUCTUSERID_MAX_LENGTH+1];
-		int32 ProductIdLen;
-		EOS_ProductUserId_ToString(InProductUserId, ProductIdAnsi, &ProductIdLen);
-		ProductUserId = FString(UTF8_TO_TCHAR(ProductIdAnsi));
+		ProductUserId = "";
+		if (EOS_ProductUserId_IsValid(InProductUserId) == EOS_TRUE)
+		{
+			char ProductIdAnsi[EOS_PRODUCTUSERID_MAX_LENGTH + 1] = {};
+			int32 ProductIdLen = sizeof(ProductIdAnsi);
+			if (EOS_ProductUserId_ToString(InProductUserId, ProductIdAnsi, &ProductIdLen) == EOS_EResult::EOS_Success)
+			{
+				ProductUserId = FString(UTF8_TO_TCHAR(ProductIdAnsi));
+			}
+		}
 	}
 
 	EOS_ProductUserId GetValueAsEosType()
 	{
-		if (EOS_ProductUserId_IsValid(ProductUserIdBasic))
+		if (EOS_ProductUserId_IsValid(ProductUserIdBasic) == EOS_TRUE)
 		{
 			return ProductUserIdBasic;
+		}
+		if (ProductUserId.IsEmpty())
+		{
+			return nullptr;
 		}
 		EOS_ProductUserId ProductUserIdSec = EOS_ProductUserId_FromString(TCHAR_TO_ANSI(*ProductUserId));
 		return ProductUserIdSec;
@@ -142,12 +152,18 @@ public:
 	}
 
 	FEIK_ContinuanceToken(EOS_ContinuanceToken InContinuanceToken)
+		: ContinuanceTokenBasic(InContinuanceToken)
 	{
-		char* OutBuffer = new char[EOS_PRODUCTUSERID_MAX_LENGTH + 1];
-		int32 OutBufferLen;
-		EOS_ContinuanceToken_ToString(InContinuanceToken, OutBuffer, &OutBufferLen);
-		ContinuanceToken = FString(UTF8_TO_TCHAR(OutBuffer));
-		ContinuanceTokenBasic = InContinuanceToken;
+		ContinuanceToken = "";
+		if (InContinuanceToken != nullptr)
+		{
+			char OutBuffer[EOS_PRODUCTUSERID_MAX_LENGTH + 1] = {};
+			int32 OutBufferLen = sizeof(OutBuffer);
+			if (EOS_ContinuanceToken_ToString(InContinuanceToken, OutBuffer, &OutBufferLen) == EOS_EResult::EOS_Success)
+			{
+				ContinuanceToken = FString(UTF8_TO_TCHAR(OutBuffer));
+			}
+		}
 	}
 	
 	EOS_ContinuanceToken GetValueAsEosType()

@@ -37,26 +37,38 @@ struct FEIK_Connect_UserLoginInfo
 	}
 	EOS_Connect_UserLoginInfo ToEOSConnectUserLoginInfo()
 	{
-		EOS_Connect_UserLoginInfo Result;
+		EOS_Connect_UserLoginInfo Result = {};
 		Result.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
 		if(DisplayName.Len() > 0)
 		{
-			Result.DisplayName = TCHAR_TO_ANSI(*DisplayName);
+			FTCHARToUTF8 DisplayNameConverter(*DisplayName);
+			CachedDisplayNameUtf8.SetNumUninitialized(DisplayNameConverter.Length() + 1);
+			FMemory::Memcpy(CachedDisplayNameUtf8.GetData(), DisplayNameConverter.Get(), DisplayNameConverter.Length() + 1);
+			Result.DisplayName = CachedDisplayNameUtf8.GetData();
 		}
 		else
 		{
+			CachedDisplayNameUtf8.Reset();
 			Result.DisplayName = nullptr;
 		}
 		if(NsaTokenId.Len() > 0)
 		{
-			Result.NsaIdToken = TCHAR_TO_ANSI(*NsaTokenId);
+			FTCHARToUTF8 NsaTokenConverter(*NsaTokenId);
+			CachedNsaTokenUtf8.SetNumUninitialized(NsaTokenConverter.Length() + 1);
+			FMemory::Memcpy(CachedNsaTokenUtf8.GetData(), NsaTokenConverter.Get(), NsaTokenConverter.Length() + 1);
+			Result.NsaIdToken = CachedNsaTokenUtf8.GetData();
 		}
 		else
 		{
+			CachedNsaTokenUtf8.Reset();
 			Result.NsaIdToken = nullptr;
 		}
 		return Result;
 	};
+
+private:
+	TArray<ANSICHAR> CachedDisplayNameUtf8;
+	TArray<ANSICHAR> CachedNsaTokenUtf8;
 	
 };
 
@@ -85,20 +97,27 @@ struct FEIK_Connect_Credentials
 
 	EOS_Connect_Credentials ToEOSConnectCredentials()
 	{
-		EOS_Connect_Credentials Result;
+		EOS_Connect_Credentials Result = {};
 		Result.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
 		if(Token.Len() > 0)
 		{
-			Result.Token = TCHAR_TO_ANSI(*Token);
+			FTCHARToUTF8 TokenConverter(*Token);
+			CachedTokenUtf8.SetNumUninitialized(TokenConverter.Length() + 1);
+			FMemory::Memcpy(CachedTokenUtf8.GetData(), TokenConverter.Get(), TokenConverter.Length() + 1);
+			Result.Token = CachedTokenUtf8.GetData();
 		}
 		else
 		{
+			CachedTokenUtf8.Reset();
 			Result.Token = nullptr;
 		}
 		Result.Type = static_cast<EOS_EExternalCredentialType>(Type.GetValue());
 		return Result;
 	
 	};
+
+private:
+	TArray<ANSICHAR> CachedTokenUtf8;
 };
 
 

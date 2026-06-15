@@ -21,16 +21,16 @@ void UEIK_LinkAccount_AsyncFunction::OnLinkAccountCallback(const EOS_Connect_Lin
 	UEIK_LinkAccount_AsyncFunction* LinkAccountFunction = static_cast<UEIK_LinkAccount_AsyncFunction*>(Data->ClientData);
 	if(LinkAccountFunction)
 	{
-		AsyncTask(ENamedThreads::GameThread, [LinkAccountFunction, Data]()
+		AsyncTask(ENamedThreads::GameThread, [LinkAccountFunction, Result]()
 		{
-			LinkAccountFunction->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode));
-		});
-		LinkAccountFunction->SetReadyToDestroy();
+			LinkAccountFunction->OnCallback.Broadcast(Result);
+			LinkAccountFunction->SetReadyToDestroy();
 #if ENGINE_MAJOR_VERSION == 5
-		LinkAccountFunction->MarkAsGarbage();
+			LinkAccountFunction->MarkAsGarbage();
 #else
-		LinkAccountFunction->MarkPendingKill();
+			LinkAccountFunction->MarkPendingKill();
 #endif
+		});
 	}
 }
 

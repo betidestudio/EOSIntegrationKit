@@ -20,16 +20,19 @@ void UEIK_Connect_Login::OnLoginCallback(const EOS_Connect_LoginCallbackInfo* Da
 {
 	if(UEIK_Connect_Login* Node = static_cast<UEIK_Connect_Login*>(Data->ClientData))
 	{
-		AsyncTask(ENamedThreads::GameThread, [Node, Data]()
+		const TEnumAsByte<EEIK_Result> ResultCode = static_cast<EEIK_Result>(Data->ResultCode);
+		const FEIK_ProductUserId LocalUserId(Data->LocalUserId);
+		const FEIK_ContinuanceToken ContinuanceToken(Data->ContinuanceToken);
+		AsyncTask(ENamedThreads::GameThread, [Node, ResultCode, LocalUserId, ContinuanceToken]()
 		{
-			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId, Data->ContinuanceToken);
-		});
-		Node->SetReadyToDestroy();
+			Node->OnCallback.Broadcast(ResultCode, LocalUserId, ContinuanceToken);
+			Node->SetReadyToDestroy();
 #if ENGINE_MAJOR_VERSION == 5
-		Node->MarkAsGarbage();
+			Node->MarkAsGarbage();
 #else
-		Node->MarkPendingKill();
+			Node->MarkPendingKill();
 #endif
+		});
 	}
 }
 

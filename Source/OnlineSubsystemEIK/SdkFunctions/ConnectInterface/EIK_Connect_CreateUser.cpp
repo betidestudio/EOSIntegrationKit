@@ -45,15 +45,17 @@ void UEIK_Connect_CreateUser::OnCreateUserCallback(const EOS_Connect_CreateUserC
 	UEIK_Connect_CreateUser* Node = static_cast<UEIK_Connect_CreateUser*>(Data->ClientData);
 	if(Node)
 	{
-		AsyncTask(ENamedThreads::GameThread, [Node, Data]()
+		const EEIK_Result ResultCode = static_cast<EEIK_Result>(Data->ResultCode);
+		const FEIK_ProductUserId LocalUserId(Data->LocalUserId);
+		AsyncTask(ENamedThreads::GameThread, [Node, ResultCode, LocalUserId]()
 		{
-			Node->OnCallback.Broadcast(static_cast<EEIK_Result>(Data->ResultCode), Data->LocalUserId);
-		});
-		Node->SetReadyToDestroy();
+			Node->OnCallback.Broadcast(ResultCode, LocalUserId);
+			Node->SetReadyToDestroy();
 #if ENGINE_MAJOR_VERSION == 5
-		Node->MarkAsGarbage();
+			Node->MarkAsGarbage();
 #else
-		Node->MarkPendingKill();
+			Node->MarkPendingKill();
 #endif
+		});
 	}
 }
