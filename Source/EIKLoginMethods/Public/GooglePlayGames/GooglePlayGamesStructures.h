@@ -4,7 +4,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Json.h"
 #include "GooglePlayGamesStructures.generated.h"
 
 /**
@@ -75,16 +74,16 @@ struct FGPGS_Player
 		if (JsonObject.IsValid())
 		{
 			// Read all fields from the JSON object
-			JsonObject->TryGetStringField("displayName", Player.DisplayName);
-			JsonObject->TryGetStringField("playerId", Player.PlayerID);
-			JsonObject->TryGetNumberField("retrievedTimeStamp", Player.RetrievedTimeStamp);
-			JsonObject->TryGetBoolField("hasHiResImage", Player.bHasHiResImage);
-			JsonObject->TryGetBoolField("hasIconImage", Player.bHasIconImage);
-			JsonObject->TryGetStringField("hiResImageUrl", Player.HiResImageUrl);
-			JsonObject->TryGetStringField("iconImageUrl", Player.IconImageUrl);
-			JsonObject->TryGetStringField("title", Player.Title);
-			JsonObject->TryGetStringField("bannerImageLandscapeUrl", Player.BannerImageLandscapeUrl);
-			JsonObject->TryGetStringField("bannerImagePortraitUrl", Player.BannerImagePortraitUrl);
+			JsonObject->TryGetStringField(TEXT("displayName"), Player.DisplayName);
+			JsonObject->TryGetStringField(TEXT("playerId"), Player.PlayerID);
+			JsonObject->TryGetNumberField(TEXT("retrievedTimeStamp"), Player.RetrievedTimeStamp);
+			JsonObject->TryGetBoolField(TEXT("hasHiResImage"), Player.bHasHiResImage);
+			JsonObject->TryGetBoolField(TEXT("hasIconImage"), Player.bHasIconImage);
+			JsonObject->TryGetStringField(TEXT("hiResImageUrl"), Player.HiResImageUrl);
+			JsonObject->TryGetStringField(TEXT("iconImageUrl"), Player.IconImageUrl);
+			JsonObject->TryGetStringField(TEXT("title"), Player.Title);
+			JsonObject->TryGetStringField(TEXT("bannerImageLandscapeUrl"), Player.BannerImageLandscapeUrl);
+			JsonObject->TryGetStringField(TEXT("bannerImagePortraitUrl"), Player.BannerImagePortraitUrl);
 		}
 		return Player;
 	}
@@ -99,16 +98,16 @@ struct FGPGS_Player
 			if (JsonObject.IsValid())
 			{
 				// Read all fields from the JSON object
-				JsonObject->TryGetStringField("displayName", Player.DisplayName);
-				JsonObject->TryGetStringField("playerId", Player.PlayerID);
-				JsonObject->TryGetNumberField("retrievedTimeStamp", Player.RetrievedTimeStamp);
-				JsonObject->TryGetBoolField("hasHiResImage", Player.bHasHiResImage);
-				JsonObject->TryGetBoolField("hasIconImage", Player.bHasIconImage);
-				JsonObject->TryGetStringField("hiResImageUrl", Player.HiResImageUrl);
-				JsonObject->TryGetStringField("iconImageUrl", Player.IconImageUrl);
-				JsonObject->TryGetStringField("title", Player.Title);
-				JsonObject->TryGetStringField("bannerImageLandscapeUrl", Player.BannerImageLandscapeUrl);
-				JsonObject->TryGetStringField("bannerImagePortraitUrl", Player.BannerImagePortraitUrl);
+				JsonObject->TryGetStringField(TEXT("displayName"), Player.DisplayName);
+				JsonObject->TryGetStringField(TEXT("playerId"), Player.PlayerID);
+				JsonObject->TryGetNumberField(TEXT("retrievedTimeStamp"), Player.RetrievedTimeStamp);
+				JsonObject->TryGetBoolField(TEXT("hasHiResImage"), Player.bHasHiResImage);
+				JsonObject->TryGetBoolField(TEXT("hasIconImage"), Player.bHasIconImage);
+				JsonObject->TryGetStringField(TEXT("hiResImageUrl"), Player.HiResImageUrl);
+				JsonObject->TryGetStringField(TEXT("iconImageUrl"), Player.IconImageUrl);
+				JsonObject->TryGetStringField(TEXT("title"), Player.Title);
+				JsonObject->TryGetStringField(TEXT("bannerImageLandscapeUrl"), Player.BannerImageLandscapeUrl);
+				JsonObject->TryGetStringField(TEXT("bannerImagePortraitUrl"), Player.BannerImagePortraitUrl);
 			}
 		}
 		return Player;
@@ -124,7 +123,7 @@ struct FGPGS_Player
 		{
 			// Get the array of friends
 			const TArray<TSharedPtr<FJsonValue>>* FriendsJsonArray;
-			if (JsonObject->TryGetArrayField("friends", FriendsJsonArray))
+			if (JsonObject->TryGetArrayField(TEXT("friends"), FriendsJsonArray))
 			{
 				// Process each friend in the array
 				for (const TSharedPtr<FJsonValue>& Value : *FriendsJsonArray)
@@ -190,11 +189,11 @@ struct FGPGS_Event
 		{
 			if (JsonObject.IsValid())
 			{
-				JsonObject->TryGetStringField("name", Event.Name);
-				JsonObject->TryGetStringField("description", Event.Description);
-				JsonObject->TryGetStringField("eventId", Event.EventID);
-				JsonObject->TryGetNumberField("value", Event.Value);
-				JsonObject->TryGetBoolField("isVisible", Event.bIsVisible);
+				JsonObject->TryGetStringField(TEXT("name"), Event.Name);
+				JsonObject->TryGetStringField(TEXT("description"), Event.Description);
+				JsonObject->TryGetStringField(TEXT("eventId"), Event.EventID);
+				JsonObject->TryGetNumberField(TEXT("value"), Event.Value);
+				JsonObject->TryGetBoolField(TEXT("isVisible"), Event.bIsVisible);
 			}
 		}
 		return Event;
@@ -252,12 +251,12 @@ struct FGPGS_PlayerStats
 		{
 			if (JsonObject.IsValid())
 			{
-				JsonObject->TryGetNumberField("averageSessionLength", PlayerStats.AverageSessionLength);
-				JsonObject->TryGetNumberField("daysSinceLastPlayed", PlayerStats.DaysSinceLastPlayed);
-				JsonObject->TryGetNumberField("numberOfPurchases", PlayerStats.NumberOfPurchases);
-				JsonObject->TryGetNumberField("numberOfSessions", PlayerStats.NumberOfSessions);
-				JsonObject->TryGetNumberField("sessionPercentile", PlayerStats.SessionPercentile);
-				JsonObject->TryGetNumberField("spendPercentile", PlayerStats.SpendPercentile);
+				JsonObject->TryGetNumberField(TEXT("averageSessionLength"), PlayerStats.AverageSessionLength);
+				JsonObject->TryGetNumberField(TEXT("daysSinceLastPlayed"), PlayerStats.DaysSinceLastPlayed);
+				JsonObject->TryGetNumberField(TEXT("numberOfPurchases"), PlayerStats.NumberOfPurchases);
+				JsonObject->TryGetNumberField(TEXT("numberOfSessions"), PlayerStats.NumberOfSessions);
+				JsonObject->TryGetNumberField(TEXT("sessionPercentile"), PlayerStats.SessionPercentile);
+				JsonObject->TryGetNumberField(TEXT("spendPercentile"), PlayerStats.SpendPercentile);
 			}
 		}
 		return PlayerStats;

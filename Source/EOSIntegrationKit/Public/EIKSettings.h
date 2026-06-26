@@ -204,6 +204,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings", meta = (EditCondition = "bEnableGooglePlayGames"))
 	FString GooglePlayGamesAppID = FString("");
 	
+	/** Should Google Play Billing be enabled? Works only on Android. */
+    UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Integration Kit Settings")
+    bool bEnableGooglePlayBilling = false;
+	
 	/** Auto-Logins the player into the game. Can be used for testing or games with only 1 type of login */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="EOS Settings|Login Settings|Auto Login")
 	TEnumAsByte<EEIK_AutoLoginType> AutoLoginType;

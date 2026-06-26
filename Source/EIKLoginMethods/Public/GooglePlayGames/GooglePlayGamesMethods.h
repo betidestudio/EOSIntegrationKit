@@ -22,6 +22,9 @@ check(0); \
 #define DECLARE_JAVA_METHOD(name) \
 static jmethodID name = NULL;
 
+// Global configurable timeout (in seconds) for Google Play Billing async nodes
+static float GPB_AsyncTimeoutSeconds = 30.0f;
+
 // ---- Methods ----
 DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_manualSignIn);
 DECLARE_JAVA_METHOD(AndroidThunkJava_GPGS_getIsSignedIn);
