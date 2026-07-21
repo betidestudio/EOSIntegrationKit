@@ -85,19 +85,29 @@ void UEIK_FindSessionByID_AsyncFunction::OnFindSessionCompleted(int I, bool bWas
 				FOnlineSessionSettings LocalSessionSettings = SessionResult.OnlineResult.Session.SessionSettings;
 
 				TMap<FName, FOnlineSessionSetting>::TIterator It(LocalSessionSettings.Settings);
-
 				TMap<FString, FEIKAttribute> LocalSettings;
+				FSessionFindStruct LocalStruct;
+
 				while (It)
 				{
 					const FName& SettingName = It.Key();
 					const FOnlineSessionSetting& Setting = It.Value();
+
+					if (SettingName.ToString() == "SessionName")
+					{
+						LocalStruct.SessionName = Setting.Data.ToString();
+					}
+
 					LocalSettings.Add(*SettingName.ToString(), Setting.Data);
 					++It;
 				}
 
+				if (LocalStruct.SessionName.IsEmpty())
+				{
+					LocalStruct.SessionName = "GameSession";
+				}
+
 				bool IsServer = LocalSessionSettings.bIsDedicated;
-				FSessionFindStruct LocalStruct;
-				LocalStruct.SessionName = "GameSession";
 				LocalStruct.CurrentNumberOfPlayers = (SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections) - (SessionResult.OnlineResult.Session.NumOpenPublicConnections + SessionResult.OnlineResult.Session.NumOpenPrivateConnections);
 				LocalStruct.MaxNumberOfPlayers = SessionResult.OnlineResult.Session.SessionSettings.NumPublicConnections + SessionResult.OnlineResult.Session.SessionSettings.NumPrivateConnections;
 				LocalStruct.SessionResult = SessionResult;
