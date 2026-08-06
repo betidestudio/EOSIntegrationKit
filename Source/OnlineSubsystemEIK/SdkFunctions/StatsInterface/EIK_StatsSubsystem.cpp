@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_StatsSubsystem.h"
@@ -40,7 +40,8 @@ TEnumAsByte<EEIK_Result> UEIK_StatsSubsystem::EIK_Stats_CopyStatByName(FEIK_Prod
 			EOS_Stats_CopyStatByNameOptions Options;
 			Options.ApiVersion = EOS_STATS_COPYSTATBYNAME_API_LATEST;
 			Options.TargetUserId = TargetUserId.GetValueAsEosType();
-			Options.Name = TCHAR_TO_ANSI(*Name);
+			auto NameAnsi = StringCast<ANSICHAR>(*Name);
+			Options.Name = NameAnsi.Get();
 			EOS_Stats_Stat *Stat = nullptr;
 			auto Result = EOS_Stats_CopyStatByName(EOSRef->StatsHandle, &Options, &Stat);
 			if (Result == EOS_EResult::EOS_Success)

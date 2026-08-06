@@ -115,7 +115,8 @@ void UEIK_GetPUIDFromEpicId_AsyncFunc::QueryExternalAccountMappingsSuccess()
 					GetExternalAccountMappingsOptions.ApiVersion = EOS_CONNECT_GETEXTERNALACCOUNTMAPPING_API_LATEST;
 					GetExternalAccountMappingsOptions.AccountIdType = EOS_EExternalAccountType::EOS_EAT_EPIC;
 					GetExternalAccountMappingsOptions.LocalUserId = EOS_ProductUserId_FromString(TCHAR_TO_UTF8(*Var_LocalProductUserId));
-					GetExternalAccountMappingsOptions.TargetExternalUserId = TCHAR_TO_UTF8(*UserId); 
+					FTCHARToUTF8 UserIdUtf8(*UserId);
+					GetExternalAccountMappingsOptions.TargetExternalUserId = UserIdUtf8.Get();
 
 					EOS_ProductUserId PUID = EOS_Connect_GetExternalAccountMapping(EOSRef->ConnectHandle, &GetExternalAccountMappingsOptions);
 

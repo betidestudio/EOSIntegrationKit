@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_PlayerDataStorage_QueryFile.h"
@@ -22,7 +22,8 @@ void UEIK_PlayerDataStorage_QueryFile::Activate()
 			EOS_PlayerDataStorage_QueryFileOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_QUERYFILE_API_LATEST;
 			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
-			Options.Filename = TCHAR_TO_ANSI(*Var_Filename);
+			auto FilenameAnsi = StringCast<ANSICHAR>(*Var_Filename);
+			Options.Filename = FilenameAnsi.Get();
 			EOS_PlayerDataStorage_QueryFile(EOSRef->PlayerDataStorageHandle, &Options, this, &UEIK_PlayerDataStorage_QueryFile::EOS_PlayerDataStorage_OnQueryFileComplete);
 			return;
 		}

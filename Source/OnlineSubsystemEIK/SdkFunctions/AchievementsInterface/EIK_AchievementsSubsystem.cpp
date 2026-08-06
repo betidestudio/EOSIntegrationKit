@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_AchievementsSubsystem.h"
@@ -153,7 +153,8 @@ TEnumAsByte<EEIK_Result> UEIK_AchievementsSubsystem::EIK_Achievements_CopyPlayer
 				UE_LOG(LogEIK, Error, TEXT("AchievementId is empty"));
 				return EEIK_Result::EOS_ServiceFailure;
 			}
-			Options.AchievementId = TCHAR_TO_ANSI(*AchievementId);
+			auto AchievementIdAnsi = StringCast<ANSICHAR>(*AchievementId);
+			Options.AchievementId = AchievementIdAnsi.Get();
 			EOS_Achievements_PlayerAchievement* OutPlayerAchievement1 = nullptr;
 			EOS_EResult Result = EOS_Achievements_CopyPlayerAchievementByAchievementId(EOSRef->AchievementsHandle, &Options, &OutPlayerAchievement1);
 			OutPlayerAchievement = *OutPlayerAchievement1;
@@ -177,7 +178,8 @@ TEnumAsByte<EEIK_Result> UEIK_AchievementsSubsystem::EIK_Achievements_CopyAchiev
 				UE_LOG(LogEIK, Error, TEXT("AchievementId is empty"));
 				return EEIK_Result::EOS_ServiceFailure;
 			}
-			Options.AchievementId = TCHAR_TO_ANSI(*AchievementId);
+			auto AchievementIdAnsi = StringCast<ANSICHAR>(*AchievementId);
+			Options.AchievementId = AchievementIdAnsi.Get();
 			EOS_Achievements_DefinitionV2* OutAchievementDefinition1 = nullptr;
 			EOS_EResult Result = EOS_Achievements_CopyAchievementDefinitionV2ByAchievementId(EOSRef->AchievementsHandle, &Options, &OutAchievementDefinition1);
 			OutAchievementDefinition = *OutAchievementDefinition1;

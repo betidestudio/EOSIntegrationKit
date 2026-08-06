@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_UserInfo_QueryUserInfoByDisplayName.h"
@@ -25,7 +25,8 @@ void UEIK_UserInfo_QueryUserInfoByDisplayName::Activate()
 			EOS_UserInfo_QueryUserInfoByDisplayNameOptions Options;
 			Options.ApiVersion = EOS_USERINFO_QUERYUSERINFOBYDISPLAYNAME_API_LATEST;
 			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
-			Options.DisplayName = TCHAR_TO_ANSI(*Var_DisplayName);
+			auto DisplayNameAnsi = StringCast<ANSICHAR>(*Var_DisplayName);
+			Options.DisplayName = DisplayNameAnsi.Get();
 			EOS_UserInfo_QueryUserInfoByDisplayName(EOSRef->UserInfoHandle, &Options, this, &UEIK_UserInfo_QueryUserInfoByDisplayName::OnQueryUserInfoByDisplayNameCallback);
 			return;
 		}

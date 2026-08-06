@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_CreateDeviceId_AsyncFunction.h"
@@ -35,7 +35,8 @@ void UEIK_CreateDeviceId_AsyncFunction::Activate()
 #endif
 				return;
 			}
-			CreateDeviceIdOptions.DeviceModel = TCHAR_TO_ANSI(*Var_DeviceModel);
+			auto DeviceModelAnsi = StringCast<ANSICHAR>(*Var_DeviceModel);
+			CreateDeviceIdOptions.DeviceModel = DeviceModelAnsi.Get();
 			EOS_Connect_CreateDeviceId(EOSRef->ConnectHandle, &CreateDeviceIdOptions, this, &UEIK_CreateDeviceId_AsyncFunction::OnCreateDeviceIdCallback);
 			return;
 		}

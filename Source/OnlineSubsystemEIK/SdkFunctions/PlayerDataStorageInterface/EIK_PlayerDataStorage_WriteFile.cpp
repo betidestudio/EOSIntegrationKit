@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_PlayerDataStorage_WriteFile.h"
@@ -60,7 +60,8 @@ void UEIK_PlayerDataStorage_WriteFile::Activate()
 			EOS_PlayerDataStorage_WriteFileOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_WRITEFILE_API_LATEST;
 			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
-			Options.Filename = TCHAR_TO_ANSI(*Var_Filename);
+			auto FilenameAnsi = StringCast<ANSICHAR>(*Var_Filename);
+			Options.Filename = FilenameAnsi.Get();
 			Options.WriteFileDataCallback = &UEIK_PlayerDataStorage_WriteFile::EOS_PlayerDataStorage_OnWriteFileData;
 			Options.FileTransferProgressCallback = &UEIK_PlayerDataStorage_WriteFile::EOS_PlayerDataStorage_OnFileTransferProgress;
 			EOS_PlayerDataStorage_WriteFile(EOSRef->PlayerDataStorageHandle, &Options, this, &UEIK_PlayerDataStorage_WriteFile::EOS_PlayerDataStorage_OnWriteFileComplete);

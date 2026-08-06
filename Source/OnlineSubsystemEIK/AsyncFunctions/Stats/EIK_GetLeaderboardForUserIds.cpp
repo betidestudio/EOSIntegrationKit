@@ -70,7 +70,8 @@ void UEIK_GetLeaderboardForUserIds::GetLeaderboardForUserIds()
                     break;
                 }
 
-                QueryStatInfo.StatName = TCHAR_TO_UTF8(*Var_StatName);
+                FTCHARToUTF8 StatNameUtf8(*Var_StatName);
+                QueryStatInfo.StatName = StatNameUtf8.Get();
 
                 QueryOptions.StatInfo = &QueryStatInfo;
 
@@ -146,7 +147,8 @@ void UEIK_GetLeaderboardForUserIds::ResultSuccess()
                 EOS_Leaderboards_GetLeaderboardUserScoreCountOptions GetLeaderboardRecordCountOptions = {};
 
                 GetLeaderboardRecordCountOptions.ApiVersion = EOS_LEADERBOARDS_GETLEADERBOARDUSERSCORECOUNT_API_LATEST;
-                GetLeaderboardRecordCountOptions.StatName = TCHAR_TO_UTF8(*Var_StatName);
+                FTCHARToUTF8 StatNameUtf8(*Var_StatName);
+                GetLeaderboardRecordCountOptions.StatName = StatNameUtf8.Get();
 
 
                 uint32_t LeaderboardRecordCount = EOS_Leaderboards_GetLeaderboardUserScoreCount(EOSRef->LeaderboardsHandle, &GetLeaderboardRecordCountOptions);
@@ -158,7 +160,8 @@ void UEIK_GetLeaderboardForUserIds::ResultSuccess()
 
                     CopyLeaderboardRecordByIndexOptions.ApiVersion = EOS_LEADERBOARDS_COPYLEADERBOARDUSERSCOREBYINDEX_API_LATEST;
                     CopyLeaderboardRecordByIndexOptions.LeaderboardUserScoreIndex = Index;
-                    CopyLeaderboardRecordByIndexOptions.StatName = TCHAR_TO_UTF8(*Var_StatName);
+                    FTCHARToUTF8 CopyStatNameUtf8(*Var_StatName);
+                    CopyLeaderboardRecordByIndexOptions.StatName = CopyStatNameUtf8.Get();
 
                     EOS_Leaderboards_LeaderboardUserScore* OutLeaderboardRecord = nullptr;
 

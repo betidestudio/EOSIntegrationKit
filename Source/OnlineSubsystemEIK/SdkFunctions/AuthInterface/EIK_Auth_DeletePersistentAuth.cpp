@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Auth_DeletePersistentAuth.h"
@@ -23,13 +23,14 @@ void UEIK_Auth_DeletePersistentAuth::Activate()
 		{
 			EOS_Auth_DeletePersistentAuthOptions Options = {};
 			Options.ApiVersion = EOS_AUTH_DELETEPERSISTENTAUTH_API_LATEST;
+			auto RefreshTokenAnsi = StringCast<ANSICHAR>(*Var_RefreshToken);
 			if(Var_RefreshToken.IsEmpty())
 			{
 				Options.RefreshToken = nullptr;
 			}
 			else
 			{
-				Options.RefreshToken = TCHAR_TO_ANSI(*Var_RefreshToken);
+				Options.RefreshToken = RefreshTokenAnsi.Get();
 			}
 			EOS_Auth_DeletePersistentAuth(EOSRef->AuthHandle, &Options, this, &UEIK_Auth_DeletePersistentAuth::OnDeletePersistentAuthCallback);
 			return;

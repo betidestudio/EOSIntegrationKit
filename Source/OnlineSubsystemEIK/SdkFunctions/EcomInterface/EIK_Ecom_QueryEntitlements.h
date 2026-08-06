@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -36,14 +36,24 @@ struct FEIK_Ecom_QueryEntitlementsOptions
 		Options.ApiVersion = EOS_ECOM_QUERYENTITLEMENTS_API_LATEST;
 		Options.LocalUserId = LocalUserId.GetValueAsEosType();
 		Options.EntitlementNameCount = EntitlementNames.Num();
-		Options.EntitlementNames = new const char*[EntitlementNames.Num()];
+		CachedEntitlementNamesAnsi.Reset();
+		CachedEntitlementNamePtrs.SetNum(EntitlementNames.Num());
 		for (int i = 0; i < EntitlementNames.Num(); i++)
 		{
-			Options.EntitlementNames[i] = TCHAR_TO_ANSI(*EntitlementNames[i]);
+			auto EntitlementNameAnsi = StringCast<ANSICHAR>(*EntitlementNames[i]);
+			CachedEntitlementNamesAnsi.AddDefaulted();
+			TArray<ANSICHAR>& EntitlementNameBuffer = CachedEntitlementNamesAnsi.Last();
+			EntitlementNameBuffer.SetNumUninitialized(EntitlementNameAnsi.Length() + 1);
+			FMemory::Memcpy(EntitlementNameBuffer.GetData(), EntitlementNameAnsi.Get(), EntitlementNameAnsi.Length() + 1);
+			CachedEntitlementNamePtrs[i] = EntitlementNameBuffer.GetData();
 		}
+		Options.EntitlementNames = CachedEntitlementNamePtrs.GetData();
 		Options.bIncludeRedeemed = bIncludeRedeemed;
 		return Options;
 	}
+
+	TArray<TArray<ANSICHAR>> CachedEntitlementNamesAnsi;
+	TArray<const char*> CachedEntitlementNamePtrs;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_Ecom_QueryEntitlementsCallback, const FEIK_EpicAccountId&, LocalUserId, const TEnumAsByte<EEIK_Result>&, Result);

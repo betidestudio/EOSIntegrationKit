@@ -70,7 +70,8 @@ TEnumAsByte<EEIK_Result> UEIK_UserInfoSubsystem::EIK_UserInfo_CopyExternalUserIn
 			Options.ApiVersion = EOS_USERINFO_COPYEXTERNALUSERINFOBYACCOUNTID_API_LATEST;
 			Options.LocalUserId = LocalUserId.GetValueAsEosType();
 			Options.TargetUserId = TargetUserId.GetValueAsEosType();
-			Options.AccountId = TCHAR_TO_ANSI(*AccountId);
+			auto AccountIdAnsi = StringCast<ANSICHAR>(*AccountId);
+			Options.AccountId = AccountIdAnsi.Get();
 			EOS_UserInfo_ExternalUserInfo* TempRef;
 			auto CopyExternalUserInfoByAccountIdResult = EOS_UserInfo_CopyExternalUserInfoByAccountId(EOSRef->UserInfoHandle, &Options, &TempRef);
 			if (CopyExternalUserInfoByAccountIdResult == EOS_EResult::EOS_Success)

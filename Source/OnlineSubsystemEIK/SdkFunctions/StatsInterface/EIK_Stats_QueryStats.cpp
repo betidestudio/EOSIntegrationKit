@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Stats_QueryStats.h"
@@ -49,13 +49,19 @@ void UEIK_Stats_QueryStats::Activate()
 			Options.StartTime = Var_StartTime;
 			Options.EndTime = Var_EndTime;
 			Options.StatNamesCount = Var_StatNames.Num();
-			char** TempStatNames = new char*[Var_StatNames.Num()];
+			TArray<TArray<ANSICHAR>> StatNameBuffers;
+			TArray<const char*> TempStatNames;
+			TempStatNames.SetNum(Var_StatNames.Num());
 			for (int i = 0; i < Var_StatNames.Num(); i++)
 			{
-				TempStatNames[i] = TCHAR_TO_ANSI(*Var_StatNames[i]);
+				auto StatNameAnsi = StringCast<ANSICHAR>(*Var_StatNames[i]);
+				StatNameBuffers.AddDefaulted();
+				TArray<ANSICHAR>& StatNameBuffer = StatNameBuffers.Last();
+				StatNameBuffer.SetNumUninitialized(StatNameAnsi.Length() + 1);
+				FMemory::Memcpy(StatNameBuffer.GetData(), StatNameAnsi.Get(), StatNameAnsi.Length() + 1);
+				TempStatNames[i] = StatNameBuffer.GetData();
 			}
-			const char** TempStatNamesConst = const_cast<const char**>(TempStatNames);
-			Options.StatNames = TempStatNamesConst;
+			Options.StatNames = TempStatNames.GetData();
 			EOS_Stats_QueryStats(EOSRef->StatsHandle, &Options, this, &UEIK_Stats_QueryStats::Internal_OnStatsQueryStatsComplete);
 			return;
 		}

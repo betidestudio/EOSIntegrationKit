@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_SessionsSubsystem.h"
@@ -136,7 +136,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionDetails_CopySessionA
 		{
 			EOS_SessionDetails_CopySessionAttributeByKeyOptions Options;
 			Options.ApiVersion = EOS_SESSIONDETAILS_COPYSESSIONATTRIBUTEBYKEY_API_LATEST;
-			Options.AttrKey = TCHAR_TO_ANSI(*AttrKey);
+			auto AttrKeyAnsi = StringCast<ANSICHAR>(*AttrKey);
+			Options.AttrKey = AttrKeyAnsi.Get();
 			EOS_SessionDetails_Attribute* Result = nullptr;
 			auto ReturnResult = EOS_SessionDetails_CopySessionAttributeByKey(Handle.Ref, &Options, &Result);
 			if (ReturnResult == EOS_EResult::EOS_Success)
@@ -219,7 +220,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionModification_RemoveA
 		{
 			EOS_SessionModification_RemoveAttributeOptions Options;
 			Options.ApiVersion = EOS_SESSIONMODIFICATION_REMOVEATTRIBUTE_API_LATEST;
-			Options.Key = TCHAR_TO_ANSI(*Key);
+			auto KeyAnsi = StringCast<ANSICHAR>(*Key);
+			Options.Key = KeyAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_SessionModification_RemoveAttribute(Handle.Ref, &Options));
 		}
 	}
@@ -269,7 +271,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionModification_SetBuck
 		{
 			EOS_SessionModification_SetBucketIdOptions Options;
 			Options.ApiVersion = EOS_SESSIONMODIFICATION_SETBUCKETID_API_LATEST;
-			Options.BucketId = TCHAR_TO_ANSI(*BucketId);
+			auto BucketIdAnsi = StringCast<ANSICHAR>(*BucketId);
+			Options.BucketId = BucketIdAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_SessionModification_SetBucketId(Handle.Ref, &Options));
 		}
 	}
@@ -291,7 +294,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionModification_SetHost
 		{
 			EOS_SessionModification_SetHostAddressOptions Options;
 			Options.ApiVersion = EOS_SESSIONMODIFICATION_SETHOSTADDRESS_API_LATEST;
-			Options.HostAddress = TCHAR_TO_ANSI(*HostAddress);
+			auto HostAddressAnsi = StringCast<ANSICHAR>(*HostAddress);
+			Options.HostAddress = HostAddressAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_SessionModification_SetHostAddress(Handle.Ref, &Options));
 		}
 	}
@@ -563,7 +567,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_CopyActiveSessionH
 			}
 			EOS_Sessions_CopyActiveSessionHandleOptions Options;
 			Options.ApiVersion = EOS_SESSIONS_COPYACTIVESESSIONHANDLE_API_LATEST;
-			Options.SessionName = TCHAR_TO_ANSI(*SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*SessionName);
+			Options.SessionName = SessionNameAnsi.Get();
 			EOS_HActiveSession LocalHandle = nullptr;
 			auto ReturnResult = EOS_Sessions_CopyActiveSessionHandle(EOSRef->SessionsHandle, &Options, &LocalHandle);
 			if (ReturnResult == EOS_EResult::EOS_Success)
@@ -591,7 +596,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_CopySessionHandleB
 			}
 			EOS_Sessions_CopySessionHandleByInviteIdOptions Options;
 			Options.ApiVersion = EOS_SESSIONS_COPYSESSIONHANDLEBYINVITEID_API_LATEST;
-			Options.InviteId = TCHAR_TO_ANSI(*InviteId);
+			auto InviteIdAnsi = StringCast<ANSICHAR>(*InviteId);
+			Options.InviteId = InviteIdAnsi.Get();
 			EOS_HSessionDetails LocalHandle = nullptr;
 			auto ReturnResult = EOS_Sessions_CopySessionHandleByInviteId(EOSRef->SessionsHandle, &Options, &LocalHandle);
 			if (ReturnResult == EOS_EResult::EOS_Success)
@@ -728,7 +734,8 @@ void UEIK_SessionsSubsystem::EIK_Sessions_DumpSessionState(FString SessionName)
 			}
 			EOS_Sessions_DumpSessionStateOptions Options;
 			Options.ApiVersion = EOS_SESSIONS_DUMPSESSIONSTATE_API_LATEST;
-			Options.SessionName = TCHAR_TO_ANSI(*SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*SessionName);
+			Options.SessionName = SessionNameAnsi.Get();
 			EOS_Sessions_DumpSessionState(EOSRef->SessionsHandle, &Options);
 			return;
 		}
@@ -796,7 +803,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_IsUserInSession(FE
 			EOS_Sessions_IsUserInSessionOptions Options;
 			Options.ApiVersion = EOS_SESSIONS_ISUSERINSESSION_API_LATEST;
 			Options.TargetUserId = TargetUserId.GetValueAsEosType();
-			Options.SessionName = TCHAR_TO_ANSI(*SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*SessionName);
+			Options.SessionName = SessionNameAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_Sessions_IsUserInSession(EOSRef->SessionsHandle, &Options));
 		}
 	}
@@ -884,7 +892,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_Sessions_UpdateSessionModif
 			}
 			EOS_Sessions_UpdateSessionModificationOptions Options;
 			Options.ApiVersion = EOS_SESSIONS_UPDATESESSIONMODIFICATION_API_LATEST;
-			Options.SessionName = TCHAR_TO_ANSI(*SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*SessionName);
+			Options.SessionName = SessionNameAnsi.Get();
 			EOS_HSessionModification LocalHandle = nullptr;
 			auto ReturnResult = EOS_Sessions_UpdateSessionModification(EOSRef->SessionsHandle, &Options, &LocalHandle);
 			if (ReturnResult == EOS_EResult::EOS_Success)
@@ -976,7 +985,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionSearch_RemoveParamet
 			EOS_SessionSearch_RemoveParameterOptions Options;
 			Options.ApiVersion = EOS_SESSIONSEARCH_REMOVEPARAMETER_API_LATEST;
 			Options.ComparisonOp = static_cast<EOS_EComparisonOp>(ComparisonOp.GetValue());
-			Options.Key = TCHAR_TO_ANSI(*Key);
+			auto KeyAnsi = StringCast<ANSICHAR>(*Key);
+			Options.Key = KeyAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_SessionSearch_RemoveParameter(*Handle.Ref, &Options));
 		}
 	}
@@ -1044,7 +1054,8 @@ TEnumAsByte<EEIK_Result> UEIK_SessionsSubsystem::EIK_SessionSearch_SetSessionId(
 			}
 			EOS_SessionSearch_SetSessionIdOptions Options;
 			Options.ApiVersion = EOS_SESSIONSEARCH_SETSESSIONID_API_LATEST;
-			Options.SessionId = TCHAR_TO_ANSI(*SessionId);
+			auto SessionIdAnsi = StringCast<ANSICHAR>(*SessionId);
+			Options.SessionId = SessionIdAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_SessionSearch_SetSessionId(*Handle.Ref, &Options));
 		}
 	}

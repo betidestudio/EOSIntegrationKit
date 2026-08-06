@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_LeaderboardsSubsystem.h"
@@ -37,7 +37,8 @@ TEnumAsByte<EEIK_Result> UEIK_LeaderboardsSubsystem::EIK_Leaderboards_CopyLeader
 		{
 			EOS_Leaderboards_CopyLeaderboardDefinitionByLeaderboardIdOptions Options = {};
 			Options.ApiVersion = EOS_LEADERBOARDS_COPYLEADERBOARDDEFINITIONBYLEADERBOARDID_API_LATEST;
-			Options.LeaderboardId = TCHAR_TO_ANSI(*LeaderboardId);
+			auto LeaderboardIdAnsi = StringCast<ANSICHAR>(*LeaderboardId);
+			Options.LeaderboardId = LeaderboardIdAnsi.Get();
 			EOS_Leaderboards_Definition* LeaderboardDefinition = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Leaderboards_CopyLeaderboardDefinitionByLeaderboardId(EOSRef->LeaderboardsHandle, &Options, &LeaderboardDefinition));
 			if (Result == EEIK_Result::EOS_Success)
@@ -107,7 +108,8 @@ TEnumAsByte<EEIK_Result> UEIK_LeaderboardsSubsystem::EIK_Leaderboards_CopyLeader
 			EOS_Leaderboards_CopyLeaderboardUserScoreByIndexOptions Options = {};
 			Options.ApiVersion = EOS_LEADERBOARDS_COPYLEADERBOARDUSERSCOREBYINDEX_API_LATEST;
 			Options.LeaderboardUserScoreIndex = LeaderboardUserScoreIndex;
-			Options.StatName = TCHAR_TO_ANSI(*StatName);
+			auto StatNameAnsi = StringCast<ANSICHAR>(*StatName);
+			Options.StatName = StatNameAnsi.Get();
 			EOS_Leaderboards_LeaderboardUserScore* LeaderboardUserScore = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Leaderboards_CopyLeaderboardUserScoreByIndex(EOSRef->LeaderboardsHandle, &Options, &LeaderboardUserScore));
 			if (Result == EEIK_Result::EOS_Success)
@@ -131,7 +133,8 @@ TEnumAsByte<EEIK_Result> UEIK_LeaderboardsSubsystem::EIK_Leaderboards_CopyLeader
 			EOS_Leaderboards_CopyLeaderboardUserScoreByUserIdOptions Options = {};
 			Options.ApiVersion = EOS_LEADERBOARDS_COPYLEADERBOARDUSERSCOREBYUSERID_API_LATEST;
 			Options.UserId = UserId.GetValueAsEosType();
-			Options.StatName = TCHAR_TO_ANSI(*StatName);
+			auto StatNameAnsi = StringCast<ANSICHAR>(*StatName);
+			Options.StatName = StatNameAnsi.Get();
 			EOS_Leaderboards_LeaderboardUserScore* LeaderboardUserScore = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Leaderboards_CopyLeaderboardUserScoreByUserId(EOSRef->LeaderboardsHandle, &Options, &LeaderboardUserScore));
 			if (Result == EEIK_Result::EOS_Success)

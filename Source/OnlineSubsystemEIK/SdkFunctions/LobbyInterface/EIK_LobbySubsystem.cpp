@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_LobbySubsystem.h"
@@ -300,7 +300,8 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_CopyLobbyDetailsHandleBy
 		{
 			EOS_Lobby_CopyLobbyDetailsHandleByInviteIdOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_COPYLOBBYDETAILSHANDLEBYINVITEID_API_LATEST;
-			Options.InviteId = TCHAR_TO_ANSI(*InviteId);
+			auto InviteIdAnsi = StringCast<ANSICHAR>(*InviteId);
+			Options.InviteId = InviteIdAnsi.Get();
 			EOS_HLobbyDetails Handle = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_CopyLobbyDetailsHandleByInviteId(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, &Handle));
 			OutLobbyDetailsHandle = Handle;
@@ -466,7 +467,8 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_Lobby_ParseLobbyIdFromConnectS
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_Lobby_ParseConnectStringOptions Options = {};
 			Options.ApiVersion = EOS_LOBBY_PARSECONNECTSTRING_API_LATEST;
-			Options.ConnectString = TCHAR_TO_ANSI(*ConnectString);
+			auto ConnectStringAnsi = StringCast<ANSICHAR>(*ConnectString);
+			Options.ConnectString = ConnectStringAnsi.Get();
 			char* OutBuffer = nullptr;
 			uint32_t* InOutBufferLength = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_Lobby_ParseConnectString(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, OutBuffer, InOutBufferLength));
@@ -529,7 +531,8 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyAttributeByKe
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyDetails_CopyAttributeByKeyOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_COPYATTRIBUTEBYKEY_API_LATEST;
-			Options.AttrKey = TCHAR_TO_ANSI(*AttrKey);
+			auto AttrKeyAnsi = StringCast<ANSICHAR>(*AttrKey);
+			Options.AttrKey = AttrKeyAnsi.Get();
 			EOS_Lobby_Attribute* Attribute = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyAttributeByKey(LobbyDetailsHandle.Ref, &Options, &Attribute));
 			if(Result != EEIK_Result::EOS_Success)
@@ -608,7 +611,8 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyDetails_CopyMemberAttribu
 			EOS_LobbyDetails_CopyMemberAttributeByKeyOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYDETAILS_COPYMEMBERATTRIBUTEBYKEY_API_LATEST;
 			Options.TargetUserId = TargetUserId.GetValueAsEosType();
-			Options.AttrKey = TCHAR_TO_ANSI(*AttrKey);
+			auto AttrKeyAnsi = StringCast<ANSICHAR>(*AttrKey);
+			Options.AttrKey = AttrKeyAnsi.Get();
 			EOS_Lobby_Attribute* Attribute = nullptr;
 			EEIK_Result Result = static_cast<EEIK_Result>(EOS_LobbyDetails_CopyMemberAttributeByKey(LobbyDetailsHandle.Ref, &Options, &Attribute));
 			if(Result != EEIK_Result::EOS_Success)
@@ -806,7 +810,8 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyModification_RemoveAttrib
 		{
 			EOS_LobbyModification_RemoveAttributeOptions LocalOptions = {};
 			LocalOptions.ApiVersion = EOS_LOBBYMODIFICATION_REMOVEATTRIBUTE_API_LATEST;
-			LocalOptions.Key = TCHAR_TO_ANSI(*Options);
+			auto KeyAnsi = StringCast<ANSICHAR>(*Options);
+			LocalOptions.Key = KeyAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_LobbyModification_RemoveAttribute(*LobbyModificationHandle.Ref, &LocalOptions));
 		}
 	}
@@ -823,7 +828,8 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyModification_RemoveMember
 		{
 			EOS_LobbyModification_RemoveMemberAttributeOptions LocalOptions = {};
 			LocalOptions.ApiVersion = EOS_LOBBYMODIFICATION_REMOVEMEMBERATTRIBUTE_API_LATEST;
-			LocalOptions.Key = TCHAR_TO_ANSI(*Options);
+			auto KeyAnsi = StringCast<ANSICHAR>(*Options);
+			LocalOptions.Key = KeyAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_LobbyModification_RemoveMemberAttribute(*LobbyModificationHandle.Ref, &LocalOptions));
 		}
 	}
@@ -867,7 +873,8 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbyModification_SetBucketId(
 		if (FOnlineSubsystemEOS* EOSRef = static_cast<FOnlineSubsystemEOS*>(OnlineSub)) {
 			EOS_LobbyModification_SetBucketIdOptions LocalOptions = {};
 			LocalOptions.ApiVersion = EOS_LOBBYMODIFICATION_SETBUCKETID_API_LATEST;
-			LocalOptions.BucketId = TCHAR_TO_ANSI(*Options);
+			auto BucketIdAnsi = StringCast<ANSICHAR>(*Options);
+			LocalOptions.BucketId = BucketIdAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_LobbyModification_SetBucketId(*LobbyModificationHandle.Ref, &LocalOptions));
 		}
 	}
@@ -980,7 +987,8 @@ TEnumAsByte<EEIK_Result> UEIK_LobbySubsystem::EIK_LobbySearch_RemoveParameter(FE
 			EOS_LobbySearch_RemoveParameterOptions Options = {};
 			Options.ApiVersion = EOS_LOBBYSEARCH_REMOVEPARAMETER_API_LATEST;
 			Options.ComparisonOp = static_cast<EOS_EComparisonOp>(ComparisonOp.GetValue());
-			Options.Key = TCHAR_TO_ANSI(*Key);
+			auto KeyAnsi = StringCast<ANSICHAR>(*Key);
+			Options.Key = KeyAnsi.Get();
 			return static_cast<EEIK_Result>(EOS_LobbySearch_RemoveParameter(LobbySearchHandle.Ref, &Options));
 		}
 	}

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Sanctions_CreatePlayerSanctionAppeal.h"
@@ -26,7 +26,8 @@ void UEIK_Sanctions_CreatePlayerSanctionAppeal::Activate()
 			Options.ApiVersion = EOS_SANCTIONS_CREATEPLAYERSANCTIONAPPEAL_API_LATEST;
 			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			Options.Reason = static_cast<EOS_ESanctionAppealReason>(Var_AppealReason.GetValue());
-			Options.ReferenceId = TCHAR_TO_ANSI(*Var_ReferenceId);
+			auto ReferenceIdAnsi = StringCast<ANSICHAR>(*Var_ReferenceId);
+			Options.ReferenceId = ReferenceIdAnsi.Get();
 			EOS_Sanctions_CreatePlayerSanctionAppeal(EOSRef->SanctionsHandle, &Options, this, &UEIK_Sanctions_CreatePlayerSanctionAppeal::Internal_OnCreatePlayerSanctionAppealComplete);
 			return;
 		}

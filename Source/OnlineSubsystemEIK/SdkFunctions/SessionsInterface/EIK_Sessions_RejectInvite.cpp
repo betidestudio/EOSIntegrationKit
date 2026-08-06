@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Sessions_RejectInvite.h"
@@ -23,7 +23,8 @@ void UEIK_Sessions_RejectInvite::Activate()
 		{
 			EOS_Sessions_RejectInviteOptions RejectInviteOptions = { };
 			RejectInviteOptions.ApiVersion = EOS_SESSIONS_REJECTINVITE_API_LATEST;
-			RejectInviteOptions.InviteId = TCHAR_TO_ANSI(*Var_InviteId);
+			auto InviteIdAnsi = StringCast<ANSICHAR>(*Var_InviteId);
+			RejectInviteOptions.InviteId = InviteIdAnsi.Get();
 			RejectInviteOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			EOS_Sessions_RejectInvite(EOSRef->SessionsHandle, &RejectInviteOptions, this, &UEIK_Sessions_RejectInvite::OnRejectInviteCallback);
 			return;

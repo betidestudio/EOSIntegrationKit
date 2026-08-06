@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Sessions_StartSession.h"
@@ -21,7 +21,8 @@ void UEIK_Sessions_StartSession::Activate()
 		{
 			EOS_Sessions_StartSessionOptions StartSessionOptions = { };
 			StartSessionOptions.ApiVersion = EOS_SESSIONS_STARTSESSION_API_LATEST;
-			StartSessionOptions.SessionName = TCHAR_TO_ANSI(*Var_SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*Var_SessionName);
+			StartSessionOptions.SessionName = SessionNameAnsi.Get();
 			EOS_Sessions_StartSession(EOSRef->SessionsHandle, &StartSessionOptions, this, &UEIK_Sessions_StartSession::OnStartSessionCallback);
 			return;
 		}

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Sessions_DestroySession.h"
@@ -21,7 +21,8 @@ void UEIK_Sessions_DestroySession::Activate()
 		{
 			EOS_Sessions_DestroySessionOptions DestroySessionOptions = { };
 			DestroySessionOptions.ApiVersion = EOS_SESSIONS_DESTROYSESSION_API_LATEST;
-			DestroySessionOptions.SessionName = TCHAR_TO_ANSI(*Var_SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*Var_SessionName);
+			DestroySessionOptions.SessionName = SessionNameAnsi.Get();
 			EOS_Sessions_DestroySession(EOSRef->SessionsHandle, &DestroySessionOptions, this, &UEIK_Sessions_DestroySession::OnDestroySessionCallback);
 			return;
 		}

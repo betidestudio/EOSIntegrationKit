@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Lobby_RejectInvite.h"
@@ -39,7 +39,8 @@ void UEIK_Lobby_RejectInvite::Activate()
 			EOS_Lobby_RejectInviteOptions Options = { };
 			Options.ApiVersion = EOS_LOBBY_REJECTINVITE_API_LATEST;
 			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
-			Options.InviteId = TCHAR_TO_ANSI(*Var_InviteId);
+			auto InviteIdAnsi = StringCast<ANSICHAR>(*Var_InviteId);
+			Options.InviteId = InviteIdAnsi.Get();
 			EOS_Lobby_RejectInvite(EOSRef->SessionInterfacePtr->LobbyHandle, &Options, this, &UEIK_Lobby_RejectInvite::OnRejectInviteComplete);
 			return;
 		}

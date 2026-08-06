@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_UserInfo_QueryUserInfoByExternalAccount.h"
@@ -29,7 +29,8 @@ void UEIK_UserInfo_QueryUserInfoByExternalAccount::Activate()
 			Options.ApiVersion = EOS_USERINFO_QUERYUSERINFOBYEXTERNALACCOUNT_API_LATEST;
 			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			Options.AccountType = static_cast<EOS_EExternalAccountType>(Var_AccountType.GetValue());
-			Options.ExternalAccountId = TCHAR_TO_ANSI(*Var_ExternalAccountId);
+			auto ExternalAccountIdAnsi = StringCast<ANSICHAR>(*Var_ExternalAccountId);
+			Options.ExternalAccountId = ExternalAccountIdAnsi.Get();
 			EOS_UserInfo_QueryUserInfoByExternalAccount(EOSRef->UserInfoHandle, &Options, this,&UEIK_UserInfo_QueryUserInfoByExternalAccount::OnQueryUserInfoByExternalAccountCallback);
 			return;
 		}

@@ -31,7 +31,8 @@ void UEIK_FindUserByDisplayName_Async::FindUserByDisplayName()
                     {
                         EOS_UserInfo_QueryUserInfoByDisplayNameOptions QueryOptions;
                         QueryOptions.ApiVersion = EOS_USERINFO_QUERYUSERINFOBYDISPLAYNAME_API_LATEST;
-                        QueryOptions.DisplayName = TCHAR_TO_UTF8(*TargetDisplayName);
+                        FTCHARToUTF8 TargetDisplayNameUtf8(*TargetDisplayName);
+                        QueryOptions.DisplayName = TargetDisplayNameUtf8.Get();
                         QueryOptions.LocalUserId = EOS_EpicAccountId_FromString(TCHAR_TO_UTF8(*LocalEpicID));
 
                         EOS_UserInfo_QueryUserInfoByDisplayName(EOSRef->UserInfoHandle, &QueryOptions, this, FindUserByDisplayNameCallback);

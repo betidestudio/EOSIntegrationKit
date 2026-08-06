@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_PlayerDataStorage_DeleteFile.h"
@@ -24,7 +24,8 @@ void UEIK_PlayerDataStorage_DeleteFile::Activate()
 			EOS_PlayerDataStorage_DeleteFileOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_DELETEFILE_API_LATEST;
 			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
-			Options.Filename = TCHAR_TO_ANSI(*Var_Filename);
+			auto FilenameAnsi = StringCast<ANSICHAR>(*Var_Filename);
+			Options.Filename = FilenameAnsi.Get();
 			EOS_PlayerDataStorage_DeleteFile(EOSRef->PlayerDataStorageHandle, &Options, this, &UEIK_PlayerDataStorage_DeleteFile::EOS_PlayerDataStorage_OnDeleteFileComplete);
 			return;
 		}

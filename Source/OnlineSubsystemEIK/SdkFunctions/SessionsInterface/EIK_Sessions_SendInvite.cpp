@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Sessions_SendInvite.h"
@@ -24,7 +24,8 @@ void UEIK_Sessions_SendInvite::Activate()
 		{
 			EOS_Sessions_SendInviteOptions SendInviteOptions = { };
 			SendInviteOptions.ApiVersion = EOS_SESSIONS_SENDINVITE_API_LATEST;
-			SendInviteOptions.SessionName = TCHAR_TO_ANSI(*Var_SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*Var_SessionName);
+			SendInviteOptions.SessionName = SessionNameAnsi.Get();
 			SendInviteOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			SendInviteOptions.TargetUserId = Var_TargetUserId.GetValueAsEosType();
 			EOS_Sessions_SendInvite(EOSRef->SessionsHandle, &SendInviteOptions, this, &UEIK_Sessions_SendInvite::OnSendInviteCallback);

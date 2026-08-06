@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Ecom_QueryOffers.h"
@@ -42,13 +42,14 @@ void UEIK_Ecom_QueryOffers::Activate()
 			EOS_Ecom_QueryOffersOptions QueryOffersOptions;
 			QueryOffersOptions.ApiVersion = EOS_ECOM_QUERYOFFERS_API_LATEST;
 			QueryOffersOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
+			auto OverrideCatalogNamespaceAnsi = StringCast<ANSICHAR>(*Var_OverrideCatalogNamespace);
 			if(Var_OverrideCatalogNamespace.IsEmpty())
 			{
 				QueryOffersOptions.OverrideCatalogNamespace = nullptr;
 			}
 			else
 			{
-				QueryOffersOptions.OverrideCatalogNamespace = TCHAR_TO_ANSI(*Var_OverrideCatalogNamespace);
+				QueryOffersOptions.OverrideCatalogNamespace = OverrideCatalogNamespaceAnsi.Get();
 			}			
 			EOS_Ecom_QueryOffers(EOSRef->EcomHandle, &QueryOffersOptions, this, &UEIK_Ecom_QueryOffers::OnQueryOffersCallback);
 			return;

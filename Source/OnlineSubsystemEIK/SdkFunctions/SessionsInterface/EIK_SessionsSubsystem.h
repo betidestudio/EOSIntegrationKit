@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -70,12 +70,21 @@ struct FEIK_Sessions_CreateSessionModificationOptions
 	{
 		EOS_Sessions_CreateSessionModificationOptions EosStruct;
 		EosStruct.ApiVersion = EOS_SESSIONS_CREATESESSIONMODIFICATION_API_LATEST;
-		EosStruct.SessionName = TCHAR_TO_ANSI(*SessionName);
-		EosStruct.BucketId = TCHAR_TO_ANSI(*BucketId);
+		auto SessionNameAnsi = StringCast<ANSICHAR>(*SessionName);
+		CachedSessionNameAnsi.SetNumUninitialized(SessionNameAnsi.Length() + 1);
+		FMemory::Memcpy(CachedSessionNameAnsi.GetData(), SessionNameAnsi.Get(), SessionNameAnsi.Length() + 1);
+		EosStruct.SessionName = CachedSessionNameAnsi.GetData();
+		auto BucketIdAnsi = StringCast<ANSICHAR>(*BucketId);
+		CachedBucketIdAnsi.SetNumUninitialized(BucketIdAnsi.Length() + 1);
+		FMemory::Memcpy(CachedBucketIdAnsi.GetData(), BucketIdAnsi.Get(), BucketIdAnsi.Length() + 1);
+		EosStruct.BucketId = CachedBucketIdAnsi.GetData();
 		EosStruct.MaxPlayers = MaxPlayers;
 		EosStruct.LocalUserId = LocalUserId.GetValueAsEosType();
 		EosStruct.bPresenceEnabled = bPresenceEnabled;
-		EosStruct.SessionId = TCHAR_TO_ANSI(*SessionId);
+		auto SessionIdAnsi = StringCast<ANSICHAR>(*SessionId);
+		CachedSessionIdAnsi.SetNumUninitialized(SessionIdAnsi.Length() + 1);
+		FMemory::Memcpy(CachedSessionIdAnsi.GetData(), SessionIdAnsi.Get(), SessionIdAnsi.Length() + 1);
+		EosStruct.SessionId = CachedSessionIdAnsi.GetData();
 		EosStruct.bSanctionsEnabled = bSanctionsEnabled;
 		EosStruct.AllowedPlatformIdsCount = AllowedPlatformIds.Num();
 		uint32_t* AllowedPlatformIdsArray = new uint32_t[AllowedPlatformIds.Num()];
@@ -86,6 +95,10 @@ struct FEIK_Sessions_CreateSessionModificationOptions
 		EosStruct.AllowedPlatformIds = AllowedPlatformIdsArray;
 		return EosStruct;
 	}
+
+	TArray<ANSICHAR> CachedSessionNameAnsi;
+	TArray<ANSICHAR> CachedBucketIdAnsi;
+	TArray<ANSICHAR> CachedSessionIdAnsi;
 };
 UCLASS()
 class ONLINESUBSYSTEMEIK_API UEIK_SessionsSubsystem : public UGameInstanceSubsystem

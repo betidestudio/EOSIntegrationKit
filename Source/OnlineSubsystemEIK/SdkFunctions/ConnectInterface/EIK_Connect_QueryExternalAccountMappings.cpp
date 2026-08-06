@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Connect_QueryExternalAccountMappings.h"
@@ -47,12 +47,19 @@ void UEIK_Connect_QueryExternalAccountMappings::Activate()
 			QueryExternalAccountMappingsOptions.LocalUserId = Var_ProductUserId.GetValueAsEosType();
 			QueryExternalAccountMappingsOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(Var_AccountType.GetValue());
 			QueryExternalAccountMappingsOptions.ExternalAccountIdCount = Var_ExternalAccountIds.Num();
-			const char** ExternalAccountIds = new const char*[Var_ExternalAccountIds.Num()];
+			TArray<TArray<ANSICHAR>> ExternalAccountIdBuffers;
+			TArray<const char*> ExternalAccountIds;
+			ExternalAccountIds.SetNum(Var_ExternalAccountIds.Num());
 			for (int i = 0; i < Var_ExternalAccountIds.Num(); i++)
 			{
-				ExternalAccountIds[i] = TCHAR_TO_ANSI(*Var_ExternalAccountIds[i]);
+				auto ExternalAccountIdAnsi = StringCast<ANSICHAR>(*Var_ExternalAccountIds[i]);
+				ExternalAccountIdBuffers.AddDefaulted();
+				TArray<ANSICHAR>& ExternalAccountIdBuffer = ExternalAccountIdBuffers.Last();
+				ExternalAccountIdBuffer.SetNumUninitialized(ExternalAccountIdAnsi.Length() + 1);
+				FMemory::Memcpy(ExternalAccountIdBuffer.GetData(), ExternalAccountIdAnsi.Get(), ExternalAccountIdAnsi.Length() + 1);
+				ExternalAccountIds[i] = ExternalAccountIdBuffer.GetData();
 			}
-			QueryExternalAccountMappingsOptions.ExternalAccountIds = ExternalAccountIds;
+			QueryExternalAccountMappingsOptions.ExternalAccountIds = ExternalAccountIds.GetData();
 			EOS_Connect_QueryExternalAccountMappings(EOSRef->ConnectHandle, &QueryExternalAccountMappingsOptions, this, &UEIK_Connect_QueryExternalAccountMappings::OnQueryExternalAccountMappingsCallback);
 			return;
 		}

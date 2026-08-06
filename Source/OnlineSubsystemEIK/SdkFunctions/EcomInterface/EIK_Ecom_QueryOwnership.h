@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -36,14 +36,21 @@ struct FEIK_Ecom_QueryOwnershipOptions
 		Options.ApiVersion = EOS_ECOM_QUERYOWNERSHIP_API_LATEST;
 		Options.LocalUserId = LocalUserId.GetValueAsEosType();
 		Options.CatalogItemIdCount = CatalogItemIds.Num();
-		Options.CatalogItemIds = new const char*[CatalogItemIds.Num()];
+		CachedCatalogItemIdPtrs.SetNum(CatalogItemIds.Num());
 		for (int i = 0; i < CatalogItemIds.Num(); i++)
 		{
-			Options.CatalogItemIds[i] = CatalogItemIds[i].Ref;
+			CachedCatalogItemIdPtrs[i] = CatalogItemIds[i].Ref;
 		}
-		Options.CatalogNamespace = TCHAR_TO_ANSI(*CatalogNamespace);
+		Options.CatalogItemIds = CachedCatalogItemIdPtrs.GetData();
+		auto CatalogNamespaceAnsi = StringCast<ANSICHAR>(*CatalogNamespace);
+		CachedCatalogNamespaceAnsi.SetNumUninitialized(CatalogNamespaceAnsi.Length() + 1);
+		FMemory::Memcpy(CachedCatalogNamespaceAnsi.GetData(), CatalogNamespaceAnsi.Get(), CatalogNamespaceAnsi.Length() + 1);
+		Options.CatalogNamespace = CachedCatalogNamespaceAnsi.GetData();
 		return Options;
 	}
+
+	TArray<const char*> CachedCatalogItemIdPtrs;
+	TArray<ANSICHAR> CachedCatalogNamespaceAnsi;
 };
 
 

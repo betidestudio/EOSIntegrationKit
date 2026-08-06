@@ -49,7 +49,8 @@ bool UAntiCheatServer::RegisterAntiCheatServer(FString ServerName, FString Clien
 				EOS_AntiCheatServer_BeginSessionOptions Options = {};
 				Options.ApiVersion = EOS_ANTICHEATSERVER_BEGINSESSION_API_LATEST;
 				Options.RegisterTimeoutSeconds = EOS_ANTICHEATSERVER_BEGINSESSION_MAX_REGISTERTIMEOUT;
-				Options.ServerName = TCHAR_TO_UTF8(*ServerName);
+				FTCHARToUTF8 ServerNameUtf8(*ServerName);
+				Options.ServerName = ServerNameUtf8.Get();
 				Options.bEnableGameplayData = EOS_FALSE;
 #if UE_SERVER
 				Options.LocalUserId = nullptr;

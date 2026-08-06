@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Sessions_EndSession.h"
@@ -21,7 +21,8 @@ void UEIK_Sessions_EndSession::Activate()
 		{
 			EOS_Sessions_EndSessionOptions EndSessionOptions = { };
 			EndSessionOptions.ApiVersion = EOS_SESSIONS_ENDSESSION_API_LATEST;
-			EndSessionOptions.SessionName = TCHAR_TO_ANSI(*Var_SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*Var_SessionName);
+			EndSessionOptions.SessionName = SessionNameAnsi.Get();
 			EOS_Sessions_EndSession(EOSRef->SessionsHandle, &EndSessionOptions, this, &UEIK_Sessions_EndSession::OnEndSessionCallback);
 			return;
 		}

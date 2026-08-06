@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -33,10 +33,15 @@ struct FEIK_Stats_IngestData
 	{
 		EOS_Stats_IngestData Data;
 		Data.ApiVersion = EOS_STATS_INGESTDATA_API_LATEST;
-		Data.StatName = TCHAR_TO_ANSI(*Name);
+		auto NameAnsi = StringCast<ANSICHAR>(*Name);
+		CachedNameAnsi.SetNumUninitialized(NameAnsi.Length() + 1);
+		FMemory::Memcpy(CachedNameAnsi.GetData(), NameAnsi.Get(), NameAnsi.Length() + 1);
+		Data.StatName = CachedNameAnsi.GetData();
 		Data.IngestAmount = IngestAmount;
 		return Data;
 	}
+
+	TArray<ANSICHAR> CachedNameAnsi;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FEIK_OnStatsIngestStatComplete, const FEIK_ProductUserId&, LocalUserId, const TEnumAsByte<EEIK_Result>&, ResultCode, const FEIK_ProductUserId&, TargetUserId);

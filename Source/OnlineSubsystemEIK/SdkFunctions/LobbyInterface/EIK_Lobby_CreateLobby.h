@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -90,7 +90,10 @@ struct FEIK_Lobby_CreateLobbyOptions
 		Options.PermissionLevel = static_cast<EOS_ELobbyPermissionLevel>(PermissionLevel.GetValue());
 		Options.bPresenceEnabled = bPresenceEnabled;
 		Options.bAllowInvites = bAllowInvites;
-		Options.BucketId = TCHAR_TO_ANSI(*BucketId);
+		auto BucketIdAnsi = StringCast<ANSICHAR>(*BucketId);
+		CachedBucketIdAnsi.SetNumUninitialized(BucketIdAnsi.Length() + 1);
+		FMemory::Memcpy(CachedBucketIdAnsi.GetData(), BucketIdAnsi.Get(), BucketIdAnsi.Length() + 1);
+		Options.BucketId = CachedBucketIdAnsi.GetData();
 		Options.bDisableHostMigration = bDisableHostMigration;
 		Options.bEnableRTCRoom = bEnableRTCRoom;
 		EOS_Lobby_LocalRTCOptions TempValue = LocalRTCOptions.GetValueAsEosType();
@@ -108,6 +111,8 @@ struct FEIK_Lobby_CreateLobbyOptions
 		Options.bCrossplayOptOut = bCrossplayOptOut;
 		return Options;
 	}
+
+	TArray<ANSICHAR> CachedBucketIdAnsi;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_Lobby_CreateLobbyComplete, const TEnumAsByte<EEIK_Result>&, Result, const FEIK_LobbyId&, LobbyId);

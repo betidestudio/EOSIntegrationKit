@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Sessions_JoinSession.h"
@@ -25,7 +25,8 @@ void UEIK_Sessions_JoinSession::Activate()
 		{
 			EOS_Sessions_JoinSessionOptions JoinSessionOptions = { };
 			JoinSessionOptions.ApiVersion = EOS_SESSIONS_JOINSESSION_API_LATEST;
-			JoinSessionOptions.SessionName = TCHAR_TO_ANSI(*Var_SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*Var_SessionName);
+			JoinSessionOptions.SessionName = SessionNameAnsi.Get();
 			JoinSessionOptions.LocalUserId = Var_LocalUserId.GetValueAsEosType();
 			JoinSessionOptions.SessionHandle = Var_SessionHandle.Ref;
 			JoinSessionOptions.bPresenceEnabled = Var_bPresenceEnabled;

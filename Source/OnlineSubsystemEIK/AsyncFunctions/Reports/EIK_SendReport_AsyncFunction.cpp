@@ -71,7 +71,8 @@ void UEIK_SendReport_AsyncFunction::SendReportFunc()
 
 				//Set message and context
 				ReportOptions.Context = "{}"; /*Not used but have to include*/
-				ReportOptions.Message = TCHAR_TO_UTF8(*Message);
+				FTCHARToUTF8 MessageUtf8(*Message);
+				ReportOptions.Message = MessageUtf8.Get();
 
 				// Call EOS SDK to send the report
 				EOS_Reports_SendPlayerBehaviorReport(EOSRef->ReportsHandle, &ReportOptions, this, SendReportFuncCallback);

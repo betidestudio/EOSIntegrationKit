@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Sessions_UnregisterPlayers.h"
@@ -23,7 +23,8 @@ void UEIK_Sessions_UnregisterPlayers::Activate()
 		{
 			EOS_Sessions_UnregisterPlayersOptions UnregisterPlayersOptions = { };
 			UnregisterPlayersOptions.ApiVersion = EOS_SESSIONS_UNREGISTERPLAYERS_API_LATEST;
-			UnregisterPlayersOptions.SessionName = TCHAR_TO_ANSI(*Var_SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*Var_SessionName);
+			UnregisterPlayersOptions.SessionName = SessionNameAnsi.Get();
 			UnregisterPlayersOptions.PlayersToUnregisterCount = Var_PlayersToUnregister.Num();
 			UnregisterPlayersOptions.PlayersToUnregister = new EOS_ProductUserId[Var_PlayersToUnregister.Num()];
 			for (int i = 0; i < Var_PlayersToUnregister.Num(); i++)

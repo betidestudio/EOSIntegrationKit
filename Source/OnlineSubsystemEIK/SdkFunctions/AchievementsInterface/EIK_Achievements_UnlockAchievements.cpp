@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Achievements_UnlockAchievements.h"
@@ -26,11 +26,19 @@ void UEIK_Achievements_UnlockAchievements::Activate()
 			Options.ApiVersion = EOS_ACHIEVEMENTS_UNLOCKACHIEVEMENTS_API_LATEST;
 			Options.UserId = Var_UserId.GetValueAsEosType();
 			Options.AchievementsCount = Var_AchievementIds.Num();
-			Options.AchievementIds = new const char*[Var_AchievementIds.Num()];
+			TArray<TArray<ANSICHAR>> AchievementIdBuffers;
+			TArray<const char*> AchievementIds;
+			AchievementIds.SetNum(Var_AchievementIds.Num());
 			for (int i = 0; i < Var_AchievementIds.Num(); i++)
 			{
-				Options.AchievementIds[i] = TCHAR_TO_ANSI(*Var_AchievementIds[i]);
+				auto AchievementIdAnsi = StringCast<ANSICHAR>(*Var_AchievementIds[i]);
+				AchievementIdBuffers.AddDefaulted();
+				TArray<ANSICHAR>& AchievementIdBuffer = AchievementIdBuffers.Last();
+				AchievementIdBuffer.SetNumUninitialized(AchievementIdAnsi.Length() + 1);
+				FMemory::Memcpy(AchievementIdBuffer.GetData(), AchievementIdAnsi.Get(), AchievementIdAnsi.Length() + 1);
+				AchievementIds[i] = AchievementIdBuffer.GetData();
 			}
+			Options.AchievementIds = AchievementIds.GetData();
 			EOS_Achievements_UnlockAchievements(EOSRef->AchievementsHandle, &Options, this, [](const EOS_Achievements_OnUnlockAchievementsCompleteCallbackInfo* Data)
 			{
 				if (UEIK_Achievements_UnlockAchievements* UnlockAchievements = static_cast<UEIK_Achievements_UnlockAchievements*>(Data->ClientData))

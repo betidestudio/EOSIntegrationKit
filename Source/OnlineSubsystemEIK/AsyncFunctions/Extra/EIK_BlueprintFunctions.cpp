@@ -1,4 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EIK_BlueprintFunctions.h"
 
@@ -444,7 +444,8 @@ bool UEIK_BlueprintFunctions::RejectSessionInvite(FString InviteId, FString Loca
 			EOS_Lobby_RejectInviteOptions RejectOptions;
 			RejectOptions.ApiVersion = EOS_LOBBY_REJECTINVITE_API_LATEST;
 			RejectOptions.LocalUserId = LocalProductUserId;
-			RejectOptions.InviteId = TCHAR_TO_ANSI(*InviteId);
+			auto InviteIdAnsi = StringCast<ANSICHAR>(*InviteId);
+			RejectOptions.InviteId = InviteIdAnsi.Get();
 			EOS_Lobby_RejectInvite(EOSRef->SessionInterfacePtr->LobbyHandle, &RejectOptions, nullptr, nullptr);
 			return true;
 		}

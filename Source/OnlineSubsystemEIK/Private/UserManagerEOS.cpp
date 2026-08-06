@@ -587,12 +587,14 @@ void FUserManagerEOS::OpenIDLogin(const FOnlineAccountCredentials& AccountCreden
 #endif
 	EOS_Connect_Credentials UserCredentials;
 	UserCredentials.Type = EOS_EExternalCredentialType::EOS_ECT_OPENID_ACCESS_TOKEN;
-	UserCredentials.Token = TCHAR_TO_UTF8(*AccountCredentials.Token);
+	FTCHARToUTF8 AccountTokenUtf8(*AccountCredentials.Token);
+	UserCredentials.Token = AccountTokenUtf8.Get();
 	UserCredentials.ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST;
 	
 	EOS_Connect_UserLoginInfo LoginInfo;
 	LoginInfo.ApiVersion = EOS_CONNECT_USERLOGININFO_API_LATEST;
-	LoginInfo.DisplayName = TCHAR_TO_UTF8(*AccountCredentials.Id);
+	FTCHARToUTF8 AccountIdUtf8(*AccountCredentials.Id);
+	LoginInfo.DisplayName = AccountIdUtf8.Get();
 
 	EOS_Connect_LoginOptions LoginOptions;
 	LoginOptions.ApiVersion = EOS_CONNECT_LOGIN_API_LATEST;

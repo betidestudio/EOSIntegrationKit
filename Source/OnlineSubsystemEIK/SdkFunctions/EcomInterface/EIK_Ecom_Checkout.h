@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -45,7 +45,10 @@ struct FEIK_Ecom_CheckoutOptions
 		EOS_Ecom_CheckoutOptions Options;
 		Options.ApiVersion = EOS_ECOM_CHECKOUT_API_LATEST;
 		Options.LocalUserId = LocalUserId.GetValueAsEosType();
-		Options.OverrideCatalogNamespace = TCHAR_TO_ANSI(*OverrideCatalogNamespace);
+		auto OverrideCatalogNamespaceAnsi = StringCast<ANSICHAR>(*OverrideCatalogNamespace);
+		CachedOverrideCatalogNamespaceAnsi.SetNumUninitialized(OverrideCatalogNamespaceAnsi.Length() + 1);
+		FMemory::Memcpy(CachedOverrideCatalogNamespaceAnsi.GetData(), OverrideCatalogNamespaceAnsi.Get(), OverrideCatalogNamespaceAnsi.Length() + 1);
+		Options.OverrideCatalogNamespace = CachedOverrideCatalogNamespaceAnsi.GetData();
 		Options.EntryCount = EntryCount;
 		EOS_Ecom_CheckoutEntry* EntriesArray = new EOS_Ecom_CheckoutEntry[EntryCount];
 		for (int i = 0; i < EntryCount; i++)
@@ -55,6 +58,8 @@ struct FEIK_Ecom_CheckoutOptions
 		Options.Entries = EntriesArray;
 		return Options;
 	}
+
+	TArray<ANSICHAR> CachedOverrideCatalogNamespaceAnsi;
 };
 
 USTRUCT(BlueprintType)

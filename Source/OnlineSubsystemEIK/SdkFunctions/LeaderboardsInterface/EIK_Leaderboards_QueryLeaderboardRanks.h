@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 #pragma once
 
@@ -36,10 +36,15 @@ struct FEIK_Leaderboards_QueryLeaderboardRanksOptions
 	{
 		EOS_Leaderboards_QueryLeaderboardRanksOptions Result;
 		Result.ApiVersion = EOS_LEADERBOARDS_QUERYLEADERBOARDRANKS_API_LATEST;
-		Result.LeaderboardId = TCHAR_TO_ANSI(*LeaderboardId);
+		auto LeaderboardIdAnsi = StringCast<ANSICHAR>(*LeaderboardId);
+		CachedLeaderboardIdAnsi.SetNumUninitialized(LeaderboardIdAnsi.Length() + 1);
+		FMemory::Memcpy(CachedLeaderboardIdAnsi.GetData(), LeaderboardIdAnsi.Get(), LeaderboardIdAnsi.Length() + 1);
+		Result.LeaderboardId = CachedLeaderboardIdAnsi.GetData();
 		Result.LocalUserId = LocalUserId.GetValueAsEosType();
 		return Result;
 	}
+
+	TArray<ANSICHAR> CachedLeaderboardIdAnsi;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEIK_Leaderboards_OnQueryLeaderboardRanksCompleteCallback, const TEnumAsByte<EEIK_Result>&, Result, const FString&, LeaderboardId);

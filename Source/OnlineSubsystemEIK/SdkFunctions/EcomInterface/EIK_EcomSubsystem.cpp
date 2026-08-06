@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_EcomSubsystem.h"
@@ -31,7 +31,8 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementById(FEIK_E
 			EOS_Ecom_CopyEntitlementByIdOptions CopyEntitlementByIdOptions = { };
 			CopyEntitlementByIdOptions.ApiVersion = EOS_ECOM_COPYENTITLEMENTBYID_API_LATEST;
 			CopyEntitlementByIdOptions.LocalUserId = LocalUserId.GetValueAsEosType();
-			CopyEntitlementByIdOptions.EntitlementId = TCHAR_TO_ANSI(*EntitlementId);
+			auto EntitlementIdAnsi = StringCast<ANSICHAR>(*EntitlementId);
+			CopyEntitlementByIdOptions.EntitlementId = EntitlementIdAnsi.Get();
 			EOS_Ecom_Entitlement* LocalRef;
 			auto Result = EOS_Ecom_CopyEntitlementById(EOSRef->EcomHandle, &CopyEntitlementByIdOptions, &LocalRef);
 			OutEntitlement = FEIK_Ecom_Entitlement(*LocalRef);
@@ -75,7 +76,8 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyEntitlementByNameAndIn
 			EOS_Ecom_CopyEntitlementByNameAndIndexOptions CopyEntitlementByNameAndIndexOptions = { };
 			CopyEntitlementByNameAndIndexOptions.ApiVersion = EOS_ECOM_COPYENTITLEMENTBYNAMEANDINDEX_API_LATEST;
 			CopyEntitlementByNameAndIndexOptions.LocalUserId = LocalUserId.GetValueAsEosType();
-			CopyEntitlementByNameAndIndexOptions.EntitlementName = TCHAR_TO_ANSI(*EntitlementName);
+			auto EntitlementNameAnsi = StringCast<ANSICHAR>(*EntitlementName);
+			CopyEntitlementByNameAndIndexOptions.EntitlementName = EntitlementNameAnsi.Get();
 			CopyEntitlementByNameAndIndexOptions.Index = Index;
 			EOS_Ecom_Entitlement* LocalRef;
 			auto Result = EOS_Ecom_CopyEntitlementByNameAndIndex(EOSRef->EcomHandle, &CopyEntitlementByNameAndIndexOptions, &LocalRef);
@@ -97,7 +99,8 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyItemById(FEIK_EpicAcco
 			EOS_Ecom_CopyItemByIdOptions CopyItemByIdOptions = { };
 			CopyItemByIdOptions.ApiVersion = EOS_ECOM_COPYITEMBYID_API_LATEST;
 			CopyItemByIdOptions.LocalUserId = LocalUserId.GetValueAsEosType();
-			CopyItemByIdOptions.ItemId = TCHAR_TO_ANSI(*ItemId);
+			auto ItemIdAnsi = StringCast<ANSICHAR>(*ItemId);
+			CopyItemByIdOptions.ItemId = ItemIdAnsi.Get();
 			EOS_Ecom_CatalogItem* LocalRef;
 			auto Result = EOS_Ecom_CopyItemById(EOSRef->EcomHandle, &CopyItemByIdOptions, &LocalRef);
 			OutCatalogItem = FEIK_Ecom_CatalogItem(*LocalRef);
@@ -270,7 +273,8 @@ TEnumAsByte<EEIK_Result> UEIK_EcomSubsystem::EIK_Ecom_CopyTransactionById(FEIK_E
 			EOS_Ecom_CopyTransactionByIdOptions CopyTransactionByIdOptions = { };
 			CopyTransactionByIdOptions.ApiVersion = EOS_ECOM_COPYTRANSACTIONBYID_API_LATEST;
 			CopyTransactionByIdOptions.LocalUserId = LocalUserId.GetValueAsEosType();
-			CopyTransactionByIdOptions.TransactionId = TCHAR_TO_ANSI(*TransactionId);
+			auto TransactionIdAnsi = StringCast<ANSICHAR>(*TransactionId);
+			CopyTransactionByIdOptions.TransactionId = TransactionIdAnsi.Get();
 			EOS_Ecom_HTransaction LocalRef;
 			auto Result = EOS_Ecom_CopyTransactionById(EOSRef->EcomHandle, &CopyTransactionByIdOptions, &LocalRef);
 			if(Result == EOS_EResult::EOS_Success)

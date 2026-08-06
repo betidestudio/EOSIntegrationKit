@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_Sessions_RegisterPlayers.h"
@@ -23,7 +23,8 @@ void UEIK_Sessions_RegisterPlayers::Activate()
 		{
 			EOS_Sessions_RegisterPlayersOptions RegisterPlayersOptions = { };
 			RegisterPlayersOptions.ApiVersion = EOS_SESSIONS_REGISTERPLAYERS_API_LATEST;
-			RegisterPlayersOptions.SessionName = TCHAR_TO_ANSI(*Var_SessionName);
+			auto SessionNameAnsi = StringCast<ANSICHAR>(*Var_SessionName);
+			RegisterPlayersOptions.SessionName = SessionNameAnsi.Get();
 			RegisterPlayersOptions.PlayersToRegisterCount = Var_PlayersToRegister.Num();
 			RegisterPlayersOptions.PlayersToRegister = new EOS_ProductUserId[Var_PlayersToRegister.Num()];
 			for (int i = 0; i < Var_PlayersToRegister.Num(); i++)

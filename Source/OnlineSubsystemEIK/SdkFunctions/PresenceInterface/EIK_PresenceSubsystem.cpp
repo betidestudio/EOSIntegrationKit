@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_PresenceSubsystem.h"
@@ -225,7 +225,8 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_PresenceModification_SetJoi
 		{
 			EOS_PresenceModification_SetJoinInfoOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCEMODIFICATION_SETJOININFO_API_LATEST;
-			Options.JoinInfo = TCHAR_TO_ANSI(*JoinInfo);
+			auto JoinInfoAnsi = StringCast<ANSICHAR>(*JoinInfo);
+			Options.JoinInfo = JoinInfoAnsi.Get();
 			auto Result = EOS_PresenceModification_SetJoinInfo(PresenceModificationHandle.Ref, &Options);
 			return static_cast<EEIK_Result>(Result);
 		}
@@ -243,7 +244,8 @@ TEnumAsByte<EEIK_Result> UEIK_PresenceSubsystem::EIK_PresenceModification_SetRaw
 		{
 			EOS_PresenceModification_SetRawRichTextOptions Options = {};
 			Options.ApiVersion = EOS_PRESENCEMODIFICATION_SETRAWRICHTEXT_API_LATEST;
-			Options.RichText = TCHAR_TO_ANSI(*RichText);
+			auto RichTextAnsi = StringCast<ANSICHAR>(*RichText);
+			Options.RichText = RichTextAnsi.Get();
 			auto Result = EOS_PresenceModification_SetRawRichText(PresenceModificationHandle.Ref, &Options);
 			return static_cast<EEIK_Result>(Result);
 		}

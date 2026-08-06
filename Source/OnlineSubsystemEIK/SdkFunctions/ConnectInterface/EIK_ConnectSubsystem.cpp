@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_ConnectSubsystem.h"
@@ -90,7 +90,8 @@ TEnumAsByte<EEIK_Result> UEIK_ConnectSubsystem::EIK_Connect_CopyProductUserExter
 			EOS_Connect_CopyProductUserExternalAccountByAccountIdOptions CopyProductUserExternalAccountByAccountIdOptions = { };
 			CopyProductUserExternalAccountByAccountIdOptions.ApiVersion = EOS_CONNECT_COPYPRODUCTUSEREXTERNALACCOUNTBYACCOUNTID_API_LATEST;
 			CopyProductUserExternalAccountByAccountIdOptions.TargetUserId = LocalUserId.GetValueAsEosType();
-			CopyProductUserExternalAccountByAccountIdOptions.AccountId = TCHAR_TO_ANSI(*AccountId);
+			auto AccountIdAnsi = StringCast<ANSICHAR>(*AccountId);
+			CopyProductUserExternalAccountByAccountIdOptions.AccountId = AccountIdAnsi.Get();
 			auto ResultVal = EOS_Connect_CopyProductUserExternalAccountByAccountId(EOSRef->ConnectHandle, &CopyProductUserExternalAccountByAccountIdOptions, &ExternalAccountInfo);
 			if(ExternalAccountInfo)
 			{
@@ -192,9 +193,10 @@ FEIK_ProductUserId UEIK_ConnectSubsystem::EIK_Connect_GetExternalAccountMapping(
 			GetExternalAccountMappingsOptions.ApiVersion = EOS_CONNECT_GETEXTERNALACCOUNTMAPPING_API_LATEST;
 			GetExternalAccountMappingsOptions.LocalUserId = LocalUserId.GetValueAsEosType();
 			GetExternalAccountMappingsOptions.AccountIdType = static_cast<EOS_EExternalAccountType>(AccountIdType.GetValue());
+			auto TargetExternalUserIdAnsi = StringCast<ANSICHAR>(*TargetExternalUserId);
 			if(!TargetExternalUserId.IsEmpty())
 			{
-				GetExternalAccountMappingsOptions.TargetExternalUserId = TCHAR_TO_ANSI(*TargetExternalUserId);
+				GetExternalAccountMappingsOptions.TargetExternalUserId = TargetExternalUserIdAnsi.Get();
 			}
 			return EOS_Connect_GetExternalAccountMapping(EOSRef->ConnectHandle, &GetExternalAccountMappingsOptions);
 		}

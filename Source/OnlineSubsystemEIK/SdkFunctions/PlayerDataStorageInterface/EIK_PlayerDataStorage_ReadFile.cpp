@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_PlayerDataStorage_ReadFile.h"
@@ -64,7 +64,8 @@ void UEIK_PlayerDataStorage_ReadFile::Activate()
 			EOS_PlayerDataStorage_ReadFileOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_READFILE_API_LATEST;
 			Options.LocalUserId = Var_LocalUserId.GetValueAsEosType();
-			Options.Filename = TCHAR_TO_ANSI(*Var_Filename);
+			auto FilenameAnsi = StringCast<ANSICHAR>(*Var_Filename);
+			Options.Filename = FilenameAnsi.Get();
 			Options.ReadChunkLengthBytes = Var_ReadChunkLengthBytes;
 			Options.ReadFileDataCallback = &UEIK_PlayerDataStorage_ReadFile::EOS_PlayerDataStorage_OnReadFileData;
 			Options.FileTransferProgressCallback = &UEIK_PlayerDataStorage_ReadFile::EOS_PlayerDataStorage_OnFileTransferProgress;

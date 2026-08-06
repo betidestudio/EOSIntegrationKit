@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Betide Studio. All Rights Reserved.
+// Copyright (c) 2023 Betide Studio. All Rights Reserved.
 
 
 #include "EIK_PlayerDataStorageSubsystem.h"
@@ -39,7 +39,8 @@ TEnumAsByte<EEIK_Result> UEIK_PlayerDataStorageSubsystem::EIK_PlayerDataStorage_
 			EOS_PlayerDataStorage_CopyFileMetadataByFilenameOptions Options = {};
 			Options.ApiVersion = EOS_PLAYERDATASTORAGE_COPYFILEMETADATABYFILENAME_API_LATEST;
 			Options.LocalUserId = LocalUserId.GetValueAsEosType();
-			Options.Filename = TCHAR_TO_ANSI(*Filename);
+			auto FilenameAnsi = StringCast<ANSICHAR>(*Filename);
+			Options.Filename = FilenameAnsi.Get();
 			EOS_PlayerDataStorage_FileMetadata* Metadata = nullptr;
 			auto Result = EOS_PlayerDataStorage_CopyFileMetadataByFilename(EOSRef->PlayerDataStorageHandle, &Options, &Metadata);
 			if (Metadata)
