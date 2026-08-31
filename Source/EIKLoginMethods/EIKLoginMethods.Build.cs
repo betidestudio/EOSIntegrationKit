@@ -16,6 +16,15 @@ public class EIKLoginMethods : ModuleRules
             Console.WriteLine("PluginPath: " + PluginPath);
             //AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "GoogleOneTap_UPL.xml"));
         }
+
+        PublicIncludePaths.AddRange(
+            new string[]
+            {
+                Path.Combine(ModuleDirectory, "Public"),
+                Path.Combine(ModuleDirectory, "Public/GooglePlayBilling")
+            }
+        );
+
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
@@ -33,6 +42,7 @@ public class EIKLoginMethods : ModuleRules
                 "OnlineSubsystemEIK",
                 "GoogleOneTapLibrary",
                 "GooglePlayGamesLibrary",
+                "GooglePlayBillingLibrary",
                 "Json",
                 "JsonUtilities"
             }
