@@ -304,7 +304,7 @@ void FUserManagerEOS::GetPlatformAuthToken(int32 LocalUserNum, const FOnGetLinke
 	// TODO config map of OSS -> token type?
 	if (PlatformOSS->GetSubsystemName() == STEAM_SUBSYSTEM)
 	{
-		TokenType = TEXT("Session");
+		TokenType = TEXT("WebAPI:epiconlineservices");
 	}
 
 	// Request the auth token from the platform
