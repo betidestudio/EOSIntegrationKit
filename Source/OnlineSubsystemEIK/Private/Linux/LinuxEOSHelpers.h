@@ -4,7 +4,7 @@
 
 #if WITH_EOS_SDK
 
-#include "EOSHelpers.h"
+#include "OnlineSubsystemEIK/Private/EOSHelpers.h"
 
 using FPlatformEOSHelpers = FEOSHelpers;
 
